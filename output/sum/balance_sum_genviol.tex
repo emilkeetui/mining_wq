@@ -1,0 +1,55 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Violation Summary},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]},
+cell{1}{1}={}{halign=l, halign=c,},
+cell{1}{2}={}{halign=l, halign=c,},
+cell{1}{3}={c=2,}{halign=r, halign=c, halign=c,},
+cell{1}{4}={}{halign=r, halign=c,},
+cell{1}{5}={c=2,}{halign=r, halign=c, halign=c,},
+cell{1}{6}={}{halign=r, halign=c,},
+cell{2,4,6,8,10,12,14,16,18,20}{1}={}{halign=l,},
+cell{2,4,6,8,10,12,14,16,18,20}{2}={}{halign=l,},
+cell{2,4,6,8,10,12,14,16,18,20}{3}={}{halign=r,},
+cell{2,4,6,8,10,12,14,16,18,20}{4}={}{halign=r,},
+cell{2,4,6,8,10,12,14,16,18,20}{5}={}{halign=r,},
+cell{2,4,6,8,10,12,14,16,18,20}{6}={}{halign=r,},
+cell{3,5,7,9,11,13,15,17,19}{1}={}{halign=l, bg=cededed,},
+cell{3,5,7,9,11,13,15,17,19}{2}={}{halign=l, bg=cededed,},
+cell{3,5,7,9,11,13,15,17,19}{3}={}{halign=r, bg=cededed,},
+cell{3,5,7,9,11,13,15,17,19}{4}={}{halign=r, bg=cededed,},
+cell{3,5,7,9,11,13,15,17,19}{5}={}{halign=r, bg=cededed,},
+cell{3,5,7,9,11,13,15,17,19}{6}={}{halign=r, bg=cededed,},
+hline{4}={1-6}{solid, black, 0.05em},
+row{even}={bg=black!5!white},
+}                     %% tabularray inner close
+\tinytableDefineColor{cededed}{HTML}{ededed}
+\toprule
+&  & Mine (N=12028) &  & Upstream (N=7281) &  \\ \cmidrule[lr]{3-4}\cmidrule[lr]{5-6}
+&    & Mean & Std. Dev. & Mean & Std. Dev. \\ \midrule %% TinyTableHeader
+multi\_year\_viol &  & 0.2 & 0.4 & 0.2 & 0.4 \\
+&  & N & Pct. & N & Pct. \\
+VIOLATION\_CATEGORY & MCL & 255 & 2.1 & 280 & 3.8 \\
+& MR & 2496 & 20.8 & 1596 & 21.9 \\
+& No violation & 8878 & 73.8 & 5241 & 72.0 \\
+& OTHER & 96 & 0.8 & 44 & 0.6 \\
+& TT & 303 & 2.5 & 120 & 1.6 \\
+RULE\_FAMILY & Chemicals & 2026 & 16.8 & 1429 & 19.6 \\
+& Disinfectant/byproducts & 18 & 0.1 & 4 & 0.1 \\
+& Microbials & 1018 & 8.5 & 567 & 7.8 \\
+& No violation & 8878 & 73.8 & 5241 & 72.0 \\
+& Other & 88 & 0.7 & 40 & 0.5 \\
+HEALTH\_BASED\_VIOL & N & 2859 & 23.8 & 1816 & 24.9 \\
+& No violation & 8878 & 73.8 & 5241 & 72.0 \\
+& Y & 291 & 2.4 & 224 & 3.1 \\
+MAJOR\_VIOL & N & 267 & 2.2 & 138 & 1.9 \\
+& No violation & 9580 & 79.6 & 5704 & 78.3 \\
+& Y & 2181 & 18.1 & 1439 & 19.8 \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}

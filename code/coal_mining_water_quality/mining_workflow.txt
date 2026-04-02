@@ -1,0 +1,44 @@
+# read and save the txt file
+# reads msha quarterly and mine data from txt to parquet
+Z:\ek559\mining_wq\code\readmshatxt.r
+
+# match mine locations to mine production and huc12
+# makes mine level, huc12 level, and county level production datasets
+Z:\ek559\mining_wq\code\minegeomatch.py
+
+# HUC coal characteristics
+# uses "Z:/ek559/mining_wq/clean_data/cws_data/matched_vio_pws.csv" from sdwismatch.py
+# Creates huc level coal characteristics by intersecting coal quality sample points within a 50 km boundary
+# directly with the huc boundary. Assigns each huc the mean of all the point characteristics.
+# Also matches the mine production to the huc
+# produces "Z:/ek559/mining_wq/clean_data/huc_coal_charac_geom_match.parquet"
+Z:\ek559\mining_wq\code\huc_coal_charac_geom_match.py
+
+# matching sdwis violations, characteristics, and pws intake locations
+# also matches the huc12 to the coal characteristics and production
+# produces a dataframe at the pws-violation-year level
+# produces the huc12-year coal level data: "Z:/ek559/mining_wq/clean_data/prod_sulfur.csv"
+Z:\ek559\mining_wq\code\sdwismatch_pwsid_level.py
+
+# mines in pws huc12
+# after matching mines to huc12
+# mines are kept if they are in the same
+# huc12 as a pws intake
+Z:\ek559\mining_wq\code\mines_in_pws_huc12.py
+
+# Summary stats and tables
+# triple difference regression
+Z:\ek559\mining_wq\code\mining_reg.r
+
+# diff in diff with heterogenous treat effects
+Z:\ek559\mining_wq\code\didhet
+
+###############
+# Archived code
+###############
+
+Z:\ek559\mining_wq\code\sdwismatch.py
+
+# Match HUC production, pws violations, and HUC sulfur level
+# final output is "Z:/ek559/mining_wq/clean_data/prod_vio_sulfur.parquet"
+Z:\ek559\mining_wq\code\match_prod_vio_sulfur.py

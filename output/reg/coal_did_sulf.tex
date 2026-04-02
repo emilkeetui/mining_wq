@@ -1,0 +1,26 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of ARP on HUC12 coal production},
+note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
+note{ }={All estimates use HUC12 and year fixed effects.},
+note{  }={Standard errors clustered at HUC12 level.},
+note{   }={Active mines is the number of active coal mines within HUC12.},
+note{    }={Coal tons is the total coal mined from HUC12.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]},
+column{2-5}={}{halign=c,},
+column{1}={}{halign=l,},
+}                     %% tabularray inner close
+\toprule
+& Coal tons (1983-2005) & Active mines (1983-2005) & Coal tons (1985-2005) & Active mines (1985-2005) \\ \midrule %% TinyTableHeader
+post93 x HighSulfur & -260424.829*** & -0.161 & -237507.025*** &  \\
+& [-376025.727, -144823.932] & [-0.458, 0.135] & [-351858.108, -123155.941] &  \\
+post95:high_sulfur &  &  &  & -0.241* \\
+&  &  &  & [-0.527, 0.045] \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}

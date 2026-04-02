@@ -1,0 +1,42 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of number of mines on PWS violations (only downstream PWS's)\label{tab:poisson_nummine_nonmine_vio_1985to2005dwnstrm}},
+note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
+note{ }={Data is from 1990 to 2005.},
+note{  }={Standard errors clustered at PWS level.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]},
+column{3-4,6-7,9-10,12-13}={}{halign=c,},
+column{1}={}{halign=l,},
+cell{1}{11}={c=3,}{halign=c, halign=c,},
+cell{1}{2}={c=3,}{halign=c, halign=c,},
+cell{1}{5}={c=3,}{halign=c, halign=c,},
+cell{1}{8}={c=3,}{halign=c, halign=c,},
+cell{2-14}{11}={}{halign=c,},
+cell{2-14}{2}={}{halign=c,},
+cell{2-14}{5}={}{halign=c,},
+cell{2-14}{8}={}{halign=c,},
+hline{9}={1-13}{solid, black, 0.05em},
+}                     %% tabularray inner close
+\toprule
+& Panel 1: total_coliform_share &  &  & Panel 2: surface_ground_water_rule_share &  &  & Panel 3: voc_share &  &  & Panel 4: soc_share &  &  \\ \cmidrule[lr]{2-4}\cmidrule[lr]{5-7}\cmidrule[lr]{8-10}\cmidrule[lr]{11-13}
+& Poisson & Poisson (FE) & Poisson RF & Poisson  & Poisson (FE)  & Poisson RF  & Poisson   & Poisson (FE)   & Poisson RF   & Poisson    & Poisson (FE)    & Poisson RF    \\ \midrule %% TinyTableHeader
+num_coal_mines & -0.101 & -0.121 &  & -0.196 & 0.367*** &  & 0.032 & -0.058 &  & 0.103 & 0.258*** &  \\
+& [-0.239, 0.037] & [-0.341, 0.100] &  & [-0.591, 0.198] & [0.147, 0.588] &  & [-0.160, 0.225] & [-0.410, 0.293] &  & [-0.022, 0.227] & [0.090, 0.426] &  \\
+post95 & 1.009*** &  &  & 1.255*** &  &  & 1.362*** &  &  & -0.304 &  &  \\
+& [0.804, 1.214] &  &  & [0.539, 1.972] &  &  & [0.880, 1.844] &  &  & [-0.850, 0.242] &  &  \\
+post95 × sulfur &  &  & 0.012 &  &  & -0.094 &  &  & -0.251 &  &  & -0.444* \\
+&  &  & [-0.194, 0.218] &  &  & [-0.370, 0.182] &  &  & [-0.636, 0.133] &  &  & [-0.939, 0.050] \\
+Num.Obs. & 4961 & 1990 & 1990 & 4629 & 597 & 597 & 4606 & 1071 & 1071 & 4673 & 1269 & 1269 \\
+R2 & 0.031 & 0.071 & 0.070 & 0.132 & 0.447 & 0.444 & 0.069 & 0.270 & 0.272 & 0.073 & 0.211 & 0.212 \\
+R2 Adj. & -0.028 & -1.041 & -1.042 & 0.088 & 0.073 & 0.071 & 0.043 & -0.065 & -0.063 & 0.053 & -0.044 & -0.043 \\
+RMSE & 0.02 & 0.03 & 0.03 & 0.09 & 0.11 & 0.11 & 0.14 & 0.22 & 0.22 & 0.16 & 0.25 & 0.25 \\
+FE: year &  & X & X &  & X & X &  & X & X &  & X & X \\
+FE: PWSID &  & X & X &  & X & X &  & X & X &  & X & X \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}

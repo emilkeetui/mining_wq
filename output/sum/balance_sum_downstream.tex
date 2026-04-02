@@ -1,0 +1,52 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={CWS source features summary statistics},
+note{}={NA is missing data.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]},
+cell{1}{1}={}{halign=l, halign=c,},
+cell{1}{2}={}{halign=l, halign=c,},
+cell{1}{3}={c=2,}{halign=r, halign=c, halign=c,},
+cell{1}{4}={}{halign=r, halign=c,},
+cell{1}{5}={c=2,}{halign=r, halign=c, halign=c,},
+cell{1}{6}={}{halign=r, halign=c,},
+cell{2,4,6,8,10,12,14,16}{1}={}{halign=l,},
+cell{2,4,6,8,10,12,14,16}{2}={}{halign=l,},
+cell{2,4,6,8,10,12,14,16}{3}={}{halign=r,},
+cell{2,4,6,8,10,12,14,16}{4}={}{halign=r,},
+cell{2,4,6,8,10,12,14,16}{5}={}{halign=r,},
+cell{2,4,6,8,10,12,14,16}{6}={}{halign=r,},
+cell{3,5,7,9,11,13,15,17}{1}={}{halign=l, bg=cededed,},
+cell{3,5,7,9,11,13,15,17}{2}={}{halign=l, bg=cededed,},
+cell{3,5,7,9,11,13,15,17}{3}={}{halign=r, bg=cededed,},
+cell{3,5,7,9,11,13,15,17}{4}={}{halign=r, bg=cededed,},
+cell{3,5,7,9,11,13,15,17}{5}={}{halign=r, bg=cededed,},
+cell{3,5,7,9,11,13,15,17}{6}={}{halign=r, bg=cededed,},
+row{even}={bg=black!5!white},
+}                     %% tabularray inner close
+\tinytableDefineColor{cededed}{HTML}{ededed}
+\toprule
+&  & High sulfur downstream (N=10147) &  & Low sulfur downstream (N=4025) &  \\ \cmidrule[lr]{3-4}\cmidrule[lr]{5-6}
+&    & N & Pct. & N & Pct. \\ \midrule %% TinyTableHeader
+water source use & Emergency & 63 & 0.6 & 21 & 0.5 \\
+& NA & 142 & 1.4 & 0 & 0.0 \\
+& Other & 333 & 3.3 & 6 & 0.1 \\
+& Permanent & 9492 & 93.5 & 3977 & 98.8 \\
+& Seasonal & 117 & 1.2 & 21 & 0.5 \\
+Filtration in place & N & 7901 & 77.9 & 3122 & 77.6 \\
+& Y & 2246 & 22.1 & 903 & 22.4 \\
+Source treated & N & 7362 & 72.6 & 2291 & 56.9 \\
+& Y & 2785 & 27.4 & 1734 & 43.1 \\
+Primary water source & Bought GW influenced by SW & 42 & 0.4 & 0 & 0.0 \\
+& Ground water (GW) & 6875 & 67.8 & 3000 & 74.5 \\
+& GW influenced by SW & 285 & 2.8 & 142 & 3.5 \\
+& GW purchased & 147 & 1.4 & 0 & 0.0 \\
+& Surface water (SW) & 2013 & 19.8 & 777 & 19.3 \\
+& SW purchased & 785 & 7.7 & 106 & 2.6 \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}

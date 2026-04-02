@@ -1,0 +1,41 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of number of mines on PWS violations\label{tab:olsrf2sls_nummine_nonmine_vio_1985to2005test}},
+note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
+note{ }={All estimations include PWS and year fixed effects.},
+note{  }={Data is from 1990 to 2005.},
+note{   }={Standard errors clustered at PWS level.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]},
+column{3-4,6-7,9-10,12-13}={}{halign=c,},
+column{1}={}{halign=l,},
+cell{1}{11}={c=3,}{halign=c, halign=c,},
+cell{1}{2}={c=3,}{halign=c, halign=c,},
+cell{1}{5}={c=3,}{halign=c, halign=c,},
+cell{1}{8}={c=3,}{halign=c, halign=c,},
+cell{2-12}{11}={}{halign=c,},
+cell{2-12}{2}={}{halign=c,},
+cell{2-12}{5}={}{halign=c,},
+cell{2-12}{8}={}{halign=c,},
+hline{9}={1-13}{solid, black, 0.05em},
+}                     %% tabularray inner close
+\toprule
+& Panel 1: total_coliform &  &  & Panel 2: surface_ground_water_rule &  &  & Panel 3: voc &  &  & Panel 4: soc &  &  \\ \cmidrule[lr]{2-4}\cmidrule[lr]{5-7}\cmidrule[lr]{8-10}\cmidrule[lr]{11-13}
+& OLS & RF & 2SLS & OLS  & RF  & 2SLS  & OLS   & RF   & 2SLS   & OLS    & RF    & 2SLS    \\ \midrule %% TinyTableHeader
+num_coal_mines & 0.003 &  &  & -0.019*** &  &  & -0.009* &  &  & 0.018* &  &  \\
+& [-0.012, 0.018] &  &  & [-0.032, -0.005] &  &  & [-0.020, 0.002] &  &  & [-0.000, 0.037] &  &  \\
+post95 × sulfur &  & 0.006 &  &  & 0.028*** &  &  & 0.004 &  &  & -0.019** &  \\
+&  & [-0.012, 0.024] &  &  & [0.012, 0.043] &  &  & [-0.006, 0.014] &  &  & [-0.038, -0.000] &  \\
+fit_num_coal_mines &  &  & -0.028 &  &  & -0.126*** &  &  & -0.017 &  &  & 0.079* \\
+&  &  & [-0.113, 0.056] &  &  & [-0.203, -0.048] &  &  & [-0.061, 0.027] &  &  & [-0.000, 0.158] \\
+Num.Obs. & 8521 & 8521 & 8521 & 8355 & 8355 & 8355 & 7938 & 7938 & 7938 & 8246 & 8246 & 8246 \\
+R2 & 0.200 & 0.200 & 0.200 & 0.308 & 0.310 & 0.310 & 0.142 & 0.141 & 0.141 & 0.234 & 0.234 & 0.234 \\
+R2 Adj. & 0.162 & 0.162 & 0.162 & 0.275 & 0.276 & 0.276 & 0.098 & 0.097 & 0.097 & 0.196 & 0.196 & 0.196 \\
+RMSE & 0.27 & 0.27 & 0.27 & 0.23 & 0.23 & 0.24 & 0.17 & 0.17 & 0.17 & 0.22 & 0.22 & 0.23 \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}

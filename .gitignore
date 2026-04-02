@@ -1,0 +1,24 @@
+# Large data files
+clean_data/**/*.csv
+clean_data/**/*.parquet
+msha_data/
+pws_data/
+coal_qual/
+sdwa_violations/
+
+# R artifacts
+.Rhistory
+.RData
+.Rproj.user/
+
+# Python artifacts
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Auto-generated R output library files (kableExtra/tinytable)
+output/sum/lib*/
+
+# OS
+.DS_Store
+Thumbs.db

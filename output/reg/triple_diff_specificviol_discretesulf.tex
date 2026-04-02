@@ -1,0 +1,36 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of ARP on drinking water violation specific categories},
+note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
+note{ }={All estimations include PWS and year fixed effects.},
+note{  }={Standard errors clustered at PWS level.},
+note{   }={MiningHUC12 = 1 if intake HUC12 has mean sulfur greater than 2.},
+note{    }={Coefficients names are displayed in column headers and dependent variable names in the first column.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]},
+column{2-4}={}{halign=c,},
+column{1}={}{halign=l,},
+}                     %% tabularray inner close
+\toprule
+& post95 x CoalMineHUC12 & post95:HighSulfur & post95:CoalMineHUC121:HighSulfur \\ \midrule %% TinyTableHeader
+total coliforms & -0.012 & -0.017 & 0.043 \\
+& [-0.047, 0.023] & [-0.059, 0.026] & [-0.008, 0.095] \\
+Synth O. Chem & 0.019** & -0.030** & 0.005 \\
+& [0.002, 0.036] & [-0.056, -0.004] & [-0.028, 0.038] \\
+Nitrates & 0.019 & -0.019 & -0.013 \\
+& [-0.008, 0.046] & [-0.058, 0.020] & [-0.061, 0.034] \\
+Arsenic & 0.004 & -0.057*** & 0.043** \\
+& [-0.014, 0.022] & [-0.087, -0.027] & [0.008, 0.079] \\
+Inorg chem & -0.010 & -0.064*** & 0.058*** \\
+& [-0.032, 0.011] & [-0.096, -0.032] & [0.018, 0.097] \\
+Radionuclides & 0.067*** & 0.014 & -0.011 \\
+& [0.026, 0.108] & [-0.042, 0.070] & [-0.083, 0.062] \\
+Lead and Copper & 0.032 & -0.031 & -0.025 \\
+& [-0.007, 0.072] & [-0.074, 0.012] & [-0.081, 0.030] \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}

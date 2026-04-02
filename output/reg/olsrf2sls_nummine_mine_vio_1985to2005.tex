@@ -1,0 +1,41 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of number of mines on PWS violations\label{tab:olsrf2sls_nummine_mine_vio_1985to2005}},
+note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
+note{ }={All estimations include PWS and year fixed effects.},
+note{  }={Data is from 1990 to 2005.},
+note{   }={Standard errors clustered at PWS level.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]},
+column{3-4,6-7,9-10,12-13}={}{halign=c,},
+column{1}={}{halign=l,},
+cell{1}{11}={c=3,}{halign=c, halign=c,},
+cell{1}{2}={c=3,}{halign=c, halign=c,},
+cell{1}{5}={c=3,}{halign=c, halign=c,},
+cell{1}{8}={c=3,}{halign=c, halign=c,},
+cell{2-12}{11}={}{halign=c,},
+cell{2-12}{2}={}{halign=c,},
+cell{2-12}{5}={}{halign=c,},
+cell{2-12}{8}={}{halign=c,},
+hline{9}={1-13}{solid, black, 0.05em},
+}                     %% tabularray inner close
+\toprule
+& Panel 1: nitrates_share &  &  & Panel 2: arsenic_share &  &  & Panel 3: inorganic_chemicals_share &  &  & Panel 4: radionuclides_share &  &  \\ \cmidrule[lr]{2-4}\cmidrule[lr]{5-7}\cmidrule[lr]{8-10}\cmidrule[lr]{11-13}
+& OLS & RF & 2SLS & OLS  & RF  & 2SLS  & OLS   & RF   & 2SLS   & OLS    & RF    & 2SLS    \\ \midrule %% TinyTableHeader
+num_coal_mines & 0.004* &  &  & 0.003 &  &  & 0.006** &  &  & 0.007*** &  &  \\
+& [-0.000, 0.008] &  &  & [-0.001, 0.008] &  &  & [0.000, 0.011] &  &  & [0.002, 0.013] &  &  \\
+post95 × sulfur &  & -0.001 &  &  & -0.005* &  &  & -0.003 &  &  & 0.018*** &  \\
+&  & [-0.007, 0.006] &  &  & [-0.012, 0.001] &  &  & [-0.011, 0.005] &  &  & [0.005, 0.032] &  \\
+fit_num_coal_mines &  &  & 0.009 &  &  & 0.111 &  &  & 0.058 &  &  & -0.394 \\
+&  &  & [-0.119, 0.137] &  &  & [-0.089, 0.310] &  &  & [-0.129, 0.246] &  &  & [-1.042, 0.253] \\
+Num.Obs. & 9680 & 9680 & 9680 & 9692 & 9692 & 9692 & 9793 & 9793 & 9793 & 10050 & 10050 & 10050 \\
+R2 & 0.339 & 0.337 & 0.337 & 0.400 & 0.400 & 0.400 & 0.382 & 0.380 & 0.380 & 0.391 & 0.391 & 0.391 \\
+R2 Adj. & 0.280 & 0.279 & 0.279 & 0.348 & 0.347 & 0.347 & 0.328 & 0.326 & 0.326 & 0.339 & 0.340 & 0.340 \\
+RMSE & 0.11 & 0.11 & 0.11 & 0.11 & 0.11 & 0.16 & 0.13 & 0.13 & 0.15 & 0.18 & 0.18 & 0.50 \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}
