@@ -9,7 +9,7 @@ import numpy as np
 from shapely.geometry import Point
 
 # Matching mines to huc12's
-minegpd = pd.read_csv("Z:/ek559/mining_wq/msha_data/mines.csv",
+minegpd = pd.read_csv("Z:/ek559/mining_wq/raw_data/msha/mines.csv",
                    encoding='windows-1252',
                    dtype={'mine_id': str,'FIPS_CNTY_CD': str, 'BOM_STATE_CD': str})
 print(minegpd.shape)
@@ -38,7 +38,7 @@ print("hucs",len(minegpd.huc12.unique()))
 
 # match mine production
 fullprod = pd.DataFrame()
-folder_path = "Z:/ek559/mining_wq/eia_data/coal/coal_prod"
+folder_path = "Z:/ek559/mining_wq/raw_data/eia/coal/coal_prod"
 file_list = glob.glob(os.path.join(folder_path, "coalpublic*.xls"))
 for file in file_list:
     print(file)
@@ -155,11 +155,11 @@ hucgroup.to_csv("Z:/ek559/mining_wq/clean_data/coal_huc_prod.csv", index=False)
 # Mine level sulfur, HUC, and production data
 #############################################
 
-sample = pd.read_csv("Z:/ek559/mining_wq/coal_qual/CQ2025101314323_sampledetails.CSV", nrows=7450)
+sample = pd.read_csv("Z:/ek559/mining_wq/raw_data/coal_qual/CQ2025101314323_sampledetails.CSV", nrows=7450)
 sample.columns = sample.columns.str.replace(" ", "").str.lower()
 
 # Load ultimate analysis CSV
-ult = pd.read_csv("Z:/ek559/mining_wq/coal_qual/CQ20251013152532_proximateultimate.CSV", nrows=7430)
+ult = pd.read_csv("Z:/ek559/mining_wq/raw_data/coal_qual/CQ20251013152532_proximateultimate.CSV", nrows=7430)
 ult.columns = ult.columns.str.replace(" ", "").str.lower()
 
 # Merge datasets on 'sampleid'

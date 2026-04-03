@@ -11,11 +11,11 @@ import numpy as np
 # are the colocated coal production and sulfur and the mean coal and sulfur from upstream
 
 # Load sample details CSV
-sample = pd.read_csv("Z:/ek559/mining_wq/coal_qual/CQ2025101314323_sampledetails.CSV", nrows=7450)
+sample = pd.read_csv("Z:/ek559/mining_wq/raw_data/coal_qual/CQ2025101314323_sampledetails.CSV", nrows=7450)
 sample.columns = sample.columns.str.replace(" ", "").str.lower()
 
 # Load ultimate analysis CSV
-ult = pd.read_csv("Z:/ek559/mining_wq/coal_qual/CQ20251013152532_proximateultimate.CSV", nrows=7430)
+ult = pd.read_csv("Z:/ek559/mining_wq/raw_data/coal_qual/CQ20251013152532_proximateultimate.CSV", nrows=7430)
 ult.columns = ult.columns.str.replace(" ", "").str.lower()
 
 # Merge datasets on 'sampleid'

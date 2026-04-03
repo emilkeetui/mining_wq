@@ -1222,7 +1222,7 @@ tsls_reg_output(
 tsls_reg_output(
   full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine == 0), ],
   c("nitrates_share", "arsenic_share", "inorganic_chemicals_share", "radionuclides_share"),
-  c("num_coal_mines_unified"),
+  c("num_coal_mines_upstream"),
   "olsrf2sls_nummine_mine_vio_1985to2005dwnstrm_coalunified",
   "Effect of number of mines on PWS violations (only downstream PWS's)",
   "olsrf2sls_nummine_mine_vio_1985to2005dwnstrm_coalunified",
@@ -1263,7 +1263,7 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine
                 "arsenic_share",
                 "inorganic_chemicals_share",
                 "radionuclides_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_upstream"),
                 "olsrf2sls_nummine_mine_vio_1985to2005dwnstrm_coalunified",
                 "Effect of number of mines on PWS violations (only downstream PWS's)",
                 "olsrf2sls_nummine_mine_vio_1985to2005dwnstrm_coalunified",

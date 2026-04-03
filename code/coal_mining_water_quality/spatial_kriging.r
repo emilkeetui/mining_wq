@@ -21,7 +21,7 @@ library(dplyr)
 library(stringr)
 
 # Coal fields
-coal_fields <- st_read("Z:/ek559/mining_wq/ncra_coal/GIS/Updated Coal Fields/Coal_Fields.shp")
+coal_fields <- st_read("Z:/ek559/mining_wq/raw_data/ncra_coal/GIS/Updated Coal Fields/Coal_Fields.shp")
 
 # convex hull of appalachian region
 appalachia <- coal_fields[coal_fields$NAME == "Appalachian Region", ]
@@ -30,7 +30,7 @@ appalachia <- coal_fields[coal_fields$NAME == "Appalachian Region", ]
 appalachia <- st_transform(appalachia, crs = 5070)
 
 # create shapefiles from coal qual borehole samples
-sample <- read_csv("Z:/ek559/mining_wq/coal_qual/CQ2025101314323_sampledetails.CSV", 
+sample <- read_csv("Z:/ek559/mining_wq/raw_data/coal_qual/CQ2025101314323_sampledetails.CSV", 
                    show_col_types = FALSE)
 
 names(sample) <- str_replace_all(names(sample), " ", "")
@@ -39,7 +39,7 @@ names(sample) <- tolower(names(sample))
 sample <- sample %>%
   filter(!str_detect(as.character(latitude), "California"))
 
-ult <- read_csv("Z:/ek559/mining_wq/coal_qual/CQ20251013152532_proximateultimate.CSV", 
+ult <- read_csv("Z:/ek559/mining_wq/raw_data/coal_qual/CQ20251013152532_proximateultimate.CSV", 
                 show_col_types = FALSE)
 
 names(ult) <- str_replace_all(names(ult), " ", "")

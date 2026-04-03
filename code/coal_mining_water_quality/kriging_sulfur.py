@@ -18,12 +18,12 @@ import gstools as gs
 from scipy.spatial import distance_matrix
 import numpy as np
 
-sample = pd.read_csv("Z:/ek559/mining_wq/coal_qual/CQ2025101314323_sampledetails.CSV",
+sample = pd.read_csv("Z:/ek559/mining_wq/raw_data/coal_qual/CQ2025101314323_sampledetails.CSV",
                      low_memory=False,
                      on_bad_lines="skip")
 sample.columns = sample.columns.str.replace(' ', '', regex=False).str.lower()
 
-ult = pd.read_csv("Z:/ek559/mining_wq/coal_qual/CQ20251013152532_proximateultimate.CSV",
+ult = pd.read_csv("Z:/ek559/mining_wq/raw_data/coal_qual/CQ20251013152532_proximateultimate.CSV",
                   low_memory=False,
                   on_bad_lines="skip")
 ult.columns = ult.columns.str.replace(' ', '', regex=False).str.lower()
@@ -114,7 +114,7 @@ transform = from_origin(x_min, y_max, xres, yres)
 
 # Save raster to specified path
 with rasterio.open(
-    r"Z:/ek559/mining_wq/coal_qual/sulfur_intrerpolation.tif",
+    r"Z:/ek559/mining_wq/raw_data/coal_qual/sulfur_intrerpolation.tif",
     "w",
     driver="GTiff",
     height=nrows,
