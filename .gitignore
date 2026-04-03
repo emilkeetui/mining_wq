@@ -1,10 +1,6 @@
 # Large data files
-clean_data/**/*.csv
-clean_data/**/*.parquet
-msha_data/
-pws_data/
-coal_qual/
-sdwa_violations/
+clean_data/
+raw_data/
 
 # R artifacts
 .Rhistory
