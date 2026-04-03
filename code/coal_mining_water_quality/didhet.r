@@ -1231,44 +1231,6 @@ tsls_reg_output(
   subheader         = "Downstream"
 )
 
-# ... remaining calls ...
-
-# After all calls, produce the combined first-stage table
-first_stage_table(
-  storage_list_name = "fs_store_minevio",
-  outfile           = "first_stages_combined",
-  title             = "First Stage Results Across Samples",
-  label             = "tab:first_stages",
-  drop              = "num_facilities"
-)
-
-
-
-## rather than a separate upstream and colocate production variable
-# this specification uses one variable which is upstream if the production is downstream
-# and and average of upstream and colocated if the production is in the huc
-tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine == 1),],
-                c("nitrates_share",
-                "arsenic_share",
-                "inorganic_chemicals_share",
-                "radionuclides_share"),
-                c("num_coal_mines_unified"),
-                "olsrf2sls_nummine_mine_vio_1985to2005colocate_coalunified",
-                "Effect of number of mines on PWS violations (only colocated PWS's)",
-                "olsrf2sls_nummine_mine_vio_1985to2005colocate_coalunified",
-                "post95*sulfur_unified")
-
-tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine == 0),],
-                c("nitrates_share",
-                "arsenic_share",
-                "inorganic_chemicals_share",
-                "radionuclides_share"),
-                c("num_coal_mines_upstream"),
-                "olsrf2sls_nummine_mine_vio_1985to2005dwnstrm_coalunified",
-                "Effect of number of mines on PWS violations (only downstream PWS's)",
-                "olsrf2sls_nummine_mine_vio_1985to2005dwnstrm_coalunified",
-                "post95*sulfur_unified")
-
 tsls_reg_output(full[full$minehuc_upstream_of_mine == 0, ],
                 c("nitrates_share",
                 "arsenic_share",
@@ -1290,6 +1252,15 @@ tsls_reg_output(full,
                 "Effect of number of mines on PWS violations (all PWS's)",
                 "olsrf2sls_nummine_mine_vio_1985to2005allhucs_coalunified",
                 "post95*sulfur_unified")
+
+# After all coalunified calls, produce the combined first-stage table
+first_stage_table(
+  storage_list_name = "fs_store_minevio",
+  outfile           = "first_stages_combined",
+  title             = "First Stage Results Across Samples",
+  label             = "tab:first_stages",
+  drop              = "num_facilities"
+)
 
 ## number of mines related violations and robustness checks 
 tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine == 1),],
