@@ -10,27 +10,40 @@ Safe Drinking Water Act.
 ## Directory Structure
 
 ```
-MINING_WQ/
-├── raw_data/          # READ ONLY — never modify, overwrite, or delete
-│   ├── DeathStar health data/     # Texas Dept of Insurance workers' comp claims
-│   ├── bls_data/      # BLS all county Quarterly Census of Employment & Wages
-│   ├── icd9 and icd10/ # ICD-9 and ICD-10 diagnosis code crosswalks
-│   └── admin boundaries/    # Commuting zone and geographic boundary files
-├── data/
-│   ├── clean/         # Processed, analysis-ready datasets (can modify)
-│   └── intermediate/  # Intermediate outputs during construction (can modify)
-├── DeathStar/         # Code
-│   ├── build/         # Data cleaning and construction scripts
-│   ├── .claude/
-│   │    └── CLAUDE.md      #(treat as read-only)
-│   ├── .git/          # git folder
-│   ├── README.md      # Git read me
-│   ├── analysis/      # Regression and estimation scripts
-│   └── figures/       # Plot and visualization scripts
-├── output/
-│   ├── tables/        # LaTeX and CSV regression tables
-│   └── figures/       # Publication-quality figures
-├── writing/           # Paper drafts and notes 
+Project Structure
+
+mining_wq/
+├── raw_data/              # Source data, read-only
+│   ├── msha/              # Mine Safety and Health Administration — mine locations & production
+│   ├── eia/               # Energy Information Administration — coal production by mine
+│   ├── coal_qual/         # USGS coal quality boreholes (sulfur %, BTU)
+│   ├── ncra_coal/         # USGS National Coal Resource Assessment — coal field shapefiles
+│   ├── huc/               # HUC12 watershed boundaries (pulled from sdwa_violations folder)
+│   └── ...                # Other datasets not used in main analysis
+│
+├── clean_data/            # Intermediate pipeline outputs
+│   ├── coal_mine_prod_charac.parquet   # mine × year: production + sulfur/BTU
+│   ├── coal_huc_prod.csv               # HUC12 × year: aggregate production
+│   ├── huc_coal_charac_geom_match.parquet  # HUC12 × year: production + sulfur + minehuc type
+│   └── cws_data/
+│       ├── prod_vio_sulfur.parquet     # PWSID × year: main analysis dataset (input to didhet.r)
+│       └── violation.csv              # raw violation records for distributional plots
+│
+├── code/coal_mining_water_quality/    # All analysis scripts
+│   ├── readmshatxt.r          # step 1: parse MSHA raw text → parquet/csv
+│   ├── minegeomatch.py        # step 2: match mines to HUC12s, assign sulfur
+│   ├── huc_coal_charac_geom_match.py  # step 3: build HUC-level panel
+│   ├── sdwismatch*.py         # step 4: match SDWIS facilities/PWS to HUCs
+│   ├── match_prod_vio_sulfur.py       # step 5: merge production, violations, sulfur
+│   ├── didhet.r               # step 6: main analysis — all regressions, tables, figures
+│   ├── mining_reg.r           # regression utilities
+│   ├── spatial_kriging.r      # sulfur interpolation
+│   └── kriging_sulfur.py
+│
+└── output/
+    ├── fig/               # .png figures
+    ├── reg/               # regression .tex tables
+    └── sum/               # summary stat .tex tables
 ```
 
 ---
@@ -41,8 +54,7 @@ MINING_WQ/
 - **Never write to, modify, overwrite, or delete any file in `raw_data/`.**
 - Never run `rm`, `unlink()`, `file.remove()`, or any destructive operation
   targeting `raw_data/`.
-- All cleaning and transformation must write outputs to `data/clean/` or
-  `data/intermediate/`.
+- All cleaning and transformation must write outputs to `clean_data/`.
 
 ### Before any file operation
 - When an intermediate or cleaned data file is needed in another file
@@ -50,8 +62,8 @@ MINING_WQ/
 - Only create an intermediate or cleaned data file that already exists if important
   changes to the build file have been made and subsequent analysis files rely
   on variables of the structure of the new build file to run.
-- Never overwrite an existing file in `data/clean/` without first confirming
-  the user wants to replace it.
+- Never overwrite an existing file in `clean_data/` without first confirming
+  the user wants to replace it and suggest what will change about the file if overwritten.
 
 ### Git discipline
 - Before any multi-file editing session, check `git status`. If there are
@@ -67,16 +79,8 @@ Before running any operation that is computationally expensive or uses a large a
 tokens (i.e. a high /cost), **estimate and report the expected cost/time first**, then
 wait for the user to approve before executing.
 
-### What requires a cost estimate
-- Any operation reading or joining across the full claims dataset (~52M rows)
-- Building or updating the PRISM weather panel (daily × commuting zone)
-- Exporting large files to disk
-
 ### How to estimate
 - Install and load any R packages needed to run the scripts without my permission.
-- For R: use a 1% sample (`slice_sample(prop = 0.01)`) to benchmark time,
-  then extrapolate. Report: *"This will take approximately X minutes and
-  produce a file of approximately Y GB."*
 - For file sizes: check with `file.info()` or `du -sh` before loading.
 - Flag if an operation will produce output >1 GB.
 - If an API or external data call is involved, estimate the number of requests
@@ -88,6 +92,15 @@ wait for the user to approve before executing.
 
 ### Language & packages
 - **R** or **Python**
+
+### Python environment
+There is no system Python on PATH. Always use the full path to the project virtualenv:
+```bash
+"Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe" script.py
+# or inline:
+"Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe" -c "..."
+```
+Do **not** use `python`, `python3`, or `py` — they will not be found.
 
 ### Style
 - Snake_case for all object and variable names
@@ -108,32 +121,73 @@ wait for the user to approve before executing.
 
 ## Project-Specific Variable Names & Concepts
 
-| Concept | Variable name convention |
+**Unit of observation:** PWSID × year (1985–2005, main sample)
+
+| Concept | Variable name |
 |---|---|
-| Commuting zone identifier | `cz_id` |
-| Date | `date` (class Date, format YYYY-MM-DD) |
-| Daily max temperature (°F) | `tmax_f` |
-| Daily mean temperature (°F) | `tmean_f` |
-| Temperature bin indicators | `tbin_[low]_[high]` (e.g. `tbin_95_100`) |
-| City ordinance indicator | `city_ord` (1 = ordinance in force, 0 = not) |
-| Post-HB2127 repeal indicator | `post_repeal` (1 = after Sept 2023) |
-| Claims per 100k workers | `claims_per_100k` |
-| ICD code | `icd_code`, `icd_version` (9 or 10) |
-| Worker home zip code | `zip_home` |
+| Public water system ID | `PWSID` |
+| HUC12 watershed of PWS intake | `huc12` |
+| HUC classification (mine/upstream/downstream) | `minehuc` |
+| Mine HUC indicator | `minehuc_mine` (1/0) |
+| Upstream-of-mine HUC indicator | `minehuc_upstream_of_mine` (1/0) |
+| Downstream-of-mine HUC indicator | `minehuc_downstream_of_mine` (1/0) |
+| N mines colocated in intake HUC | `num_coal_mines_colocated` |
+| N mines in directly upstream HUC | `num_coal_mines_upstream` |
+| N mines unified (avg if both nonzero, else max) | `num_coal_mines_unified` |
+| Coal production tons, colocated | `production_short_tons_coal_colocated` |
+| Coal production tons, upstream | `production_short_tons_coal_upstream` |
+| Coal production tons, unified | `production_short_tons_coal_unified` |
+| Avg sulfur % of coal seams, colocated | `sulfur_colocated` |
+| Avg sulfur % of coal seams, upstream | `sulfur_upstream` |
+| Avg sulfur %, unified | `sulfur_unified` |
+| Avg BTU content, colocated/upstream/unified | `btu_colocated`, `btu_upstream`, `btu_unified` |
+| Post-ARP Phase I indicator (year >= 1995) | `post95` |
+| Share of year in nitrates violation | `nitrates_share` |
+| Share of year in arsenic violation | `arsenic_share` |
+| Share of year in inorganic chemicals violation | `inorganic_chemicals_share` |
+| Share of year in radionuclides violation | `radionuclides_share` |
+| Share of year in total coliform violation | `total_coliform_share` |
+| Share of year in surface/groundwater rule violation | `surface_ground_water_rule_share` |
+| Share of year in VOC violation | `voc_share` |
+| Share of year in SOC violation | `soc_share` |
+| N intake facilities (main control) | `num_facilities` |
+| N source HUC12s for the PWS | `num_hucs` |
+| Population served | `POPULATION_SERVED_COUNT` |
+| Ownership type | `OWNER_TYPE_CODE` |
+| Primary water source type | `PRIMARY_SOURCE_CODE` |
+
+**Violation categories:** MCL (max contaminant level), MR (monitoring/reporting), TT (treatment technique) — stored as `VIOLATION_CATEGORY_CODE_MCL`, `_MR`, `_TT`.
+
+**Mining vs. non-mining violations:** Nitrates, arsenic, inorganic chemicals, and radionuclides are the "mining-related" outcomes. Total coliform, surface/groundwater rule, VOCs, and SOCs are "non-mining" placebo outcomes.
+
+**Unified variables:** `_unified` variables average the colocated and upstream values when both are nonzero, and take the nonzero value when only one exists. For downstream HUCs, `num_coal_mines_unified` = `num_coal_mines_upstream` by construction (colocated is always 0).
 
 ### Geography
-- Unit of analysis: **commuting zone × day**
-- Worker location inferred from home zip code → USDA commuting zone crosswalk
-- PRISM weather aggregated as area-weighted mean over commuting zone boundary
+- Unit of analysis: **PWSID × year**
+- PWS intakes are matched to HUC12 sub-watersheds via spatial join (SDWIS facility coordinates → HUC12 shapefile)
+- HUC12s are classified as `mine`, `upstream_of_mine`, or `downstream_of_mine` based on mine locations and the HUC flow network (`tohuc` column links each HUC to its downstream neighbor)
+- Coal quality (sulfur %) assigned to HUC12s via spatial join with USGS borehole samples, using a 20 km buffer
 
-### Empirical specification (Equation 1)
-The main regression interacts temperature bins with the city ordinance
-indicator and a post-repeal indicator. The key coefficients of interest (π_k)
-capture the mitigating effect of ordinances on the temperature–medical
-utilization relationship. Always include:
-- Commuting zone fixed effects (`| cz_id`)
-- Day fixed effects (`| date`)
-- Standard errors clustered at the commuting zone level
+### Empirical specification (2SLS)
+
+**First stage** — effect of ARP on coal production:
+```
+CoalMines_ht = α(sulfur_h × post95_t) + η_PWSID + τ_year + ρ_state + ε_ht
+```
+The instrument is `post95 * sulfur_unified`. High-sulfur HUCs saw larger production declines after 1995 when ARP Phase I took effect.
+
+**Second stage** — effect of coal mining on SDWA violations:
+```
+ViolationShare_pt = β·CoalMineŝ_ht + γ·num_facilities_pt + η_PWSID + τ_year + ρ_state + ε_pt
+```
+
+Fixed effects: PWSID, year, state. SEs clustered at PWSID level (`cluster = ~ PWSID`). Estimated with `fixest::feols`. Each table reports OLS, reduced form, and 2SLS side by side.
+
+**Sample cuts used in regression tables:**
+- Colocated only: `minehuc_mine == 1 & minehuc_downstream_of_mine == 0`
+- Downstream only: `minehuc_downstream_of_mine == 1 & minehuc_mine == 0`
+- Colocated + downstream: `minehuc_upstream_of_mine == 0`
+- All HUCs: full sample
 
 ---
 
