@@ -3,7 +3,7 @@
 ## Project Overview
 
 This project estimates the causal effects of coal mining on drinking water
-quality at PWS/CWS. Drinking water quality is measured as violations of the 
+quality at CWS. Drinking water quality is measured as violations of the 
 Safe Drinking Water Act.
 ---
 
@@ -125,8 +125,8 @@ Do **not** use `python`, `python3`, or `py` — they will not be found.
 
 | Concept | Variable name |
 |---|---|
-| Public water system ID | `PWSID` |
-| HUC12 watershed of PWS intake | `huc12` |
+| Public water system ID (always refer to the drinking water systems as Community Water Systems or CWS and not PWS) | `PWSID` |
+| HUC12 watershed of CWS intake | `huc12` |
 | HUC classification (mine/upstream/downstream) | `minehuc` |
 | Mine HUC indicator | `minehuc_mine` (1/0) |
 | Upstream-of-mine HUC indicator | `minehuc_upstream_of_mine` (1/0) |
@@ -142,29 +142,34 @@ Do **not** use `python`, `python3`, or `py` — they will not be found.
 | Avg sulfur %, unified | `sulfur_unified` |
 | Avg BTU content, colocated/upstream/unified | `btu_colocated`, `btu_upstream`, `btu_unified` |
 | Post-ARP Phase I indicator (year >= 1995) | `post95` |
-| Share of year in nitrates violation | `nitrates_share` |
-| Share of year in arsenic violation | `arsenic_share` |
-| Share of year in inorganic chemicals violation | `inorganic_chemicals_share` |
-| Share of year in radionuclides violation | `radionuclides_share` |
-| Share of year in total coliform violation | `total_coliform_share` |
-| Share of year in surface/groundwater rule violation | `surface_ground_water_rule_share` |
-| Share of year in VOC violation | `voc_share` |
-| Share of year in SOC violation | `soc_share` |
+
+Outcome variables are types of drinking water contaminants:
+nitrates violation | `nitrates` |
+arsenic violation | `arsenic` |
+inorganic chemicals violation | `inorganic_chemicals` |
+radionuclides violation | `radionuclides` |
+total coliform violation | `total_coliform` |
+surface/groundwater rule violation | `surface_ground_water_rule` |
+VOC violation | `voc` |
+SOC violation | `soc` |
+
+**Units of Violations** share of year in violation: outcome name contains `_share`. Number of days of year in violation: outcome name contains `_days`.
+ 
+**Violation categories:** MCL (max contaminant level), MR (monitoring/reporting), TT (treatment technique) — outcome name contains `_MCL`, `_MR`, `_TT`. If outcome name does not contain MCL, MR, or TT then violation measures the time (in share of year or number of days) that any violation occured.
+
+**Mining vs. non-mining violations:** Nitrates, arsenic, inorganic chemicals, and radionuclides are the "mining-related" outcomes. Total coliform, surface/groundwater rule, VOCs, and SOCs are "non-mining" placebo outcomes.
+
 | N intake facilities (main control) | `num_facilities` |
 | N source HUC12s for the PWS | `num_hucs` |
 | Population served | `POPULATION_SERVED_COUNT` |
 | Ownership type | `OWNER_TYPE_CODE` |
 | Primary water source type | `PRIMARY_SOURCE_CODE` |
 
-**Violation categories:** MCL (max contaminant level), MR (monitoring/reporting), TT (treatment technique) — stored as `VIOLATION_CATEGORY_CODE_MCL`, `_MR`, `_TT`.
-
-**Mining vs. non-mining violations:** Nitrates, arsenic, inorganic chemicals, and radionuclides are the "mining-related" outcomes. Total coliform, surface/groundwater rule, VOCs, and SOCs are "non-mining" placebo outcomes.
-
 **Unified variables:** `_unified` variables average the colocated and upstream values when both are nonzero, and take the nonzero value when only one exists. For downstream HUCs, `num_coal_mines_unified` = `num_coal_mines_upstream` by construction (colocated is always 0).
 
 ### Geography
 - Unit of analysis: **PWSID × year**
-- PWS intakes are matched to HUC12 sub-watersheds via spatial join (SDWIS facility coordinates → HUC12 shapefile)
+- CWS intakes are matched to HUC12 sub-watersheds via spatial join (SDWIS facility coordinates → HUC12 shapefile)
 - HUC12s are classified as `mine`, `upstream_of_mine`, or `downstream_of_mine` based on mine locations and the HUC flow network (`tohuc` column links each HUC to its downstream neighbor)
 - Coal quality (sulfur %) assigned to HUC12s via spatial join with USGS borehole samples, using a 20 km buffer
 
