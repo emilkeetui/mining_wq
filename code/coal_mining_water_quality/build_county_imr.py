@@ -194,9 +194,9 @@ print(f"Saved: {out1}")
 
 # ── Build mining/downstream county panel ──────────────────────────────────────
 # Base: all counties that are mining or downstream of mining
-downstream = pd.read_parquet(CLEAN_DIR / "county_mining_downstream.parquet")
-if "geometry" in downstream.columns:
-    downstream = downstream.drop(columns=["geometry"])
+import geopandas as gpd
+downstream_geo = gpd.read_parquet(CLEAN_DIR / "county_mining_downstream.parquet")
+downstream = pd.DataFrame(downstream_geo.drop(columns=["geometry"]))
 
 mining_counties = downstream[
     downstream["is_mining_county"] | downstream["is_downstream_neighbor"]
@@ -209,14 +209,48 @@ print(f"\nMining/downstream counties: {len(mining_counties)}")
 years_df = pd.DataFrame({"year": YEARS})
 base_panel = mining_counties.merge(years_df, how="cross")
 
-# ── Merge coal production ─────────────────────────────────────────────────────
-coal_prod = pd.read_csv(CLEAN_DIR / "coal_county_prod.csv")
-coal_prod["fips5"] = (
-    coal_prod["bom_state_cd"].astype(int).apply(lambda x: f"{x:02d}") +
-    coal_prod["fips_cnty_cd"].astype(int).apply(lambda x: f"{x:03d}")
+# ── Build coal production by county × year via spatial join ───────────────────
+# Use mine coordinates from coal_mine_prod_charac.parquet (not coal_county_prod.csv)
+# because the CSV uses MSHA-reported county codes which miss many large counties.
+# Spatial join of mine points to county polygons gives complete coverage.
+print("Building county × year coal production via spatial mine join...")
+mine_prod = pd.read_parquet(CLEAN_DIR / "coal_mine_prod_charac.parquet",
+                             columns=["mine_id", "year", "production_short_tons",
+                                      "coal_metal_ind", "latitude", "longitude"])
+mine_prod = mine_prod[
+    (mine_prod["year"] >= min(YEARS)) &
+    (mine_prod["year"] <= max(YEARS)) &
+    (mine_prod["coal_metal_ind"] == "C") &
+    (mine_prod["production_short_tons"] > 0) &
+    mine_prod["latitude"].notna()
+].copy()
+
+mines_gdf = gpd.GeoDataFrame(
+    mine_prod,
+    geometry=gpd.points_from_xy(mine_prod["longitude"], mine_prod["latitude"]),
+    crs="EPSG:4326"
+)
+
+# Spatially join mine points to county polygons (already in downstream_geo)
+mine_county_join = gpd.sjoin(
+    mines_gdf[["mine_id", "year", "production_short_tons", "geometry"]],
+    downstream_geo[["fips5", "geometry"]].to_crs("EPSG:4326"),
+    how="left",
+    predicate="within"
+)[["mine_id", "year", "production_short_tons", "fips5"]]
+
+coal_prod = (
+    mine_county_join.dropna(subset=["fips5"])
+    .groupby(["fips5", "year"])
+    .agg(
+        num_coal_mines=("mine_id", "nunique"),
+        production_short_tons_coal=("production_short_tons", "sum")
+    )
+    .reset_index()
 )
 coal_prod["year"] = coal_prod["year"].astype(int)
-coal_prod = coal_prod[["fips5", "year", "production_short_tons_coal", "num_coal_mines"]]
+print(f"  County × year production records: {len(coal_prod)}, "
+      f"unique counties: {coal_prod['fips5'].nunique()}")
 
 base_panel = base_panel.merge(coal_prod, on=["fips5", "year"], how="left")
 
@@ -233,6 +267,68 @@ n_with_imr    = base_panel["imr"].notna().sum()
 n_suppressed  = base_panel["imr"].isna().sum()
 print(f"  County-years with IMR data:    {n_with_imr:,}")
 print(f"  County-years with IMR missing: {n_suppressed:,} (suppressed small counties)")
+
+# ── Build upstream mine count and sulfur for downstream counties ──────────────
+# Spatial join: for each strictly-downstream county, find its bordering mining
+# counties. Use these neighbors to assign upstream mine count (per year) and
+# upstream mean sulfur (static).
+print("\nBuilding upstream mine/sulfur linkage for downstream counties...")
+
+mining_geo     = downstream_geo[downstream_geo["is_mining_county"]][["fips5", "geometry"]].copy()
+strictly_down  = downstream_geo[downstream_geo["is_strictly_downstream"]][["fips5", "geometry"]].copy()
+
+neighbor_pairs = gpd.sjoin(
+    strictly_down.rename(columns={"fips5": "downstream_fips5"}),
+    mining_geo.rename(columns={"fips5": "mining_fips5"}),
+    how="left",
+    predicate="intersects"
+)[["downstream_fips5", "mining_fips5"]].dropna().drop_duplicates()
+
+print(f"  Downstream-mining neighbor pairs: {len(neighbor_pairs)}")
+
+# Upstream mine count per downstream county × year
+upstream_mines = (
+    neighbor_pairs
+    .merge(coal_prod.rename(columns={"fips5": "mining_fips5"}),
+           on="mining_fips5", how="left")
+    .groupby(["downstream_fips5", "year"])["num_coal_mines"]
+    .sum(min_count=1)
+    .reset_index()
+    .rename(columns={"downstream_fips5": "fips5",
+                     "num_coal_mines": "upstream_num_coal_mines"})
+)
+
+# Upstream sulfur per downstream county (static — no year variation)
+upstream_sulfur_link = (
+    neighbor_pairs
+    .merge(county_sulfur.rename(columns={"fips5": "mining_fips5"}),
+           on="mining_fips5", how="left")
+    .groupby("downstream_fips5")["sulfur_county_pct"]
+    .mean()
+    .reset_index()
+    .rename(columns={"downstream_fips5": "fips5",
+                     "sulfur_county_pct": "upstream_sulfur_county_pct"})
+)
+
+base_panel = base_panel.merge(upstream_mines, on=["fips5", "year"], how="left")
+base_panel = base_panel.merge(upstream_sulfur_link, on="fips5", how="left")
+
+# Unified columns: own values for mining counties, upstream for downstream
+base_panel["num_coal_mines_unified"] = np.where(
+    base_panel["is_mining_county"],
+    base_panel["num_coal_mines"],
+    base_panel["upstream_num_coal_mines"]
+)
+base_panel["sulfur_unified"] = np.where(
+    base_panel["is_mining_county"],
+    base_panel["sulfur_county_pct"],
+    base_panel["upstream_sulfur_county_pct"]
+)
+
+print(f"  upstream_num_coal_mines non-null: {base_panel['upstream_num_coal_mines'].notna().sum()}")
+print(f"  upstream_sulfur_county_pct non-null: {base_panel['upstream_sulfur_county_pct'].notna().sum()}")
+print(f"  num_coal_mines_unified non-null: {base_panel['num_coal_mines_unified'].notna().sum()}")
+print(f"  sulfur_unified non-null: {base_panel['sulfur_unified'].notna().sum()}")
 
 out2 = CLEAN_DIR / "county_imr_mining.parquet"
 base_panel.to_parquet(out2, index=False)
