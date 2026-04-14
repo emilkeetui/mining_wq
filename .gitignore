@@ -1,6 +1,7 @@
 # Large data files
 clean_data/
 raw_data/
+lit/
 
 # R artifacts
 .Rhistory

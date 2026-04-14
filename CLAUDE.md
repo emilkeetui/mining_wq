@@ -48,6 +48,16 @@ mining_wq/
 
 ---
 
+## Core Principles
+
+- **Plan first** — enter plan mode before non-trivial tasks; plans saved to `~/.claude/plans/`
+- **Verify after** — run the script and confirm output exists at the end of every task
+- **Quality gates** — 80 = commit, 90 = peer-review ready, 95 = aspirational
+- **[LEARN] tags** — when corrected, save `[LEARN:category] wrong → right` to memory;
+  session logs in `.claude/logs/YYYY-MM-DD-<topic>.md`
+
+---
+
 ## DATA SAFEGUARDS — READ CAREFULLY
 
 ### raw_data/ is strictly read-only
@@ -101,6 +111,14 @@ There is no system Python on PATH. Always use the full path to the project virtu
 "Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe" -c "..."
 ```
 Do **not** use `python`, `python3`, or `py` — they will not be found.
+
+### Quality Thresholds
+
+| Score | Gate | Meaning |
+|-------|------|---------|
+| 80 | Commit | Runs without error, structurally sound |
+| 90 | Peer-review ready | Reproducible, matches spec, clean code |
+| 95 | Excellence | Aspirational; minimal reviewer friction |
 
 ### Style
 - Snake_case for all object and variable names
@@ -193,6 +211,24 @@ Fixed effects: PWSID, year, state. SEs clustered at PWSID level (`cluster = ~ PW
 - Downstream only: `minehuc_downstream_of_mine == 1 & minehuc_mine == 0`
 - Colocated + downstream: `minehuc_upstream_of_mine == 0`
 - All HUCs: full sample
+
+---
+
+## Skills Quick Reference
+
+| Command | What It Does |
+|---------|-------------|
+| `/data-analysis [goal]` | End-to-end R analysis with fixest; produces tables + figures |
+| `/regression-table [script]` | Run regression script; verify LaTeX output and F-stat |
+| `/review-r [file]` | R code review: spec, parquet I/O, reproducibility, output |
+| `/review-python [file]` | Python review: parquet schema, CRS, raw_data protection |
+| `/review-paper [file]` | Full manuscript review with referee objections |
+| `/lit-review [topic]` | Literature search + synthesis + BibTeX |
+| `/research-ideation [topic]` | Research questions + identification strategies |
+| `/interview-me [topic]` | Conversational research spec interview |
+| `/commit [msg]` | Branch → stage → commit → PR → merge |
+| `/learn [skill-name]` | Extract discovery into persistent skill |
+| `/context-status` | Show active plan, session log, hook status |
 
 ---
 

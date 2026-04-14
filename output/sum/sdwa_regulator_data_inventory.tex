@@ -1,0 +1,378 @@
+% ============================================================
+% Tables: SDWA datasets for regulator behavior analysis
+% Generated: 2026-04-13
+% Sections:
+%   Tables 1--4  : inventory, site visits, enforcement, recommended outcomes
+%   Tables 5--9  : detailed profile results with outcome candidacy conclusions
+% ============================================================
+
+% ------------------------------------------------------------------
+% Table 1: Dataset inventory
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{SDWA Datasets Available for Regulator Behavior Analysis}
+\label{tab:sdwa_inventory}
+\small
+\begin{tabular}{llrrll}
+\hline\hline
+Dataset & Key Variables & \multicolumn{2}{c}{Rows (1985--2005)} & Usability \\
+\cmidrule(lr){3-4}
+ & & Total file & Matched sample & \\
+\hline
+\texttt{SDWA\_SITE\_VISITS} & Visit frequency, reason code, & 2,394,287 & 11,452 & \textbf{Strong} \\
+ & agency type, eval codes & & (1,181 PWSIDs) & \\[4pt]
+\texttt{SDWA\_VIOLATIONS\_} & Enforcement category, & 14,665,006 & 108,265 & \textbf{Strong} \\
+\texttt{ENFORCEMENT} & originator, days to RTC, & & (1,160 PWSIDs) & \\
+ & violation status & & & \\[4pt]
+\texttt{SDWA\_EVENTS\_} & Milestone codes (DEEM, DONE, & 262,540 & 1,696 & Narrow \\
+\texttt{MILESTONES} & SDFF, FICF), reason codes & & (871 PWSIDs) & (LCR only) \\[4pt]
+\texttt{SDWA\_PN\_VIOLATION\_} & Public notice tier, & 355,197 & 777 & Too sparse \\
+\texttt{ASSOC} & related violation & & (95 PWSIDs) & \\[4pt]
+\texttt{SDWA\_PUB\_WATER\_} & Reduced monitoring status, & --- & 1,507 PWSIDs & Too sparse \\
+\texttt{SYSTEMS} & outstanding performer & & (cross-sectional) & \\
+\hline\hline
+\multicolumn{5}{l}{\footnotesize Note: ``Matched sample'' refers to PWSIDs in the coal mining CWS analysis sample.} \\
+\multicolumn{5}{l}{\footnotesize LCR = Lead and Copper Rule. RTC = return to compliance.} \\
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------------
+% Table 2: Site visits profile
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{Site Visits in Analysis Sample, 1985--2005}
+\label{tab:site_visits_profile}
+\small
+\begin{tabular}{lrr}
+\hline\hline
+ & \multicolumn{1}{c}{Count} & \multicolumn{1}{c}{Share (\%)} \\
+\hline
+\multicolumn{3}{l}{\textit{Panel A: Visit reason}} \\
+Sanitary survey (SNSV) & 5,249 & 45.8 \\
+Technical assistance (TECH) & 1,397 & 12.2 \\
+Site visit (SITE) & 1,364 & 11.9 \\
+Research (RSCH) & 745 & 6.5 \\
+Sampling (SMPL) & 694 & 6.1 \\
+Investigation (INVG) & 649 & 5.7 \\
+Other (OTHR) & 592 & 5.2 \\
+Infrastructure inspection (INFI) & 205 & 1.8 \\
+Other (ENGR, PRMT, OM, EMRG, etc.) & 557 & 4.9 \\
+\hline
+\textit{Total} & 11,452 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel B: Agency conducting visit}} \\
+State (ST) & 6,194 & 54.1 \\
+State administrative district (SA) & 4,677 & 40.8 \\
+State administrative region (SR) & 432 & 3.8 \\
+District (DS) & 133 & 1.2 \\
+Other (RG, CN) & 16 & 0.1 \\
+\hline
+\textit{Total} & 11,452 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel C: Compliance evaluation outcome}} \\
+Not evaluated / not applicable (X, Z) & 5,830 & 50.9 \\
+No deficiencies (N) & 5,333 & 46.6 \\
+Recommendations made (R) & 274 & 2.4 \\
+Minor deficiencies (M) & 13 & 0.1 \\
+Sanitary defect (D) & 2 & 0.0 \\
+\hline
+\textit{Total} & 11,452 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel D: Visits per PWSID-year}} \\
+Minimum & 1 & \\
+25th percentile & 1 & \\
+Median & 1 & \\
+Mean & 1.9 & \\
+75th percentile & 2 & \\
+Maximum & 25 & \\
+\hline\hline
+\multicolumn{3}{l}{\footnotesize Note: Sample is 1,181 unique PWSIDs matched to coal mining analysis sample.} \\
+\multicolumn{3}{l}{\footnotesize Compliance evaluation codes missing for $\approx$51\% of visits, concentrated} \\
+\multicolumn{3}{l}{\footnotesize in pre-2000 records before eval fields were standardised.} \\
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------------
+% Table 3: Enforcement actions profile
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{Enforcement Actions in Analysis Sample, 1985--2005}
+\label{tab:enforcement_profile}
+\small
+\begin{tabular}{lrr}
+\hline\hline
+ & \multicolumn{1}{c}{Count} & \multicolumn{1}{c}{Share (\%)} \\
+\hline
+\multicolumn{3}{l}{\textit{Panel A: Violation category}} \\
+Monitoring \& Reporting (MR) & 97,180 & 89.8 \\
+Maximum Contaminant Level (MCL) & 4,057 & 3.7 \\
+Other & 3,984 & 3.7 \\
+Treatment Technique (TT) & 3,026 & 2.8 \\
+Max. Residual Disinfectant Level (MRDL) & 18 & 0.0 \\
+\hline
+\textit{Total violations} & 108,265 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel B: Enforcement action category}} \\
+Informal & 68,998 & 64.7 \\
+Resolving & 33,147 & 31.1 \\
+Formal & 4,556 & 4.3 \\
+\hline
+\textit{Total enforcement actions} & 106,701 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel C: Enforcement originator}} \\
+State & 101,475 & 95.1 \\
+Federal & 5,226 & 4.9 \\
+\hline
+\textit{Total enforcement actions} & 106,701 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel D: Violation status}} \\
+Resolved & 92,950 & 85.9 \\
+Archived & 15,091 & 13.9 \\
+Addressed & 209 & 0.2 \\
+Unaddressed & 15 & 0.0 \\
+\hline
+\textit{Total violations} & 108,265 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel E: Days to return to compliance (N = 108,041)}} \\
+Minimum & $-7,132$ & \\
+25th percentile & 89 & \\
+Median & 119 & \\
+Mean & 364 & \\
+75th percentile & 364 & \\
+Maximum & 10,505 & \\
+\hline\hline
+\multicolumn{3}{l}{\footnotesize Note: Sample is 1,160 unique PWSIDs with enforcement actions matched to coal} \\
+\multicolumn{3}{l}{\footnotesize mining analysis sample. Negative values of days to return to compliance} \\
+\multicolumn{3}{l}{\footnotesize reflect data entry inconsistencies in SDWIS.} \\
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------------
+% Table 4: Recommended outcome variables
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{Recommended Regulator Behavior Outcome Variables}
+\label{tab:regulator_outcomes}
+\small
+\begin{tabular}{p{3.8cm}p{4.2cm}p{2.2cm}p{3cm}}
+\hline\hline
+Variable & Definition & Source & Notes \\
+\hline
+\multicolumn{4}{l}{\textit{Tier 1 — Well-powered; clean regulator choice}} \\[2pt]
+\texttt{n\_visits} & Count of regulator site visits per PWSID-year & SITE\_VISITS & 11,452 obs; fill zero for PWSID-years with no visit \\[4pt]
+\texttt{formal\_enf} & 1 if any violation in PWSID-year received formal enforcement action & VIOLATIONS\_ ENFORCEMENT & 4,556 formal actions; most enforcement is informal \\[4pt]
+\texttt{days\_to\_rtc} & Days from violation start to return-to-compliance date & VIOLATIONS\_ ENFORCEMENT & Median 119d; N=108K; continuous \\[6pt]
+\multicolumn{4}{l}{\textit{Tier 2 — Usable; lower power or mixed regulator/CWS choice}} \\[2pt]
+\texttt{federal\_enf} & 1 if enforcement action initiated by federal agency & VIOLATIONS\_ ENFORCEMENT & Only 5\% of actions; may be underpowered \\[4pt]
+\texttt{viol\_unresolved} & 1 if violation status is Unaddressed or Addressed & VIOLATIONS\_ ENFORCEMENT & Very low variation (224 obs) \\[6pt]
+\multicolumn{4}{l}{\textit{Not usable in this sample}} \\[2pt]
+Reduced monitoring & Regulator-granted monitoring reduction & PUB\_WATER\_ SYSTEMS & Only 2 PWSIDs \\
+Outstanding performer & State-designated status & PUB\_WATER\_ SYSTEMS & 46 PWSIDs; cross-sectional \\
+Public notices & PN violations & PN\_VIOLATION\_ ASSOC & 95 PWSIDs \\
+Milestones & DEEM/DONE events & EVENTS\_ MILESTONES & Lead/Copper Rule only \\
+\hline\hline
+\multicolumn{4}{p{13cm}}{\footnotesize Note: Power assessments are specific to the 1,507-PWSID coal mining analysis sample, 1985--2005. \textbf{Tier~1} = well-powered ($\geq$1,000 observations in sample period) and a clean regulator choice (the variable reflects a decision made unilaterally by the regulator, not jointly with the CWS). \textbf{Tier~2} = usable but either underpowered ($<$1,000 observations or $<$10\% of sample PWSIDs) or a mixed regulator/CWS choice where CWS behavior partly determines the outcome.} \\
+\end{tabular}
+\end{table}
+
+% ==================================================================
+% DETAILED PROFILE RESULTS (Tables 5--9)
+% ==================================================================
+
+% ------------------------------------------------------------------
+% Table 5: Site visits — full profile
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{SDWA\_SITE\_VISITS: Full Profile for Analysis Sample, 1985--2005}
+\label{tab:profile_site_visits}
+\small
+\begin{tabular}{p{5.5cm}rrl}
+\hline\hline
+ & Count & Share (\%) & Candidacy assessment \\
+\hline
+\multicolumn{4}{l}{\textit{Coverage}} \\
+Total rows in file & 2,394,287 & & \\
+Matched to sample PWSIDs (all years) & 27,610 & & \\
+In sample period (1985--2005) & 11,452 & & \\
+Unique PWSIDs with $\geq$1 visit & 1,181 & 78.4 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel A: Visit reason code}} \\
+Sanitary survey (SNSV) & 5,249 & 45.8 & Routine; clean regulator decision \\
+Technical assistance (TECH) & 1,397 & 12.2 & Reactive; partly CWS-requested \\
+Site inspection (SITE) & 1,364 & 11.9 & Reactive \\
+Research (RSCH) & 745 & 6.5 & Non-enforcement \\
+Sampling (SMPL) & 694 & 6.1 & Regulatory monitoring \\
+Investigation (INVG) & 649 & 5.7 & Complaint/violation-triggered \\
+Other (OTHR) & 592 & 5.2 & Mixed \\
+Infrastructure (INFI) & 205 & 1.8 & \\
+Informal enforcement (IENF) & 7 & 0.1 & \\
+Formal enforcement (FENF) & 13 & 0.1 & \\
+Other (ENGR, PRMT, OM, EMRG, etc.) & 537 & 4.7 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel B: Agency type conducting visit}} \\
+State (ST) & 6,194 & 54.1 & Primary regulator \\
+State administrative district (SA) & 4,677 & 40.8 & State sub-unit \\
+State administrative region (SR) & 432 & 3.8 & \\
+District (DS) & 133 & 1.2 & \\
+County, region, other & 16 & 0.1 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel C: Compliance evaluation outcome}} \\
+Not evaluated / not applicable (X, Z) & 5,830 & 50.9 & Missing pre-2000; limits use of eval codes \\
+No deficiencies (N) & 5,333 & 46.6 & \\
+Recommendations made (R) & 274 & 2.4 & \\
+Minor deficiencies (M) & 13 & 0.1 & \\
+Sanitary defect (D) & 2 & 0.0 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel D: Visits per PWSID-year}} \\
+Min / 25th pct / Median & 1 / 1 / 1 & & \\
+Mean / 75th pct / Max & 1.9 / 2 / 25 & & \\
+\hline\hline
+\multicolumn{4}{p{13cm}}{\footnotesize \textbf{Outcome candidacy:} Visit frequency (\texttt{n\_visits} per PWSID-year, filling zeros) is a \textbf{strong Tier~1 candidate} — Tier~1 means well-powered and a clean regulator choice (the regulator decides when to visit; the CWS does not), 1,181 PWSIDs, minimal missing. Evaluation codes (COMPLIANCE\_EVAL\_CODE etc.) are a \textbf{weak candidate}: $\approx$51\% missing, concentrated in pre-2000 visits; usable only for post-2000 subsample analysis.} \\
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------------
+% Table 6: Enforcement actions — full profile
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{SDWA\_VIOLATIONS\_ENFORCEMENT: Full Profile for Analysis Sample, 1985--2005}
+\label{tab:profile_enforcement}
+\small
+\begin{tabular}{p{5.5cm}rrl}
+\hline\hline
+ & Count & Share (\%) & Candidacy assessment \\
+\hline
+\multicolumn{4}{l}{\textit{Coverage}} \\
+Total rows in file & 14,665,006 & & \\
+Matched to sample, 1985--2005 & 108,265 & & \\
+Rows with an enforcement action & 106,701 & 98.6 & \\
+Unique violations with enforcement & 35,544 & & \\
+Unique PWSIDs with enforcement & 1,160 & 77.0 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel A: Violation category}} \\
+Monitoring \& Reporting (MR) & 97,180 & 89.8 & Primary outcome of interest \\
+Maximum Contaminant Level (MCL) & 4,057 & 3.7 & Key comparison outcome \\
+Other & 3,984 & 3.7 & \\
+Treatment Technique (TT) & 3,026 & 2.8 & \\
+Max.\ Residual Disinfectant Level (MRDL) & 18 & 0.0 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel B: Enforcement action category (conditional on enforcement)}} \\
+Informal & 68,998 & 64.7 & Baseline response \\
+Resolving & 33,147 & 31.1 & Compliance achieved \\
+Formal & 4,556 & 4.3 & Strong Tier~1 outcome \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel C: Enforcement originator}} \\
+State & 101,475 & 95.1 & Confirms state primacy \\
+Federal & 5,226 & 4.9 & Tier~2; may be underpowered \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel D: Violation originator (who detected)}} \\
+State & 107,180 & 99.0 & \\
+Federal & 1,080 & 1.0 & \\
+Regional & 5 & 0.0 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel E: Major violation indicator (MR violations only)}} \\
+Major (Y) & 85,108 & 78.6 & \\
+Minor (N) & 17,162 & 15.9 & \\
+Missing & 5,995 & 5.5 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel F: Violation status}} \\
+Resolved & 92,950 & 85.9 & \\
+Archived & 15,091 & 13.9 & \\
+Addressed (formal enforcement, not resolved) & 209 & 0.2 & \\
+Unaddressed & 15 & 0.0 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel G: Days to return to compliance (N = 108,041)}} \\
+Min / 25th pct / Median & $-7,132$ / 89 / 119 & & Strong Tier~1 outcome \\
+Mean / 75th pct / Max & 364 / 364 / 10,505 & & \\
+\hline\hline
+\multicolumn{4}{p{13cm}}{\footnotesize \textbf{Outcome candidacy:} Tier~1 = well-powered and a clean regulator choice (the regulator decides enforcement response unilaterally); Tier~2 = usable but underpowered or partly determined by CWS behavior. (1)~\texttt{formal\_enf} (1 if Formal action in PWSID-year): \textbf{Tier~1}, 4,556 obs, real variation. (2)~\texttt{days\_to\_rtc}: \textbf{Tier~1}, continuous, N=108K, median 119 days. (3)~\texttt{federal\_enf}: \textbf{Tier~2}, only 5\% of actions, may lack power. (4)~\texttt{major\_viol\_share}: usable for MR violation severity but 5.5\% missing. (5)~MR vs.\ MCL split is the central empirical puzzle: both should appear side-by-side in all tables. Negative values of days-to-RTC ($n=$ small) reflect SDWIS data entry errors; drop or winsorise.} \\
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------------
+% Table 7: Public water systems — regulatory discretion fields
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{SDWA\_PUB\_WATER\_SYSTEMS: Regulatory Discretion Fields, Analysis Sample}
+\label{tab:profile_pws}
+\small
+\begin{tabular}{p{5.5cm}rrl}
+\hline\hline
+ & Count & Share (\%) & Candidacy assessment \\
+\hline
+PWSIDs matched to sample & 1,507 & 100.0 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel A: Reduced RTCR monitoring (regulatory reward)}} \\
+Missing / not granted & 1,505 & 99.9 & \\
+Annual & 1 & 0.1 & \\
+Quarterly & 1 & 0.1 & \\
+Non-missing begin date & 2 & 0.1 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel B: Outstanding performer status}} \\
+Missing (never designated) & 1,436 & 95.3 & \\
+Yes (Y) & 46 & 3.1 & \\
+No (N) & 25 & 1.7 & \\
+Non-missing begin date & 46 & 3.1 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel C: Source water protection code}} \\
+Missing & 959 & 63.6 & \\
+No (N) & 347 & 23.0 & \\
+Yes (Y) & 201 & 13.3 & \\
+\hline\hline
+\multicolumn{4}{p{13cm}}{\footnotesize \textbf{Outcome candidacy:} All three fields are \textbf{not usable} for panel regression. Reduced monitoring is granted to only 2 PWSIDs; outstanding performer to 46 (cross-sectional, not time-varying). Source water protection code has 64\% missing. Drop all three from primary specifications.} \\
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------------
+% Table 8: Events and milestones — full profile
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{SDWA\_EVENTS\_MILESTONES: Full Profile for Analysis Sample, 1985--2005}
+\label{tab:profile_milestones}
+\small
+\begin{tabular}{p{5.5cm}rrl}
+\hline\hline
+ & Count & Share (\%) & Candidacy assessment \\
+\hline
+\multicolumn{4}{l}{\textit{Coverage}} \\
+Total rows in file & 262,540 & & \\
+Matched to sample PWSIDs (all years) & 3,621 & & \\
+In sample period (1985--2005) & 1,696 & & \\
+Unique PWSIDs with events & 871 & 57.8 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel A: Event milestone code}} \\
+DEEM (deemed optimised without OCCT) & 892 & 52.6 & Lead/Copper Rule specific \\
+DONE (done with OCCT) & 799 & 47.1 & Lead/Copper Rule specific \\
+LSLR (lead service line replacement) & 5 & 0.3 & \\[6pt]
+
+\multicolumn{4}{l}{\textit{Panel B: Event reason code}} \\
+B1 (serving $<$50,000 population) & 1,178 & 69.5 & \\
+Missing & 483 & 28.5 & \\
+WQP (water quality parameters) & 34 & 2.0 & \\
+B3 (serving $>$50,000, met action levels) & 1 & 0.1 & \\
+\hline\hline
+\multicolumn{4}{p{13cm}}{\footnotesize \textbf{Outcome candidacy:} \textbf{Not usable} for general regulator behavior analysis. All events in the sample are Lead and Copper Rule (LCR) compliance milestones (DEEM/DONE), which track a distinct regulatory timeline unrelated to general water quality enforcement. Significant deficiency codes (SDFF, SDFI) and fecal indicator codes (FICF, FICI) do not appear in this sample. Drop from primary specifications.} \\
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------------
+% Table 9: Public notice violations — full profile
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{SDWA\_PN\_VIOLATION\_ASSOC: Full Profile for Analysis Sample, 1985--2005}
+\label{tab:profile_pn}
+\small
+\begin{tabular}{p{5.5cm}rrl}
+\hline\hline
+ & Count & Share (\%) & Candidacy assessment \\
+\hline
+Total rows in file & 355,197 & & \\
+Matched to sample PWSIDs, 1985--2005 & 777 & & \\
+Unique PWSIDs with public notices & 95 & 6.3 & \\
+Unique violations with public notices & 325 & & \\
+\hline\hline
+\multicolumn{4}{p{13cm}}{\footnotesize \textbf{Outcome candidacy:} \textbf{Not usable.} Only 95 of 1,507 sample PWSIDs (6.3\%) have any public notice violation in 1985--2005. Insufficient variation to power a regression. Public notification is also partly a CWS obligation rather than a pure regulator decision. Drop from primary and robustness specifications.} \\
+\end{tabular}
+\end{table}

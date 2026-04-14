@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{test} Test table}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{nitrates\_share\_days}\\
+         
+                                                           & (1)           & (2)           & (3)\\  
+         
+         \midrule 
+         num\_coal\_mines\_upstream                        & 5.061         &               & 49.84\\   
+                                                           & (6.041)       &               & (35.82)\\   
+         post95 $\times$ sulfur\_unified                   &               & -4.213        &   \\   
+                                                           &               & (2.947)       &   \\   
+         
+          \\
+         
+         Observations                                      & 4,186         & 4,186         & 4,186\\  
+         R$^2$                                             & 0.23364       & 0.23439       & 0.23439\\  
+         Within R$^2$                                      & 0.00047       & 0.00146       & 0.00146\\  
+         F-test (1st stage), num\_coal\_mines\_upstream    &               &               & 139.53\\  
+         
+          \\
+         
+         PWSID fixed effects                               & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                         & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      \par \raggedright 
+   This note should appear at the bottom below the adjustbox.
+   
+\end{table}
+
+
