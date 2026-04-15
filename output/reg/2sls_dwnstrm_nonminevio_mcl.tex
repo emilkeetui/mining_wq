@@ -10,31 +10,31 @@
       
       %start:tab
       
-      \begin{tabular}{lccccccccc}
+      \begin{tabular}{lcccccc}
          \toprule
          
-          & \multicolumn{3}{c}{Total coliform (MCL)} & \multicolumn{3}{c}{VOCs (MCL)} & \multicolumn{3}{c}{SOCs (MCL)}\\
+          & \multicolumn{3}{c}{Total coliform (MCL)} & \multicolumn{3}{c}{VOCs (MCL)}\\
          
-                                                           & (1)                  & (2)           & (3)           & (4)                   & (5)                   & (6)                   & (7)                   & (8)                   & (9)\\  
+                                                           & (1)                  & (2)           & (3)           & (4)                   & (5)                  & (6)\\  
          
          \midrule 
-         num\_coal\_mines\_upstream                        & 0.1136               &               & 1.274         & -0.0022               &                       & -0.2583               & 0.0146                &                       & -0.0159\\   
-                                                           & (0.0968)             &               & (1.174)       & (0.0651)              &                       & (1.298)               & (0.0148)              &                       & (0.0197)\\   
-         post95 $\times$ sulfur\_unified                   &                      & -0.1047       &               &                       & 0.0212                &                       &                       & 0.0013                &   \\   
-                                                           &                      & (0.0955)      &               &                       & (0.1064)              &                       &                       & (0.0016)              &   \\   
+         num\_coal\_mines\_upstream                        & 0.1136               &               & 1.274         & 0.0475                &                      & -0.6951\\   
+                                                           & (0.0968)             &               & (1.174)       & (0.1561)              &                      & (2.780)\\   
+         post95 $\times$ sulfur\_unified                   &                      & -0.1047       &               &                       & 0.0466               &   \\   
+                                                           &                      & (0.0955)      &               &                       & (0.1856)             &   \\   
          
           \\
          
-         Observations                                      & 6,225                & 6,225         & 6,225         & 6,225                 & 6,225                 & 6,225                 & 6,225                 & 6,225                 & 6,225\\  
-         R$^2$                                             & 0.10186              & 0.10199       & 0.10199       & 0.07601               & 0.07601               & 0.07601               & 0.05078               & 0.05074               & 0.05074\\  
-         Within R$^2$                                      & $8.6\times 10^{-5}$  & 0.00023       & 0.00023       & $2.86\times 10^{-8}$  & $5.96\times 10^{-6}$  & $5.96\times 10^{-6}$  & $4.61\times 10^{-5}$  & $1.62\times 10^{-6}$  & $1.62\times 10^{-6}$\\   
-         F-test (1st stage), num\_coal\_mines\_upstream    &                      &               & 149.79        &                       &                       & 149.79                &                       &                       & 149.79\\  
+         Observations                                      & 6,225                & 6,225         & 6,225         & 4,904                 & 4,904                & 4,904\\  
+         R$^2$                                             & 0.10186              & 0.10199       & 0.10199       & 0.09802               & 0.09803              & 0.09803\\  
+         Within R$^2$                                      & $8.6\times 10^{-5}$  & 0.00023       & 0.00023       & $6.05\times 10^{-6}$  & $2.2\times 10^{-5}$  & $2.2\times 10^{-5}$\\   
+         F-test (1st stage), num\_coal\_mines\_upstream    &                      &               & 149.79        &                       &                      & 86.074\\  
          
           \\
          
-         PWSID fixed effects                               & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
-         STATE\_CODE fixed effects                         & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
-         year fixed effects                                & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
+         PWSID fixed effects                               & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$         & $\checkmark$\\   
+         STATE\_CODE fixed effects                         & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$         & $\checkmark$\\   
+         year fixed effects                                & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$         & $\checkmark$\\   
          
          \bottomrule
          
