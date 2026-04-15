@@ -524,26 +524,31 @@ water_sys.year_pws_deactivated = water_sys.year_pws_deactivated.fillna(3000)
 
 water_sys = water_sys.fillna(0)
 
-# Set violation variables to NaN for years before rules were enacted.
-# Pre-rule years should be missing (not zero) since no monitoring was required.
+# Set violation variables to NaN for years before violations were first recorded in SDWIS.
+# Cutoffs are data-driven: first year of non-zero violations in trend figures.
 
-# VOC: Phase I Rule — compliance January 1, 1989
+# Total Coliform: first recorded violations 1991
+tc_cols = [c for c in water_sys.columns
+           if c.startswith('total_coliform') or
+           c in ['RULE_CODE_110.0', 'RULE_CODE_111.0']]
+water_sys.loc[water_sys['year'] < 1991, tc_cols] = np.nan
+
+# VOC: first recorded violations 1990
 voc_cols = [c for c in water_sys.columns
             if c.startswith('voc') or c == 'RULE_CODE_310.0']
-water_sys.loc[water_sys['year'] < 1989, voc_cols] = np.nan
+water_sys.loc[water_sys['year'] < 1990, voc_cols] = np.nan
 
-# SOC: Phase II/V Rules — compliance January 1, 1993
+# SOC: first recorded violations 1987
 soc_cols = [c for c in water_sys.columns
             if c.startswith('soc') or c == 'RULE_CODE_320.0']
-water_sys.loc[water_sys['year'] < 1993, soc_cols] = np.nan
+water_sys.loc[water_sys['year'] < 1987, soc_cols] = np.nan
 
-# Surface/Groundwater Treatment Rule — compliance July 1, 1993
-# Treat year < 1993 as pre-rule at annual frequency
+# Surface/Groundwater Treatment Rule: first recorded violations 1990
 sgwr_cols = [c for c in water_sys.columns
              if c.startswith('surface_ground_water_rule') or
              c in ['RULE_CODE_121.0', 'RULE_CODE_122.0',
                    'RULE_CODE_123.0', 'RULE_CODE_140.0']]
-water_sys.loc[water_sys['year'] < 1993, sgwr_cols] = np.nan
+water_sys.loc[water_sys['year'] < 1990, sgwr_cols] = np.nan
 
 water_sys["no_violation"] = np.where((water_sys["VIOLATION_CATEGORY_CODE_MCL"]==0) & 
                                      (water_sys["VIOLATION_CATEGORY_CODE_MON"]==0) &

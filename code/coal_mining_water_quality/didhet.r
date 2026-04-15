@@ -739,10 +739,11 @@ full[["voc"]][full$RULE_CODE_310.0==1] <- 1
 full[["soc"]] <- 0
 full[["soc"]][full$RULE_CODE_320.0==1] <- 1
 
-# Pre-rule years: set binary indicators to NA (rule not yet enacted)
-full$voc[full$year < 1989] <- NA
-full$soc[full$year < 1993] <- NA
-full$surface_ground_water_rule[full$year < 1993] <- NA
+# Pre-rule years: set binary indicators to NA based on first recorded violations in SDWIS
+full$total_coliform[full$year < 1991] <- NA
+full$voc[full$year < 1990] <- NA
+full$soc[full$year < 1987] <- NA
+full$surface_ground_water_rule[full$year < 1990] <- NA
 
 ##############
 # Num mine treat diff in diff

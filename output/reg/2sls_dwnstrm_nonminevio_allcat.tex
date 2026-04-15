@@ -10,31 +10,31 @@
       
       %start:tab
       
-      \begin{tabular}{lcccccc}
+      \begin{tabular}{lcccccccccccc}
          \toprule
          
-          & \multicolumn{3}{c}{Total coliform} & \multicolumn{3}{c}{VOCs}\\
+          & \multicolumn{3}{c}{Total coliform} & \multicolumn{3}{c}{S/G water rule} & \multicolumn{3}{c}{VOCs} & \multicolumn{3}{c}{SOCs}\\
          
-                                                           & (1)           & (2)           & (3)           & (4)           & (5)                   & (6)\\  
+                                                           & (1)           & (2)                   & (3)                   & (4)           & (5)           & (6)           & (7)           & (8)           & (9)           & (10)          & (11)          & (12)\\  
          
          \midrule 
-         num\_coal\_mines\_upstream                        & -0.2964       &               & 4.641$^{*}$   & -3.542        &                       & 10.07\\   
-                                                           & (0.2942)      &               & (2.691)       & (2.402)       &                       & (17.53)\\   
-         post95 $\times$ sulfur\_unified                   &               & -0.3814$^{*}$ &               &               & -0.6749               &   \\   
-                                                           &               & (0.2003)      &               &               & (1.104)               &   \\   
+         num\_coal\_mines\_upstream                        & -0.8782$^{*}$ &                       & 2.642                 & 1.723         &               & 22.07         & -4.072        &               & 13.99         & 4.909         &               & 60.87$^{**}$\\   
+                                                           & (0.4773)      &                       & (6.438)               & (1.391)       &               & (15.43)       & (2.656)       &               & (21.76)       & (3.116)       &               & (28.36)\\   
+         post95 $\times$ sulfur\_unified                   &               & -0.1354               &                       &               & -1.324        &               &               & -0.8393       &               &               & -4.442$^{**}$ &   \\   
+                                                           &               & (0.3323)              &                       &               & (0.8607)      &               &               & (1.209)       &               &               & (1.829)       &   \\   
          
           \\
          
-         Observations                                      & 6,225         & 6,225         & 6,225         & 4,904         & 4,904                 & 4,904\\  
-         R$^2$                                             & 0.18166       & 0.18222       & 0.18222       & 0.13272       & 0.13238               & 0.13238\\  
-         Within R$^2$                                      & 0.00024       & 0.00093       & 0.00093       & 0.00049       & $8.45\times 10^{-5}$  & $8.45\times 10^{-5}$\\   
-         F-test (1st stage), num\_coal\_mines\_upstream    &               &               & 149.79        &               &                       & 86.074\\  
+         Observations                                      & 4,254         & 4,254                 & 4,254                 & 4,576         & 4,576         & 4,576         & 4,576         & 4,576         & 4,576         & 5,556         & 5,556         & 5,556\\  
+         R$^2$                                             & 0.21599       & 0.21549               & 0.21549               & 0.59997       & 0.60020       & 0.60020       & 0.13902       & 0.13862       & 0.13862       & 0.19677       & 0.19849       & 0.19849\\  
+         Within R$^2$                                      & 0.00071       & $6.42\times 10^{-5}$  & $6.42\times 10^{-5}$  & 0.00046       & 0.00103       & 0.00103       & 0.00057       & 0.00011       & 0.00011       & 0.00108       & 0.00321       & 0.00321\\  
+         F-test (1st stage), num\_coal\_mines\_upstream    &               &                       & 42.623                &               &               & 64.228        &               &               & 64.228        &               &               & 110.37\\  
          
           \\
          
-         PWSID fixed effects                               & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
-         STATE\_CODE fixed effects                         & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
-         year fixed effects                                & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         PWSID fixed effects                               & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                         & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
          
          \bottomrule
          
