@@ -1,12 +1,13 @@
 % ============================================================
-% Tables: MR Violation Breakdown, 1985--2005
+% Tables: MR Violation Breakdown, 1985--2005 (Downstream CWSs)
 % Purpose: Describes what triggers Monitoring and Reporting
 %          violations in SDWA data — by violation code,
 %          regulatory rule, and their combination.
+% Sample:  Strictly downstream CWSs (minehuc_downstream_of_mine=1, minehuc_mine=0)
 % Source:  SDWA_VIOLATIONS_ENFORCEMENT.parquet +
 %          SDWA_REF_CODE_VALUES.csv,
 %          Z:/ek559/sdwa_violations/SDWA_latest_downloads/
-% N:       4,692,282 MR violations, 1985--2005
+% N:       6,374 unique MR violations, 1985--2005
 % ============================================================
 
 %------------------------------------------------------------------
@@ -14,7 +15,7 @@
 %------------------------------------------------------------------
 \begin{table}[htbp]
 \centering
-\caption{MR Violations by Violation Code, 1985--2005}
+\caption{MR Violations by Violation Code, 1985--2005 (Downstream CWSs)}
 \label{tab:mr_viol_code}
 \small
 \begin{tabular}{clrr}
@@ -24,34 +25,30 @@
 \addlinespace[2pt]
 \multicolumn{4}{l}{\textit{Routine and repeat monitoring failures}} \\
 \addlinespace[2pt]
-03 & Monitoring, Regular                          & 3,006,195 & 64.1 \\
-23 & Monitoring, Routine Major (TCR)              & 1,175,146 & 25.0 \\
-24 & Monitoring, Routine Minor (TCR)              &   123,172 &  2.6 \\
-25 & Monitoring, Repeat Major (TCR)               &    75,067 &  1.6 \\
-26 & Monitoring, Repeat Minor (TCR)               &    31,397 &  0.7 \\
-04 & Monitoring, Check/Repeat/Confirmation        &    11,608 &  0.2 \\
+03 & Monitoring, Regular & 4,988 & 78.3 \\
+23 & Monitoring, Routine Major (TCR) & 483 & 7.6 \\
+24 & Monitoring, Routine Minor (TCR) & 104 & 1.6 \\
+25 & Monitoring, Repeat Major (TCR) & 28 & 0.4 \\
+26 & Monitoring, Repeat Minor (TCR) & 31 & 0.5 \\
+04 & Monitoring, Check/Repeat/Confirmation & 7 & 0.1 \\
 \addlinespace[4pt]
 \multicolumn{4}{l}{\textit{Contaminant- or rule-specific monitoring failures}} \\
 \addlinespace[2pt]
-27 & Monitoring and Reporting (DBP)               &    76,730 &  1.6 \\
-51 & Initial Tap Sampling for Pb and Cu           &    76,693 &  1.6 \\
-52 & Follow-up or Routine LCR Tap M/R             &    53,666 &  1.1 \\
-36 & Monitoring of Treatment (SWTR-Filter)        &    44,503 &  0.9 \\
-53 & Water Quality Parameter M/R (LCR)            &     8,804 &  0.2 \\
-38 & Monitoring, Turbidity (Enhanced SWTR)        &     4,808 &  0.1 \\
-31 & Monitoring of Treatment (SWTR-Unfiltered/GWR)&     2,334 &  0.1 \\
-56 & Initial, Follow-up, or Routine Source Water M/R (LCR) & 1,942 & 0.0 \\
-29 & Failure to Submit Filter Profile/CPE Report  &       200 &  0.0 \\
-39 & Monitoring and Reporting (FBRR)              &        17 &  0.0 \\
+27 & Monitoring and Reporting (DBP) & 358 & 5.6 \\
+36 & Monitoring of Treatment (SWTR-Filter) & 207 & 3.2 \\
+52 & Follow-up Or Routine LCR Tap M/R & 71 & 1.1 \\
+51 & Initial Tap Sampling for Pb and Cu & 60 & 0.9 \\
+38 & Monitoring, Turbidity (Enhanced SWTR) & 31 & 0.5 \\
+53 & Water Quality Parameter M/R & 6 & 0.1 \\
 \addlinespace[2pt]
 \hline
-   & \textit{Total}                               & 4,692,282 & 100.0 \\
+ & \textit{Total} & 6,374 & 100.0 \\
 \hline\hline
 \end{tabular}
 \begin{minipage}{\linewidth}
 \vspace{4pt}
 \footnotesize
-\textit{Notes:} TCR = Total Coliform Rule. DBP = Disinfection Byproducts Rule. LCR = Lead and Copper Rule. SWTR = Surface Water Treatment Rule. FBRR = Filter Backwash Recycling Rule. ``Major'' TCR violations (codes 23, 25) indicate failure to collect $\geq$90\% of required samples in a compliance period; ``minor'' violations (codes 24, 26) indicate partial non-compliance. 89\% of all MR violations are missed monitoring deadlines (codes 03, 23, 24, 25, 26). Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
+\textit{Notes:} TCR = Total Coliform Rule. DBP = Disinfection Byproducts Rule. LCR = Lead and Copper Rule. SWTR = Surface Water Treatment Rule. FBRR = Filter Backwash Recycling Rule. ``Major'' TCR violations (codes 23, 25) indicate failure to collect $\geq$90\% of required samples in a compliance period; ``minor'' violations (codes 24, 26) indicate partial non-compliance. Sample restricted to strictly downstream CWSs (minehuc\_downstream\_of\_mine\,=\,1 and minehuc\_mine\,=\,0). Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
 \end{minipage}
 \end{table}
 
@@ -62,7 +59,7 @@
 %------------------------------------------------------------------
 \begin{table}[htbp]
 \centering
-\caption{MR Violations by Regulatory Rule, 1985--2005}
+\caption{MR Violations by Regulatory Rule, 1985--2005 (Downstream CWSs)}
 \label{tab:mr_rule_code}
 \small
 \begin{tabular}{clrr}
@@ -72,45 +69,44 @@
 \addlinespace[2pt]
 \multicolumn{4}{l}{\textit{Chemical contaminants (Rule Group 300)}} \\
 \addlinespace[2pt]
-310 & Volatile Organic Chemicals                  & 1,404,782 & 29.9 \\
-320 & Synthetic Organic Chemicals                 &   743,595 & 15.8 \\
-331 & Nitrate Rule                                &   421,089 &  9.0 \\
-333 & Inorganic Chemicals                         &   413,380 &  8.8 \\
-332 & Arsenic Rule                                &    50,618 &  1.1 \\
-340 & Radionuclides                               &    41,432 &  0.9 \\
+310 & Volatile Organic Chemicals & 2,960 & 46.4 \\
+320 & Synthetic Organic Chemicals & 716 & 11.2 \\
+331 & Nitrate Rule & 291 & 4.6 \\
+332 & Arsenic Rule & 98 & 1.5 \\
+333 & Inorganic Chemicals & 844 & 13.2 \\
+340 & Radionuclides and Revised Rad Rule & 86 & 1.3 \\
+350 & Lead and Copper Rule & 137 & 2.1 \\
 \addlinespace[4pt]
 \multicolumn{4}{l}{\textit{Microbial contaminants (Rule Group 100)}} \\
 \addlinespace[2pt]
-110 & Total Coliform Rule                         & 1,347,689 & 28.7 \\
-121 & Surface Water Treatment Rule                &    46,837 &  1.0 \\
-122 & Enhanced Surface Water Treatment Rule       &     5,008 &  0.1 \\
-130 & Filter Backwash Rule                        &        17 &  0.0 \\
+110 & Total Coliform Rule & 646 & 10.1 \\
+121 & Surface Water Treatment Rule & 207 & 3.2 \\
+122 & Interim and Long Term 1 Enhanced Surface Water.. & 31 & 0.5 \\
 \addlinespace[4pt]
 \multicolumn{4}{l}{\textit{Disinfectants and disinfection byproducts (Rule Group 200)}} \\
 \addlinespace[2pt]
-210 & Stage 1 Disinfectants and DBP Rule          &    76,274 &  1.6 \\
-230 & Former Total Trihalomethane Rule            &       456 &  0.0 \\
-350 & Lead and Copper Rule                        &   141,105 &  3.0 \\
+210 & Stage 1 Disinfectants and Disinfection Byprodu.. & 356 & 5.6 \\
+230 & Former Total Trihalomethane Rule & 2 & 0.0 \\
 \addlinespace[2pt]
 \hline
-    & \textit{Total}                              & 4,692,282 & 100.0 \\
+ & \textit{Total} & 6,374 & 100.0 \\
 \hline\hline
 \end{tabular}
 \begin{minipage}{\linewidth}
 \vspace{4pt}
 \footnotesize
-\textit{Notes:} Rule codes and groups follow EPA SDWIS classification. The Lead and Copper Rule (350) is classified under Rule Group 200 in SDWIS. VOC and SOC violations (rules 310, 320) are concentrated in 1993--2001, reflecting the Standardized Monitoring Framework (SMF) initial monitoring cycle introduced under the Phase II Rule (56 FR 3526, January 30, 1991). Mining-related outcome rules (nitrate 331, arsenic 332, inorganic chemicals 333, radionuclides 340) together account for 20\% of all MR violations. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
+\textit{Notes:} Rule codes follow EPA SDWIS classification. Mining-related outcome rules (nitrate 331, arsenic 332, inorganic chemicals 333, radionuclides 340) together account for the share shown. Sample restricted to strictly downstream CWSs. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
 \end{minipage}
 \end{table}
 
 \clearpage
 
 %------------------------------------------------------------------
-% Table 3: Top violation code × rule code combinations
+% Table 3: Top violation code x rule code combinations
 %------------------------------------------------------------------
 \begin{table}[htbp]
 \centering
-\caption{MR Violations by Violation Code and Regulatory Rule (Top Combinations), 1985--2005}
+\caption{MR Violations by Violation Code and Regulatory Rule (Top Combinations), 1985--2005 (Downstream CWSs)}
 \label{tab:mr_viol_rule_crosstab}
 \small
 \begin{tabular}{llp{6.5cm}rr}
@@ -121,43 +117,39 @@
 \addlinespace[2pt]
 \multicolumn{5}{l}{\textit{Mining-related outcomes (nitrate, arsenic, inorganic chemicals, radionuclides)}} \\
 \addlinespace[2pt]
-03 & 331 & Missed routine nitrate sampling                     &   414,523 &  8.8 \\
-03 & 333 & Missed routine inorganic chemical sampling          &   412,005 &  8.8 \\
-03 & 332 & Missed routine arsenic sampling                     &    50,424 &  1.1 \\
-03 & 340 & Missed routine radionuclide sampling               &    41,201 &  0.9 \\
-04 & 331 & Check/repeat/confirmation, nitrate                  &     6,566 &  0.1 \\
+03 & 333 & Monitoring, Regular (333) & 838 & 13.1 \\
+03 & 331 & Monitoring, Regular (331) & 290 & 4.5 \\
+03 & 332 & Monitoring, Regular (332) & 98 & 1.5 \\
+03 & 340 & Monitoring, Regular (340) & 86 & 1.3 \\
+04 & 333 & Monitoring, Check/Repeat/Confirmation (333) & 6 & 0.1 \\
+04 & 331 & Monitoring, Check/Repeat/Confirmation (331) & 1 & 0.0 \\
 \addlinespace[4pt]
 \multicolumn{5}{l}{\textit{Microbial and treatment monitoring}} \\
 \addlinespace[2pt]
-23 & 110 & Missed routine coliform samples, major              & 1,175,146 & 25.1 \\
-24 & 110 & Missed routine coliform samples, minor              &   123,172 &  2.6 \\
-25 & 110 & Missed repeat coliform samples, major               &    75,067 &  1.6 \\
-26 & 110 & Missed repeat coliform samples, minor               &    31,397 &  0.7 \\
-36 & 121 & Missed turbidity/treatment monitoring (SWTR-filter) &    44,503 &  0.9 \\
-31 & 121 & Missed treatment monitoring (SWTR-unfiltered/GWR)   &     2,334 &  0.1 \\
-38 & 122 & Missed turbidity monitoring (Enhanced SWTR)         &     4,808 &  0.1 \\
+23 & 110 & Monitoring, Routine Major (TCR) (110) & 483 & 7.6 \\
+36 & 121 & Monitoring of Treatment (SWTR-Filter) (121) & 207 & 3.2 \\
+24 & 110 & Monitoring, Routine Minor (TCR) (110) & 104 & 1.6 \\
+26 & 110 & Monitoring, Repeat Minor (TCR) (110) & 31 & 0.5 \\
+38 & 122 & Monitoring, Turbidity (Enhanced SWTR) (122) & 31 & 0.5 \\
+25 & 110 & Monitoring, Repeat Major (TCR) (110) & 28 & 0.4 \\
 \addlinespace[4pt]
 \multicolumn{5}{l}{\textit{Chemical phase rules (VOC, SOC) and other}} \\
 \addlinespace[2pt]
-03 & 310 & Missed routine VOC sampling                         & 1,346,239 & 28.7 \\
-03 & 320 & Missed routine SOC sampling                         &   741,803 & 15.8 \\
-27 & 210 & Missed disinfection byproduct (DBP) M/R             &    76,274 &  1.6 \\
-51 & 350 & Failed initial lead/copper tap sampling             &    76,693 &  1.6 \\
-52 & 350 & Missed follow-up lead/copper tap sampling           &    53,666 &  1.1 \\
-53 & 350 & Water quality parameter M/R (LCR)                   &     8,804 &  0.2 \\
-56 & 350 & Source water M/R (LCR)                              &     1,942 &  0.0 \\
-04 & 320 & Check/repeat/confirmation, SOC                      &     1,792 &  0.0 \\
-04 & 310 & Check/repeat/confirmation, VOC                      &     1,450 &  0.0 \\
-27 & 230 & M/R, former TTHM Rule                               &       456 &  0.0 \\
-39 & 130 & M/R, Filter Backwash Recycling Rule                 &        17 &  0.0 \\
+03 & 310 & Monitoring, Regular (310) & 2,960 & 46.4 \\
+03 & 320 & Monitoring, Regular (320) & 716 & 11.2 \\
+27 & 210 & Monitoring and Reporting (DBP) (210) & 356 & 5.6 \\
+52 & 350 & Follow-up Or Routine LCR Tap M/R (350) & 71 & 1.1 \\
+51 & 350 & Initial Tap Sampling for Pb and Cu (350) & 60 & 0.9 \\
+53 & 350 & Water Quality Parameter M/R (350) & 6 & 0.1 \\
+27 & 230 & Monitoring and Reporting (DBP) (230) & 2 & 0.0 \\
 \addlinespace[2pt]
 \hline
-   &     & \textit{Total}                                      & 4,692,282 & 100.0 \\
+ &  & \textit{Total} & 6,374 & 100.0 \\
 \hline\hline
 \end{tabular}
 \begin{minipage}{\linewidth}
 \vspace{4pt}
 \footnotesize
-\textit{Notes:} Violation code 03 = Monitoring, Regular; 04 = Monitoring, Check/Repeat/Confirmation; 23/24 = Monitoring, Routine Major/Minor (TCR); 25/26 = Monitoring, Repeat Major/Minor (TCR); 27 = M/R (DBP); 31 = Monitoring of Treatment (SWTR-Unfiltered/GWR); 36 = Monitoring of Treatment (SWTR-Filter); 38 = Monitoring, Turbidity (Enhanced SWTR); 39 = M/R (FBRR); 51 = Initial Tap Sampling, Pb/Cu; 52 = Follow-up or Routine LCR Tap M/R; 53 = Water Quality Parameter M/R; 56 = Source Water M/R. All violation codes reflect failure to collect required samples or submit results on schedule; no contamination exceedance is required to trigger an MR violation. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
+\textit{Notes:} Violation code 03 = Monitoring, Regular; 04 = Monitoring, Check/Repeat/Confirmation; 23/24 = Monitoring, Routine Major/Minor (TCR); 25/26 = Monitoring, Repeat Major/Minor (TCR); 27 = M/R (DBP); 31 = Monitoring of Treatment (SWTR-Unfiltered/GWR); 36 = Monitoring of Treatment (SWTR-Filter); 38 = Monitoring, Turbidity (Enhanced SWTR); 51 = Initial Tap Sampling, Pb/Cu; 52 = Follow-up or Routine LCR Tap M/R; 53 = Water Quality Parameter M/R; 56 = Source Water M/R. All violation codes reflect failure to collect required samples or submit results on schedule; no contamination exceedance is required to trigger an MR violation. Sample restricted to strictly downstream CWSs. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
 \end{minipage}
 \end{table}

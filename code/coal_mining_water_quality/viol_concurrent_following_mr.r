@@ -16,11 +16,15 @@
 library(arrow)
 library(data.table)
 
-# ── 0. Sample PWSIDs ─────────────────────────────────────────────────────────
-pws_ids <- unique(as.data.frame(
+# ── 0. Sample PWSIDs — strictly downstream only ──────────────────────────────
+# Strictly downstream: minehuc_downstream_of_mine == 1 & minehuc_mine == 0
+# (mirrors the "dwnstrm" sample cut in run_main_tables.r)
+pws_sample <- as.data.frame(
   arrow::read_parquet("Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
-                      col_select = "PWSID"))$PWSID)
-cat("Sample:", length(pws_ids), "PWSIDs\n")
+                      col_select = c("PWSID", "minehuc_downstream_of_mine", "minehuc_mine")))
+pws_ids <- unique(pws_sample$PWSID[
+  pws_sample$minehuc_downstream_of_mine == 1 & pws_sample$minehuc_mine == 0])
+cat("Strictly downstream PWSIDs:", length(pws_ids), "\n")
 
 # ── 1. Load violations ────────────────────────────────────────────────────────
 cat("Loading violations...\n")

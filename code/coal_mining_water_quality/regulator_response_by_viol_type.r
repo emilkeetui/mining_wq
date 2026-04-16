@@ -13,13 +13,17 @@ library(arrow)
 library(dplyr)
 library(data.table)
 
-# ── 0. Sample PWSID list ─────────────────────────────────────────────────────
+# ── 0. Sample PWSID list — strictly downstream only ──────────────────────────
+# Strictly downstream: minehuc_downstream_of_mine == 1 & minehuc_mine == 0
+# (mirrors the "dwnstrm" sample cut in run_main_tables.r)
 cat("Loading sample PWSIDs...\n")
 pws <- arrow::read_parquet("Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
-                           col_select = c("PWSID", "year")) |>
+                           col_select = c("PWSID", "year",
+                                          "minehuc_downstream_of_mine", "minehuc_mine")) |>
   distinct()
-sample_pwsids <- unique(pws$PWSID)
-cat("Sample:", length(sample_pwsids), "unique PWSIDs\n\n")
+sample_pwsids <- unique(pws$PWSID[
+  pws$minehuc_downstream_of_mine == 1 & pws$minehuc_mine == 0])
+cat("Strictly downstream PWSIDs:", length(sample_pwsids), "\n\n")
 
 # ── 1. Load violations (column subset to limit memory) ────────────────────────
 cat("Reading SDWA_VIOLATIONS_ENFORCEMENT.csv (3.7 GB — using fread)...\n")
