@@ -1,0 +1,41 @@
+% ============================================================
+% Table: Concurrent and Following Violation for Same Contaminant after MR
+% Unit: PWSID × rule_code × year cell with MR=TRUE.
+% Concurrent = same cell; Following = (PWSID, rule, year+1), index yr ≤ 2004.
+% N concurrent:  mining=2,540, nonmining=3,514
+% N following:   mining=2,459, nonmining=3,164
+% ============================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Concurrent and Following Violation after an MR Violation,
+  by Contaminant Group, 1985--2005}
+\label{tab:viol_concurrent_following}
+\small
+\begin{tabular}{lrr}
+\hline\hline
+\textbf{} & \textbf{Mining MR} & \textbf{Non-mining MR} \\
+\hline
+\addlinespace[4pt]
+\multicolumn{3}{l}{\textit{Panel A: Concurrent period --- same PWSID, same contaminant, same year}} \\
+\multicolumn{3}{l}{\quad\textit{(N\,=\,2,540 mining; N\,=\,3,514 non-mining PWSID$\times$rule$\times$year cells)}} \\
+\addlinespace[2pt]
+MR only --- no concurrent MCL or TT (\%) & 98.9 & 92.6 \\
+MCL concurrent with MR (\%) & 1.1 & 5.5 \\
+TT concurrent with MR, no MCL (\%) & 0.0 & 1.9 \\
+\addlinespace[6pt]
+\multicolumn{3}{l}{\textit{Panel B: Following year --- same PWSID, same contaminant, year\,$+$\,1}} \\
+\multicolumn{3}{l}{\quad\textit{(index violations in 1985--2004; N\,=\,2,459 mining; N\,=\,3,164 non-mining)}} \\
+\addlinespace[2pt]
+No violation recorded (\%) & 89.3 & 70.6 \\
+MR only --- monitoring failure again, no MCL (\%) & 10.3 & 24.7 \\
+MCL violation (with or without MR) (\%) & 0.4 & 3.6 \\
+TT only --- no MR or MCL (\%) & 0.0 & 1.0 \\
+\hline\hline
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\textit{Notes:} Unit of observation is the PWSID\,$\times$\,rule\,code\,$\times$\,calendar year cell. Each cell is classified as 1 if any violation of the stated type was recorded in SDWIS for that PWSID, rule, and year; 0 otherwise. Index cells are those with at least one MR violation. Mining-related rule codes: nitrate (331), arsenic (332), inorganic chemicals (333), radionuclides (340). Non-mining rule codes: total coliform (110, 111), surface/groundwater rule (121--123, 140), VOCs (310), SOCs (320). \textit{Panel A} rows are mutually exclusive and sum to 100: the index cell always has MR=1, so concurrent MCL or TT indicates a second type of violation for the same PWSID, contaminant, and year alongside the monitoring failure. \textit{Panel B} rows are mutually exclusive and sum to 100: MCL takes precedence over MR and TT; TT only requires no MCL and no MR in year\,$+$\,1. ``No violation'' in Panel B means no SDWIS record for that PWSID and contaminant rule in year\,$+$\,1; this includes both genuine compliance and cases where the PWSID left the sample. Index violations in 2005 are excluded from Panel B (year\,$+$\,1 falls outside the sample period). Source: SDWA\_VIOLATIONS\_ENFORCEMENT.csv.
+\end{minipage}
+\end{table}

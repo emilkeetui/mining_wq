@@ -1,0 +1,51 @@
+% ============================================================
+% Table: Violation Sequencing — What Follows a Mining vs Non-mining MR Violation?
+% Unit: MR violation (unique VIOLATION_ID). Next violation = highest-severity
+% violation at the next distinct begin_date for the same PWSID.
+% N: mining MR = 6,926;  non-mining MR = 25,710
+% ============================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Violation Following a Mining vs.\@ Non-mining MR Violation, 1985--2005}
+\label{tab:viol_sequence}
+\small
+\begin{tabular}{lrr}
+\hline\hline
+\textbf{Next violation} & \textbf{Mining MR} & \textbf{Non-mining MR} \\
+ & \textit{(N=6,926)} & \textit{(N=25,710)} \\
+\hline
+\addlinespace[4pt]
+\multicolumn{3}{l}{\textit{No subsequent violation}} \\
+\addlinespace[2pt]
+No further violation in 1985--2005 (\%) & 4.5 & 8.1 \\
+\addlinespace[4pt]
+\multicolumn{3}{l}{\textit{Monitoring/reporting violation follows}} \\
+\addlinespace[2pt]
+MR, same contaminant$^a$ (\%) & 5.4 & 25.7 \\
+MR, same contaminant group$^b$ (\%) & 19.9 & 21.1 \\
+MR, other contaminant (\%) & 48.8 & 25.1 \\
+\addlinespace[4pt]
+\multicolumn{3}{l}{\textit{Limit exceedance violation follows}} \\
+\addlinespace[2pt]
+MCL, same contaminant$^a$ (\%) & 0.4 & 1.2 \\
+MCL, same contaminant group$^b$ (\%) & 0.5 & 2.6 \\
+MCL, other contaminant (\%) & 5.7 & 1.0 \\
+\addlinespace[4pt]
+\multicolumn{3}{l}{\textit{Other violation type follows}} \\
+\addlinespace[2pt]
+Treatment technique (TT) (\%) & 3.5 & 4.4 \\
+Other category (\%) & 11.2 & 10.8 \\
+\addlinespace[4pt]
+\multicolumn{3}{l}{\textit{Time to next violation}} \\
+\addlinespace[2pt]
+Median days to next violation & 365.0 & 181.0 \\
+Mean days to next violation & 742.1 & 453.8 \\
+\hline\hline
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\textit{Notes:} Unit of observation is the MR violation (unique VIOLATION\_ID). Sample: CWS in the coal mining analysis panel, 1985--2005. Mining-related rules: nitrate (331), arsenic (332), inorganic chemicals (333), radionuclides (340). Non-mining rules: total coliform (110, 111), surface/groundwater rule (121--123, 140), VOCs (310), SOCs (320). ``Next violation'' is defined as the highest-severity violation beginning on the next distinct begin date for the same PWSID; severity order is MCL mining $>$ MCL non-mining $>$ MCL other $>$ TT $>$ MR mining $>$ MR non-mining $>$ other. When multiple violations share the next date, the highest-severity is selected; this is conservative for detecting MCL escalation (the MCL is surfaced if present). ``Days to next violation'' is missing for violations with no subsequent violation. $^a$Same contaminant = same SDWIS RULE\_CODE (e.g., an arsenic MR followed by an arsenic MCL). $^b$Same contaminant group (but different rule code): e.g., a nitrate MR followed by an arsenic MCL; or a total-coliform MR followed by a surface-water rule MCL. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.csv.
+\end{minipage}
+\end{table}

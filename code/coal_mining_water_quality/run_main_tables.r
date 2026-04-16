@@ -59,21 +59,24 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
   result <- list()
 
   for (y in varlist) {
-    cat("  Outcome:", y, "| n =", nrow(dset), "\n")
+    # Subset to non-missing rows for this outcome so N reflects actual sample
+    dset_y <- dset[!is.na(dset[[y]]), ]
+    cat("  Outcome:", y, "| n =", nrow(dset_y), "\n")
     f_ols <- as.formula(paste0(y, " ~ ", paste(coalvar, collapse="+"), " + ", controls_str, " | ", fe_str))
     f_rf  <- as.formula(paste0(y, " ~ ", instr_str, " + ", controls_str, " | ", fe_str))
     f_iv  <- as.formula(paste0(y, " ~ ", controls_str, " | ", fe_str, " | ", paste(coalvar, collapse="+"), " ~ ", instr_str))
-    mods <- tryCatch({
-      list(
-        OLS = fixest::feols(f_ols, data = dset, cluster = ~ PWSID),
-        RF  = fixest::feols(f_rf,  data = dset, cluster = ~ PWSID),
-        IV  = fixest::feols(f_iv,  data = dset, cluster = ~ PWSID)
-      )
-    }, error = function(e) {
-      cat("  Skipping", y, "-", conditionMessage(e), "\n")
-      NULL
-    })
-    if (!is.null(mods)) result[[y]] <- mods
+    ols <- tryCatch(fixest::feols(f_ols, data = dset_y, cluster = ~ PWSID),
+                    error = function(e) { cat("  OLS error", y, "-", conditionMessage(e), "\n"); NULL })
+    rf  <- tryCatch(fixest::feols(f_rf,  data = dset_y, cluster = ~ PWSID),
+                    error = function(e) { cat("  RF error",  y, "-", conditionMessage(e), "\n"); NULL })
+    iv  <- tryCatch(fixest::feols(f_iv,  data = dset_y, cluster = ~ PWSID),
+                    error = function(e) { cat("  IV error",  y, "-", conditionMessage(e), "\n"); NULL })
+    # Only include outcome if all three models succeeded
+    if (!is.null(ols) && !is.null(rf) && !is.null(iv)) {
+      result[[y]] <- list(OLS = ols, RF = rf, IV = iv)
+    } else {
+      cat("  Dropping", y, "- not all three models succeeded\n")
+    }
   }
 
   if (length(result) == 0) {
@@ -114,8 +117,8 @@ std_note <- paste0(
 )
 
 sample_specs <- list(
-  list(sample="dwnstrm",        dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream", instr="post95*sulfur_unified", titlesamp="downstream PWS's"),
-  list(sample="dwnstrmcolocate",dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified",  instr="post95*sulfur_unified", titlesamp="downstream and colocated PWS's")
+  list(sample="dwnstrm",        dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream", instr="post95:sulfur_unified", titlesamp="downstream PWS's"),
+  list(sample="dwnstrmcolocate",dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified",  instr="post95:sulfur_unified", titlesamp="downstream and colocated PWS's")
 )
 vio_specs <- list(
   list(name="minevio",    allcat=c("nitrates_share_days","arsenic_share_days","inorganic_chemicals_share_days","radionuclides_share_days"),             mcl=c("nitrates_MCL_share_days","arsenic_MCL_share_days","inorganic_chemicals_MCL_share_days","radionuclides_MCL_share_days"),             mr=c("nitrates_MR_share_days","arsenic_MR_share_days","inorganic_chemicals_MR_share_days","radionuclides_MR_share_days"),             titlevio="mining violations"),
