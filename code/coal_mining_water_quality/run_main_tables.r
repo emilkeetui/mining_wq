@@ -51,7 +51,8 @@ move_notes_below_adjustbox <- function(x) {
 }
 
 tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, label,
-                                  instr_str, dict = NULL, notes = NULL) {
+                                  instr_str, dict = NULL, notes = NULL,
+                                  storage_list_name = NULL, subheader = NULL) {
   controls            <- c("num_facilities")
   drop_controls_exact <- paste0("^(", paste(controls, collapse = "|"), ")$")
   fe_str              <- "PWSID + STATE_CODE + year"
@@ -84,6 +85,23 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
     return(invisible(NULL))
   }
 
+  # ── Persist first stages to global list ──────────────────────────────────
+  if (!is.null(storage_list_name) && !is.null(subheader)) {
+    if (!exists(storage_list_name, envir = .GlobalEnv)) {
+      assign(storage_list_name, list(), envir = .GlobalEnv)
+    }
+    fs_list <- get(storage_list_name, envir = .GlobalEnv)
+    if (is.null(fs_list[[subheader]])) {
+      fs_list[[subheader]] <- list()
+    }
+    for (y in names(result)) {
+      for (cv in coalvar) {
+        fs_list[[subheader]][[y]][[cv]] <- result[[y]]$IV$iv_first_stage[[cv]]
+      }
+    }
+    assign(storage_list_name, fs_list, envir = .GlobalEnv)
+  }
+
   model_list <- unlist(
     lapply(names(result), function(y) list(result[[y]]$OLS, result[[y]]$RF, result[[y]]$IV)),
     recursive = FALSE
@@ -104,6 +122,43 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
   if (!is.null(dict))  etable_args$dict  <- dict
   if (!is.null(notes)) etable_args$notes <- notes
   do.call(etable, etable_args)
+}
+
+first_stage_table <- function(storage_list_name, outfile, title = NULL,
+                               label = NULL, which_coalvar = NULL,
+                               drop = NULL) {
+  fs_list       <- get(storage_list_name, envir = .GlobalEnv)
+  model_list    <- list()
+  inner_headers <- list()
+  outer_headers <- list()
+
+  for (subheader in names(fs_list)) {
+    depvar_bucket <- fs_list[[subheader]]
+    n_cols        <- 0
+    for (depvar in names(depvar_bucket)) {
+      coal_models <- depvar_bucket[[depvar]]
+      cv <- if (!is.null(which_coalvar)) which_coalvar else names(coal_models)[1]
+      model_list              <- c(model_list, list(coal_models[[cv]]))
+      inner_headers[[depvar]] <- 1L
+      n_cols                  <- n_cols + 1L
+    }
+    outer_headers[[subheader]] <- n_cols
+  }
+
+  two_level_headers <- list(outer_headers, inner_headers)
+  do.call(etable, c(
+    model_list,
+    list(
+      fitstat   = ~ . + ivf1,
+      style.tex = style.tex("aer", adjustbox = TRUE),
+      tex       = TRUE,
+      drop      = drop,
+      headers   = two_level_headers,
+      title     = title,
+      label     = label,
+      file      = paste0("Z:/ek559/mining_wq/output/reg/", outfile, ".tex")
+    )
+  ))
 }
 
 std_note <- paste0(
@@ -132,6 +187,7 @@ cat_specs <- list(
 
 for (sp in sample_specs) {
   for (vp in vio_specs) {
+    fs_store_name <- paste0("fs_store_", sp$sample, "_", vp$name)
     for (cp in cat_specs) {
       fname     <- paste0("2sls_", sp$sample, "_", vp$name, "_", cp$name)
       tab_title <- paste0("Effect of coal mines on ", vp$titlevio, " (", cp$titlecat, ", ", sp$titlesamp, ")")
@@ -139,8 +195,20 @@ for (sp in sample_specs) {
       cat("\nRunning:", fname, "\n")
       tsls_reg_output_main(dset=sp$dset, varlist=varlist, coalvar=sp$coalvar,
                            regoutname=fname, title=tab_title, label=fname,
-                           instr_str=sp$instr, dict=vio_dict, notes=std_note)
+                           instr_str=sp$instr, dict=vio_dict, notes=std_note,
+                           storage_list_name = fs_store_name,
+                           subheader         = cp$titlecat)
     }
+    fs_outfile <- paste0("fs_", sp$sample, "_", vp$name)
+    fs_title   <- paste0("First Stage: ", vp$titlevio, " (", sp$titlesamp, ")")
+    cat("\nProducing first-stage table:", fs_outfile, "\n")
+    first_stage_table(
+      storage_list_name = fs_store_name,
+      outfile           = fs_outfile,
+      title             = fs_title,
+      label             = paste0("tab:", fs_outfile),
+      drop              = "num_facilities"
+    )
   }
 }
 cat("\nDone.\n")
