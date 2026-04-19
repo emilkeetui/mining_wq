@@ -2,12 +2,12 @@
 \centering
 \resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
 \begin{talltblr}[         %% tabularray outer open
-caption={Effect of ARP on HUC12 coal production},
+caption={Effect of ARP Phase I on HUC12 coal production, 1985--2005},
 note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
-note{ }={All estimates use HUC12 and year fixed effects.},
-note{  }={Standard errors clustered at HUC12 level.},
-note{   }={Active mines is the number of active coal mines within HUC12.},
-note{    }={Coal tons is the total coal mined from HUC12.},
+note{ }={Columns (1)--(2): high sulfur indicator = 1 if sulfur > 2 pct.},
+note{  }={Columns (3)--(4): sulfur entered as continuous percentage.},
+note{   }={All estimates use HUC12 and year fixed effects.},
+note{    }={Standard errors clustered at HUC12 level.},
 ]                     %% tabularray outer close
 {                     %% tabularray inner open
 colspec={Q[]Q[]Q[]Q[]Q[]},
@@ -15,11 +15,11 @@ column{2-5}={}{halign=c,},
 column{1}={}{halign=l,},
 }                     %% tabularray inner close
 \toprule
-& Coal tons (1983-2005) & Active mines (1983-2005) & Coal tons (1985-2005) & Active mines (1985-2005) \\ \midrule %% TinyTableHeader
-post93 x HighSulfur & -260424.829*** & -0.161 & -237507.025*** &  \\
-& [-376025.727, -144823.932] & [-0.458, 0.135] & [-351858.108, -123155.941] &  \\
-post95:high_sulfur &  &  &  & -0.241* \\
-&  &  &  & [-0.527, 0.045] \\
+& Coal tons & Active mines & Coal tons  & Active mines  \\ \midrule %% TinyTableHeader
+Post-1995 x High sulfur & -98517.182*** & -0.113 &  &  \\
+& [-164606.355, -32428.008] & [-0.284, 0.057] &  &  \\
+Post-1995 x Sulfur pct &  &  & -25180.156** & -0.012 \\
+&  &  & [-46237.066, -4123.247] & [-0.055, 0.031] \\
 \bottomrule
 \end{talltblr}
 }

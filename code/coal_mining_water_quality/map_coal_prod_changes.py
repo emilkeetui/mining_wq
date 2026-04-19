@@ -594,3 +594,105 @@ plot_change_map(
     s_min=20,
     s_max=800
 )
+
+##########################################################################
+# Proportionate circle map: change in mine COUNT, 1985-2005
+# Restricted to mine HUC12s co-located or upstream of CWSs
+##########################################################################
+
+# Load prod_sulfur.csv (CWS-matched HUC12s) and filter to mine HUC12s
+prod_sulfur = pd.read_csv("Z:/ek559/mining_wq/clean_data/prod_sulfur.csv",
+                          dtype={"huc12": str})
+mine_panel = prod_sulfur[prod_sulfur["minehuc"] == "mine"].copy()
+
+# Extract mine count for 1985 and 2005
+mines_1985 = (mine_panel[mine_panel["year"] == 1985]
+              .groupby("huc12")["num_coal_mines_colocated"].max()
+              .rename("mines1985"))
+mines_2005 = (mine_panel[mine_panel["year"] == 2005]
+              .groupby("huc12")["num_coal_mines_colocated"].max()
+              .rename("mines2005"))
+sulfur_huc = (mine_panel.groupby("huc12")["sulfur_colocated"].mean()
+              .rename("sulfur_colocated"))
+
+mine_chg = (pd.concat([mines_1985, mines_2005, sulfur_huc], axis=1)
+            .reset_index()
+            .fillna(0))
+mine_chg["change"] = mine_chg["mines2005"] - mine_chg["mines1985"]
+mine_chg["mag"]    = mine_chg["change"].abs()
+print(f"Mine HUC12s with data: {len(mine_chg)}  (increase: {(mine_chg['change']>0).sum()}, decrease: {(mine_chg['change']<0).sum()})")
+
+# Load HUC12 centroids from shapefile (bbox = CONUS)
+import pyogrio
+huc_attrs = pyogrio.read_dataframe(
+    r"Z:\ek559\sdwa_violations\WBD_HUC12_CONUS_pulled10262020\WBD_HUC12_CONUS_pulled10262020.shp",
+    columns=["huc12"]
+)
+huc_attrs["huc12"] = huc_attrs["huc12"].astype(str).str.strip()
+huc_attrs = huc_attrs[huc_attrs["huc12"].isin(mine_chg["huc12"])].copy()
+huc_attrs = huc_attrs.to_crs("EPSG:5070")
+huc_attrs["geometry"] = huc_attrs["geometry"].centroid
+
+mine_pts = huc_attrs.merge(mine_chg, on="huc12")
+mine_pts = gpd.GeoDataFrame(mine_pts, geometry="geometry", crs="EPSG:5070")
+print(f"Mine HUC12 centroids matched: {len(mine_pts)}")
+
+# Size bubbles proportionally to |change|
+mag_nonzero = mine_pts.loc[mine_pts["mag"] > 0, "mag"].to_numpy()
+vmin_m, vmax_m = float(mag_nonzero.min()), float(mag_nonzero.max())
+S_MIN, S_MAX = 15, 500
+mine_pts["s"] = np.where(
+    mine_pts["mag"] <= 0, 0.0,
+    S_MIN + (mine_pts["mag"] - vmin_m) * (S_MAX - S_MIN) / (vmax_m - vmin_m + 1e-12)
+)
+
+states_albers = contiguous_states.to_crs("EPSG:5070")
+bounds = mine_pts.total_bounds
+buf = 150_000
+xlim = (bounds[0] - buf, bounds[2] + buf)
+ylim = (bounds[1] - buf, bounds[3] + buf)
+
+fig, ax = plt.subplots(figsize=(11, 7))
+states_albers.plot(ax=ax, facecolor="white", edgecolor="0.65", linewidth=0.5)
+
+inc = mine_pts[mine_pts["change"] > 0]
+dec = mine_pts[mine_pts["change"] < 0]
+if not dec.empty:
+    dec.plot(ax=ax, markersize=dec["s"], color="tomato",   alpha=0.75, marker="o", linewidth=0)
+if not inc.empty:
+    inc.plot(ax=ax, markersize=inc["s"], color="steelblue", alpha=0.75, marker="o", linewidth=0)
+
+ax.set_xlim(*xlim)
+ax.set_ylim(*ylim)
+ax.set_axis_off()
+ax.set_title(
+    "Change in number of coal mines by HUC12, 1985 to 2005\n"
+    "Mine HUC12s co-located or upstream of CWSs  |  Blue = increase, Red = decrease",
+    fontsize=11
+)
+
+# Size legend
+ref_mags = np.array([vmax_m * 0.25, vmax_m * 0.5, vmax_m])
+ref_s    = S_MIN + (ref_mags - vmin_m) * (S_MAX - S_MIN) / (vmax_m - vmin_m + 1e-12)
+size_handles = [ax.scatter([], [], s=s, color="grey", alpha=0.6, edgecolors="k")
+                for s in ref_s]
+size_labels  = [f"{int(v):+d} mines" for v in ref_mags]
+leg1 = ax.legend(size_handles, size_labels, title="|Change|", loc="lower left",
+                 bbox_to_anchor=(0.01, 0.05), frameon=True, fontsize=8)
+ax.add_artist(leg1)
+
+color_handles = [
+    Line2D([0],[0], marker="o", color="w", markerfacecolor="steelblue", markersize=9, label="Increase"),
+    Line2D([0],[0], marker="o", color="w", markerfacecolor="tomato",    markersize=9, label="Decrease"),
+]
+ax.legend(handles=color_handles, title="Direction", loc="lower right", fontsize=8)
+
+fig.text(0.5, 0.01,
+         "Circle area proportional to absolute change in number of active coal mines, 1985–2005.",
+         ha="center", fontsize=8, color="0.4")
+
+plt.tight_layout()
+out_path = "Z:/ek559/mining_wq/output/fig/proportionatecircleprod_huc12_1985_2005.png"
+plt.savefig(out_path, dpi=200, bbox_inches="tight")
+plt.close()
+print(f"Saved: {out_path}")

@@ -411,22 +411,24 @@ save_tt("Z:/ek559/mining_wq/output/sum/balance_sum_miningviol_exante.tex", overw
 ##############
 
 coal_data <- read.csv("Z:/ek559/mining_wq/clean_data/prod_sulfur.csv")
-coal_data$high_sulfur <- 0
-coal_data$high_sulfur[coal_data$sulfur > 2] <- 1
+# Restrict to mine HUC12s co-located or upstream of CWSs
+coal_data <- coal_data[coal_data$minehuc == "mine", ]
+coal_data$high_sulfur <- as.integer(coal_data$sulfur_colocated > 2)
 
-# HUC12 sulfur histogram
+# HUC12 sulfur histogram — one obs per HUC12
 coal_sulfur_hist <- coal_data %>% group_by(huc12) %>%
-  summarise(sulfur = max(sulfur))
+  summarise(sulfur = max(sulfur_colocated, na.rm = TRUE))
 
 png("Z:/ek559/mining_wq/output/fig/sulfur_histogram.png")
-hist(coal_sulfur_hist$sulfur, main = "HUC12 Mean Coal Sulfur % Histogram", xlab = "coal bed % sulfur", col = "lightblue", border = "black")
+hist(coal_sulfur_hist$sulfur, main = "HUC12 Coal Sulfur % Histogram", xlab = "Coal bed % sulfur", col = "lightblue", border = "black")
+mtext("Sample: mine HUC12s co-located or upstream of CWSs", side = 1, line = 4, cex = 0.75, col = "grey40")
 dev.off()
 
 # plot coal prod by high sulfur
 coal_prod_over_time <- coal_data[coal_data$year<2006,] %>% group_by(high_sulfur, year) %>%
-  summarise(avg_huc_coal = mean(production_short_tons_coal),
-            tot_sulf_coal = sum(production_short_tons_coal),
-            mean_coal_mine = mean(num_coal_mines),
+  summarise(avg_huc_coal = mean(production_short_tons_coal_colocated, na.rm = TRUE),
+            tot_sulf_coal = sum(production_short_tons_coal_colocated, na.rm = TRUE),
+            mean_coal_mine = mean(num_coal_mines_colocated, na.rm = TRUE),
             .groups = "drop")
 
 coal_prod_over_time$high_sulfur <- as.factor(coal_prod_over_time$high_sulfur)
@@ -464,47 +466,48 @@ plot3 = ggplot(coal_prod_over_time, aes(x = year, y = mean_coal_mine, color = hi
     theme_minimal()
 
 combined_plot <- wrap_plots(list(plot1, plot2, plot3), ncol = 1) +
-    plot_layout(guides = "collect") & 
-    theme(legend.position = "bottom")  # or "right", "top", etc.
+    plot_layout(guides = "collect") &
+    theme(legend.position = "bottom")
+
+combined_plot <- combined_plot +
+    plot_annotation(caption = "Sample: mine HUC12s co-located or upstream of CWSs") &
+    theme(plot.caption = element_text(hjust = 0, color = "grey40", size = 7))
 
 ggsave("Z:/ek559/mining_wq/output/fig/coal_summary_plot.png", combined_plot, height = 5, width = 5)
 
 coal_data$post93 <- 0
 coal_data$post93[coal_data$year>1992] <- 1
+# First-stage DiD: binary and continuous sulfur, 1985-2005
+samp_coal <- coal_data[coal_data$year > 1985 & coal_data$year < 2006, ]
 
-# Diff in diff coal prod 1990 to 1999
 huccoal <- list(
-    "Coal tons (1983-2005)" = feols(production_short_tons_coal ~ post93*high_sulfur | huc12 + year,
-                             data = coal_data[coal_data$year<2006, ],
-                             cluster = ~ huc12),
-    "Active mines (1983-2005)" = feols(num_coal_mines ~ post93*high_sulfur | huc12 + year,
-                             data = coal_data[coal_data$year<2006, ],
-                             cluster = ~ huc12),
-    "Coal tons (1985-2005)" = feols(production_short_tons_coal ~ post93*high_sulfur | huc12 + year,
-                             data = coal_data[coal_data$year> 1985 & coal_data$year<2006, ],
-                             cluster = ~ huc12),
-    "Active mines (1985-2005)" = feols(num_coal_mines ~ post95*high_sulfur | huc12 + year,
-                             data = coal_data[coal_data$year> 1985 & coal_data$year<2006, ],
-                             cluster = ~ huc12)
-)      
-                        
+    "Coal tons"     = feols(production_short_tons_coal_colocated ~ post95:high_sulfur | huc12 + year,
+                            data = samp_coal, cluster = ~ huc12),
+    "Active mines"  = feols(num_coal_mines_colocated ~ post95:high_sulfur | huc12 + year,
+                            data = samp_coal, cluster = ~ huc12),
+    "Coal tons "    = feols(production_short_tons_coal_colocated ~ post95:sulfur_colocated | huc12 + year,
+                            data = samp_coal, cluster = ~ huc12),
+    "Active mines " = feols(num_coal_mines_colocated ~ post95:sulfur_colocated | huc12 + year,
+                            data = samp_coal, cluster = ~ huc12)
+)
+
 modelsummary(
   huccoal,
-  coef_rename = c("post93:sulfur" = "post93 x sulfur",
-                  "post93:high_sulfur" = "post93 x HighSulfur"),
+  coef_rename = c("post95:high_sulfur"      = "Post-1995 $\\times$ High sulfur ($>$2\\%)",
+                  "post95:sulfur_colocated" = "Post-1995 $\\times$ Sulfur (\\%)"),
   output = "tinytable",
   stars = c('*' = .1, '**' = .05, '***' = .01),
   statistic = "conf.int",
   fmt = "%.3f",
   gof_omit = ".*",
-  title = "Effect of ARP on HUC12 coal production",
-  escape = TRUE,
-  notes = c("All estimates use HUC12 and year fixed effects.",
-            "Standard errors clustered at HUC12 level.",
-            "Active mines is the number of active coal mines within HUC12.",
-            "Coal tons is the total coal mined from HUC12.")
+  title = "Effect of ARP Phase I on HUC12 coal production, 1985--2005",
+  escape = FALSE,
+  notes = c("Columns (1)--(2): high sulfur indicator = 1 if sulfur $>$ 2\\%.",
+            "Columns (3)--(4): sulfur entered as continuous percentage.",
+            "All estimates use HUC12 and year fixed effects.",
+            "Standard errors clustered at HUC12 level.")
 ) |>
-theme_latex(resize_width= 1, resize_direction="down") |>
+theme_latex(resize_width = 1, resize_direction = "down") |>
 save_tt("Z:/ek559/mining_wq/output/reg/coal_did_sulf.tex", overwrite = TRUE)
 
 ##########

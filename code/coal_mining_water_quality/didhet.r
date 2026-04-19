@@ -46,29 +46,27 @@ library(magrittr)
 #################################################
 # Plotting coal production relationship to sulfur
 #################################################
-huccoal <- read_parquet("Z:/ek559/mining_wq/clean_data/huc_coal_charac_geom_match.parquet")
-huccoal <- huccoal[huccoal$year<2006 & huccoal$year>1984,]
-huccoal$HighSulfur <- ifelse(huccoal$sulfur_colocated > 1.5,
-                             "High sulfur",
-                             "Low sulfur")
-huccoal <- huccoal[huccoal$minehuc=="mine",]
+# Restrict to mine HUC12s co-located or upstream of CWSs (prod_sulfur.csv is CWS-matched)
+huccoal <- read.csv("Z:/ek559/mining_wq/clean_data/prod_sulfur.csv")
+huccoal <- huccoal[huccoal$minehuc == "mine" & huccoal$year < 2006 & huccoal$year > 1984, ]
+huccoal$HighSulfur <- ifelse(huccoal$sulfur_colocated > 1.5, "High sulfur (>1.5%)", "Low sulfur (<=1.5%)")
 
 # Define shared color scale
-color_values <- c("High sulfur" = "blue", "Low sulfur" = "red")
+color_values <- c("High sulfur (>1.5%)" = "blue", "Low sulfur (<=1.5%)" = "red")
 
 # Left plot: before 1995
 p_before <- huccoal %>%
   filter(year < 1995) %>%
-  ggplot(aes(x = production_short_tons_coal_colocated,
+  ggplot(aes(x = num_coal_mines_colocated,
              y = sulfur_colocated,
              color = HighSulfur)) +
   geom_point(alpha = 0.5, size = 1.5) +
-  geom_smooth(aes(group = HighSulfur), method = "lm", se = FALSE, linewidth = 0.9) +
-  scale_color_manual(values = color_values, name = "Sulfur Category") +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 0.9) +
+  scale_color_manual(values = color_values, name = "Sulfur category") +
   labs(
-    title    = "Before 1995",
-    x        = "Coal Production (short tons)",
-    y        = "Sulfur (%)"
+    title = "Before 1995",
+    x     = "Number of coal mines",
+    y     = "Sulfur (%)"
   ) +
   theme_bw() +
   theme(legend.position = "bottom")
@@ -76,15 +74,15 @@ p_before <- huccoal %>%
 # Right plot: 1995 and after
 p_after <- huccoal %>%
   filter(year >= 1995) %>%
-  ggplot(aes(x = production_short_tons_coal_colocated,
+  ggplot(aes(x = num_coal_mines_colocated,
              y = sulfur_colocated,
              color = HighSulfur)) +
   geom_point(alpha = 0.5, size = 1.5) +
-  geom_smooth(aes(group = HighSulfur), method = "lm", se = FALSE, linewidth = 0.9) +
-  scale_color_manual(values = color_values, name = "Sulfur Category") +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 0.9) +
+  scale_color_manual(values = color_values, name = "Sulfur category") +
   labs(
     title = "1995 and After",
-    x     = "Coal Production (short tons)",
+    x     = "Number of coal mines",
     y     = "Sulfur (%)"
   ) +
   theme_bw() +
@@ -93,7 +91,7 @@ p_after <- huccoal %>%
 # Combine with a shared legend
 (p_before + p_after) +
   plot_layout(guides = "collect") &
-  plot_annotation(title = "HUC level coal production (tons) and sulfur (%): Scatter and Linear Fit") &
+  plot_annotation(title = "HUC12 sulfur (%) and number of coal mines: mine HUC12s co-located or upstream of CWSs") &
   theme(legend.position = "bottom")
 
 ggsave("Z:/ek559/mining_wq/output/fig/scatterhuccoalsulfur.png", width = 8, height = 6, dpi = 500)
