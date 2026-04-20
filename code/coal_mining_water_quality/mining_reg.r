@@ -502,8 +502,9 @@ modelsummary(
   gof_omit = ".*",
   title = "Effect of ARP Phase I on HUC12 coal production, 1985--2005",
   escape = FALSE,
-  notes = c("Columns (1)--(2): high sulfur indicator = 1 if sulfur $>$ 2\\%.",
-            "Columns (3)--(4): sulfur entered as continuous percentage.",
+  notes = c("Sample: mine HUC12s co-located with or upstream of a matched CWS, 1985--2005.",
+            "Columns (1)--(2): Post-1995 $\\times$ High sulfur, where High sulfur $= 1$ if average coal seam sulfur $>$ 2\\% in HUC12.",
+            "Columns (3)--(4): Post-1995 $\\times$ Sulfur (\\%), where sulfur is the continuous average coal seam sulfur percentage.",
             "All estimates use HUC12 and year fixed effects.",
             "Standard errors clustered at HUC12 level.")
 ) |>

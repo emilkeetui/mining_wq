@@ -1,26 +1,28 @@
 \begin{table}
 \centering
+\caption{Effect of ARP Phase I on HUC12 coal production, 1985--2005}
 \resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
-\begin{talltblr}[         %% tabularray outer open
-caption={Effect of ARP Phase I on HUC12 coal production, 1985--2005},
-note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
-note{ }={Columns (1)--(2): high sulfur indicator = 1 if sulfur > 2 pct.},
-note{  }={Columns (3)--(4): sulfur entered as continuous percentage.},
-note{   }={All estimates use HUC12 and year fixed effects.},
-note{    }={Standard errors clustered at HUC12 level.},
-]                     %% tabularray outer close
-{                     %% tabularray inner open
+\begin{tblr}{                     %% tabularray inner open
 colspec={Q[]Q[]Q[]Q[]Q[]},
 column{2-5}={}{halign=c,},
 column{1}={}{halign=l,},
 }                     %% tabularray inner close
 \toprule
 & Coal tons & Active mines & Coal tons  & Active mines  \\ \midrule %% TinyTableHeader
-Post-1995 x High sulfur & -98517.182*** & -0.113 &  &  \\
-& [-164606.355, -32428.008] & [-0.284, 0.057] &  &  \\
-Post-1995 x Sulfur pct &  &  & -25180.156** & -0.012 \\
-&  &  & [-46237.066, -4123.247] & [-0.055, 0.031] \\
+Post-1995 $\times$ High sulfur ($>$2\%) & -206755.329*** & -0.213 &  &  \\
+& [-345139.868, -68370.790] & [-0.563, 0.137] &  &  \\
+Post-1995 $\times$ Sulfur (\%) &  &  & -76011.608** & 0.027 \\
+&  &  & [-140932.887, -11090.329] & [-0.104, 0.158] \\
 \bottomrule
-\end{talltblr}
+\end{tblr}
 }
+\par\vspace{0.4em}
+\begin{minipage}{\linewidth}
+\footnotesize
+* p $<$ 0.1, ** p $<$ 0.05, *** p $<$ 0.01. 95\% confidence intervals in brackets. \\
+Sample: mine HUC12s co-located with or upstream of a matched CWS, 1985--2005. \\
+Cols (1)--(2): High sulfur $= 1$ if avg coal seam sulfur $>$ 2\% in HUC12. \\
+Cols (3)--(4): Sulfur entered as continuous avg coal seam sulfur percentage. \\
+All estimates include HUC12 and year fixed effects. Standard errors clustered at HUC12 level.
+\end{minipage}
 \end{table}
