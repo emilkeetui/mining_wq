@@ -1,0 +1,56 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:strategic_contemp_corr} Contemporaneous Within-PWSID Correlation: MCL and MR Violation Days}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccc}
+         \toprule
+         
+          & \multicolumn{2}{c}{mining\_MCL\_share\_days} & \multicolumn{2}{c}{nonmining\_MCL\_share\_days}\\
+         
+          & \multicolumn{2}{c}{Panel A: Mining MCL} & \multicolumn{2}{c}{Panel B: Non-mining MCL (placebo)} \\ 
+                                                  & OLS           & 2SLS          & OLS           & 2SLS  \\   
+         
+                                                  & (1)           & (2)           & (3)           & (4)\\  
+         
+         \midrule 
+         Mining MR (days)                         & -0.0015       & -0.0483       &               &   \\   
+                                                  & (0.0014)      & (0.0503)      &               &   \\   
+         Non-mining MR (days)                     &               &               & 0.0016        & 0.1113\\   
+                                                  &               &               & (0.0013)      & (0.1688)\\   
+         
+          \\
+         
+         Observations                             & 11,706        & 11,706        & 11,706        & 11,706\\  
+         R$^2$                                    & 0.16243       & 0.16243       & 0.08882       & 0.08879\\  
+         Within R$^2$                             & 0.00027       & 0.00027       & 0.00044       & 0.00041\\  
+         F-test (1st stage), Mining MR (days)     &               & 11.443        &               & \\  
+         F-test (1st stage), Non-mining MR (days) &               &               &               & 2.2146\\  
+         
+          \\
+         
+         PWSID fixed effects                      & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                       & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Within-PWSID contemporaneous relationship between MCL and MR violation days. Outcome: sum of MCL violation days for the given contaminant group. Predictor: MR violation days (OLS) or its instrumented value (2SLS). Instrument: \textit{post}95$\,\times\,$\textit{sulfur\textunderscore unified}. Strategic substitution predicts $\hat{\beta} < 0$ for mining outcomes (more MR $\rightarrow$ fewer MCL, within the same CWS over time), with no such pattern for non-mining placebo. Genuine incapacity or monitoring burden predicts $\hat{\beta} \geq 0$. All regressions include PWSID, state, and year fixed effects; SEs clustered at PWSID level. Sample: at most two-step downstream CWSs, 1985--2005.}
+   
+\end{table}
+
+

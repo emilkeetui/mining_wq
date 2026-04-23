@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:strategic_lead_lag} Temporal Sequencing: Mining MR Predicting Future MCL (Forward Direction)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccccc}
+         \toprule
+         
+                                              & MCL (K=0)     & MCL (K=1)            & MCL (K=2)     & MCL (K=3)     & MCL (K=0)     & MCL (K=1)     & MCL (K=2)     & MCL (K=3)\\  
+         
+          & \multicolumn{4}{c}{OLS} & \multicolumn{4}{c}{2SLS} \\ 
+         
+                                              & (1)           & (2)                  & (3)           & (4)           & (5)           & (6)           & (7)           & (8)\\  
+         
+         \midrule 
+         Mining MR (days)                     & -0.0015       & 0.0008               & 0.0045        & 0.0079        & -0.0483       & -0.0591       & -0.0360       & -0.0273\\   
+                                              & (0.0014)      & (0.0018)             & (0.0033)      & (0.0053)      & (0.0503)      & (0.0695)      & (0.0521)      & (0.0426)\\   
+         
+          \\
+         
+         Observations                         & 11,706        & 11,108               & 10,515        & 9,924         & 11,706        & 11,108        & 10,515        & 9,924\\  
+         R$^2$                                & 0.16243       & 0.17136              & 0.18744       & 0.21429       & 0.16243       & 0.17148       & 0.18590       & 0.20970\\  
+         Within R$^2$                         & 0.00027       & $9.9\times 10^{-5}$  & 0.00203       & 0.00592       & 0.00027       & 0.00025       & 0.00014       & 0.00011\\  
+         F-test (1st stage), Mining MR (days) &               &                      &               &               & 11.443        & 6.6951        & 8.3423        & 10.609\\  
+         
+          \\
+         
+         PWSID fixed effects                  & $\checkmark$  & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects            & $\checkmark$  & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                   & $\checkmark$  & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Forward temporal sequencing on mining-related contaminants (nitrates, arsenic, inorganic chemicals, radionuclides). Each column regresses the sum of MCL violation days at horizon K on current-year MR violation days (OLS) or its instrumented value (2SLS). Instrument: \textit{post}95$\,\times\,$\textit{sulfur\textunderscore unified} (post-ARP Phase I indicator $\times$ mean coal sulfur content of intake watershed). Strategic substitution predicts $\hat{\beta}_k \approx 0$ or negative for $k > 0$; genuine incapacity and monitoring-burden stories predict $\hat{\beta}_k > 0$. All regressions include PWSID, state, and year fixed effects; standard errors clustered at PWSID level. Sample: at most two-step downstream CWSs, 1985--2005.}
+   
+\end{table}
+
+

@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:strategic_lead_lag_placebo} Temporal Sequencing: Non-mining MR Predicting Future MCL (Placebo)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccccc}
+         \toprule
+         
+                                                  & MCL (K=0)     & MCL (K=1)     & MCL (K=2)     & MCL (K=3)             & MCL (K=0)     & MCL (K=1)     & MCL (K=2)     & MCL (K=3)\\  
+         
+          & \multicolumn{4}{c}{OLS} & \multicolumn{4}{c}{2SLS} \\ 
+         
+                                                  & (1)           & (2)           & (3)           & (4)                   & (5)           & (6)           & (7)           & (8)\\  
+         
+         \midrule 
+         Non-mining MR (days)                     & 0.0016        & -0.0002       & 0.0011        & -0.0001               & 0.1113        & 0.1772        & 0.0993        & 0.0472\\   
+                                                  & (0.0013)      & (0.0007)      & (0.0011)      & (0.0007)              & (0.1688)      & (0.3768)      & (0.1449)      & (0.0733)\\   
+         
+          \\
+         
+         Observations                             & 11,706        & 11,108        & 10,515        & 9,924                 & 11,706        & 11,108        & 10,515        & 9,924\\  
+         R$^2$                                    & 0.08882       & 0.09252       & 0.09700       & 0.10193               & 0.08879       & 0.09275       & 0.09707       & 0.10197\\  
+         Within R$^2$                             & 0.00044       & 0.00012       & 0.00015       & $3.03\times 10^{-5}$  & 0.00041       & 0.00038       & 0.00023       & $7.64\times 10^{-5}$\\   
+         F-test (1st stage), Non-mining MR (days) &               &               &               &                       & 2.2146        & 1.0713        & 2.3103        & 3.0832\\  
+         
+          \\
+         
+         PWSID fixed effects                      & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                       & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Placebo: forward temporal sequencing on non-mining contaminants (total coliform, surface/groundwater rule, VOCs, SOCs). Specification identical to mining table. If the mining result reflects a strategic substitution mechanism specific to mining-affected CWSs, non-mining outcomes should show $\hat{\beta}_k \approx 0$ throughout. 2SLS instrument has no causal path to non-mining MR violations, so the first-stage F-statistic is expected to be weak for these columns. All regressions include PWSID, state, and year fixed effects; standard errors clustered at PWSID level. Sample: at most two-step downstream CWSs, 1985--2005.}
+   
+\end{table}
+
+
