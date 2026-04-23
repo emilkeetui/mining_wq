@@ -10,6 +10,22 @@ full$minehuc_upstream_of_mine[full$minehuc_upstream_of_mine == 1] <- "Upstream o
 full$minehuc_upstream_of_mine[full$minehuc_upstream_of_mine == 0] <- "Colocated/Downstream of mining"
 cat("Rows in full:", nrow(full), "\n")
 
+# 2-step downstream sample (CWSs 2 HUC12s downstream of a mine)
+two_step_path <- "Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur_2step.parquet"
+if (file.exists(two_step_path)) {
+  full_2s <- read_parquet(two_step_path)
+  full_2s <- full_2s[full_2s$year < 2006 & full_2s$year > 1984, ]
+  full_2s <- full_2s[full_2s$PWSID != "WV3303401", ]
+  full_2s$minehuc_upstream_of_mine[full_2s$minehuc_upstream_of_mine == 1] <- "Upstream of mining"
+  full_2s$minehuc_upstream_of_mine[full_2s$minehuc_upstream_of_mine == 0] <- "Colocated/Downstream of mining"
+  cat("Rows in full_2s:", nrow(full_2s), "\n")
+  full_expanded <- dplyr::bind_rows(full, full_2s)
+  cat("Rows in full_expanded:", nrow(full_expanded), "\n")
+} else {
+  warning("prod_vio_sulfur_2step.parquet not found - dwnstrm2step spec will be skipped")
+  full_expanded <- full
+}
+
 vio_dict <- c(
   nitrates_share_days                      = "Nitrates",
   arsenic_share_days                       = "Arsenic",
@@ -171,9 +187,17 @@ std_note <- paste0(
   "Sample period 1985--2005."
 )
 
+nonmine_note <- paste0(
+  std_note,
+  " The number of observations differs across columns because some non-mining violation rules ",
+  "(total coliform, surface/groundwater rule, VOCs, SOCs) were implemented during the sample period; ",
+  "years prior to each rule's implementation are coded as missing and excluded from the regression."
+)
+
 sample_specs <- list(
   list(sample="dwnstrm",        dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream", instr="post95:sulfur_unified", titlesamp="downstream PWS's"),
-  list(sample="dwnstrmcolocate",dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified",  instr="post95:sulfur_unified", titlesamp="downstream and colocated PWS's")
+  list(sample="dwnstrmcolocate",dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified",  instr="post95:sulfur_unified", titlesamp="downstream and colocated PWS's"),
+  list(sample="dwnstrm2step",   dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream", instr="post95:sulfur_unified", titlesamp="downstream CWSs (1 or 2 steps)")
 )
 vio_specs <- list(
   list(name="minevio",    allcat=c("nitrates_share_days","arsenic_share_days","inorganic_chemicals_share_days","radionuclides_share_days"),             mcl=c("nitrates_MCL_share_days","arsenic_MCL_share_days","inorganic_chemicals_MCL_share_days","radionuclides_MCL_share_days"),             mr=c("nitrates_MR_share_days","arsenic_MR_share_days","inorganic_chemicals_MR_share_days","radionuclides_MR_share_days"),             titlevio="mining violations"),
@@ -193,9 +217,10 @@ for (sp in sample_specs) {
       tab_title <- paste0("Effect of coal mines on ", vp$titlevio, " (", cp$titlecat, ", ", sp$titlesamp, ")")
       varlist   <- vp[[cp$varkey]]
       cat("\nRunning:", fname, "\n")
+      tab_note <- if (vp$name == "nonminevio") nonmine_note else std_note
       tsls_reg_output_main(dset=sp$dset, varlist=varlist, coalvar=sp$coalvar,
                            regoutname=fname, title=tab_title, label=fname,
-                           instr_str=sp$instr, dict=vio_dict, notes=std_note,
+                           instr_str=sp$instr, dict=vio_dict, notes=tab_note,
                            storage_list_name = fs_store_name,
                            subheader         = cp$titlecat)
     }

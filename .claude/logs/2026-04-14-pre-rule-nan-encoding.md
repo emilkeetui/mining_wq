@@ -60,3 +60,21 @@ rather than zero. Then re-run the 2SLS regression tables and trend figures.
 Auto-compact triggered. Active plan: `data-driven-nonmining-nan-cutoffs.md`.  
 Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
 ---
+
+---
+**[COMPACTION NOTE — 2026-04-16T01:27:25Z]**  
+Auto-compact triggered. Active plan: `data-driven-nonmining-nan-cutoffs.md`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---
+
+---
+**[COMPACTION NOTE — 2026-04-16T03:07:58Z]**  
+Auto-compact triggered. Active plan: `data-driven-nonmining-nan-cutoffs.md`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---
+
+---
+**[COMPACTION NOTE — 2026-04-16T18:42:51Z]**  
+Auto-compact triggered. Active plan: `data-driven-nonmining-nan-cutoffs.md`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---

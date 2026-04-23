@@ -4,88 +4,71 @@
 %          conditional on violation category (MR vs MCL) and
 %          contaminant group (mining vs non-mining).
 % Source:  SDWA_VIOLATIONS_ENFORCEMENT.csv
-% N MR:    6,523 violations
-% N MCL:   290 violations
+% N MR:    558,208 violations
+% N MCL:   43,576 violations
 % ============================================================
 
-\begin{table}[htbp]
-\centering
-\caption{Regulator Response Conditional on MR Violations, 1985--2005}
+\begin{frame}{Regulator Response: MR Violations, 1985--2005}
 \label{tab:reg_response_mr}
-\small
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrr}
 \hline\hline
 \textbf{Regulator response} & \textbf{All MR} & \textbf{Mining MR} & \textbf{Non-mining MR} \\
 \hline
-\textit{N violations} & 6,523 & 1,359 & 4,644 \\
-\addlinespace[4pt]
+\textit{N violations} & 558,208 & 131,435 & 393,105 \\
+\addlinespace[3pt]
 \multicolumn{4}{l}{\textit{Enforcement intensity}} \\
-\addlinespace[2pt]
-No enforcement received (\%) & 2.7 & 2.5 & 2.9 \\
-Any enforcement received (\%) & 97.3 & 97.5 & 97.1 \\
-\quad Informal enforcement (\%) & 17.7 & 23.0 & 18.1 \\
-\quad Resolving enforcement (\%) & 70.6 & 67.0 & 72.4 \\
-\quad Formal enforcement (\%) & 9.0 & 7.6 & 6.7 \\
-Federal (not state) enforcement (\%) & 5.3 & 6.4 & 5.4 \\
-\addlinespace[4pt]
-\multicolumn{4}{l}{\textit{Violation severity}} \\
-\addlinespace[2pt]
-Major violation (\%) & 87.0 & 98.5 & 85.7 \\
-\addlinespace[4pt]
+\addlinespace[1pt]
+No enforcement received (\%) & 10.3 & 19.4 & 7.6 \\
+Any enforcement received (\%) & 89.7 & 80.6 & 92.4 \\
+\quad Informal (\%) & 17.5 & 20.2 & 17.9 \\
+\quad Resolving (\%) & 60.8 & 52.2 & 62.4 \\
+\quad Formal (\%) & 11.4 & 8.2 & 12.1 \\
+Federal enforcement (\%) & 5.4 & 3.7 & 5.1 \\
+Major violation (\%) & 80.6 & 98.2 & 79.1 \\
+\addlinespace[3pt]
 \multicolumn{4}{l}{\textit{Return to compliance}} \\
-\addlinespace[2pt]
-Status: Resolved (\%) & 79.2 & 74.5 & 78.6 \\
-Status: Archived (\%) & 20.8 & 25.5 & 21.4 \\
-Status: Open (\%) & 0.0 & 0.0 & 0.0 \\
-Median days to compliance & 288 & 364 & 91 \\
-Mean days to compliance & 336 & 544 & 282 \\
+\addlinespace[1pt]
+Status: Resolved (\%) & 68.2 & 58.0 & 69.9 \\
+Status: Archived (\%) & 31.7 & 42.0 & 30.1 \\
+Status: Open (\%) & 0.1 & 0.0 & 0.0 \\
+Median days to compliance & 214 & 1094 & 91 \\
+Mean days to compliance & 469 & 749 & 340 \\
 \hline\hline
-\end{tabular}
-\begin{minipage}{\linewidth}
-\vspace{4pt}
-\footnotesize
-\textit{Notes:} Unit of observation is the violation (unique VIOLATION\_ID), collapsed from the SDWA\_VIOLATIONS\_ENFORCEMENT file. Sample: CWS in the coal mining analysis panel, 1985--2005. Mining-related rules: nitrate (331), arsenic (332), inorganic chemicals (333), radionuclides (340). Non-mining rules: total coliform (110, 111), surface/groundwater rule (121--123, 140), VOCs (310), SOCs (320). Violations with multiple enforcement actions are assigned the most severe action received (Formal $>$ Resolving $>$ Informal). ``Informal'' = administrative order or informal notice; ``Resolving'' = action taken while violation is under active resolution; ``Formal'' = formal administrative order or referral. Federal enforcement = ENF\_ORIGINATOR\_CODE equal to F (federal). Major violation = IS\_MAJOR\_VIOL\_IND equal to Y. Days to compliance = CALCULATED\_RTC\_DATE minus NON\_COMPL\_PER\_BEGIN\_DATE; missing when RTC date is not recorded. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.csv.
-\end{minipage}
-\end{table}
+\end{tabular}%
+}
+{\tiny Unit of observation: violation (unique VIOLATION\_ID). Sample: 56,842 CWSs in states represented in the downstream 2SLS sample, 1985--2005 (AL, CA, CO, FL, GA, IL, KS, KY, LA, MD, NC, NJ, NY, OH, OR, PA, SC, TN, UT, VA, WA, WV). Mining rules: nitrate (331), arsenic (332), inorganic chemicals (333), radionuclides (340). Non-mining rules: total coliform (110/111), surface/groundwater rule (121--123/140), VOCs (310), SOCs (320). Multiple enforcement actions per violation assigned the most severe (Formal $>$ Resolving $>$ Informal). Days to compliance = CALCULATED\_RTC\_DATE $-$ NON\_COMPL\_PER\_BEGIN\_DATE. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.csv.}
+\end{frame}
 
-\clearpage
 
-\begin{table}[htbp]
-\centering
-\caption{Regulator Response Conditional on MCL Violations, 1985--2005}
+\begin{frame}{Regulator Response: MCL Violations, 1985--2005}
 \label{tab:reg_response_mcl}
-\small
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrr}
 \hline\hline
 \textbf{Regulator response} & \textbf{All MCL} & \textbf{Mining MCL} & \textbf{Non-mining MCL} \\
 \hline
-\textit{N violations} & 290 & 17 & 202 \\
-\addlinespace[4pt]
+\textit{N violations} & 43,576 & 8,787 & 30,554 \\
+\addlinespace[3pt]
 \multicolumn{4}{l}{\textit{Enforcement intensity}} \\
-\addlinespace[2pt]
-No enforcement received (\%) & 2.8 & 0.0 & 3.5 \\
-Any enforcement received (\%) & 97.2 & 100.0 & 96.5 \\
-\quad Informal enforcement (\%) & 32.1 & 29.4 & 42.6 \\
-\quad Resolving enforcement (\%) & 52.1 & 64.7 & 47.0 \\
-\quad Formal enforcement (\%) & 13.1 & 5.9 & 6.9 \\
-Federal (not state) enforcement (\%) & 6.6 & 0.0 & 6.4 \\
-\addlinespace[4pt]
-\multicolumn{4}{l}{\textit{Violation severity}} \\
-\addlinespace[2pt]
+\addlinespace[1pt]
+No enforcement received (\%) & 8.1 & 6.9 & 9.3 \\
+Any enforcement received (\%) & 91.9 & 93.1 & 90.7 \\
+\quad Informal (\%) & 33.8 & 15.1 & 43.0 \\
+\quad Resolving (\%) & 39.5 & 36.2 & 38.6 \\
+\quad Formal (\%) & 18.6 & 41.8 & 9.1 \\
+Federal enforcement (\%) & 6.4 & 9.2 & 5.5 \\
 Major violation (\%) & 0.0 & 0.0 & 0.0 \\
-\addlinespace[4pt]
+\addlinespace[3pt]
 \multicolumn{4}{l}{\textit{Return to compliance}} \\
-\addlinespace[2pt]
-Status: Resolved (\%) & 62.8 & 70.6 & 50.5 \\
-Status: Archived (\%) & 37.2 & 29.4 & 49.5 \\
+\addlinespace[1pt]
+Status: Resolved (\%) & 52.3 & 69.1 & 42.8 \\
+Status: Archived (\%) & 47.7 & 30.9 & 57.2 \\
 Status: Open (\%) & 0.0 & 0.0 & 0.0 \\
-Median days to compliance & 30 & 364 & 30 \\
-Mean days to compliance & 72 & 475 & 32 \\
+Median days to compliance & 30 & 91 & 30 \\
+Mean days to compliance & 86 & 301 & 21 \\
 \hline\hline
-\end{tabular}
-\begin{minipage}{\linewidth}
-\vspace{4pt}
-\footnotesize
-\textit{Notes:} Unit of observation is the violation (unique VIOLATION\_ID), collapsed from the SDWA\_VIOLATIONS\_ENFORCEMENT file. Sample: CWS in the coal mining analysis panel, 1985--2005. Mining-related rules: nitrate (331), arsenic (332), inorganic chemicals (333), radionuclides (340). Non-mining rules: total coliform (110, 111), surface/groundwater rule (121--123, 140), VOCs (310), SOCs (320). Violations with multiple enforcement actions are assigned the most severe action received (Formal $>$ Resolving $>$ Informal). ``Informal'' = administrative order or informal notice; ``Resolving'' = action taken while violation is under active resolution; ``Formal'' = formal administrative order or referral. Federal enforcement = ENF\_ORIGINATOR\_CODE equal to F (federal). Major violation = IS\_MAJOR\_VIOL\_IND equal to Y. Days to compliance = CALCULATED\_RTC\_DATE minus NON\_COMPL\_PER\_BEGIN\_DATE; missing when RTC date is not recorded. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.csv.
-\end{minipage}
-\end{table}
+\end{tabular}%
+}
+{\tiny Unit of observation: violation (unique VIOLATION\_ID). Sample: 56,842 CWSs in states represented in the downstream 2SLS sample, 1985--2005 (AL, CA, CO, FL, GA, IL, KS, KY, LA, MD, NC, NJ, NY, OH, OR, PA, SC, TN, UT, VA, WA, WV). Mining rules: nitrate (331), arsenic (332), inorganic chemicals (333), radionuclides (340). Non-mining rules: total coliform (110/111), surface/groundwater rule (121--123/140), VOCs (310), SOCs (320). Multiple enforcement actions per violation assigned the most severe (Formal $>$ Resolving $>$ Informal). Days to compliance = CALCULATED\_RTC\_DATE $-$ NON\_COMPL\_PER\_BEGIN\_DATE. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.csv.}
+\end{frame}

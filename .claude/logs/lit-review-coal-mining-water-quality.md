@@ -381,3 +381,45 @@ Papers requiring manual verification of exact author list / coauthor details:
 - McDermott et al. (2011): Confirm exact title and journal
 
 ---
+
+---
+**[COMPACTION NOTE — 2026-04-20T03:27:36Z]**  
+Auto-compact triggered. Active plan: `generic-sniffing-pixel.md`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---
+
+---
+**[COMPACTION NOTE — 2026-04-21T20:37:00Z]**  
+Auto-compact triggered. Active plan: `none`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---
+
+---
+**[COMPACTION NOTE — 2026-04-22T01:23:19Z]**  
+Auto-compact triggered. Active plan: `none`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---
+
+---
+**[COMPACTION NOTE — 2026-04-22T03:00:07Z]**  
+Auto-compact triggered. Active plan: `none`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---
+
+---
+**[COMPACTION NOTE — 2026-04-22T19:22:01Z]**  
+Auto-compact triggered. Active plan: `none`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---
+
+---
+**[COMPACTION NOTE — 2026-04-22T20:23:53Z]**  
+Auto-compact triggered. Active plan: `none`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---
+
+---
+**[COMPACTION NOTE — 2026-04-22T23:46:32Z]**  
+Auto-compact triggered. Active plan: `none`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---

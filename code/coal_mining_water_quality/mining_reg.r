@@ -410,9 +410,23 @@ save_tt("Z:/ek559/mining_wq/output/sum/balance_sum_miningviol_exante.tex", overw
 # ARP on coal production 
 ##############
 
-coal_data <- read.csv("Z:/ek559/mining_wq/clean_data/prod_sulfur.csv")
-# Restrict to mine HUC12s co-located or upstream of CWSs
-coal_data <- coal_data[coal_data$minehuc == "mine", ]
+# Mine HUC12s that a downstream-only 2SLS CWS draws water from: identified as fromhuc in
+# "downstream_of_mine" rows of prod_sulfur. Kept only HUC12s with >= 1 active mine in 1985-2005.
+prod_s <- read.csv("Z:/ek559/mining_wq/clean_data/prod_sulfur.csv", stringsAsFactors = FALSE)
+ds_rows <- prod_s[prod_s$minehuc == "downstream_of_mine" & !is.na(prod_s$fromhuc), ]
+upstream_mine_hucs <- unique(sprintf("%012.0f", ds_rows$fromhuc))
+
+coal_data <- arrow::read_parquet("Z:/ek559/mining_wq/clean_data/huc_coal_charac_geom_match.parquet")
+coal_data <- coal_data[coal_data$huc12 %in% upstream_mine_hucs &
+                       coal_data$year >= 1985 & coal_data$year <= 2005, ]
+active_mine_hucs <- coal_data %>%
+  group_by(huc12) %>%
+  summarise(max_mines = max(num_coal_mines_colocated, na.rm = TRUE)) %>%
+  filter(max_mines > 0) %>%
+  pull(huc12)
+coal_data <- coal_data[coal_data$huc12 %in% active_mine_hucs, ]
+cat("ARP sample — upstream mine HUC12s with >= 1 mine year:", length(active_mine_hucs), "\n")
+coal_data$post95      <- as.integer(coal_data$year >= 1995)
 coal_data$high_sulfur <- as.integer(coal_data$sulfur_colocated > 2)
 
 # HUC12 sulfur histogram — one obs per HUC12
@@ -421,7 +435,7 @@ coal_sulfur_hist <- coal_data %>% group_by(huc12) %>%
 
 png("Z:/ek559/mining_wq/output/fig/sulfur_histogram.png")
 hist(coal_sulfur_hist$sulfur, main = "HUC12 Coal Sulfur % Histogram", xlab = "Coal bed % sulfur", col = "lightblue", border = "black")
-mtext("Sample: mine HUC12s co-located or upstream of CWSs", side = 1, line = 4, cex = 0.75, col = "grey40")
+mtext("Sample: mine HUC12s upstream of downstream-only 2SLS CWS intakes, >= 1 active mine year 1985-2005", side = 1, line = 4, cex = 0.75, col = "grey40")
 dev.off()
 
 # plot coal prod by high sulfur
@@ -470,7 +484,7 @@ combined_plot <- wrap_plots(list(plot1, plot2, plot3), ncol = 1) +
     theme(legend.position = "bottom")
 
 combined_plot <- combined_plot +
-    plot_annotation(caption = "Sample: mine HUC12s co-located or upstream of CWSs") &
+    plot_annotation(caption = "Sample: mine HUC12s upstream of CWS intakes (downstream-only 2SLS sample)") &
     theme(plot.caption = element_text(hjust = 0, color = "grey40", size = 7))
 
 ggsave("Z:/ek559/mining_wq/output/fig/coal_summary_plot.png", combined_plot, height = 5, width = 5)
@@ -502,7 +516,7 @@ modelsummary(
   gof_omit = ".*",
   title = "Effect of ARP Phase I on HUC12 coal production, 1985--2005",
   escape = FALSE,
-  notes = c("Sample: mine HUC12s co-located with or upstream of a matched CWS, 1985--2005.",
+  notes = c("Sample: mine HUC12s upstream of CWS intakes in the downstream-only 2SLS sample, 1985--2005.",
             "Columns (1)--(2): Post-1995 $\\times$ High sulfur, where High sulfur $= 1$ if average coal seam sulfur $>$ 2\\% in HUC12.",
             "Columns (3)--(4): Post-1995 $\\times$ Sulfur (\\%), where sulfur is the continuous average coal seam sulfur percentage.",
             "All estimates use HUC12 and year fixed effects.",

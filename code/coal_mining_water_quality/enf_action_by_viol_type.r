@@ -14,15 +14,26 @@
 library(arrow)
 library(data.table)
 
-# ── 0. Sample PWSID list — strictly downstream only ──────────────────────────
-# Strictly downstream: minehuc_downstream_of_mine == 1 & minehuc_mine == 0
-# (mirrors the "dwnstrm" sample cut in run_main_tables.r)
-pws_sample <- as.data.frame(
+# ── 0. Sample PWSID list — all CWSs in states represented in downstream sample ─
+# Step 1: get the states that appear in the strictly-downstream 2SLS sample
+pws_ds <- as.data.frame(
   arrow::read_parquet("Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
-                      col_select = c("PWSID", "minehuc_downstream_of_mine", "minehuc_mine")))
-pws_ids <- unique(pws_sample$PWSID[
-  pws_sample$minehuc_downstream_of_mine == 1 & pws_sample$minehuc_mine == 0])
-cat("Strictly downstream PWSIDs:", length(pws_ids), "\n")
+                      col_select = c("PWSID", "STATE_CODE",
+                                     "minehuc_downstream_of_mine", "minehuc_mine")))
+downstream_states <- unique(pws_ds$STATE_CODE[
+  pws_ds$minehuc_downstream_of_mine == 1 & pws_ds$minehuc_mine == 0 &
+  !is.na(pws_ds$STATE_CODE)])
+cat("States in downstream sample:", paste(sort(downstream_states), collapse = ", "), "\n")
+
+# Step 2: all CWSs whose primacy agency (state) is in those states
+water_sys <- fread(
+  "Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_PUB_WATER_SYSTEMS.csv",
+  select     = c("PWSID", "PWS_TYPE_CODE", "PRIMACY_AGENCY_CODE"),
+  na.strings = c("", "NA")
+)
+pws_ids <- unique(water_sys[
+  PWS_TYPE_CODE == "CWS" & PRIMACY_AGENCY_CODE %in% downstream_states, PWSID])
+cat("All CWSs in downstream states:", length(pws_ids), "\n")
 
 # ── 1. Load violations (enforcement actions only) ─────────────────────────────
 cat("Reading violations file...\n")
@@ -207,6 +218,9 @@ for (sec in sections) {
   }
 }
 
+state_list <- paste(sort(downstream_states[downstream_states != "0"]), collapse = ", ")
+n_cws_fmt  <- format(length(pws_ids), big.mark = ",")
+
 notes <- paste0(
   "\\textit{Notes:} Unit of observation is the enforcement action row in ",
   "SDWA\\_VIOLATIONS\\_ENFORCEMENT.csv. Entries show the share (\\%) of all enforcement ",
@@ -214,7 +228,8 @@ notes <- paste0(
   "violation category (MR = monitoring/reporting; MCL = maximum contaminant level) and contaminant ",
   "group (mining = rules 331 nitrate, 332 arsenic, 333 inorganic chemicals, 340 radionuclides; ",
   "non-mining = rules 110/111 total coliform, 121--123/140 surface/groundwater rule, 310 VOCs, 320 SOCs). ",
-  "Sample: CWS in the coal mining analysis panel, 1985--2005. ",
+  "Sample: all CWSs in states represented in the downstream 2SLS sample, 1985--2005 ",
+  "(", n_cws_fmt, " CWSs; states: ", state_list, "). ",
   "A violation may generate multiple enforcement actions; rows are enforcement actions, not violations. ",
   "Enforcement categories follow EPA SDWIS classification: ",
   "\\textit{Formal} = legally binding instruments (administrative orders, consent decrees, penalties, ",

@@ -58,6 +58,9 @@ mining_wq/
 
 ---
 
+## Naming Plans
+- Always name plans with a name that describes the plan, such as data-driven-nonmining-nan-cutoffs.md, do not use whimsical names such as playful-puzzling-sparkle.md
+
 ## DATA SAFEGUARDS — READ CAREFULLY
 
 ### raw_data/ is strictly read-only

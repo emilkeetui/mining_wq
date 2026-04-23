@@ -13,17 +13,27 @@ library(arrow)
 library(dplyr)
 library(data.table)
 
-# ── 0. Sample PWSID list — strictly downstream only ──────────────────────────
-# Strictly downstream: minehuc_downstream_of_mine == 1 & minehuc_mine == 0
-# (mirrors the "dwnstrm" sample cut in run_main_tables.r)
-cat("Loading sample PWSIDs...\n")
-pws <- arrow::read_parquet("Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
-                           col_select = c("PWSID", "year",
-                                          "minehuc_downstream_of_mine", "minehuc_mine")) |>
-  distinct()
-sample_pwsids <- unique(pws$PWSID[
-  pws$minehuc_downstream_of_mine == 1 & pws$minehuc_mine == 0])
-cat("Strictly downstream PWSIDs:", length(sample_pwsids), "\n\n")
+# ── 0. Sample PWSID list — all CWSs in states represented in downstream sample ─
+# Step 1: get the states that appear in the strictly-downstream 2SLS sample
+cat("Loading downstream sample states...\n")
+pws_ds <- as.data.frame(
+  arrow::read_parquet("Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
+                      col_select = c("PWSID", "STATE_CODE",
+                                     "minehuc_downstream_of_mine", "minehuc_mine")))
+downstream_states <- unique(pws_ds$STATE_CODE[
+  pws_ds$minehuc_downstream_of_mine == 1 & pws_ds$minehuc_mine == 0 &
+  !is.na(pws_ds$STATE_CODE)])
+cat("States in downstream sample:", paste(sort(downstream_states), collapse = ", "), "\n")
+
+# Step 2: all CWSs whose primacy agency (state) is in those states
+water_sys <- fread(
+  "Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_PUB_WATER_SYSTEMS.csv",
+  select     = c("PWSID", "PWS_TYPE_CODE", "PRIMACY_AGENCY_CODE"),
+  na.strings = c("", "NA")
+)
+sample_pwsids <- unique(water_sys[
+  PWS_TYPE_CODE == "CWS" & PRIMACY_AGENCY_CODE %in% downstream_states, PWSID])
+cat("All CWSs in downstream states:", length(sample_pwsids), "\n\n")
 
 # ── 1. Load violations (column subset to limit memory) ────────────────────────
 cat("Reading SDWA_VIOLATIONS_ENFORCEMENT.csv (3.7 GB — using fread)...\n")
@@ -173,49 +183,40 @@ fmt_pct <- function(x) sprintf("%.1f", x)
 fmt_n   <- function(x) format(x, big.mark = ",", scientific = FALSE)
 fmt_days <- function(x) if (is.nan(x) || is.na(x)) "---" else sprintf("%.0f", x)
 
-make_table <- function(grps, col_headers, caption, label, notes) {
+make_frame <- function(grps, col_headers, frame_title, label, notes) {
   g <- lapply(grps, function(nm) s[[nm]])
 
   lines <- c(
-    "\\begin{table}[htbp]",
-    "\\centering",
-    paste0("\\caption{", caption, "}"),
+    paste0("\\begin{frame}{", frame_title, "}"),
     paste0("\\label{", label, "}"),
-    "\\small",
+    "\\resizebox{\\textwidth}{!}{%",
     paste0("\\begin{tabular}{lrrr}"),
     "\\hline\\hline",
     paste0("\\textbf{Regulator response} & \\textbf{", col_headers[1], "} & \\textbf{",
            col_headers[2], "} & \\textbf{", col_headers[3], "} \\\\"),
     "\\hline",
-    # N
     paste0("\\textit{N violations} & ",
            fmt_n(g[[1]]$n), " & ", fmt_n(g[[2]]$n), " & ", fmt_n(g[[3]]$n), " \\\\"),
-    "\\addlinespace[4pt]",
-    # Enforcement block
+    "\\addlinespace[3pt]",
     "\\multicolumn{4}{l}{\\textit{Enforcement intensity}} \\\\",
-    "\\addlinespace[2pt]",
+    "\\addlinespace[1pt]",
     paste0("No enforcement received (\\%) & ",
            fmt_pct(g[[1]]$pct_no_enf), " & ", fmt_pct(g[[2]]$pct_no_enf), " & ", fmt_pct(g[[3]]$pct_no_enf), " \\\\"),
     paste0("Any enforcement received (\\%) & ",
            fmt_pct(g[[1]]$pct_any_enf), " & ", fmt_pct(g[[2]]$pct_any_enf), " & ", fmt_pct(g[[3]]$pct_any_enf), " \\\\"),
-    paste0("\\quad Informal enforcement (\\%) & ",
+    paste0("\\quad Informal (\\%) & ",
            fmt_pct(g[[1]]$pct_informal), " & ", fmt_pct(g[[2]]$pct_informal), " & ", fmt_pct(g[[3]]$pct_informal), " \\\\"),
-    paste0("\\quad Resolving enforcement (\\%) & ",
+    paste0("\\quad Resolving (\\%) & ",
            fmt_pct(g[[1]]$pct_resolving), " & ", fmt_pct(g[[2]]$pct_resolving), " & ", fmt_pct(g[[3]]$pct_resolving), " \\\\"),
-    paste0("\\quad Formal enforcement (\\%) & ",
+    paste0("\\quad Formal (\\%) & ",
            fmt_pct(g[[1]]$pct_formal), " & ", fmt_pct(g[[2]]$pct_formal), " & ", fmt_pct(g[[3]]$pct_formal), " \\\\"),
-    paste0("Federal (not state) enforcement (\\%) & ",
+    paste0("Federal enforcement (\\%) & ",
            fmt_pct(g[[1]]$pct_federal), " & ", fmt_pct(g[[2]]$pct_federal), " & ", fmt_pct(g[[3]]$pct_federal), " \\\\"),
-    "\\addlinespace[4pt]",
-    # Major violation
-    "\\multicolumn{4}{l}{\\textit{Violation severity}} \\\\",
-    "\\addlinespace[2pt]",
     paste0("Major violation (\\%) & ",
            fmt_pct(g[[1]]$pct_major), " & ", fmt_pct(g[[2]]$pct_major), " & ", fmt_pct(g[[3]]$pct_major), " \\\\"),
-    "\\addlinespace[4pt]",
-    # Compliance resolution
+    "\\addlinespace[3pt]",
     "\\multicolumn{4}{l}{\\textit{Return to compliance}} \\\\",
-    "\\addlinespace[2pt]",
+    "\\addlinespace[1pt]",
     paste0("Status: Resolved (\\%) & ",
            fmt_pct(g[[1]]$pct_resolved), " & ", fmt_pct(g[[2]]$pct_resolved), " & ", fmt_pct(g[[3]]$pct_resolved), " \\\\"),
     paste0("Status: Archived (\\%) & ",
@@ -227,51 +228,42 @@ make_table <- function(grps, col_headers, caption, label, notes) {
     paste0("Mean days to compliance & ",
            fmt_days(g[[1]]$mean_days), " & ", fmt_days(g[[2]]$mean_days), " & ", fmt_days(g[[3]]$mean_days), " \\\\"),
     "\\hline\\hline",
-    "\\end{tabular}",
-    paste0("\\begin{minipage}{\\linewidth}"),
-    "\\vspace{4pt}",
-    "\\footnotesize",
-    paste0("\\textit{Notes:} ", notes),
-    "\\end{minipage}",
-    "\\end{table}"
+    "\\end{tabular}%",
+    "}",
+    paste0("{\\tiny ", notes, "}"),
+    "\\end{frame}"
   )
   paste(lines, collapse = "\n")
 }
 
-mr_notes <- paste0(
-  "Unit of observation is the violation (unique VIOLATION\\_ID), collapsed from the ",
-  "SDWA\\_VIOLATIONS\\_ENFORCEMENT file. Sample: CWS in the coal mining analysis panel, 1985--2005. ",
-  "Mining-related rules: nitrate (331), arsenic (332), inorganic chemicals (333), radionuclides (340). ",
-  "Non-mining rules: total coliform (110, 111), surface/groundwater rule (121--123, 140), ",
-  "VOCs (310), SOCs (320). ",
-  "Violations with multiple enforcement actions are assigned the most severe action received ",
-  "(Formal $>$ Resolving $>$ Informal). ",
-  "``Informal'' = administrative order or informal notice; ",
-  "``Resolving'' = action taken while violation is under active resolution; ",
-  "``Formal'' = formal administrative order or referral. ",
-  "Federal enforcement = ENF\\_ORIGINATOR\\_CODE equal to F (federal). ",
-  "Major violation = IS\\_MAJOR\\_VIOL\\_IND equal to Y. ",
-  "Days to compliance = CALCULATED\\_RTC\\_DATE minus NON\\_COMPL\\_PER\\_BEGIN\\_DATE; ",
-  "missing when RTC date is not recorded. ",
+state_list <- paste(sort(downstream_states[downstream_states != "0"]), collapse = ", ")
+n_cws_fmt  <- format(length(sample_pwsids), big.mark = ",")
+
+shared_notes <- paste0(
+  "Unit of observation: violation (unique VIOLATION\\_ID). ",
+  "Sample: ", n_cws_fmt, " CWSs in states represented in the downstream 2SLS sample, 1985--2005 ",
+  "(", state_list, "). ",
+  "Mining rules: nitrate (331), arsenic (332), inorganic chemicals (333), radionuclides (340). ",
+  "Non-mining rules: total coliform (110/111), surface/groundwater rule (121--123/140), VOCs (310), SOCs (320). ",
+  "Multiple enforcement actions per violation assigned the most severe (Formal $>$ Resolving $>$ Informal). ",
+  "Days to compliance = CALCULATED\\_RTC\\_DATE $-$ NON\\_COMPL\\_PER\\_BEGIN\\_DATE. ",
   "Source: SDWA\\_VIOLATIONS\\_ENFORCEMENT.csv."
 )
 
-mcl_notes <- mr_notes  # same notes apply
-
-t1 <- make_table(
+t1 <- make_frame(
   grps        = c("mr_all", "mr_mine", "mr_non"),
   col_headers = c("All MR", "Mining MR", "Non-mining MR"),
-  caption     = "Regulator Response Conditional on MR Violations, 1985--2005",
+  frame_title = "Regulator Response: MR Violations, 1985--2005",
   label       = "tab:reg_response_mr",
-  notes       = mr_notes
+  notes       = shared_notes
 )
 
-t2 <- make_table(
+t2 <- make_frame(
   grps        = c("mcl_all", "mcl_mine", "mcl_non"),
   col_headers = c("All MCL", "Mining MCL", "Non-mining MCL"),
-  caption     = "Regulator Response Conditional on MCL Violations, 1985--2005",
+  frame_title = "Regulator Response: MCL Violations, 1985--2005",
   label       = "tab:reg_response_mcl",
-  notes       = mcl_notes
+  notes       = shared_notes
 )
 
 header <- paste0(
@@ -288,7 +280,7 @@ header <- paste0(
 
 out_path <- "Z:/ek559/mining_wq/output/sum/regulator_response_by_viol_type.tex"
 writeLines(
-  paste(header, t1, "\n\\clearpage\n", t2, sep = "\n"),
+  paste(header, t1, "\n", t2, sep = "\n"),
   out_path
 )
 cat("\nOutput written to:", out_path, "\n")

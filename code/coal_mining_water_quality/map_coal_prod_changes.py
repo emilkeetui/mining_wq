@@ -596,34 +596,62 @@ plot_change_map(
 )
 
 ##########################################################################
-# Proportionate circle map: change in mine COUNT, 1985-2005
-# Restricted to mine HUC12s co-located or upstream of CWSs
+# Proportionate circle map: change in coal PRODUCTION, 1985-2005
+# Mine HUC12s upstream of downstream-only 2SLS CWSs, >= 1 active mine year 1985-2005
 ##########################################################################
 
-# Load prod_sulfur.csv (CWS-matched HUC12s) and filter to mine HUC12s
-prod_sulfur = pd.read_csv("Z:/ek559/mining_wq/clean_data/prod_sulfur.csv",
-                          dtype={"huc12": str})
-mine_panel = prod_sulfur[prod_sulfur["minehuc"] == "mine"].copy()
+import pyogrio
 
-# Extract mine count for 1985 and 2005
-mines_1985 = (mine_panel[mine_panel["year"] == 1985]
-              .groupby("huc12")["num_coal_mines_colocated"].max()
-              .rename("mines1985"))
-mines_2005 = (mine_panel[mine_panel["year"] == 2005]
-              .groupby("huc12")["num_coal_mines_colocated"].max()
-              .rename("mines2005"))
-sulfur_huc = (mine_panel.groupby("huc12")["sulfur_colocated"].mean()
-              .rename("sulfur_colocated"))
+# Mine HUC12s that a downstream-only 2SLS CWS draws water from: fromhuc in
+# "downstream_of_mine" rows of prod_sulfur. Restricted to HUC12s with >= 1
+# active mine year in 1985-2005 (same sample as scatter and regression outputs).
+import pyarrow.parquet as pq
 
-mine_chg = (pd.concat([mines_1985, mines_2005, sulfur_huc], axis=1)
+prod_s = pd.read_csv("Z:/ek559/mining_wq/clean_data/prod_sulfur.csv",
+                     dtype={"huc12": str}, low_memory=False)
+ds_rows = prod_s[prod_s["minehuc"] == "downstream_of_mine"]
+raw_fromhucs = ds_rows["fromhuc"].dropna().unique()
+upstream_mine_hucs_all = set(str(int(f)).zfill(12) for f in raw_fromhucs)
+
+# Identify active HUC12s: present in parquet with >= 1 mine year in 1985-2005
+huccoal_pq = pq.read_table(
+    "Z:/ek559/mining_wq/clean_data/huc_coal_charac_geom_match.parquet",
+    columns=["huc12", "year", "num_coal_mines_colocated"]
+).to_pandas()
+huccoal_pq["huc12"] = huccoal_pq["huc12"].astype(str).str.zfill(12)
+huccoal_sub = huccoal_pq[
+    huccoal_pq["huc12"].isin(upstream_mine_hucs_all) &
+    huccoal_pq["year"].between(1985, 2005)
+]
+active_mine_hucs = set(
+    huccoal_sub.groupby("huc12")["num_coal_mines_colocated"]
+    .max()
+    .pipe(lambda s: s[s > 0].index)
+)
+upstream_mine_hucs = upstream_mine_hucs_all & active_mine_hucs
+print(f"Mine HUC12s upstream of downstream-only 2SLS CWSs: {len(upstream_mine_hucs)}")
+
+coal_all = pd.read_csv("Z:/ek559/mining_wq/clean_data/coal_huc_prod.csv", dtype={"huc12": str})
+
+# Production data
+coal = coal_all[coal_all["huc12"].isin(upstream_mine_hucs)].copy()
+
+prod_1985 = (coal[coal["year"] == 1985]
+             .groupby("huc12")["production_short_tons_coal"].max()
+             .rename("prod1985"))
+prod_2005 = (coal[coal["year"] == 2005]
+             .groupby("huc12")["production_short_tons_coal"].max()
+             .rename("prod2005"))
+
+mine_chg = (pd.concat([prod_1985, prod_2005], axis=1)
             .reset_index()
             .fillna(0))
-mine_chg["change"] = mine_chg["mines2005"] - mine_chg["mines1985"]
+mine_chg["change"] = mine_chg["prod2005"] - mine_chg["prod1985"]
 mine_chg["mag"]    = mine_chg["change"].abs()
-print(f"Mine HUC12s with data: {len(mine_chg)}  (increase: {(mine_chg['change']>0).sum()}, decrease: {(mine_chg['change']<0).sum()})")
+print(f"Upstream-only mine HUC12s with data: {len(mine_chg)}  "
+      f"(increase: {(mine_chg['change']>0).sum()}, decrease: {(mine_chg['change']<0).sum()})")
 
-# Load HUC12 centroids from shapefile (bbox = CONUS)
-import pyogrio
+# Load HUC12 centroids
 huc_attrs = pyogrio.read_dataframe(
     r"Z:\ek559\sdwa_violations\WBD_HUC12_CONUS_pulled10262020\WBD_HUC12_CONUS_pulled10262020.shp",
     columns=["huc12"]
@@ -666,8 +694,8 @@ ax.set_xlim(*xlim)
 ax.set_ylim(*ylim)
 ax.set_axis_off()
 ax.set_title(
-    "Change in number of coal mines by HUC12, 1985 to 2005\n"
-    "Mine HUC12s co-located or upstream of CWSs  |  Blue = increase, Red = decrease",
+    "Change in coal production (short tons) by HUC12, 1985 to 2005\n"
+    "Mine HUC12s upstream of downstream-only 2SLS CWSs  |  Blue = increase, Red = decrease",
     fontsize=11
 )
 
@@ -676,7 +704,7 @@ ref_mags = np.array([vmax_m * 0.25, vmax_m * 0.5, vmax_m])
 ref_s    = S_MIN + (ref_mags - vmin_m) * (S_MAX - S_MIN) / (vmax_m - vmin_m + 1e-12)
 size_handles = [ax.scatter([], [], s=s, color="grey", alpha=0.6, edgecolors="k")
                 for s in ref_s]
-size_labels  = [f"{int(v):+d} mines" for v in ref_mags]
+size_labels  = [f"{int(v):,.0f} short tons" for v in ref_mags]
 leg1 = ax.legend(size_handles, size_labels, title="|Change|", loc="lower left",
                  bbox_to_anchor=(0.01, 0.05), frameon=True, fontsize=8)
 ax.add_artist(leg1)
@@ -688,7 +716,8 @@ color_handles = [
 ax.legend(handles=color_handles, title="Direction", loc="lower right", fontsize=8)
 
 fig.text(0.5, 0.01,
-         "Circle area proportional to absolute change in number of active coal mines, 1985–2005.",
+         "Circle area proportional to absolute change in coal production (short tons), 1985–2005.\n"
+         "Mine HUC12s upstream of CWS intakes in the downstream-only 2SLS regression sample.",
          ha="center", fontsize=8, color="0.4")
 
 plt.tight_layout()

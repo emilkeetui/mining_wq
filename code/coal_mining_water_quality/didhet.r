@@ -46,55 +46,60 @@ library(magrittr)
 #################################################
 # Plotting coal production relationship to sulfur
 #################################################
-# Restrict to mine HUC12s co-located or upstream of CWSs (prod_sulfur.csv is CWS-matched)
-huccoal <- read.csv("Z:/ek559/mining_wq/clean_data/prod_sulfur.csv")
-huccoal <- huccoal[huccoal$minehuc == "mine" & huccoal$year < 2006 & huccoal$year > 1984, ]
-huccoal$HighSulfur <- ifelse(huccoal$sulfur_colocated > 1.5, "High sulfur (>1.5%)", "Low sulfur (<=1.5%)")
+# Sample: mine HUC12s that (1) a downstream-only 2SLS CWS draws water from — identified
+# as fromhuc in "downstream_of_mine" rows of prod_sulfur.csv — and (2) had at least one
+# active mine in 1985–2005. No exclusion based on whether the HUC12 also has a CWS intake.
+prod_s_scatter <- read.csv("Z:/ek559/mining_wq/clean_data/prod_sulfur.csv", stringsAsFactors = FALSE)
+ds_rows_scatter         <- prod_s_scatter[prod_s_scatter$minehuc == "downstream_of_mine" & !is.na(prod_s_scatter$fromhuc), ]
+upstream_mine_hucs_scatter <- unique(sprintf("%012.0f", ds_rows_scatter$fromhuc))
 
-# Define shared color scale
-color_values <- c("High sulfur (>1.5%)" = "blue", "Low sulfur (<=1.5%)" = "red")
+huccoal <- arrow::read_parquet("Z:/ek559/mining_wq/clean_data/huc_coal_charac_geom_match.parquet")
+huccoal <- huccoal[huccoal$huc12 %in% upstream_mine_hucs_scatter &
+                   huccoal$year >= 1985 & huccoal$year <= 2005, ]
+
+# Keep only HUC12s with at least one active mine year in 1985–2005
+active_scatter_hucs <- huccoal %>%
+  group_by(huc12) %>%
+  summarise(max_mines = max(num_coal_mines_colocated, na.rm = TRUE)) %>%
+  filter(max_mines > 0) %>%
+  pull(huc12)
+huccoal <- huccoal[huccoal$huc12 %in% active_scatter_hucs, ]
+cat("Scatter sample — upstream mine HUC12s with >= 1 mine year:", length(active_scatter_hucs), "\n")
+cat("Scatter sample rows:", nrow(huccoal), "\n")
 
 # Left plot: before 1995
 p_before <- huccoal %>%
   filter(year < 1995) %>%
-  ggplot(aes(x = num_coal_mines_colocated,
-             y = sulfur_colocated,
-             color = HighSulfur)) +
-  geom_point(alpha = 0.5, size = 1.5) +
-  geom_smooth(method = "lm", se = FALSE, linewidth = 0.9) +
-  scale_color_manual(values = color_values, name = "Sulfur category") +
+  ggplot(aes(x = num_coal_mines_colocated, y = sulfur_colocated)) +
+  geom_point(alpha = 0.4, size = 1.5, color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.9) +
   labs(
     title = "Before 1995",
     x     = "Number of coal mines",
     y     = "Sulfur (%)"
   ) +
-  theme_bw() +
-  theme(legend.position = "bottom")
+  theme_bw()
 
 # Right plot: 1995 and after
 p_after <- huccoal %>%
   filter(year >= 1995) %>%
-  ggplot(aes(x = num_coal_mines_colocated,
-             y = sulfur_colocated,
-             color = HighSulfur)) +
-  geom_point(alpha = 0.5, size = 1.5) +
-  geom_smooth(method = "lm", se = FALSE, linewidth = 0.9) +
-  scale_color_manual(values = color_values, name = "Sulfur category") +
+  ggplot(aes(x = num_coal_mines_colocated, y = sulfur_colocated)) +
+  geom_point(alpha = 0.4, size = 1.5, color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.9) +
   labs(
     title = "1995 and After",
     x     = "Number of coal mines",
     y     = "Sulfur (%)"
   ) +
-  theme_bw() +
-  theme(legend.position = "bottom")
+  theme_bw()
 
-# Combine with a shared legend
 (p_before + p_after) +
-  plot_layout(guides = "collect") &
-  plot_annotation(title = "HUC12 sulfur (%) and number of coal mines: mine HUC12s co-located or upstream of CWSs") &
-  theme(legend.position = "bottom")
+  plot_annotation(
+    title   = "HUC12 sulfur (%) vs. number of coal mines",
+    caption = "Sample: mine HUC12s upstream of downstream-only 2SLS CWS intakes, no CWS intake, >= 1 active mine year 1985-2005."
+  )
 
-ggsave("Z:/ek559/mining_wq/output/fig/scatterhuccoalsulfur.png", width = 8, height = 6, dpi = 500)
+ggsave("Z:/ek559/mining_wq/output/fig/scatterhuccoalsulfur.png", width = 8, height = 5, dpi = 500)
 
 
 ########################

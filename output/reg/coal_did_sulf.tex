@@ -1,28 +1,27 @@
 \begin{table}
 \centering
-\caption{Effect of ARP Phase I on HUC12 coal production, 1985--2005}
 \resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
-\begin{tblr}{                     %% tabularray inner open
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of ARP Phase I on HUC12 coal production, 1985--2005},
+note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
+note{ }={Sample: mine HUC12s upstream of downstream-only 2SLS CWS intakes, >= 1 active mine year, 1985--2005.},
+note{  }={Columns (1)--(2): Post-1995 $\times$ High sulfur, where High sulfur $= 1$ if average coal seam sulfur $>$ 2\% in HUC12.},
+note{   }={Columns (3)--(4): Post-1995 $\times$ Sulfur (\%), where sulfur is the continuous average coal seam sulfur percentage.},
+note{    }={All estimates use HUC12 and year fixed effects.},
+note{     }={Standard errors clustered at HUC12 level.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
 colspec={Q[]Q[]Q[]Q[]Q[]},
 column{2-5}={}{halign=c,},
 column{1}={}{halign=l,},
 }                     %% tabularray inner close
 \toprule
 & Coal tons & Active mines & Coal tons  & Active mines  \\ \midrule %% TinyTableHeader
-Post-1995 $\times$ High sulfur ($>$2\%) & -206755.329*** & -0.213 &  &  \\
-& [-345139.868, -68370.790] & [-0.563, 0.137] &  &  \\
-Post-1995 $\times$ Sulfur (\%) &  &  & -76011.608** & 0.027 \\
-&  &  & [-140932.887, -11090.329] & [-0.104, 0.158] \\
+Post-1995 $\times$ High sulfur ($>$2\%) & -222357.552** & -0.450*** &  &  \\
+& [-434774.445, -9940.659] & [-0.683, -0.217] &  &  \\
+Post-1995 $\times$ Sulfur (\%) &  &  & -77134.543* & -0.133*** \\
+&  &  & [-167482.557, 13213.472] & [-0.218, -0.048] \\
 \bottomrule
-\end{tblr}
+\end{talltblr}
 }
-\par\vspace{0.4em}
-\begin{minipage}{\linewidth}
-\footnotesize
-* p $<$ 0.1, ** p $<$ 0.05, *** p $<$ 0.01. 95\% confidence intervals in brackets. \\
-Sample: mine HUC12s co-located with or upstream of a matched CWS, 1985--2005. \\
-Cols (1)--(2): High sulfur $= 1$ if avg coal seam sulfur $>$ 2\% in HUC12. \\
-Cols (3)--(4): Sulfur entered as continuous avg coal seam sulfur percentage. \\
-All estimates include HUC12 and year fixed effects. Standard errors clustered at HUC12 level.
-\end{minipage}
 \end{table}
