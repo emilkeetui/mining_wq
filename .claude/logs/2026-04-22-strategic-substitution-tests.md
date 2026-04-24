@@ -50,10 +50,45 @@ The decomposition table (Test 2) exists but confirm results are very noisy.
 | `output/reg/mr_healthbased_decomp.tex` | OK (3,839 bytes) |
 | `output/reg/strategic_contemp_corr.tex` | OK (3,157 bytes) |
 
+## Test 4 — Violation Sequencing (added 2026-04-23)
+
+Added as a new section in `test_strategic_substitution.r`.
+
+**Data construction:** Left-joined `mining_MR_regular_share_days` and
+`mining_MR_confirm_share_days` from `prod_vio_sulfur_hb.parquet` into `two_step_sample`
+(PWSID+year key). 6,232 of 12,196 two-step rows have the decomp (1-step downstream CWSs
+from hb only; strictly-2-step CWSs lack it and are dropped). 
+
+Sequence indicators (both require t-2 to be violation-free):
+- `last_regular_mr`: 220 PWSID-years with regular MR at t-1 after clean t-2
+- `last_confirm_mr`: 4 PWSID-years (extremely sparse)
+
+**Results:**
+- `last_regular_mr`: β ≈ 0 (6.86×10⁻⁶), SE = 0.005 — regular MR after clean period does
+  NOT predict MCL. Scenario 3 (successful substitution or lapse) dominates scenario 1.
+  This actually STRENGTHENS the strategic story: CWSs deploy regular MR and usually
+  successfully suppress MCL.
+- `last_confirm_mr`: β = 0.449 (SE = 0.238, * at 10%) — confirmation MR predicts MCL,
+  consistent with monitoring burden (prior positive test → forced confirmation → MCL follows).
+  But only 4 observations; treat with extreme caution.
+- Key contrast: regular MR (CWS controls timing) → no MCL; confirmation MR (forced by detection) → MCL.
+
+**Output:**
+| File | Status |
+|------|--------|
+| `output/reg/strategic_seq_violations.tex` | OK |
+
 ## Open questions / next steps
 
 - Weak first-stage F for 2SLS in forward direction (K=1: 6.7, K=2: 8.3): note in footnote
   and rely primarily on OLS for the temporal sequencing narrative.
-- Test 2 (confirm MR) is very noisy (only 9 PWSID-years with confirm MR > 0 in downstream sample);
-  the table exists but the confirm column has essentially zero power.
-- May want to also check the reverse direction and placebo tables for sign patterns.
+- Test 2 confirm MR and Test 4 confirm MR both extremely sparse (9 / 4 PWSID-years);
+  the confirm results are effectively underpowered — mention in paper.
+- Test 4 restricted to 1-step downstream CWSs (no hb decomp for strictly-2-step CWSs);
+  could extend `build_healthbased_mr.py` if full 2-step coverage is needed.
+
+---
+**[COMPACTION NOTE � 2026-04-24T03:36:17Z]**  
+Auto-compact triggered. Active plan: `none`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---

@@ -4,10 +4,11 @@
 #          Test 1: Temporal sequencing (lead-lag OLS + 2SLS)
 #          Test 2: Regular vs. confirmation MR decomposition
 #          Test 3: Contemporaneous within-PWSID correlation
+#          Test 4: Violation sequencing (regular MR → MCL vs. confirm MR → MCL)
 # Inputs:
 #   clean_data/cws_data/prod_vio_sulfur.parquet
 #   clean_data/cws_data/prod_vio_sulfur_2step.parquet
-#   clean_data/cws_data/prod_vio_sulfur_hb.parquet  (Test 2; skipped if absent)
+#   clean_data/cws_data/prod_vio_sulfur_hb.parquet  (Tests 2, 4; skipped if absent)
 #   clean_data/cws_data/prod_vio_allstates.parquet  (Test 1 robustness)
 # Outputs:
 #   output/reg/strategic_lead_lag.tex          (Test 1, forward, mining)
@@ -16,6 +17,7 @@
 #   output/reg/strategic_lead_lag_robustness.tex (Test 1, all-states OLS)
 #   output/reg/mr_healthbased_decomp.tex       (Test 2)
 #   output/reg/strategic_contemp_corr.tex      (Test 3)
+#   output/reg/strategic_seq_violations.tex    (Test 4)
 # Author: EK  Date: 2026-04-22
 # ============================================================
 
@@ -511,11 +513,131 @@ if (length(contemp_mods) > 0) {
   cat("  Written: strategic_contemp_corr.tex\n")
 }
 
+# ────────────────────────────────────────────────────────────────────────────
+# TEST 4 — VIOLATION SEQUENCING
+# Three observable sequences (all start from a clean t-2):
+#   Scenario 1: t-2 clean → t-1 regular MR → t MCL  (strategic sub. failing)
+#   Scenario 2: t-2 clean → t-1 MCL → t confirm MR  (monitoring burden;
+#               appears in the reverse direction, not this regression)
+#   Scenario 3: t-2 clean → t-1 regular MR → t clean (lapse or successful sub.)
+# Regression identifies scenario 1: does regular MR at t-1 predict MCL at t?
+# ────────────────────────────────────────────────────────────────────────────
+cat("\n=== Test 4: Violation sequencing ===\n")
+
+if (!file.exists(hb_path)) {
+  warning("prod_vio_sulfur_hb.parquet not found — skipping Test 4 (violation sequencing)")
+} else {
+  # Pull regular/confirm decomposition from hb and left-join onto two_step_sample.
+  # CWSs present only in prod_vio_sulfur_2step.parquet (strictly 2-step HUCs)
+  # will receive NA for these columns and are dropped from this test.
+  decomp_cols <- read_parquet(hb_path) %>%
+    select(PWSID, year, mining_MR_regular_share_days, mining_MR_confirm_share_days) %>%
+    filter(year >= 1985 & year <= 2005, PWSID != "WV3303401")
+
+  seq_df <- two_step_sample %>%
+    left_join(decomp_cols, by = c("PWSID", "year"))
+
+  n_decomp_rows <- sum(!is.na(seq_df$mining_MR_regular_share_days))
+  cat("  Rows with regular/confirm decomp available:", n_decomp_rows,
+      "of", nrow(seq_df), "\n")
+
+  # Binary outcome: any mining MCL violation in year t
+  seq_df <- seq_df %>%
+    mutate(
+      mining_any_viol = as.integer(
+        (!is.na(mining_MR_share_days)  & mining_MR_share_days  > 0) |
+        (!is.na(mining_MCL_share_days) & mining_MCL_share_days > 0)),
+      mining_MCL_any = as.integer(
+        !is.na(mining_MCL_share_days) & mining_MCL_share_days > 0)
+    ) %>%
+    arrange(PWSID, year) %>%
+    group_by(PWSID) %>%
+    mutate(
+      lag2_any_viol   = lag(mining_any_viol, 2),
+      lag1_regular_mr = lag(mining_MR_regular_share_days, 1),
+      lag1_confirm_mr = lag(mining_MR_confirm_share_days, 1),
+      # Sequence indicators: t-2 clean AND t-1 had the given MR type
+      last_regular_mr = as.integer(
+        !is.na(lag2_any_viol) & lag2_any_viol == 0 &
+        !is.na(lag1_regular_mr) & lag1_regular_mr > 0),
+      last_confirm_mr = as.integer(
+        !is.na(lag2_any_viol) & lag2_any_viol == 0 &
+        !is.na(lag1_confirm_mr) & lag1_confirm_mr > 0)
+    ) %>%
+    ungroup()
+
+  n_reg_seq <- sum(seq_df$last_regular_mr == 1, na.rm = TRUE)
+  n_con_seq <- sum(seq_df$last_confirm_mr  == 1, na.rm = TRUE)
+  cat("  PWSID-years with last_regular_mr = 1:", n_reg_seq, "\n")
+  cat("  PWSID-years with last_confirm_mr  = 1:", n_con_seq, "\n")
+
+  seq_dat <- seq_df %>%
+    filter(!is.na(last_regular_mr), !is.na(last_confirm_mr), !is.na(mining_MCL_any))
+
+  f_seq <- as.formula(
+    paste0("mining_MCL_any ~ last_regular_mr + last_confirm_mr + ", CTRL,
+           " | ", FE_STR))
+
+  seq_mod <- tryCatch(
+    feols(f_seq, data = seq_dat, cluster = ~PWSID),
+    error = function(e) { cat("  LPM error:", conditionMessage(e), "\n"); NULL }
+  )
+
+  if (!is.null(seq_mod)) {
+    cat("  Sequencing model estimated OK\n")
+    note_seq <- paste0(
+      "Linear probability model. Outcome: indicator equal to 1 if the CWS had any ",
+      "mining-related MCL violation (nitrates, arsenic, inorganic chemicals, ",
+      "radionuclides) in year $t$. ",
+      "\\textit{Standard MR at $t-1$}: indicator equal to 1 if year $t-1$ had a regular ",
+      "monitoring MR violation (VIOLATION\\_CODE `03') and year $t-2$ had no mining ",
+      "violation of any kind (Scenario 1). ",
+      "\\textit{Confirmation MR at $t-1$}: analogous indicator for confirmation MR ",
+      "(VIOLATION\\_CODE `04', Scenario 2 adjacent path). ",
+      "Conditioning on a clean $t-2$ isolates sequences from a violation-free baseline, ",
+      "ruling out chronic-violator dynamics. ",
+      "Scenario 1 (strategic substitution failing): regular MR deployed to suppress MCL ",
+      "but contamination persists --- predicts $\\hat{\\gamma} > 0$. ",
+      "Scenario 3 (successful substitution or genuine lapse): regular MR not followed ",
+      "by MCL --- contributes a negative offset to $\\hat{\\gamma}$. ",
+      "The sign and significance of $\\hat{\\gamma}$ relative to $\\hat{\\beta}$ ",
+      "identifies whether regular MR is a distinct precursor to MCL compared with ",
+      "confirmation MR (which arises from a prior positive test, not test-timing discretion). ",
+      "Note: confirmation MR is rare (", n_con_seq, " PWSID-years); interpret $\\hat{\\beta}$ ",
+      "with caution. ",
+      "All regressions include PWSID, state, and year fixed effects; ",
+      "SEs clustered at PWSID level. ",
+      "Sample: at most two-step downstream CWSs with available violation-code ",
+      "decomposition (1-step CWSs from prod\\_vio\\_sulfur.parquet), 1985--2005.")
+
+    dict_seq <- c(
+      last_regular_mr = "Standard MR at $t-1$",
+      last_confirm_mr = "Confirmation MR at $t-1$",
+      mining_MCL_any  = "Pr(Mining MCL)"
+    )
+
+    etable(
+      list(seq_mod),
+      style.tex       = style.tex("aer", adjustbox = TRUE),
+      tex             = TRUE,
+      drop            = paste0("^(", CTRL, ")$"),
+      dict            = dict_seq,
+      title           = "Violation Sequencing: Does Prior Regular MR Predict Current MCL?",
+      label           = "tab:strategic_seq_violations",
+      notes           = note_seq,
+      postprocess.tex = move_notes,
+      file            = file.path(ROOT, "output/reg/strategic_seq_violations.tex")
+    )
+    cat("  Written: strategic_seq_violations.tex\n")
+  }
+}
+
 cat("\n=== DONE ===\n")
 cat("Output files:\n")
 for (f in c("strategic_lead_lag.tex", "strategic_lead_lag_placebo.tex",
             "strategic_lead_lag_reverse.tex", "strategic_lead_lag_robustness.tex",
-            "mr_healthbased_decomp.tex", "strategic_contemp_corr.tex")) {
+            "mr_healthbased_decomp.tex", "strategic_contemp_corr.tex",
+            "strategic_seq_violations.tex")) {
   full_path <- file.path(ROOT, "output/reg", f)
   exists_str <- if (file.exists(full_path)) "OK" else "MISSING"
   cat("  [", exists_str, "]", f, "\n")
