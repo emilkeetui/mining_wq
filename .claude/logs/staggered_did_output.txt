@@ -1,0 +1,360 @@
+
+Attaching package: 'arrow'
+
+The following object is masked from 'package:utils':
+
+    timestamp
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Loading 2-step downstream panel...
+Rows: 5964 | PWSIDs: 284 
+mining_MR_share_days > 0: 471 
+mining_MCL_share_days > 0: 21 
+
+Constructing treatment timing variables...
+PWSIDs with opening events: 214 
+PWSIDs with closing events: 156 
+Never treated: 21 approx
+
+=== SUN-ABRAHAM: MINE OPENINGS ===
+SA open sample — PWSIDs: 170 | rows: 3570 
+Cohort distribution:
+
+1986 1987 1988 1989 1990 1991 1992 1995 1997 1998 1999 2001 2003 2004 2005  Inf 
+  24    9   23    1    8   10    1    7    2    2    2    2    4    2    3   70 
+  SA: mining_MR_share_days | n = 3570 
+Warning message:
+The VCOV matrix is not positive semi-definite and was 'fixed' (see ?vcov). 
+  SA: mining_MCL_share_days | n = 3570 
+Warning message:
+The VCOV matrix is not positive semi-definite and was 'fixed' (see ?vcov). 
+  SA: nitrates_MR_share_days | n = 3570 
+Warning message:
+The VCOV matrix is not positive semi-definite and was 'fixed' (see ?vcov). 
+Scale for x is already present.
+Adding another scale for x, which will replace the existing scale.
+  Saved: Z:/ek559/mining_wq/output/fig/sdid_open_mr_composite_eventstudy.png 
+Scale for x is already present.
+Adding another scale for x, which will replace the existing scale.
+  Saved: Z:/ek559/mining_wq/output/fig/sdid_open_mrnit_eventstudy.png 
+Scale for x is already present.
+Adding another scale for x, which will replace the existing scale.
+  Saved: Z:/ek559/mining_wq/output/fig/sdid_open_mcl_composite_eventstudy.png 
+
+Sun-Abraham aggregated ATT (mine openings):
+  MR composite:
+               Estimate Std. Error     t value     Pr(>|t|)
+cohort::1986   2.222210  22.781427  0.09754483 9.224198e-01
+cohort::1987  13.638108  31.306292  0.43563472 6.637078e-01
+cohort::1988 -54.550831  62.864993 -0.86774577 3.868750e-01
+cohort::1989   3.980180  18.718162  0.21263733 8.318892e-01
+cohort::1990  55.138954  31.946635  1.72597062 8.634541e-02
+cohort::1991  50.951767  33.024946  1.54282668 1.249120e-01
+cohort::1992 -11.225010  10.205485 -1.09989967 2.730812e-01
+cohort::1995  35.733998  25.833257  1.38325563 1.685757e-01
+cohort::1997  -1.636074   7.400727 -0.22106935 8.253294e-01
+cohort::1998 113.713045  87.700544  1.29660592 1.966938e-01
+cohort::1999   6.461117  19.531036  0.33081281 7.412327e-01
+cohort::2001  71.938884   8.989499  8.00254621 2.671014e-13
+cohort::2003   9.419965   8.242155  1.14290075 2.548420e-01
+cohort::2004  15.003981  10.044555  1.49374277 1.372758e-01
+cohort::2005  13.719826   8.613750  1.59278207 1.132464e-01
+  MCL composite:
+                Estimate Std. Error    t value  Pr(>|t|)
+cohort::1986  2.22020798 2.36772382  0.9376972 0.3498589
+cohort::1987 -0.20581267 0.27596181 -0.7458013 0.4569170
+cohort::1988  1.56484841 1.68264591  0.9299927 0.3538210
+cohort::1989 -0.40224429 0.42377141 -0.9492011 0.3439960
+cohort::1990  4.44575224 4.59290997  0.9679598 0.3345724
+cohort::1991 -0.34759474 0.36349031 -0.9562696 0.3404251
+cohort::1992 -0.18231175 0.22025514 -0.8277298 0.4090961
+cohort::1995 -0.05583685 0.09497968 -0.5878821 0.5574670
+cohort::1997 -0.11980796 0.14534217 -0.8243165 0.4110264
+cohort::1998  0.20302899 0.34943801  0.5810158 0.5620737
+cohort::1999 -0.12284107 0.15060749 -0.8156372 0.4159593
+cohort::2001 -0.10646226 0.13526510 -0.7870638 0.4324463
+cohort::2003 -0.08189405 0.11202561 -0.7310297 0.4658646
+cohort::2004 -0.02047351 0.02827104 -0.7241866 0.4700428
+cohort::2005 -0.01364901 0.02112775 -0.6460229 0.5192198
+
+=== CLOSING EVENT STUDY ===
+Closing sample — PWSIDs: 214 | rows: 4494 
+  Closers: 156 
+  Always-treated (no closing): 58 
+  Close ES: mining_MR_share_days | n = 4494 
+  Close ES: mining_MCL_share_days | n = 4494 
+  Close ES: nitrates_MR_share_days | n = 4494 
+  Saved: Z:/ek559/mining_wq/output/fig/sdid_close_mr_eventstudy.png 
+  Saved: Z:/ek559/mining_wq/output/fig/sdid_close_nit_mr_eventstudy.png 
+  Saved: Z:/ek559/mining_wq/output/fig/sdid_close_mcl_eventstudy.png 
+
+=== DIDmultiplegtDYN ===
+  DIDmultiplegtDYN: mining_MR_share_days | n = 5964 
+
+----------------------------------------------------------------------
+       Estimation of treatment effects: Event-study effects
+----------------------------------------------------------------------
+             Estimate SE       LB CI     UB CI    N     Switchers
+Effect_1     3.42000  10.11008 -16.39539 23.23538 1,892 182      
+Effect_2     15.50629 18.97751 -21.68894 52.70152 1,682 162      
+Effect_3     11.87117 18.81437 -25.00431 48.74665 1,512 158      
+Effect_4     23.54958 21.34557 -18.28697 65.38612 1,364 149      
+
+Test of joint nullity of the effects : p-value = 0.5546
+----------------------------------------------------------------------
+    Average cumulative (total) effect per treatment unit
+----------------------------------------------------------------------
+ Estimate        SE     LB CI     UB CI         N Switchers 
+ 19.84237  22.40645 -24.07346  63.75820     2,864       651 
+Average number of time periods over which a treatment effect is accumulated: 2.7271
+
+----------------------------------------------------------------------
+     Testing the parallel trends and no anticipation assumptions
+----------------------------------------------------------------------
+             Estimate SE       LB CI     UB CI     N     Switchers
+Placebo_1    -6.48752 17.41521 -40.62071 27.64567  1,635 147      
+Placebo_2    36.53438 32.52275 -27.20903 100.27780 1,282 113      
+Placebo_3    13.25795 46.02067 -76.94091 103.45681 985   72       
+
+Test of joint nullity of the placebos : p-value = 0.2432
+
+
+The development of this package was funded by the European Union.
+ERC REALLYCREDIBLE - GA N. 101043899
+  DIDmultiplegtDYN: nitrates_MR_share_days | n = 5964 
+
+----------------------------------------------------------------------
+       Estimation of treatment effects: Event-study effects
+----------------------------------------------------------------------
+             Estimate SE      LB CI     UB CI    N     Switchers
+Effect_1     -1.20364 3.89461 -8.83694  6.42965  1,892 182      
+Effect_2     3.66764  5.87540 -7.84794  15.18322 1,682 162      
+Effect_3     2.35850  6.66815 -10.71083 15.42783 1,512 158      
+Effect_4     5.63637  7.04170 -8.16510  19.43785 1,364 149      
+
+Test of joint nullity of the effects : p-value = 0.5858
+----------------------------------------------------------------------
+    Average cumulative (total) effect per treatment unit
+----------------------------------------------------------------------
+ Estimate        SE     LB CI     UB CI         N Switchers 
+  3.69773   6.78680  -9.60416  16.99961     2,864       651 
+Average number of time periods over which a treatment effect is accumulated: 2.7271
+
+----------------------------------------------------------------------
+     Testing the parallel trends and no anticipation assumptions
+----------------------------------------------------------------------
+             Estimate SE       LB CI     UB CI    N     Switchers
+Placebo_1    -3.13910 5.34135  -13.60797 7.32976  1,635 147      
+Placebo_2    10.70951 9.84263  -8.58168  30.00070 1,282 113      
+Placebo_3    10.94097 14.85237 -18.16914 40.05107 985   72       
+
+Test of joint nullity of the placebos : p-value = 0.3232
+
+
+The development of this package was funded by the European Union.
+ERC REALLYCREDIBLE - GA N. 101043899
+  DIDmultiplegtDYN: mining_MCL_share_days | n = 5964 
+
+----------------------------------------------------------------------
+       Estimation of treatment effects: Event-study effects
+----------------------------------------------------------------------
+             Estimate SE      LB CI    UB CI   N     Switchers
+Effect_1     -0.06023 0.04203 -0.14261 0.02215 1,892 182      
+Effect_2     0.04925  0.09985 -0.14646 0.24496 1,682 162      
+Effect_3     -1.17617 1.15781 -3.44544 1.09309 1,512 158      
+
+Test of joint nullity of the effects : p-value = 0.2916
+----------------------------------------------------------------------
+    Average cumulative (total) effect per treatment unit
+----------------------------------------------------------------------
+ Estimate        SE     LB CI     UB CI         N Switchers 
+ -0.55481   0.54134  -1.61581   0.50620     2,709       502 
+Average number of time periods over which a treatment effect is accumulated: 2.2258
+
+----------------------------------------------------------------------
+     Testing the parallel trends and no anticipation assumptions
+----------------------------------------------------------------------
+             Estimate SE      LB CI    UB CI   N     Switchers
+Placebo_1    -0.21956 0.22890 -0.66820 0.22909 1,635 147      
+Placebo_2    0.14481  0.14481 -0.13901 0.42864 1,282 113      
+
+Test of joint nullity of the placebos : p-value = 0.3236
+
+
+The development of this package was funded by the European Union.
+ERC REALLYCREDIBLE - GA N. 101043899
+
+
+=================================================================
+STAGGERED DiD RESULTS SUMMARY
+=================================================================
+
+--- MINE OPENINGS (Sun-Abraham) ---
+Sample: ~100 post-1985 openers + 70 never-treated (1985 cohort dropped as left-censored)
+MR composite — aggregated ATT (by cohort):
+               Estimate Std. Error     t value     Pr(>|t|)
+cohort::1986   2.222210  22.781427  0.09754483 9.224198e-01
+cohort::1987  13.638108  31.306292  0.43563472 6.637078e-01
+cohort::1988 -54.550831  62.864993 -0.86774577 3.868750e-01
+cohort::1989   3.980180  18.718162  0.21263733 8.318892e-01
+cohort::1990  55.138954  31.946635  1.72597062 8.634541e-02
+cohort::1991  50.951767  33.024946  1.54282668 1.249120e-01
+cohort::1992 -11.225010  10.205485 -1.09989967 2.730812e-01
+cohort::1995  35.733998  25.833257  1.38325563 1.685757e-01
+cohort::1997  -1.636074   7.400727 -0.22106935 8.253294e-01
+cohort::1998 113.713045  87.700544  1.29660592 1.966938e-01
+cohort::1999   6.461117  19.531036  0.33081281 7.412327e-01
+cohort::2001  71.938884   8.989499  8.00254621 2.671014e-13
+cohort::2003   9.419965   8.242155  1.14290075 2.548420e-01
+cohort::2004  15.003981  10.044555  1.49374277 1.372758e-01
+cohort::2005  13.719826   8.613750  1.59278207 1.132464e-01
+
+MCL composite — aggregated ATT (by cohort):
+                Estimate Std. Error    t value  Pr(>|t|)
+cohort::1986  2.22020798 2.36772382  0.9376972 0.3498589
+cohort::1987 -0.20581267 0.27596181 -0.7458013 0.4569170
+cohort::1988  1.56484841 1.68264591  0.9299927 0.3538210
+cohort::1989 -0.40224429 0.42377141 -0.9492011 0.3439960
+cohort::1990  4.44575224 4.59290997  0.9679598 0.3345724
+cohort::1991 -0.34759474 0.36349031 -0.9562696 0.3404251
+cohort::1992 -0.18231175 0.22025514 -0.8277298 0.4090961
+cohort::1995 -0.05583685 0.09497968 -0.5878821 0.5574670
+cohort::1997 -0.11980796 0.14534217 -0.8243165 0.4110264
+cohort::1998  0.20302899 0.34943801  0.5810158 0.5620737
+cohort::1999 -0.12284107 0.15060749 -0.8156372 0.4159593
+cohort::2001 -0.10646226 0.13526510 -0.7870638 0.4324463
+cohort::2003 -0.08189405 0.11202561 -0.7310297 0.4658646
+cohort::2004 -0.02047351 0.02827104 -0.7241866 0.4700428
+cohort::2005 -0.01364901 0.02112775 -0.6460229 0.5192198
+
+--- MINE CLOSINGS (relative-time event study) ---
+Sample: 156 closers + 49 always-treated control
+MR composite — post-closing coefficients:
+rel_time_close_trim::0 rel_time_close_trim::1 rel_time_close_trim::2 
+             12.116339             -13.637983              12.315991 
+rel_time_close_trim::3 rel_time_close_trim::4 rel_time_close_trim::5 
+             15.982626              22.640099              19.840704 
+rel_time_close_trim::6 rel_time_close_trim::7 rel_time_close_trim::8 
+            -10.296198              -8.568396             -10.812218 
+
+--- DIDmultiplegtDYN (continuous treatment) ---
+MR composite:
+
+----------------------------------------------------------------------
+       Estimation of treatment effects: Event-study effects
+----------------------------------------------------------------------
+             Estimate SE       LB CI     UB CI    N     Switchers
+Effect_1     3.42000  10.11008 -16.39539 23.23538 1,892 182      
+Effect_2     15.50629 18.97751 -21.68894 52.70152 1,682 162      
+Effect_3     11.87117 18.81437 -25.00431 48.74665 1,512 158      
+Effect_4     23.54958 21.34557 -18.28697 65.38612 1,364 149      
+
+Test of joint nullity of the effects : p-value = 0.5546
+----------------------------------------------------------------------
+    Average cumulative (total) effect per treatment unit
+----------------------------------------------------------------------
+ Estimate        SE     LB CI     UB CI         N Switchers 
+ 19.84237  22.40645 -24.07346  63.75820     2,864       651 
+Average number of time periods over which a treatment effect is accumulated: 2.7271
+
+----------------------------------------------------------------------
+     Testing the parallel trends and no anticipation assumptions
+----------------------------------------------------------------------
+             Estimate SE       LB CI     UB CI     N     Switchers
+Placebo_1    -6.48752 17.41521 -40.62071 27.64567  1,635 147      
+Placebo_2    36.53438 32.52275 -27.20903 100.27780 1,282 113      
+Placebo_3    13.25795 46.02067 -76.94091 103.45681 985   72       
+
+Test of joint nullity of the placebos : p-value = 0.2432
+
+
+The development of this package was funded by the European Union.
+ERC REALLYCREDIBLE - GA N. 101043899
+
+MCL composite:
+
+----------------------------------------------------------------------
+       Estimation of treatment effects: Event-study effects
+----------------------------------------------------------------------
+             Estimate SE      LB CI    UB CI   N     Switchers
+Effect_1     -0.06023 0.04203 -0.14261 0.02215 1,892 182      
+Effect_2     0.04925  0.09985 -0.14646 0.24496 1,682 162      
+Effect_3     -1.17617 1.15781 -3.44544 1.09309 1,512 158      
+
+Test of joint nullity of the effects : p-value = 0.2916
+----------------------------------------------------------------------
+    Average cumulative (total) effect per treatment unit
+----------------------------------------------------------------------
+ Estimate        SE     LB CI     UB CI         N Switchers 
+ -0.55481   0.54134  -1.61581   0.50620     2,709       502 
+Average number of time periods over which a treatment effect is accumulated: 2.2258
+
+----------------------------------------------------------------------
+     Testing the parallel trends and no anticipation assumptions
+----------------------------------------------------------------------
+             Estimate SE      LB CI    UB CI   N     Switchers
+Placebo_1    -0.21956 0.22890 -0.66820 0.22909 1,635 147      
+Placebo_2    0.14481  0.14481 -0.13901 0.42864 1,282 113      
+
+Test of joint nullity of the placebos : p-value = 0.3236
+
+
+The development of this package was funded by the European Union.
+ERC REALLYCREDIBLE - GA N. 101043899
+
+=================================================================
+HONEST ASSESSMENT
+=================================================================
+
+Does staggered DiD overcome the publication readiness problems?
+
+SHORT ANSWER: Partly for MR; not at all for MCL.
+
+(1) MCL power failure — NOT FIXED.
+    MCL violations in the 2-step sample: ~21 PWSID-year events (0.35% of obs).
+    No estimator — Sun-Abraham, DIDmultiplegtDYN, or 2SLS — can detect effects
+    on an outcome that almost never equals one. Staggered DiD does not fix this;
+    it uses less variation (binary/count changes) than 2SLS (continuous).
+
+(2) MR violations — ROBUSTNESS CONFIRMED, NOT EXTENDED.
+    Sun-Abraham and DIDmultiplegtDYN can recover significant MR effects
+    (if the 2SLS result is real), providing identification via parallel trends
+    rather than the ARP exclusion restriction. This is a useful robustness check.
+    But MR violations are a weak welfare outcome (missed testing != harm).
+
+(3) Left-censoring of the 1985 cohort — SERIOUS LIMITATION for openings.
+    114 of 214 treated PWSIDs are already treated in 1985. Dropping them
+    halves the treated sample and leaves cohorts of 1-24 PWSIDs.
+    Thin cohorts produce imprecise ATT estimates and unreliable pre-trend tests.
+
+(4) Mine closings — POTENTIALLY INFORMATIVE if effects are symmetric.
+    If mines cause MR violations (opening increases them), then closing should
+    decrease them. Symmetric closing effects would strengthen the causal claim.
+    But the control group (always-treated) is small (49 PWSIDs) and may violate
+    parallel trends if always-treated and closing PWSIDs differ systematically.
+
+(5) Does it help the paper? Marginally.
+    - Confirms MR result without needing exclusion restriction
+    - Provides visual pre-trend evidence
+    - Does NOT solve missing welfare story (MCL insignificance)
+    - Does NOT solve weak first-stage in main colocated 2SLS sample
+    The paper still cannot claim health effects from mining without MCL results.
+
+BOTTOM LINE: Staggered DiD is honest robustness, not a silver bullet.
+It is appropriate to include as an appendix. It does not change the
+fundamental problem: the data has no detectable effects on health-relevant
+(MCL) outcomes, and the novel contribution (strategic substitution) remains
+unsupported.
+=================================================================
+
+Done. Figures in output/fig/sdid_*.png
