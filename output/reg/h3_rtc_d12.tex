@@ -1,0 +1,36 @@
+
+\begingroup
+\centering
+\begin{tabular}{lccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variable: & \multicolumn{3}{c}{mean\_rtc\_days}\\
+                                                     & OLS     & Reduced form & 2SLS \\   
+   Model:                                            & (1)     & (2)          & (3)\\  
+   \midrule
+   \emph{Variables}\\
+   num\_coal\_mines\_upstream                        & 6.007   &              & -74.26\\   
+                                                     & (13.62) &              & (112.4)\\   
+   num\_facilities                                   & 17.44   & 17.53        & 19.10$^{*}$\\   
+                                                     & (10.82) & (10.64)      & (10.80)\\   
+   post95 $\times$ sulfur\_upstream                  &         & 10.37        &   \\   
+                                                     &         & (15.51)      &   \\   
+   \midrule
+   \emph{Fixed-effects}\\
+   PWSID                                             & Yes     & Yes          & Yes\\  
+   year                                              & Yes     & Yes          & Yes\\  
+   STATE\_CODE                                       & Yes     & Yes          & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   R$^2$                                             & 0.32487 & 0.32496      & 0.32496\\  
+   Observations                                      & 2,366   & 2,366        & 2,366\\  
+   F-test (1st stage), num\_coal\_mines\_upstream    &         &              & 41.398\\  
+   \midrule \midrule
+   \multicolumn{4}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+   \multicolumn{4}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+ 
+\par \raggedright 
+Sample: PWSID-years with at least one enforcement record. N = 2443 PWSID-years. Outcome: mean days from violation start to return-to-compliance. Instrument: post95 x sulfur\_upstream. SEs clustered at PWSID level.
+\par\endgroup
+
+

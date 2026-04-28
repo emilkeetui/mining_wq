@@ -1,0 +1,36 @@
+
+\begingroup
+\centering
+\begin{tabular}{lccccccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables: & \multicolumn{3}{c}{any\_enf} & \multicolumn{6}{c}{any\_formal}\\
+                                                     & Any enf. (OLS) & Any enf. (RF)  & Any enf. (2SLS) & Formal (OLS)    & Formal (RF)    & Formal (2SLS)   & Formal: drop 2005 & Formal: 1993+ & Formal: 1993-2004 \\   
+   Model:                                            & (1)            & (2)            & (3)             & (4)             & (5)            & (6)             & (7)               & (8)           & (9)\\  
+   \midrule
+   \emph{Variables}\\
+   num\_coal\_mines\_upstream                        & -0.0045        &                & -0.0604         & -0.0148$^{***}$ &                & -0.0865$^{***}$ & -0.0620$^{***}$   & -0.2616$^{*}$ & -0.1711$^{*}$\\   
+                                                     & (0.0078)       &                & (0.0456)        & (0.0037)        &                & (0.0216)        & (0.0165)          & (0.1369)      & (0.0876)\\   
+   num\_facilities                                   & 0.0414$^{***}$ & 0.0416$^{***}$ & 0.0409$^{***}$  & 0.0086$^{***}$  & 0.0089$^{***}$ & 0.0079$^{***}$  & 0.0068$^{***}$    & 0.0090$^{**}$ & 0.0077$^{**}$\\   
+                                                     & (0.0108)       & (0.0109)       & (0.0108)        & (0.0021)        & (0.0023)       & (0.0024)        & (0.0020)          & (0.0040)      & (0.0032)\\   
+   post95 $\times$ sulfur\_upstream                  &                & 0.0100         &                 &                 & 0.0143$^{***}$ &                 &                   &               &   \\   
+                                                     &                & (0.0074)       &                 &                 & (0.0031)       &                 &                   &               &   \\   
+   \midrule
+   \emph{Fixed-effects}\\
+   PWSID                                             & Yes            & Yes            & Yes             & Yes             & Yes            & Yes             & Yes               & Yes           & Yes\\  
+   year                                              & Yes            & Yes            & Yes             & Yes             & Yes            & Yes             & Yes               & Yes           & Yes\\  
+   STATE\_CODE                                       & Yes            & Yes            & Yes             & Yes             & Yes            & Yes             & Yes               & Yes           & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   R$^2$                                             & 0.24571        & 0.24590        & 0.24590         & 0.17532         & 0.17569        & 0.17569         & 0.15956           & 0.21655       & 0.20151\\  
+   Observations                                      & 13,671         & 13,671         & 13,671          & 13,671          & 13,671         & 13,671          & 13,020            & 8,463         & 7,812\\  
+   F-test (1st stage), num\_coal\_mines\_upstream    &                &                & 475.38          &                 &                & 475.38          & 544.52            & 27.538        & 42.045\\  
+   \midrule \midrule
+   \multicolumn{10}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+   \multicolumn{10}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+ 
+\par \raggedright 
+D1-D2 downstream sample. Cols 1-3: any enforcement action (16.7\% of panel). Cols 4-9: formal enforcement action (2.4\% baseline). Cols 7-9: sample robustness checks dropping 2005 spike / pre-1993 thin data. Instrument: post95 x sulfur\_upstream. SEs clustered at PWSID level.
+\par\endgroup
+
+
