@@ -1,0 +1,32 @@
+
+\begingroup
+\centering
+\begin{tabular}{lccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables:  & nitrates\_MR\_share\_days    & arsenic\_MR\_share\_days    & inorganic\_chemicals\_MR\_share\_days     & inorganic\_chemicals\_MCL\_share\_days     & radionuclides\_MR\_share\_days\\     
+                         & Nitrates MR                  & Arsenic MR                  & Inorganic MR                              & Inorganic MCL                              & Radionuclides MR \\   
+   Model:                & (1)                          & (2)                         & (3)                                       & (4)                                        & (5)\\  
+   \midrule
+   \emph{Variables}\\
+   Coal mines (upstream) & 2.931$^{*}$                  & 1.452                       & 1.540                                     & -1.658                                     & 1.068\\   
+                         & (1.519)                      & (2.052)                     & (1.823)                                   & (7.247)                                    & (1.759)\\   
+   CF residual           & -2.698$^{*}$                 & -1.200                      & -1.243                                    & -0.5765                                    & -0.7995\\   
+                         & (1.529)                      & (2.041)                     & (1.816)                                   & (8.333)                                    & (1.768)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   PWSID                 & Yes                          & Yes                         & Yes                                       & Yes                                        & Yes\\  
+   year                  & Yes                          & Yes                         & Yes                                       & Yes                                        & Yes\\  
+   STATE\_CODE           & Yes                          & Yes                         & Yes                                       & Yes                                        & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations          & 2,782                        & 1,830                       & 2,044                                     & 110                                        & 1,293\\  
+   \midrule \midrule
+   \multicolumn{6}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+   \multicolumn{6}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+ 
+\par \raggedright 
+Poisson QMLE control-function 2SLS (Wooldridge 2002). Instrument: post-1995 $\times$ upstream sulfur\%. Outcomes: integer days in violation per PWSID-year. Coefficients are log incidence rate ratios; exp(coef) = multiplicative effect on expected days. ``CF residual'' tests endogeneity (t-test on first-stage residual). Fixed effects: PWSID, year, state. SE clustered at PWSID. Sample: 1-step downstream, 1985--2005.
+\par\endgroup
+
+

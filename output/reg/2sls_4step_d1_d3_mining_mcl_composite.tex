@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{2sls_4step_d1_d3_mining_mcl_composite} Effect of coal mines on mining MCL composite (D1--D3 (1--3 steps downstream))}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Mining viol. composite (MCL)}\\
+         
+                                                           & (1)                   & (2)           & (3)\\  
+         
+         \midrule 
+         num\_coal\_mines\_upstream                        & 0.1537                &               & -2.895\\   
+                                                           & (0.3595)              &               & (1.841)\\   
+         post95 $\times$ sulfur\_unified                   &                       & 0.4134        &   \\   
+                                                           &                       & (0.2518)      &   \\   
+         
+          \\
+         
+         Observations                                      & 17,976                & 17,976        & 17,976\\  
+         R$^2$                                             & 0.38108               & 0.38121       & 0.38121\\  
+         Within R$^2$                                      & $4.79\times 10^{-5}$  & 0.00026       & 0.00026\\  
+         F-test (1st stage), num\_coal\_mines\_upstream    &                       &               & 481.79\\  
+         
+          \\
+         
+         PWSID fixed effects                               & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                         & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is the sum of MCL-only violation days across nitrates, arsenic, inorganic chemicals, and radionuclides. Instrument is post95 interacted with mean coal sulfur content of the intake watershed (post95 x sulfur unified). All regressions include PWSID, year, and state fixed effects. Standard errors clustered at PWSID level. Sample period 1985--2005.}
+   
+\end{table}
+
+
