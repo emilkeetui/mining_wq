@@ -339,6 +339,33 @@ cat("\n--- 2SLS (mean_rtc_days) ---\n");        print(summary(iv_r))
 cat(sprintf("\nFirst-stage F-stat (H3c): %.1f\n", fitstat(iv_r, "ivf")[[1]]$stat))
 
 # ── Step 6: LaTeX tables ──────────────────────────────────────────────────────
+
+# Wraps a fixest etable .tex file so it scales automatically in both beamer
+# (constrained by slide height) and regular LaTeX documents.
+wrap_for_beamer <- function(path, beamer_height = "0.78\\textheight") {
+  header <- c(
+    "\\makeatletter",
+    paste0("\\@ifclassloaded{beamer}{%\n",
+           "  \\begin{adjustbox}{max width=\\linewidth,",
+           " max totalheight=", beamer_height, ", center}%\n",
+           "}{%\n",
+           "  \\begin{adjustbox}{max width=\\linewidth, center}%\n",
+           "}%"),
+    "\\makeatother"
+  )
+  lines <- readLines(path)
+  note_start  <- grep("^\\\\par \\\\raggedright\\s*$", lines)
+  endgroup_ln <- grep("^\\\\par\\\\endgroup\\s*$",     lines)
+  if (length(note_start) == 1 && length(endgroup_ln) == 1 && note_start < endgroup_ln) {
+    note_text <- lines[(note_start + 1):(endgroup_ln - 1)]
+    body      <- c(lines[seq_len(note_start - 1)], "\\par\\endgroup")
+    writeLines(c(header, body, "\\end{adjustbox}", "",
+                 "\\par \\raggedright", note_text, "\\par"), path)
+  } else {
+    writeLines(c(header, lines, "\\end{adjustbox}"), path)
+  }
+}
+
 dir.create(file.path(ROOT, "output/reg"), showWarnings = FALSE, recursive = TRUE)
 out_tex <- file.path(ROOT, "output/reg/h2_visits_d12.tex")
 
@@ -353,6 +380,7 @@ etable(ols, rf, iv,
        file    = out_tex,
        replace = TRUE)
 
+wrap_for_beamer(out_tex)
 cat(sprintf("\nTable saved to: %s\n", out_tex))
 if (file.exists(out_tex) && file.info(out_tex)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")
@@ -372,6 +400,7 @@ etable(ols_b, rf_b, iv_b,
        file    = out_tex_b,
        replace = TRUE)
 
+wrap_for_beamer(out_tex_b)
 cat(sprintf("\nTable saved to: %s\n", out_tex_b))
 if (file.exists(out_tex_b) && file.info(out_tex_b)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")
@@ -395,6 +424,7 @@ etable(ols_e, rf_e, iv_e, ols_f, rf_f, iv_f,
        file    = out_tex_h3,
        replace = TRUE)
 
+wrap_for_beamer(out_tex_h3)
 cat(sprintf("\nTable saved to: %s\n", out_tex_h3))
 if (file.exists(out_tex_h3) && file.info(out_tex_h3)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")
@@ -416,6 +446,7 @@ etable(ols_r, rf_r, iv_r,
        file    = out_tex_rtc,
        replace = TRUE)
 
+wrap_for_beamer(out_tex_rtc)
 cat(sprintf("\nTable saved to: %s\n", out_tex_rtc))
 if (file.exists(out_tex_rtc) && file.info(out_tex_rtc)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")

@@ -106,8 +106,14 @@ wait for the user to approve before executing.
 ### Language & packages
 - **R** or **Python**
 
+### R tables
+
+R is accessed at C:\Program Files\R\R-4.5.2\bin\Rscript.exe
+
+Beamer-compatible tables — after every etable() write, call wrap_for_beamer(path) (defined in enforcement_chain_d12.r; copy the function into any new script that generates .tex tables). This prepends a \@ifclassloaded{beamer} conditional so \input{reg/table} works unchanged in both beamer frames and regular LaTeX documents, and moves the notes = text outside the adjustbox so it renders below the table. Both documents must load \usepackage{adjustbox}.
+
 ### Python environment
-There is no system Python on PATH. Always use the full path to the project virtualenv:
+When using python use this path to the project virtualenv:
 ```bash
 "Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe" script.py
 # or inline:
