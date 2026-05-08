@@ -88,9 +88,20 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
                     error = function(e) { cat("  RF error",  y, "-", conditionMessage(e), "\n"); NULL })
     iv  <- tryCatch(fixest::feols(f_iv,  data = dset_y, cluster = ~ PWSID),
                     error = function(e) { cat("  IV error",  y, "-", conditionMessage(e), "\n"); NULL })
+    # Clustered first-stage F-stat: run first stage explicitly with cluster=~PWSID
+    # fixest's ivf1 uses HC1 SEs internally; t^2 from the clustered regression is correct
+    f_clustered <- NA_real_
+    if (!is.null(iv)) {
+      f_fs <- as.formula(paste0(coalvar[1], " ~ ", instr_str, " + ", controls_str, " | ", fe_str))
+      fs_cl <- tryCatch(fixest::feols(f_fs, data = dset_y, cluster = ~ PWSID), error = function(e) NULL)
+      if (!is.null(fs_cl)) {
+        t_cl <- coef(fs_cl)[instr_str] / se(fs_cl)[instr_str]
+        f_clustered <- round(t_cl^2, 2)
+      }
+    }
     # Only include outcome if all three models succeeded
     if (!is.null(ols) && !is.null(rf) && !is.null(iv)) {
-      result[[y]] <- list(OLS = ols, RF = rf, IV = iv)
+      result[[y]] <- list(OLS = ols, RF = rf, IV = iv, f_clustered = f_clustered)
     } else {
       cat("  Dropping", y, "- not all three models succeeded\n")
     }
@@ -122,16 +133,25 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
     lapply(names(result), function(y) list(result[[y]]$OLS, result[[y]]$RF, result[[y]]$IV)),
     recursive = FALSE
   )
+  # Build extralines: clustered F-stat in IV columns only, blank in OLS/RF columns
+  f_label <- paste0("F-test (1st stage, clustered), ", paste(coalvar, collapse = "+"))
+  f_vec   <- unlist(lapply(names(result), function(y) {
+    fc <- result[[y]]$f_clustered
+    c("", "", if (is.na(fc)) "" else format(round(fc, 2), nsmall = 2))
+  }))
+  el        <- list(f_vec)
+  names(el) <- f_label
   etable_args <- c(
     model_list,
     list(
-      fitstat         = ~ . + ivf1,
+      fitstat         = ~ .,
       style.tex       = style.tex("aer", adjustbox = TRUE),
       tex             = TRUE,
       drop            = drop_controls_exact,
       title           = title,
       label           = label,
       postprocess.tex = move_notes_below_adjustbox,
+      extralines      = el,
       file            = paste0("Z:/ek559/mining_wq/output/reg/", regoutname, ".tex")
     )
   )

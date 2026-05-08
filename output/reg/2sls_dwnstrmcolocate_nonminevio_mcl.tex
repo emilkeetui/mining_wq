@@ -15,26 +15,27 @@
          
           & \multicolumn{3}{c}{Total coliform (MCL)} & \multicolumn{3}{c}{VOCs (MCL)} & \multicolumn{3}{c}{SOCs (MCL)}\\
          
-                                                          & (1)           & (2)           & (3)           & (4)                   & (5)                   & (6)                   & (7)                   & (8)           & (9)\\  
+                                                                     & (1)           & (2)           & (3)           & (4)                   & (5)                   & (6)                   & (7)                   & (8)           & (9)\\  
          
          \midrule 
-         num\_coal\_mines\_unified                        & 0.0896        &               & -1.662        & 0.0551                &                       & -1.491                & 0.0090                &               & 0.4962\\   
-                                                          & (0.0738)      &               & (2.698)       & (0.0427)              &                       & (3.541)               & (0.0072)              &               & (0.5220)\\   
-         post95 $\times$ sulfur\_unified                  &               & 0.0705        &               &                       & 0.0564                &                       &                       & -0.0254       &   \\   
-                                                          &               & (0.1079)      &               &                       & (0.1309)              &                       &                       & (0.0261)      &   \\   
+         num\_coal\_mines\_unified                                   & 0.0896        &               & -1.662        & 0.0551                &                       & -1.491                & 0.0090                &               & 0.4962\\   
+                                                                     & (0.0738)      &               & (2.698)       & (0.0427)              &                       & (3.541)               & (0.0072)              &               & (0.5220)\\   
+         post95 $\times$ sulfur\_unified                             &               & 0.0705        &               &                       & 0.0564                &                       &                       & -0.0254       &   \\   
+                                                                     &               & (0.1079)      &               &                       & (0.1309)              &                       &                       & (0.0261)      &   \\   
+         
+         F-test (1st stage, clustered), num\_coal\_mines\_unified    &               &               & 6.09          &                       &                       & 4.09                  &                       &               & 6.27\\  
          
           \\
          
-         Observations                                     & 13,190        & 13,190        & 13,190        & 14,212                & 14,212                & 14,212                & 17,325                & 17,325        & 17,325\\  
-         R$^2$                                            & 0.13496       & 0.13480       & 0.13480       & 0.08416               & 0.08413               & 0.08413               & 0.05343               & 0.05359       & 0.05359\\  
-         Within R$^2$                                     & 0.00068       & 0.00049       & 0.00049       & $6.52\times 10^{-5}$  & $2.73\times 10^{-5}$  & $2.73\times 10^{-5}$  & $8.86\times 10^{-5}$  & 0.00027       & 0.00027\\  
-         F-test (1st stage), num\_coal\_mines\_unified    &               &               & 9.3758        &                       &                       & 8.0066                &                       &               & 17.007\\  
+         Observations                                                & 13,190        & 13,190        & 13,190        & 14,212                & 14,212                & 14,212                & 17,325                & 17,325        & 17,325\\  
+         R$^2$                                                       & 0.13496       & 0.13480       & 0.13480       & 0.08416               & 0.08413               & 0.08413               & 0.05343               & 0.05359       & 0.05359\\  
+         Within R$^2$                                                & 0.00068       & 0.00049       & 0.00049       & $6.52\times 10^{-5}$  & $2.73\times 10^{-5}$  & $2.73\times 10^{-5}$  & $8.86\times 10^{-5}$  & 0.00027       & 0.00027\\  
          
           \\
          
-         PWSID fixed effects                              & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
-         STATE\_CODE fixed effects                        & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                               & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         PWSID fixed effects                                         & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                                   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
          
          \bottomrule
          

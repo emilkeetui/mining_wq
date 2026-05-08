@@ -15,26 +15,27 @@
          
           & \multicolumn{3}{c}{Total coliform} & \multicolumn{3}{c}{S/G water rule} & \multicolumn{3}{c}{VOCs} & \multicolumn{3}{c}{SOCs}\\
          
-                                                          & (1)           & (2)           & (3)           & (4)           & (5)           & (6)           & (7)           & (8)           & (9)           & (10)          & (11)          & (12)\\  
+                                                                     & (1)           & (2)           & (3)           & (4)           & (5)           & (6)           & (7)           & (8)           & (9)           & (10)          & (11)          & (12)\\  
          
          \midrule 
-         num\_coal\_mines\_unified                        & 0.0914        &               & -15.25$^{*}$  & 1.015$^{**}$  &               & 42.01         & -1.994$^{*}$  &               & 35.38         & -0.8609       &               & 41.81$^{*}$\\   
-                                                          & (0.1217)      &               & (9.033)       & (0.4229)      &               & (29.05)       & (1.201)       &               & (27.95)       & (0.8072)      &               & (24.77)\\   
-         post95 $\times$ sulfur\_unified                  &               & 0.6470$^{**}$ &               &               & -1.589$^{*}$  &               &               & -1.339$^{*}$  &               &               & -2.137$^{**}$ &   \\   
-                                                          &               & (0.2584)      &               &               & (0.8135)      &               &               & (0.7439)      &               &               & (1.031)       &   \\   
+         num\_coal\_mines\_unified                                   & 0.0914        &               & -15.25$^{*}$  & 1.015$^{**}$  &               & 42.01         & -1.994$^{*}$  &               & 35.38         & -0.8609       &               & 41.81$^{*}$\\   
+                                                                     & (0.1217)      &               & (9.033)       & (0.4229)      &               & (29.05)       & (1.201)       &               & (27.95)       & (0.8072)      &               & (24.77)\\   
+         post95 $\times$ sulfur\_unified                             &               & 0.6470$^{**}$ &               &               & -1.589$^{*}$  &               &               & -1.339$^{*}$  &               &               & -2.137$^{**}$ &   \\   
+                                                                     &               & (0.2584)      &               &               & (0.8135)      &               &               & (0.7439)      &               &               & (1.031)       &   \\   
+         
+         F-test (1st stage, clustered), num\_coal\_mines\_unified    &               &               & 6.09          &               &               & 4.09          &               &               & 4.09          &               &               & 6.27\\  
          
           \\
          
-         Observations                                     & 13,190        & 13,190        & 13,190        & 14,212        & 14,212        & 14,212        & 14,212        & 14,212        & 14,212        & 17,325        & 17,325        & 17,325\\  
-         R$^2$                                            & 0.20397       & 0.20475       & 0.20475       & 0.48516       & 0.48515       & 0.48515       & 0.17919       & 0.17854       & 0.17854       & 0.20394       & 0.20422       & 0.20422\\  
-         Within R$^2$                                     & 0.00017       & 0.00116       & 0.00116       & 0.00178       & 0.00176       & 0.00176       & 0.00098       & 0.00019       & 0.00019       & 0.00028       & 0.00062       & 0.00062\\  
-         F-test (1st stage), num\_coal\_mines\_unified    &               &               & 9.3758        &               &               & 8.0066        &               &               & 8.0066        &               &               & 17.007\\  
+         Observations                                                & 13,190        & 13,190        & 13,190        & 14,212        & 14,212        & 14,212        & 14,212        & 14,212        & 14,212        & 17,325        & 17,325        & 17,325\\  
+         R$^2$                                                       & 0.20397       & 0.20475       & 0.20475       & 0.48516       & 0.48515       & 0.48515       & 0.17919       & 0.17854       & 0.17854       & 0.20394       & 0.20422       & 0.20422\\  
+         Within R$^2$                                                & 0.00017       & 0.00116       & 0.00116       & 0.00178       & 0.00176       & 0.00176       & 0.00098       & 0.00019       & 0.00019       & 0.00028       & 0.00062       & 0.00062\\  
          
           \\
          
-         PWSID fixed effects                              & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         STATE\_CODE fixed effects                        & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                               & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         PWSID fixed effects                                         & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                                   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
          
          \bottomrule
          
