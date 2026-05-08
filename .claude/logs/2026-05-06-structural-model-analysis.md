@@ -88,6 +88,20 @@ Total and MR coefficients are nearly identical — MCL contributes essentially z
 
 ---
 
+**Structural-Model Fitness Assessment (added 2026-05-07)**
+
+A separate question from data feasibility: is the dynamic structural framework *appropriate* given the data findings, and do the planned counterfactuals justify it over reduced form?
+
+| Counterfactual | Verdict | Reason |
+|----------------|---------|--------|
+| CF1: doubled enforcement intensity | **Appropriate — headline result** | Reduced form gives marginal effects along the existing policy, not responses to a regime change. Re-solving the CWS Bellman under counterfactual P(s'|s,a) is exactly what structural buys you. |
+| CF2 (original, cross-quartile simulation) | **Weak** | Reduced-form heterogeneous treatment effects across enforcement-intensity quartiles do this without structure. Reframe as out-of-sample validation of k_MR. |
+| CF3 (original, K&S schedule recovery) | **Not identified** | The K&S schedule ε*(k) lives over a count action space; the data support only binary {comply, MR}. Inverting a Poisson mixture from a binary choice probability is underdetermined. Reframe as a level comparison or drop. |
+
+**Critical specification correction.** The original plan described a "regulatory machine" with transitions estimated unconditionally — implying P(s'|s) is exogenous to CWS behavior. SDWA enforcement is *triggered by violations*, so transitions are action-conditional: P(s' | s, a). Estimate two transition matrices (one for comply-years, one for MR-years). The action-conditional Δπ(s) is what makes the dynamic deterrence channel operational in the CCP equation; without it, the model collapses to a static logit. Refer to the object as a "regulatory response function" rather than a "machine" — the Duflo et al. (2018) machine framing assumes inspection randomization, which we do not have.
+
+---
+
 **Revised Feasibility Summary**
 
 | Component | Original plan | Revised assessment |
@@ -129,7 +143,7 @@ Four propositions derived from the CWS's FOC: θ·b'(a(θ)) = e'(a(θ)).
 - **P1 (type sorting):** ∂a/∂θ > 0 — higher-compliance-cost CWSs choose more MR violations. Tested via heterogeneity by CWS size and source water type.
 - **P2 (enforcement deterrence):** ∂a/∂λ < 0 — higher enforcement intensity reduces MR violations. Operationalized via the enforcement machine counterfactual.
 - **P3 (mining externality as type shifter):** ∂a/∂m > 0 — more mining raises effective compliance cost θ(m), increasing equilibrium MR violations. This is the structural grounding for the 2SLS result.
-- **P4 (optimal convexity):** ε''(k) > 0 at optimum — normative benchmark for the MR enforcement schedule.
+- **P4 (second-best penalty convexity):** The K&S (2021) second-best optimal expected penalty schedule, derived from the implementability condition (K&S eq. 7), satisfies e*'(a) = θ(a)b'(a): marginal expected penalty equals the compliance cost scaled by the type cutoff. The schedule is increasing in negligence level a and, where b is not too concave relative to the rate at which the type cutoff θ(a) rises, convex in a. K&S (Fig. 2, p. 2977) empirically confirm the estimated schedule is strictly convex in violation count k. This is the second-best benchmark — not first-best, which would require the regulator to observe θ directly. Normative use: compare the observed SDWA MR enforcement schedule to the K&S second-best optimal, not to a standalone discrete convexity theorem.
 
 Remark in theory section: "We focus empirically on the MR margin, where the instrument provides clean identification." The choice-set narrowing is addressed in the empirical section, not the theory.
 
@@ -143,11 +157,13 @@ Existing 2SLS tables stand. Two additions to motivate the structural model:
 
 2. **Enforcement intensity heterogeneity** — split reduced-form sample by enforcement intensity quartile (fraction of 1985–2005 years with any enforcement action). Test whether mining → MR violation effect is larger in low-enforcement areas. Reduced-form test of K&S mechanism.
 
-### Section 3 — Structural Estimation (2-state machine, binary CCP)
+### Section 3 — Structural Estimation (2-state regulatory response function, binary CCP)
 
-**Step 1: 2-state regulatory machine**
+**Step 1: 2-state regulatory response function (action-conditional transitions)**
 
-State space: {`no_enf`, `enf`}. Transition matrix estimated by counting state transitions across 268 PWSIDs with enforcement records. Forward-simulate V₀(s) for s ∈ {no_enf, enf} under β = 0.95. Allow transitions to vary by enforcement intensity quartile.
+State space: {`no_enf`, `enf`}. Transitions are **not exogenous** — SDWA enforcement is triggered by violations, so the regulator's transition matrix is action-conditional: P(s' | s, a) for a ∈ {comply, MR}. Estimate two 2×2 matrices by counting transitions separately within comply-years and MR-years across the 268 PWSIDs with enforcement records. Forward-simulate V₀(s) for s ∈ {no_enf, enf} under β = 0.95 using the optimal-policy-implied transition matrix. The action-conditional structure is what makes Δπ(s) ≡ Pr(enf' | s, MR) − Pr(enf' | s, comply) nonzero in Step 2 and is the source of dynamic deterrence in the model. Allow transitions to vary by enforcement intensity quartile.
+
+Terminology: refer to this as a "regulatory response function" rather than a "regulatory machine" to avoid implying exogeneity. The Duflo et al. (2018) "machine" framing is inappropriate here because their inspection process was randomized; ours is endogenous to firm behavior.
 
 **Step 2: CCP identification of k_MR**
 
@@ -165,14 +181,18 @@ Two-type Arcidiacono-Miller heterogeneity invoked only if R² from PWSID FE regr
 
 ### Section 4 — Counterfactuals
 
-**Counterfactual 1: Double MR enforcement transition probability (quantifies P2)**
-Increase π(enf | no_enf) by 100%. Recompute V₀ and optimal CWS choices. Report change in MR violation share by contamination quartile and aggregate person-weighted violation-days.
+**Counterfactual 1 (headline): Double MR enforcement transition probability (quantifies P2)**
+Increase π(enf | no_enf, comply) and π(enf | no_enf, MR) by 100% (proportionally, preserving Δπ(s)). Recompute V₀ under the new action-conditional transitions and re-solve for optimal CWS choices given the recovered k_MR. Report change in MR violation share by contamination quartile and aggregate person-weighted violation-days. **This is the structural value-add the paper sells:** reduced form cannot answer "what happens if we double inspection intensity?" because it identifies marginal effects along the existing policy, not responses to a regime change.
 
-**Counterfactual 2: Targeted enforcement for high-contamination CWSs**
-Compare compliance between top- and bottom-quartile enforcement intensity CWSs. Simulate low-enforcement area violation rates under high-enforcement intensity.
+**Counterfactual 2 (validation, not headline): Out-of-sample cross-quartile prediction**
+Estimate k_MR on the top enforcement-intensity quartile only. Forward-simulate predicted MR violation shares for the bottom enforcement-intensity quartile under that quartile's observed P(s'|s,a). Compare to observed bottom-quartile MR shares. A close match validates the structural assumption that k_MR is a stable preference parameter rather than a reduced-form artifact of the enforcement environment. Reframed from the original CF2 because heterogeneous-treatment-effect simulation is achievable with reduced form alone — referees would push back that the structural machinery is unnecessary for that exercise. The validation framing makes the structural model earn its keep.
 
-**Counterfactual 3: K&S-optimal convex MR penalty schedule (normative P4)**
-Compute optimal ε*(k) from recovered k_MR and 2-state machine. Compare to observed schedule. Report compliance gain and fraction attributable to schedule shape vs. enforcement intensity.
+**Counterfactual 3 — DROPPED in the schedule-recovery form, reframed as level comparison**
+The original CF3 (recover the K&S second-best penalty schedule ε*(k) over violation counts k) is **not identified in this sample**. The K&S schedule is defined over a count action space; collapsing the choice set to {comply, MR} eliminates within-CWS variation along the count dimension needed to pin down ε*(k) for k ≥ 2. Numerically inverting the Poisson mixture e(a) = Σ_k ε(k) · Pois(k|a) from a binary choice probability is one equation in infinitely many unknowns.
+
+Reframed normative statement: compute the K&S second-best optimal *expected* penalty level e*(a*) at the observed equilibrium negligence a* and compare to the implied observed expected penalty (recovered from k_MR and the estimated transition matrix). Report the level gap. A single number — not a schedule comparison — but defensible and directly informative about whether MR enforcement is too lax or too stringent overall. Defer the full schedule-shape question to future work that exploits the colocated sample (where MCL incidence may support a richer choice set) or natural experiments in penalty schedules.
+
+**Scope discipline:** the paper now claims one structural counterfactual (CF1), one validation exercise (CF2), and one normative level comparison (CF3-reframed). This is appropriate for JPubEcon / AEJ:Applied and tighter than the original ambition.
 
 ---
 
@@ -185,7 +205,8 @@ Compute optimal ε*(k) from recovered k_MR and 2-state machine. Compare to obser
 | k_MR recovered: implicit cost of MR violation | Binary CCP + 2-state machine | Section 3 |
 | Mining → MR effect larger in low-enforcement areas | P2 cross-section test | Enforcement intensity split, new |
 | Doubling MR enforcement → X% reduction in violations | P2 quantified | Counterfactual 1 |
-| Observed MR schedule is suboptimal (subconvex) | P4 normative | Counterfactual 3 |
+| Observed MR expected penalty level vs. K&S second-best optimal level e*(a*) | P4 normative (level only) | Counterfactual 3 — reframed |
+| Out-of-sample validation: k_MR estimated on top-quartile enforcement predicts bottom-quartile MR shares | Structural validation | Counterfactual 2 — reframed |
 
 ---
 
@@ -214,8 +235,8 @@ All four feasibility checks complete as of 2026-05-07. Results incorporated abov
 
 ### Priority 1 — Theory (no data needed)
 
-- [ ] **Write theory section (P1–P4).** Adapt K&S / Mookherjee-Png to SDWA setting. Derive Propositions 1–4 formally with proofs. ~6–8 pages. Can be drafted now.
-- [ ] **Read Mookherjee and Png (1994).** PDF at `.claude/skills/Mookherjee and Png 1994.pdf`. Needed to cite correct source for P4's convexity result.
+- [ ] **Write theory section (P1–P4).** Adapt K&S / Mookherjee-Png to SDWA setting. Derive Propositions 1–4 formally with proofs. ~6–8 pages. Can be drafted now. P4 uses Option A: ground convexity in K&S eq. (7) implementability condition and cite K&S Fig. 2 for empirical confirmation; do not derive discrete ε(k) convexity as a standalone theorem. Label P4 as second-best (asymmetric information), not first-best.
+- [x] **Read Mookherjee and Png (1994).** M&P state no formal proposition on penalty convexity; convexity appears only graphically in parametric examples (Figs. 1c, 2). M&P Proposition 1 (p. 1051) and Proposition 2 (p. 1058) characterize optimal marginal deterrence, not schedule convexity. Correct source for P4's convexity claim is K&S eq. (7) + K&S Fig. 2. M&P is cited for the marginal deterrence framework (P1–P3) and the implementability lemma underlying K&S eq. (7).
 
 ### Priority 2 — Reduced-form additions (~1 week)
 
@@ -238,6 +259,6 @@ All four feasibility checks complete as of 2026-05-07. Results incorporated abov
 
 ### Priority 5 — Structural coding (after reduced-form additions confirmed)
 
-- [ ] **`structural_penalty_machine.r`** — 2-state Markov MLE, V₀(s) forward simulation.
+- [ ] **`structural_penalty_machine.r`** — Estimate **action-conditional** transition matrices P(s'|s, comply) and P(s'|s, MR) by tabulating transitions separately within comply-years and MR-years. Forward-simulate V₀(s) under β=0.95 via (I − βP)^{-1}c, where c is the per-period normalized enforcement cost (set c(no_enf)=0, c(enf)=1; k_MR is then identified in units of "one period under enforcement" without external dollar calibration).
 - [ ] **`structural_ccp.r`** — binary logit CCP, control function IV, k_MR recovery.
 - [ ] **`structural_counterfactuals.r`** — three counterfactuals, compliance gains in violation-days and person-weighted exposure.
