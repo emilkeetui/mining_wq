@@ -340,3 +340,65 @@ A defensible Section 3 citation cluster looks like:
 > preferences from a randomized inspection experiment in Indian environmental
 > enforcement; we instead recover firm-side compliance costs from a
 > quasi-experimental shock to firm-level pollution burden."
+
+---
+
+## Background Reading Path
+
+Layered path from foundations to the specific estimator used in this model.
+
+### Layer 1 — Dynamic programming basics
+
+**Sargent and Stachurski, *Dynamic Programming* (free at quantecon.org)**
+- Read: "Finite Markov Chains," "Job Search," "McCall Model"
+- Teaches: Bellman equations, value functions, policy functions, the matrix solve (I−βP)⁻¹c in a concrete setting
+- Goal: understand V₀ and the transition matrix logic before touching the structural paper
+
+### Layer 2 — Static discrete choice (prerequisite for dynamic)
+
+**Train, *Discrete Choice Methods with Simulation* (free PDF at eml.berkeley.edu)**
+- Read: Chapters 2–3
+- Teaches: T1EV errors, the logit choice probability formula, log-odds representation
+- Goal: the CCP regression in Step 2 is a log-odds regression — this gives you the mechanics
+
+### Layer 3 — The canonical dynamic discrete choice paper
+
+**Rust (1987), "Optimal Replacement of GMC Bus Engines," *Econometrica***
+- Read: Sections 1–4 (skip the nested fixed-point algorithm details initially)
+- Teaches: how a firm's action today affects its state tomorrow, the Bellman in a real application, why static logit is insufficient when actions have future consequences
+- Concrete setting (bus engine replacement) makes the abstract structure tangible
+
+### Layer 4 — The CCP shortcut this model uses
+
+**Aguirregabiria and Mira (2010), "Dynamic Discrete Choice Structural Models: A Survey," *Journal of Econometrics***
+- Read: Sections 1–4
+- Teaches: Rust and Hotz–Miller side by side with unified notation — cleaner entry point than the original papers
+
+**Hotz and Miller (1993), "Conditional Choice Probabilities and the Estimation of Dynamic Models," *Review of Economic Studies***
+- Read: Sections 1–3
+- Teaches: why observed choice frequencies (CCPs) are sufficient to recover value functions without solving the full Bellman; the invertible mapping between log-odds and ΔU(s)
+- This is the direct basis for Step 2 above
+
+### Layer 5 — Unobserved heterogeneity (conditional)
+
+**Arcidiacono and Miller (2011), "Conditional Choice Probability Estimation of Dynamic Discrete Choice Models with Unobserved Heterogeneity," *Econometrica***
+- Read: Sections 1–3
+- Invoke only if PWSID fixed effects explain R² ≥ 0.3 of MR-share variance
+
+### Suggested reading order
+
+| Step | Resource | Time | Goal |
+|---|---|---|---|
+| 1 | QuantEcon: Finite Markov Chains + McCall Model | 3–4 hrs | Bellman, V₀, transition matrices |
+| 2 | Train Ch. 2–3 | 2–3 hrs | Logit, log-odds, T1EV errors |
+| 3 | Rust (1987) Sec. 1–4 | 3–4 hrs | Dynamic discrete choice in practice |
+| 4 | Aguirregabiria–Mira (2010) Sec. 1–4 | 3 hrs | Unified survey; Hotz–Miller explained cleanly |
+| 5 | Hotz–Miller (1993) Sec. 1–3 | 2–3 hrs | The CCP inversion used in Step 2 |
+
+Total: roughly 12–15 focused hours before this explainer is self-contained.
+
+### What to skip
+
+- Nested fixed-point (Rust's NFXP algorithm) — this model uses the two-step CCP shortcut, which explicitly avoids it
+- Mixed logit / simulation methods (Train Ch. 6+) — not used here
+- Multi-agent / game-theoretic dynamic models — the CWS is a single agent; the regulator is treated as an exogenous response function
