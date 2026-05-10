@@ -66,6 +66,27 @@ move_notes_below_adjustbox <- function(x) {
   x
 }
 
+# Replace the auto-numbered column row "(1) (2) (3) ..." with cycling OLS / RF / 2SLS.
+rename_col_numbers_to_labels <- function(x) {
+  x     <- paste(x, collapse = "\n")
+  lines <- strsplit(x, "\n")[[1]]
+  for (i in seq_along(lines)) {
+    nums <- regmatches(lines[i], gregexpr("\\(\\d+\\)", lines[i]))[[1]]
+    if (length(nums) >= 2) {
+      num_vals <- as.integer(gsub("[()]", "", nums))
+      if (identical(num_vals, seq_along(num_vals))) {
+        labels <- rep(c("OLS", "RF", "2SLS"), length.out = length(nums))
+        line   <- lines[i]
+        for (j in seq_along(nums)) line <- sub(nums[j], labels[j], line, fixed = TRUE)
+        lines[i] <- line
+      }
+    }
+  }
+  paste(lines, collapse = "\n")
+}
+
+postprocess_table <- function(x) rename_col_numbers_to_labels(move_notes_below_adjustbox(x))
+
 tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, label,
                                   instr_str, dict = NULL, notes = NULL,
                                   storage_list_name = NULL, subheader = NULL) {
@@ -150,7 +171,7 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
       drop            = drop_controls_exact,
       title           = title,
       label           = label,
-      postprocess.tex = move_notes_below_adjustbox,
+      postprocess.tex = postprocess_table,
       extralines      = el,
       file            = paste0("Z:/ek559/mining_wq/output/reg/", regoutname, ".tex")
     )
