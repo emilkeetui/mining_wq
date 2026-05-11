@@ -40,17 +40,11 @@ vio_dict <- c(
   inorganic_chemicals_MR_share_days        = "Inorganic chemicals (MR)",
   radionuclides_MR_share_days              = "Radionuclides (MR)",
   total_coliform_share_days                = "Total coliform",
-  surface_ground_water_rule_share_days     = "S/G water rule",
   voc_share_days                           = "VOCs",
-  soc_share_days                           = "SOCs",
   total_coliform_MCL_share_days            = "Total coliform (MCL)",
-  surface_ground_water_rule_MCL_share_days = "S/G water rule (MCL)",
   voc_MCL_share_days                       = "VOCs (MCL)",
-  soc_MCL_share_days                       = "SOCs (MCL)",
   total_coliform_MR_share_days             = "Total coliform (MR)",
-  surface_ground_water_rule_MR_share_days  = "S/G water rule (MR)",
-  voc_MR_share_days                        = "VOCs (MR)",
-  soc_MR_share_days                        = "SOCs (MR)"
+  voc_MR_share_days                        = "VOCs (MR)"
 )
 
 move_notes_below_adjustbox <- function(x) {
@@ -230,19 +224,19 @@ std_note <- paste0(
 
 nonmine_note <- paste0(
   std_note,
-  " The number of observations differs across columns because some non-mining violation rules ",
-  "(total coliform, surface/groundwater rule, VOCs, SOCs) were implemented during the sample period; ",
+  " The number of observations differs across columns because non-mining violation rules ",
+  "(total coliform, VOCs) were implemented during the sample period; ",
   "years prior to each rule's implementation are coded as missing and excluded from the regression."
 )
 
 sample_specs <- list(
-  list(sample="dwnstrm",        dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream", instr="post95:sulfur_unified", titlesamp="downstream PWS's"),
+  list(sample="dwnstrm",        dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream", instr="post95:sulfur_unified", titlesamp="CWSs at most one HUC12 down-stream"),
   list(sample="dwnstrmcolocate",dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified",  instr="post95:sulfur_unified", titlesamp="downstream and colocated PWS's"),
-  list(sample="dwnstrm2step",   dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream", instr="post95:sulfur_unified", titlesamp="downstream CWSs (1 or 2 steps)")
+  list(sample="dwnstrm2step",   dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream", instr="post95:sulfur_unified", titlesamp="CWSs at most two HUC12's downstream of coal mines")
 )
 vio_specs <- list(
   list(name="minevio",    allcat=c("nitrates_share_days","arsenic_share_days","inorganic_chemicals_share_days","radionuclides_share_days"),             mcl=c("nitrates_MCL_share_days","arsenic_MCL_share_days","inorganic_chemicals_MCL_share_days","radionuclides_MCL_share_days"),             mr=c("nitrates_MR_share_days","arsenic_MR_share_days","inorganic_chemicals_MR_share_days","radionuclides_MR_share_days"),             titlevio="mining violations"),
-  list(name="nonminevio", allcat=c("total_coliform_share_days","surface_ground_water_rule_share_days","voc_share_days","soc_share_days"),                mcl=c("total_coliform_MCL_share_days","surface_ground_water_rule_MCL_share_days","voc_MCL_share_days","soc_MCL_share_days"),                mr=c("total_coliform_MR_share_days","surface_ground_water_rule_MR_share_days","voc_MR_share_days","soc_MR_share_days"),                titlevio="non-mining violations")
+  list(name="nonminevio", allcat=c("total_coliform_share_days","voc_share_days"),                mcl=c("total_coliform_MCL_share_days","voc_MCL_share_days"),                mr=c("total_coliform_MR_share_days","voc_MR_share_days"),                titlevio="non-mining violations")
 )
 cat_specs <- list(
   list(name="allcat", varkey="allcat", titlecat="any violation category"),

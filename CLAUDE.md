@@ -184,7 +184,7 @@ SOC violation | `soc` |
  
 **Violation categories:** MCL (max contaminant level), MR (monitoring/reporting), TT (treatment technique) — outcome name contains `_MCL`, `_MR`, `_TT`. If outcome name does not contain MCL, MR, or TT then violation measures the time (in share of year or number of days) that any violation occured.
 
-**Mining vs. non-mining violations:** Nitrates, arsenic, inorganic chemicals, and radionuclides are the "mining-related" outcomes. Total coliform, surface/groundwater rule, VOCs, and SOCs are "non-mining" placebo outcomes.
+**Mining vs. non-mining violations:** Nitrates, arsenic, inorganic chemicals, and radionuclides are the "mining-related" outcomes. Total coliform, surface/groundwater rule, and VOCs are "non-mining" placebo outcomes. The SOC PAH (Benzopyrene) is associated with coal mining but not regulated until 1992 which makes SOCs a difficult placebo and mining violation.
 
 | N intake facilities (main control) | `num_facilities` |
 | N source HUC12s for the PWS | `num_hucs` |
