@@ -15,27 +15,27 @@
          
           & \multicolumn{3}{c}{Total coliform (MCL)} & \multicolumn{3}{c}{VOCs (MCL)}\\
          
-                                                                     & OLS           & RF            & 2SLS          & OLS                   & RF                    & 2SLS\\  
+                                                                            & OLS           & RF            & 2SLS          & OLS                   & RF                    & 2SLS\\  
          
          \midrule 
-         num\_coal\_mines\_unified                                   & 0.0896        &               & -1.662        & 0.0551                &                       & -1.491\\   
-                                                                     & (0.0738)      &               & (2.698)       & (0.0427)              &                       & (3.541)\\   
-         post95 $\times$ sulfur\_unified                             &               & 0.0705        &               &                       & 0.0564                &   \\   
-                                                                     &               & (0.1079)      &               &                       & (0.1309)              &   \\   
+         num\_coal\_mines\_unified\_mean                                    & 0.0896        &               & -1.662        & 0.0551                &                       & -1.491\\   
+                                                                            & (0.0738)      &               & (2.698)       & (0.0427)              &                       & (3.541)\\   
+         post95 $\times$ sulfur\_unified\_mean                              &               & 0.0705        &               &                       & 0.0564                &   \\   
+                                                                            &               & (0.1079)      &               &                       & (0.1309)              &   \\   
          
-         F-test (1st stage, clustered), num\_coal\_mines\_unified    &               &               & 6.09          &                       &                       & 4.09\\  
-         
-          \\
-         
-         Observations                                                & 13,190        & 13,190        & 13,190        & 14,212                & 14,212                & 14,212\\  
-         R$^2$                                                       & 0.13496       & 0.13480       & 0.13480       & 0.08416               & 0.08413               & 0.08413\\  
-         Within R$^2$                                                & 0.00068       & 0.00049       & 0.00049       & $6.52\times 10^{-5}$  & $2.73\times 10^{-5}$  & $2.73\times 10^{-5}$\\   
+         F-test (1st stage, clustered), num\_coal\_mines\_unified\_mean     &               &               & 6.09          &                       &                       & 4.09\\  
          
           \\
          
-         PWSID fixed effects                                         & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
-         STATE\_CODE fixed effects                                   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
-         year fixed effects                                          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
+         Observations                                                       & 13,190        & 13,190        & 13,190        & 14,212                & 14,212                & 14,212\\  
+         R$^2$                                                              & 0.13496       & 0.13480       & 0.13480       & 0.08416               & 0.08413               & 0.08413\\  
+         Within R$^2$                                                       & 0.00068       & 0.00049       & 0.00049       & $6.52\times 10^{-5}$  & $2.73\times 10^{-5}$  & $2.73\times 10^{-5}$\\   
+         
+          \\
+         
+         PWSID fixed effects                                                & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
+         STATE\_CODE fixed effects                                          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
+         year fixed effects                                                 & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
          
          \bottomrule
          

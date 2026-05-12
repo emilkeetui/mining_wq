@@ -15,27 +15,27 @@
          
           & \multicolumn{3}{c}{Total coliform (MR)} & \multicolumn{3}{c}{VOCs (MR)}\\
          
-                                                                      & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+                                                                             & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
          
          \midrule 
-         num\_coal\_mines\_upstream                                   & -0.1751       &               & -13.25        & -0.1345       &               & -7.773\\   
-                                                                      & (0.2201)      &               & (9.078)       & (2.612)       &               & (16.85)\\   
-         post95 $\times$ sulfur\_unified                              &               & 0.6559$^{**}$ &               &               & 0.4684        &   \\   
-                                                                      &               & (0.3242)      &               &               & (1.008)       &   \\   
+         num\_coal\_mines\_upstream\_mean                                    & -0.1751       &               & -13.25        & -0.1345       &               & -7.773\\   
+                                                                             & (0.2201)      &               & (9.078)       & (2.612)       &               & (16.85)\\   
+         post95 $\times$ sulfur\_unified\_mean                               &               & 0.6559$^{**}$ &               &               & 0.4684        &   \\   
+                                                                             &               & (0.3242)      &               &               & (1.008)       &   \\   
          
-         F-test (1st stage, clustered), num\_coal\_mines\_upstream    &               &               & 4.83          &               &               & 6.34\\  
-         
-          \\
-         
-         Observations                                                 & 8,169         & 8,169         & 8,169         & 8,752         & 8,752         & 8,752\\  
-         R$^2$                                                        & 0.16216       & 0.16299       & 0.16299       & 0.13663       & 0.13665       & 0.13665\\  
-         Within R$^2$                                                 & 0.00145       & 0.00245       & 0.00245       & 0.00075       & 0.00078       & 0.00078\\  
+         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_mean     &               &               & 4.83          &               &               & 6.34\\  
          
           \\
          
-         PWSID fixed effects                                          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         STATE\_CODE fixed effects                                    & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                           & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         Observations                                                        & 8,169         & 8,169         & 8,169         & 8,752         & 8,752         & 8,752\\  
+         R$^2$                                                               & 0.16216       & 0.16299       & 0.16299       & 0.13663       & 0.13665       & 0.13665\\  
+         Within R$^2$                                                        & 0.00145       & 0.00245       & 0.00245       & 0.00075       & 0.00078       & 0.00078\\  
+         
+          \\
+         
+         PWSID fixed effects                                                 & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                                           & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                                  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
          
          \bottomrule
          

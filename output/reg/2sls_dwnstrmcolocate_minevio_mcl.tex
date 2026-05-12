@@ -15,27 +15,27 @@
          
           & \multicolumn{3}{c}{Nitrates (MCL)} & \multicolumn{3}{c}{Arsenic (MCL)} & \multicolumn{3}{c}{Inorganic chemicals (MCL)} & \multicolumn{3}{c}{Radionuclides (MCL)}\\
          
-                                                                     & OLS                   & RF            & 2SLS          & OLS                   & RF                    & 2SLS                  & OLS                   & RF                    & 2SLS                  & OLS                   & RF            & 2SLS\\  
+                                                                            & OLS                   & RF            & 2SLS          & OLS                   & RF                    & 2SLS                  & OLS                   & RF                    & 2SLS                  & OLS                   & RF            & 2SLS\\  
          
          \midrule 
-         num\_coal\_mines\_unified                                   & 0.0396                &               & -1.732        & 0.0056                &                       & 0.1167                & 0.0118                &                       & -1.264                & 0.0122                &               & -3.058\\   
-                                                                     & (0.0308)              &               & (1.238)       & (0.0047)              &                       & (0.2761)              & (0.0577)              &                       & (3.752)               & (0.0125)              &               & (3.216)\\   
-         post95 $\times$ sulfur\_unified                             &                       & 0.1081        &               &                       & -0.0073               &                       &                       & 0.0789                &                       &                       & 0.1910        &   \\   
-                                                                     &                       & (0.0673)      &               &                       & (0.0171)              &                       &                       & (0.2327)              &                       &                       & (0.1909)      &   \\   
+         num\_coal\_mines\_unified\_mean                                    & 0.0396                &               & -1.732        & 0.0056                &                       & 0.1167                & 0.0118                &                       & -1.264                & 0.0122                &               & -3.058\\   
+                                                                            & (0.0308)              &               & (1.238)       & (0.0047)              &                       & (0.2761)              & (0.0577)              &                       & (3.752)               & (0.0125)              &               & (3.216)\\   
+         post95 $\times$ sulfur\_unified\_mean                              &                       & 0.1081        &               &                       & -0.0073               &                       &                       & 0.0789                &                       &                       & 0.1910        &   \\   
+                                                                            &                       & (0.0673)      &               &                       & (0.0171)              &                       &                       & (0.2327)              &                       &                       & (0.1909)      &   \\   
          
-         F-test (1st stage, clustered), num\_coal\_mines\_unified    &                       &               & 9.26          &                       &                       & 9.26                  &                       &                       & 9.26                  &                       &               & 9.26\\  
-         
-          \\
-         
-         Observations                                                & 19,450                & 19,450        & 19,450        & 19,450                & 19,450                & 19,450                & 19,450                & 19,450                & 19,450                & 19,450                & 19,450        & 19,450\\  
-         R$^2$                                                       & 0.26237               & 0.26244       & 0.26244       & 0.04945               & 0.04944               & 0.04944               & 0.24743               & 0.24744               & 0.24744               & 0.19308               & 0.19352       & 0.19352\\  
-         Within R$^2$                                                & $5.49\times 10^{-5}$  & 0.00014       & 0.00014       & $1.46\times 10^{-5}$  & $1.02\times 10^{-5}$  & $1.02\times 10^{-5}$  & $1.26\times 10^{-6}$  & $1.23\times 10^{-5}$  & $1.23\times 10^{-5}$  & $7.27\times 10^{-6}$  & 0.00056       & 0.00056\\  
+         F-test (1st stage, clustered), num\_coal\_mines\_unified\_mean     &                       &               & 9.26          &                       &                       & 9.26                  &                       &                       & 9.26                  &                       &               & 9.26\\  
          
           \\
          
-         PWSID fixed effects                                         & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
-         STATE\_CODE fixed effects                                   & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         Observations                                                       & 19,450                & 19,450        & 19,450        & 19,450                & 19,450                & 19,450                & 19,450                & 19,450                & 19,450                & 19,450                & 19,450        & 19,450\\  
+         R$^2$                                                              & 0.26237               & 0.26244       & 0.26244       & 0.04945               & 0.04944               & 0.04944               & 0.24743               & 0.24744               & 0.24744               & 0.19308               & 0.19352       & 0.19352\\  
+         Within R$^2$                                                       & $5.49\times 10^{-5}$  & 0.00014       & 0.00014       & $1.46\times 10^{-5}$  & $1.02\times 10^{-5}$  & $1.02\times 10^{-5}$  & $1.26\times 10^{-6}$  & $1.23\times 10^{-5}$  & $1.23\times 10^{-5}$  & $7.27\times 10^{-6}$  & 0.00056       & 0.00056\\  
+         
+          \\
+         
+         PWSID fixed effects                                                & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                                          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                                 & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
          
          \bottomrule
          

@@ -15,27 +15,27 @@
          
           & \multicolumn{3}{c}{Nitrates (MR)} & \multicolumn{3}{c}{Arsenic (MR)} & \multicolumn{3}{c}{Inorganic chemicals (MR)} & \multicolumn{3}{c}{Radionuclides (MR)}\\
          
-                                                                      & OLS           & RF             & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+                                                                             & OLS           & RF             & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
          
          \midrule 
-         num\_coal\_mines\_upstream                                   & -0.6927       &                & 51.65$^{*}$   & 1.252         &               & 42.11$^{*}$   & 0.7113        &               & 41.54$^{*}$   & 2.437         &               & -27.37\\   
-                                                                      & (2.026)       &                & (26.86)       & (2.070)       &               & (23.74)       & (2.026)       &               & (24.25)       & (2.206)       &               & (29.42)\\   
-         post95 $\times$ sulfur\_unified                              &               & -4.256$^{***}$ &               &               & -3.470$^{**}$ &               &               & -3.424$^{**}$ &               &               & 2.255         &   \\   
-                                                                      &               & (1.646)        &               &               & (1.523)       &               &               & (1.583)       &               &               & (2.211)       &   \\   
+         num\_coal\_mines\_upstream\_mean                                    & -0.6927       &                & 51.65$^{*}$   & 1.252         &               & 42.11$^{*}$   & 0.7113        &               & 41.54$^{*}$   & 2.437         &               & -27.37\\   
+                                                                             & (2.026)       &                & (26.86)       & (2.070)       &               & (23.74)       & (2.026)       &               & (24.25)       & (2.206)       &               & (29.42)\\   
+         post95 $\times$ sulfur\_unified\_mean                               &               & -4.256$^{***}$ &               &               & -3.470$^{**}$ &               &               & -3.424$^{**}$ &               &               & 2.255         &   \\   
+                                                                             &               & (1.646)        &               &               & (1.523)       &               &               & (1.583)       &               &               & (2.211)       &   \\   
          
-         F-test (1st stage, clustered), num\_coal\_mines\_upstream    &               &                & 9.23          &               &               & 9.23          &               &               & 9.23          &               &               & 9.23\\  
-         
-          \\
-         
-         Observations                                                 & 11,706        & 11,706         & 11,706        & 11,706        & 11,706        & 11,706        & 11,706        & 11,706        & 11,706        & 11,706        & 11,706        & 11,706\\  
-         R$^2$                                                        & 0.13956       & 0.14090        & 0.14090       & 0.16490       & 0.16610       & 0.16610       & 0.17494       & 0.17601       & 0.17601       & 0.23582       & 0.23596       & 0.23596\\  
-         Within R$^2$                                                 & 0.00045       & 0.00200        & 0.00200       & 0.00029       & 0.00173       & 0.00173       & 0.00032       & 0.00162       & 0.00162       & 0.00041       & 0.00059       & 0.00059\\  
+         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_mean     &               &                & 9.23          &               &               & 9.23          &               &               & 9.23          &               &               & 9.23\\  
          
           \\
          
-         PWSID fixed effects                                          & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         STATE\_CODE fixed effects                                    & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                           & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         Observations                                                        & 11,706        & 11,706         & 11,706        & 11,706        & 11,706        & 11,706        & 11,706        & 11,706        & 11,706        & 11,706        & 11,706        & 11,706\\  
+         R$^2$                                                               & 0.13956       & 0.14090        & 0.14090       & 0.16490       & 0.16610       & 0.16610       & 0.17494       & 0.17601       & 0.17601       & 0.23582       & 0.23596       & 0.23596\\  
+         Within R$^2$                                                        & 0.00045       & 0.00200        & 0.00200       & 0.00029       & 0.00173       & 0.00173       & 0.00032       & 0.00162       & 0.00162       & 0.00041       & 0.00059       & 0.00059\\  
+         
+          \\
+         
+         PWSID fixed effects                                                 & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                                           & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                                  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
          
          \bottomrule
          

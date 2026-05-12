@@ -255,30 +255,93 @@ fin['post95'] = np.where(fin['year']>=1995,
                          1,
                          0)
 
-# Make a pws coal production dataframe that takes the average of all 
-# huc level coal production associated with the pws intakes        
+# Make a pws coal production dataframe that takes the average of all
+# huc level coal production associated with the pws intakes
 # extract the pws's from facility: drop to pws-huc-year level
 onelvldwn = facility.drop_duplicates(subset=['PWSID','huc12','year'])
 onelvldwn = onelvldwn.merge(fin, how='left')
-# take it down to the pws-year level
+# _mean variant: average across intake HUCs of the HUC-level _mean.
+# btu_upstream remains a plain mean (legacy).
 onelvldwn = (
     onelvldwn
     .groupby(['PWSID', 'year'], as_index=False)
     .agg(
         btu_colocated=('btu_colocated', 'mean'),
         sulfur_colocated=('sulfur_colocated', 'mean'),
-        btu_upstream=('btu_upstream', 'mean'),
-        sulfur_upstream=('sulfur_upstream', 'mean'),
+        btu_upstream=('btu_upstream_mean', 'mean'),
+        sulfur_upstream_mean=('sulfur_upstream_mean', 'mean'),
         production_short_tons_coal_colocated=('production_short_tons_coal_colocated', 'mean'),
         num_coal_mines_colocated=('num_coal_mines_colocated', 'mean'),
-        production_short_tons_coal_upstream=('production_short_tons_coal_upstream', 'mean'),
-        num_coal_mines_upstream=('num_coal_mines_upstream', 'mean'),
-        num_coal_mines_unified=('num_coal_mines_unified', 'mean'),
-        production_short_tons_coal_unified=('production_short_tons_coal_unified', 'mean'),
+        production_short_tons_coal_upstream_mean=('production_short_tons_coal_upstream_mean', 'mean'),
+        num_coal_mines_upstream_mean=('num_coal_mines_upstream_mean', 'mean'),
+        num_coal_mines_unified_mean=('num_coal_mines_unified_mean', 'mean'),
+        production_short_tons_coal_unified_mean=('production_short_tons_coal_unified_mean', 'mean'),
         btu_unified=('btu_unified', 'mean'),
-        sulfur_unified=('sulfur_unified', 'mean')
+        sulfur_unified_mean=('sulfur_unified_mean', 'mean')
     )
 )
+
+# ============================================================
+# _sum variants with upstream-HUC dedup
+# ------------------------------------------------------------
+# For each PWSID x year:
+#   1. Pull (intake_huc, fromhuc, year, num_coal_mines_upstream,
+#      production_short_tons_coal_upstream, sulfur_upstream) from
+#      huc_fromhuc_long.parquet, joined to facility intakes by huc12.
+#   2. drop_duplicates(['PWSID','fromhuc','year']) so a shared upstream
+#      HUC feeding two intakes is counted once.
+#   3. Aggregate: sum for mines/production; mean over non-zero sulfur.
+# ============================================================
+long = pd.read_parquet("Z:/ek559/mining_wq/clean_data/huc_fromhuc_long.parquet",
+                       engine="pyarrow")
+long['huc12']   = long['huc12'].astype(str)
+long['fromhuc'] = long['fromhuc'].astype(str)
+long['year']    = long['year'].astype('int64')
+
+pwsid_huc = facility[['PWSID', 'huc12', 'year']].drop_duplicates()
+pwsid_huc['huc12'] = pwsid_huc['huc12'].astype(str)
+pwsid_huc['year']  = pwsid_huc['year'].astype('int64')
+
+pwsid_from = pwsid_huc.merge(long, on=['huc12', 'year'], how='inner')
+# Dedup shared upstream HUCs within a PWSID
+pwsid_from = pwsid_from.drop_duplicates(subset=['PWSID', 'fromhuc', 'year'])
+
+sulfur_sum_df = (
+    pwsid_from[pwsid_from['sulfur_upstream'] != 0]
+    .groupby(['PWSID', 'year'], as_index=False)
+    .agg(sulfur_upstream_sum=('sulfur_upstream', 'mean'))
+)
+mines_sum_df = (
+    pwsid_from
+    .groupby(['PWSID', 'year'], as_index=False)
+    .agg(
+        num_coal_mines_upstream_sum=('num_coal_mines_upstream', 'sum'),
+        production_short_tons_coal_upstream_sum=('production_short_tons_coal_upstream', 'sum'),
+    )
+)
+
+onelvldwn = onelvldwn.merge(mines_sum_df, on=['PWSID', 'year'], how='left')
+onelvldwn = onelvldwn.merge(sulfur_sum_df, on=['PWSID', 'year'], how='left')
+
+# Fill upstream sums with 0 where no upstream HUC matched.
+# Leave sulfur_upstream_sum as NaN where no upstream HUC has measured sulfur
+# (to distinguish "no measurement" from "measured = 0").
+for c in ['num_coal_mines_upstream_sum', 'production_short_tons_coal_upstream_sum']:
+    onelvldwn[c] = onelvldwn[c].fillna(0)
+
+# Recompute unified _sum at the PWSID level using the same rule as before.
+def _unified_pws(df, up_col, co_col):
+    up = df[up_col].fillna(0)
+    co = df[co_col].fillna(0)
+    both_nz = (up != 0) & (co != 0)
+    return np.where(both_nz, (up + co) / 2.0, np.maximum(up, co))
+
+onelvldwn['num_coal_mines_unified_sum'] = _unified_pws(
+    onelvldwn, 'num_coal_mines_upstream_sum', 'num_coal_mines_colocated')
+onelvldwn['production_short_tons_coal_unified_sum'] = _unified_pws(
+    onelvldwn, 'production_short_tons_coal_upstream_sum', 'production_short_tons_coal_colocated')
+onelvldwn['sulfur_unified_sum'] = _unified_pws(
+    onelvldwn, 'sulfur_upstream_sum', 'sulfur_colocated')
 
 # collapsing facility to pwsid-year level 
 # not going to collapse to the pwsid-huc12-year level because we

@@ -6,22 +6,22 @@
    \begin{adjustbox}{width = \textwidth, center}
       \begin{tabular}{lcccccc}
          \toprule
-          & \multicolumn{6}{c}{num\_coal\_mines\_upstream}\\
+          & \multicolumn{6}{c}{num\_coal\_mines\_upstream\_mean}\\
           & \multicolumn{2}{c}{any violation category} & \multicolumn{2}{c}{MCL violations only} & \multicolumn{2}{c}{MR violations only} \\ 
-                                           & total\_coliform\_share\_days    & voc\_share\_days   & total\_coliform\_MCL\_share\_days     & voc\_MCL\_share\_days    & total\_coliform\_MR\_share\_days     & voc\_MR\_share\_days \\      
-                                           & (1)                             & (2)                & (3)                                   & (4)                      & (5)                                  & (6)\\  
+                                                  & total\_coliform\_share\_days    & voc\_share\_days   & total\_coliform\_MCL\_share\_days     & voc\_MCL\_share\_days    & total\_coliform\_MR\_share\_days     & voc\_MR\_share\_days \\      
+                                                  & (1)                             & (2)                & (3)                                   & (4)                      & (5)                                  & (6)\\  
          \midrule 
-         post95 $\times$ sulfur\_unified   & -0.0495$^{**}$                  & -0.0603$^{**}$     & -0.0495$^{**}$                        & -0.0603$^{**}$           & -0.0495$^{**}$                       & -0.0603$^{**}$\\   
-                                           & (0.0225)                        & (0.0239)           & (0.0225)                              & (0.0239)                 & (0.0225)                             & (0.0239)\\   
+         post95 $\times$ sulfur\_unified\_mean    & -0.0495$^{**}$                  & -0.0603$^{**}$     & -0.0495$^{**}$                        & -0.0603$^{**}$           & -0.0495$^{**}$                       & -0.0603$^{**}$\\   
+                                                  & (0.0225)                        & (0.0239)           & (0.0225)                              & (0.0239)                 & (0.0225)                             & (0.0239)\\   
           \\
-         Observations                      & 8,169                           & 8,752              & 8,169                                 & 8,752                    & 8,169                                & 8,752\\  
-         R$^2$                             & 0.74724                         & 0.74142            & 0.74724                               & 0.74142                  & 0.74724                              & 0.74142\\  
-         Within R$^2$                      & 0.00499                         & 0.00707            & 0.00499                               & 0.00707                  & 0.00499                              & 0.00707\\  
-         F-test (1st stage)                & 38.023                          & 60.912             & 38.023                                & 60.912                   & 38.023                               & 60.912\\  
+         Observations                             & 8,169                           & 8,752              & 8,169                                 & 8,752                    & 8,169                                & 8,752\\  
+         R$^2$                                    & 0.74724                         & 0.74142            & 0.74724                               & 0.74142                  & 0.74724                              & 0.74142\\  
+         Within R$^2$                             & 0.00499                         & 0.00707            & 0.00499                               & 0.00707                  & 0.00499                              & 0.00707\\  
+         F-test (1st stage)                       & 38.023                          & 60.912             & 38.023                                & 60.912                   & 38.023                               & 60.912\\  
           \\
-         PWSID fixed effects               & $\checkmark$                    & $\checkmark$       & $\checkmark$                          & $\checkmark$             & $\checkmark$                         & $\checkmark$\\   
-         STATE\_CODE fixed effects         & $\checkmark$                    & $\checkmark$       & $\checkmark$                          & $\checkmark$             & $\checkmark$                         & $\checkmark$\\   
-         year fixed effects                & $\checkmark$                    & $\checkmark$       & $\checkmark$                          & $\checkmark$             & $\checkmark$                         & $\checkmark$\\   
+         PWSID fixed effects                      & $\checkmark$                    & $\checkmark$       & $\checkmark$                          & $\checkmark$             & $\checkmark$                         & $\checkmark$\\   
+         STATE\_CODE fixed effects                & $\checkmark$                    & $\checkmark$       & $\checkmark$                          & $\checkmark$             & $\checkmark$                         & $\checkmark$\\   
+         year fixed effects                       & $\checkmark$                    & $\checkmark$       & $\checkmark$                          & $\checkmark$             & $\checkmark$                         & $\checkmark$\\   
          \bottomrule
       \end{tabular}
    \end{adjustbox}

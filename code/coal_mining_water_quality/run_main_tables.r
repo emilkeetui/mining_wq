@@ -230,9 +230,9 @@ nonmine_note <- paste0(
 )
 
 sample_specs <- list(
-  list(sample="dwnstrm",        dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream", instr="post95:sulfur_unified", titlesamp="CWSs at most one HUC12 down-stream"),
-  list(sample="dwnstrmcolocate",dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified",  instr="post95:sulfur_unified", titlesamp="downstream and colocated PWS's"),
-  list(sample="dwnstrm2step",   dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream", instr="post95:sulfur_unified", titlesamp="CWSs at most two HUC12's downstream of coal mines")
+  list(sample="dwnstrm",        dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most one HUC12 down-stream"),
+  list(sample="dwnstrmcolocate",dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified_mean",  instr="post95:sulfur_unified_mean", titlesamp="downstream and colocated PWS's"),
+  list(sample="dwnstrm2step",   dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most two HUC12's downstream of coal mines")
 )
 vio_specs <- list(
   list(name="minevio",    allcat=c("nitrates_share_days","arsenic_share_days","inorganic_chemicals_share_days","radionuclides_share_days"),             mcl=c("nitrates_MCL_share_days","arsenic_MCL_share_days","inorganic_chemicals_MCL_share_days","radionuclides_MCL_share_days"),             mr=c("nitrates_MR_share_days","arsenic_MR_share_days","inorganic_chemicals_MR_share_days","radionuclides_MR_share_days"),             titlevio="mining violations"),

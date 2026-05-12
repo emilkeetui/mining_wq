@@ -234,34 +234,65 @@ prod_cols = ['production_short_tons_coal_upstream', 'num_coal_mines_upstream',
 fin[prod_cols] = fin[prod_cols].fillna(0)
 
 ############################################################
+# Save (huc12, fromhuc, year) long file BEFORE collapse.
+# Needed downstream for PWSID-level dedup'd sum aggregates.
+# Each row carries: the mine count, production, and sulfur measured
+# in the single upstream HUC identified by fromhuc.
+############################################################
+long_cols = ['huc12', 'fromhuc', 'minehuc', 'year',
+             'num_coal_mines_upstream', 'production_short_tons_coal_upstream',
+             'sulfur_upstream', 'btu_upstream']
+fin_long = fin[long_cols].copy()
+fin_long = fin_long.dropna(subset=['fromhuc'])
+fin_long['huc12']   = fin_long['huc12'].astype(str)
+fin_long['fromhuc'] = fin_long['fromhuc'].astype(str)
+fin_long['year']    = fin_long['year'].astype('int64')
+fin_long.to_parquet("Z:/ek559/mining_wq/clean_data/huc_fromhuc_long.parquet",
+                    index=False, engine="pyarrow")
+print("Wrote huc_fromhuc_long.parquet:", len(fin_long), "rows")
+
+############################################################
 # collapse down to the huc-year level
 # ##########################################################
-# upstream coal production is the average of the
-# coal produced in the huc12's directly upstream
+# _mean: average across upstream HUCs (legacy definition)
+# _sum:  sum across upstream HUCs (new definition; sulfur_sum is
+#        mean over upstream HUCs with measured (non-zero) sulfur)
 
-fin = fin.groupby(['huc12', 'minehuc', 'year'], as_index=False).agg(btu_colocated=('btu_colocated', 'mean'),
-                                                         sulfur_colocated=('sulfur_colocated', 'mean'),
-                                                         btu_upstream=('btu_upstream', 'mean'),
-                                                         sulfur_upstream=('sulfur_upstream', 'mean'),
-                                                         production_short_tons_coal_colocated=('production_short_tons_coal_colocated', 'mean'),
-                                                         num_coal_mines_colocated=('num_coal_mines_colocated', 'mean'),
-                                                         production_short_tons_coal_upstream=('production_short_tons_coal_upstream', 'mean'),
-                                                         num_coal_mines_upstream=('num_coal_mines_upstream', 'mean'))
+def _mean_nonzero(s):
+    s2 = s[s != 0]
+    return s2.mean() if len(s2) > 0 else 0.0
 
-fin['sulfur_unified'] = np.where((fin['sulfur_upstream']!=0) & (fin['sulfur_colocated']!=0),
-                                 fin[['sulfur_upstream', 'sulfur_colocated']].mean(axis=1),
-                                 fin[['sulfur_upstream', 'sulfur_colocated']].max(axis=1))
+fin = fin.groupby(['huc12', 'minehuc', 'year'], as_index=False).agg(
+    btu_colocated=('btu_colocated', 'mean'),
+    sulfur_colocated=('sulfur_colocated', 'mean'),
+    btu_upstream_mean=('btu_upstream', 'mean'),
+    sulfur_upstream_mean=('sulfur_upstream', 'mean'),
+    sulfur_upstream_sum=('sulfur_upstream', _mean_nonzero),
+    production_short_tons_coal_colocated=('production_short_tons_coal_colocated', 'mean'),
+    num_coal_mines_colocated=('num_coal_mines_colocated', 'mean'),
+    production_short_tons_coal_upstream_mean=('production_short_tons_coal_upstream', 'mean'),
+    production_short_tons_coal_upstream_sum=('production_short_tons_coal_upstream', 'sum'),
+    num_coal_mines_upstream_mean=('num_coal_mines_upstream', 'mean'),
+    num_coal_mines_upstream_sum=('num_coal_mines_upstream', 'sum'),
+)
 
-fin['btu_unified'] = np.where((fin['btu_upstream']!=0) & (fin['btu_colocated']!=0),
-                                 fin[['btu_upstream', 'btu_colocated']].mean(axis=1),
-                                 fin[['btu_upstream', 'btu_colocated']].max(axis=1))
+# Unified rule: mean of upstream and colocated if both nonzero, else max.
+# Applied separately for _mean and _sum upstream variants.
+def _unified(df, up_col, co_col):
+    return np.where((df[up_col] != 0) & (df[co_col] != 0),
+                    df[[up_col, co_col]].mean(axis=1),
+                    df[[up_col, co_col]].max(axis=1))
 
-fin['num_coal_mines_unified'] = np.where((fin['num_coal_mines_upstream']!=0) & (fin['num_coal_mines_colocated']!=0),
-                                 fin[['num_coal_mines_upstream', 'num_coal_mines_colocated']].mean(axis=1),
-                                 fin[['num_coal_mines_upstream', 'num_coal_mines_colocated']].max(axis=1))
-
-fin['production_short_tons_coal_unified'] = np.where((fin['production_short_tons_coal_upstream']!=0) & (fin['production_short_tons_coal_colocated']!=0),
-                                 fin[['production_short_tons_coal_upstream', 'production_short_tons_coal_colocated']].mean(axis=1),
-                                 fin[['production_short_tons_coal_upstream', 'production_short_tons_coal_colocated']].max(axis=1))
+fin['sulfur_unified_mean']     = _unified(fin, 'sulfur_upstream_mean', 'sulfur_colocated')
+fin['sulfur_unified_sum']      = _unified(fin, 'sulfur_upstream_sum',  'sulfur_colocated')
+fin['btu_unified']             = _unified(fin, 'btu_upstream_mean',   'btu_colocated')
+fin['num_coal_mines_unified_mean'] = _unified(
+    fin, 'num_coal_mines_upstream_mean', 'num_coal_mines_colocated')
+fin['num_coal_mines_unified_sum'] = _unified(
+    fin, 'num_coal_mines_upstream_sum',  'num_coal_mines_colocated')
+fin['production_short_tons_coal_unified_mean'] = _unified(
+    fin, 'production_short_tons_coal_upstream_mean', 'production_short_tons_coal_colocated')
+fin['production_short_tons_coal_unified_sum']  = _unified(
+    fin, 'production_short_tons_coal_upstream_sum',  'production_short_tons_coal_colocated')
 
 fin.to_parquet("Z:/ek559/mining_wq/clean_data/huc_coal_charac_geom_match.parquet")

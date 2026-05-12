@@ -94,14 +94,28 @@ mine_sulfur = (
 d2_chars = d2_mine.merge(mine_sulfur, on="mine_huc12", how="left")
 d2_chars = d2_chars.merge(coal_prod, on="mine_huc12", how="left")  # adds year, num_coal_mines, production
 
-# Aggregate across all mine HUCs feeding each D2 (mean per D2 × year)
+# Dedup (D2, mine_huc12) pairs so a mine reachable via multiple D1 paths
+# is counted once in the _sum aggregates.
+d2_chars_dedup = d2_chars.drop_duplicates(subset=["D2_huc12", "mine_huc12", "year"])
+
+# Aggregate across all mine HUCs feeding each D2.
+# _mean: average across mine HUCs (legacy).
+# _sum:  sum across mine HUCs (count/production); sulfur is mean over
+#        mine HUCs with non-zero sulfur measurement.
+def _mean_nonzero(s):
+    s2 = s[s != 0]
+    return s2.mean() if len(s2) > 0 else 0.0
+
 d2_chars = (
-    d2_chars.groupby(["D2_huc12", "year"])
+    d2_chars_dedup.groupby(["D2_huc12", "year"])
     .agg(
-        sulfur_upstream=("sulfur_colocated",                     "mean"),
-        btu_upstream=("btu_colocated",                           "mean"),
-        num_coal_mines_upstream=("num_coal_mines",               "mean"),
-        production_short_tons_coal_upstream=("production_short_tons_coal", "mean"),
+        sulfur_upstream_mean=("sulfur_colocated",                     "mean"),
+        sulfur_upstream_sum=("sulfur_colocated",                      _mean_nonzero),
+        btu_upstream=("btu_colocated",                                "mean"),
+        num_coal_mines_upstream_mean=("num_coal_mines",               "mean"),
+        num_coal_mines_upstream_sum=("num_coal_mines",                "sum"),
+        production_short_tons_coal_upstream_mean=("production_short_tons_coal", "mean"),
+        production_short_tons_coal_upstream_sum=("production_short_tons_coal",  "sum"),
     )
     .reset_index()
     .rename(columns={"D2_huc12": "huc12"})
@@ -114,11 +128,14 @@ d2_chars["num_coal_mines_colocated"]             = 0.0
 d2_chars["production_short_tons_coal_colocated"] = 0.0
 
 # Unified = upstream (since colocated = 0)
-d2_chars["sulfur_unified"]                       = d2_chars["sulfur_upstream"]
-d2_chars["btu_unified"]                          = d2_chars["btu_upstream"]
-d2_chars["num_coal_mines_unified"]               = d2_chars["num_coal_mines_upstream"]
-d2_chars["production_short_tons_coal_unified"]   = d2_chars["production_short_tons_coal_upstream"]
-d2_chars["post95"]                               = (d2_chars["year"] >= 1995).astype(int)
+d2_chars["sulfur_unified_mean"]                       = d2_chars["sulfur_upstream_mean"]
+d2_chars["sulfur_unified_sum"]                        = d2_chars["sulfur_upstream_sum"]
+d2_chars["btu_unified"]                               = d2_chars["btu_upstream"]
+d2_chars["num_coal_mines_unified_mean"]               = d2_chars["num_coal_mines_upstream_mean"]
+d2_chars["num_coal_mines_unified_sum"]                = d2_chars["num_coal_mines_upstream_sum"]
+d2_chars["production_short_tons_coal_unified_mean"]   = d2_chars["production_short_tons_coal_upstream_mean"]
+d2_chars["production_short_tons_coal_unified_sum"]    = d2_chars["production_short_tons_coal_upstream_sum"]
+d2_chars["post95"]                                    = (d2_chars["year"] >= 1995).astype(int)
 
 print(f"  D2×year rows with coal data: {len(d2_chars)}")
 
@@ -313,26 +330,67 @@ panel  = panel.merge(water_sys, on="PWSID", how="left")
 panel  = panel.merge(num_fac,   on=["PWSID", "year"], how="left")
 panel["num_facilities"] = panel["num_facilities"].fillna(1)
 
-# Average coal characteristics across all D2 intakes per PWSID × year
+# _mean variant: average across D2 intakes per PWSID × year
 pwsid_coal = (
     pwsid_huc.merge(d2_chars, on="huc12", how="left")
     .groupby(["PWSID", "year"])
     .agg(
         sulfur_colocated=("sulfur_colocated",                     "mean"),
-        sulfur_upstream=("sulfur_upstream",                       "mean"),
-        sulfur_unified=("sulfur_unified",                         "mean"),
+        sulfur_upstream_mean=("sulfur_upstream_mean",             "mean"),
+        sulfur_unified_mean=("sulfur_unified_mean",               "mean"),
         btu_colocated=("btu_colocated",                           "mean"),
         btu_upstream=("btu_upstream",                             "mean"),
         btu_unified=("btu_unified",                               "mean"),
         num_coal_mines_colocated=("num_coal_mines_colocated",     "mean"),
-        num_coal_mines_upstream=("num_coal_mines_upstream",       "mean"),
-        num_coal_mines_unified=("num_coal_mines_unified",         "mean"),
+        num_coal_mines_upstream_mean=("num_coal_mines_upstream_mean", "mean"),
+        num_coal_mines_unified_mean=("num_coal_mines_unified_mean",   "mean"),
         production_short_tons_coal_colocated=("production_short_tons_coal_colocated", "mean"),
-        production_short_tons_coal_upstream=("production_short_tons_coal_upstream",   "mean"),
-        production_short_tons_coal_unified=("production_short_tons_coal_unified",     "mean"),
+        production_short_tons_coal_upstream_mean=("production_short_tons_coal_upstream_mean", "mean"),
+        production_short_tons_coal_unified_mean=("production_short_tons_coal_unified_mean", "mean"),
     )
     .reset_index()
 )
+
+# _sum variant with mine-HUC dedup: for each PWSID, build the unique set of
+# mine HUCs that feed any of its D2 intakes, then sum mines/production
+# (mean-over-non-zero for sulfur) across that set.
+# d2_mine is the (D2_huc12, D1_huc12, mine_huc12) frame from Step 1.
+pws_d2_mine = (
+    pwsid_huc.rename(columns={"huc12": "D2_huc12"})
+    .merge(d2_mine, on="D2_huc12", how="inner")
+    [["PWSID", "mine_huc12"]]
+    .drop_duplicates()
+)
+# Join to coal_prod (mine_huc12 × year) to get mine/production per (PWSID, mine_huc12, year)
+pws_mine_prod = pws_d2_mine.merge(coal_prod, on="mine_huc12", how="left")
+# Sulfur (time-invariant) per mine HUC
+pws_mine_sulfur = pws_d2_mine.merge(mine_sulfur, on="mine_huc12", how="left")
+
+mines_sum_df = (
+    pws_mine_prod
+    .groupby(["PWSID", "year"], as_index=False)
+    .agg(
+        num_coal_mines_upstream_sum=("num_coal_mines",               "sum"),
+        production_short_tons_coal_upstream_sum=("production_short_tons_coal", "sum"),
+    )
+)
+sulfur_sum_df = (
+    pws_mine_sulfur[pws_mine_sulfur["sulfur_colocated"].fillna(0) != 0]
+    .groupby(["PWSID"], as_index=False)
+    .agg(sulfur_upstream_sum=("sulfur_colocated", "mean"))
+)
+
+pwsid_coal = pwsid_coal.merge(mines_sum_df, on=["PWSID", "year"], how="left")
+pwsid_coal = pwsid_coal.merge(sulfur_sum_df, on=["PWSID"], how="left")
+
+# Fill mine/production sums with 0 where no upstream mine HUC matched.
+for c in ["num_coal_mines_upstream_sum", "production_short_tons_coal_upstream_sum"]:
+    pwsid_coal[c] = pwsid_coal[c].fillna(0)
+
+# Unified _sum = upstream_sum (D2 has no colocated mines by sample definition)
+pwsid_coal["num_coal_mines_unified_sum"]             = pwsid_coal["num_coal_mines_upstream_sum"]
+pwsid_coal["production_short_tons_coal_unified_sum"] = pwsid_coal["production_short_tons_coal_upstream_sum"]
+pwsid_coal["sulfur_unified_sum"]                     = pwsid_coal["sulfur_upstream_sum"]
 
 panel = panel.merge(pwsid_coal, on=["PWSID", "year"], how="left")
 panel = panel.merge(vio_agg,   on=["PWSID", "year"], how="left")
@@ -375,7 +433,8 @@ panel.to_parquet(str(OUT_PATH), index=False, engine="pyarrow")
 result = pd.read_parquet(str(OUT_PATH), engine="pyarrow")
 print(f"\nWritten {len(result):,} rows × {result.shape[1]} columns to {OUT_PATH}")
 print(f"  2-step CWSs:            {result['PWSID'].nunique()}")
-print(f"  sulfur_unified > 0:     {(result['sulfur_unified'].fillna(0) > 0).sum()}")
+print(f"  sulfur_unified_mean > 0: {(result['sulfur_unified_mean'].fillna(0) > 0).sum()}")
+print(f"  sulfur_unified_sum  > 0: {(result['sulfur_unified_sum'].fillna(0) > 0).sum()}")
 mcl_check = "nitrates_MCL_share_days"
 if mcl_check in result.columns:
     print(f"  Nitrates MCL vio rows:  {(result[mcl_check] > 0).sum()}")
