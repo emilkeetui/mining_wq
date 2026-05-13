@@ -18,23 +18,22 @@
                                                                              & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
          
          \midrule 
-         num\_coal\_mines\_upstream\_mean                                    & -0.1751       &               & -13.25        & -0.1345       &               & -7.773\\   
-                                                                             & (0.2201)      &               & (9.078)       & (2.612)       &               & (16.85)\\   
-         post95 $\times$ sulfur\_unified\_mean                               &               & 0.6559$^{**}$ &               &               & 0.4684        &   \\   
-                                                                             &               & (0.3242)      &               &               & (1.008)       &   \\   
+         num\_coal\_mines\_upstream\_mean                                    & -0.1573       &               & -14.69        & -0.1918       &               & -8.830\\   
+                                                                             & (0.1985)      &               & (10.97)       & (2.377)       &               & (18.41)\\   
+         post95 $\times$ sulfur\_unified\_mean                               &               & 0.6250$^{**}$ &               &               & 0.4681        &   \\   
+                                                                             &               & (0.3090)      &               &               & (0.9650)      &   \\   
          
-         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_mean     &               &               & 4.83          &               &               & 6.34\\  
+         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_mean     &               &               & 3.40          &               &               & 4.68\\  
          
           \\
          
-         Observations                                                        & 8,169         & 8,169         & 8,169         & 8,752         & 8,752         & 8,752\\  
-         R$^2$                                                               & 0.16216       & 0.16299       & 0.16299       & 0.13663       & 0.13665       & 0.13665\\  
-         Within R$^2$                                                        & 0.00145       & 0.00245       & 0.00245       & 0.00075       & 0.00078       & 0.00078\\  
+         Observations                                                        & 8,514         & 8,514         & 8,514         & 9,120         & 9,120         & 9,120\\  
+         R$^2$                                                               & 0.16435       & 0.16514       & 0.16514       & 0.13707       & 0.13709       & 0.13709\\  
+         Within R$^2$                                                        & 0.00144       & 0.00239       & 0.00239       & 0.00072       & 0.00075       & 0.00075\\  
          
           \\
          
          PWSID fixed effects                                                 & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         STATE\_CODE fixed effects                                           & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
          year fixed effects                                                  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
          
          \bottomrule
@@ -46,7 +45,7 @@
       
    \end{adjustbox}
       {\tiny\linespread{1}\selectfont \par \raggedright 
-   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is days out of the year in violation. Instrument is post95 interacted with mean coal sulfur content of the intake watershed (post95 x sulfur unified). All regressions include PWSID, year, and state fixed effects. Standard errors clustered at PWSID level. Sample period 1985--2005. The number of observations differs across columns because non-mining violation rules (total coliform, VOCs) were implemented during the sample period; years prior to each rule's implementation are coded as missing and excluded from the regression.}
+   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is days out of the year in violation. Instrument is post95 interacted with mean coal sulfur content of the intake watershed (post95 x sulfur unified). All regressions include PWSID and year fixed effects. Standard errors clustered at PWSID level. Sample period 1985--2005. The number of observations differs across columns because non-mining violation rules (total coliform, VOCs) were implemented during the sample period; years prior to each rule's implementation are coded as missing and excluded from the regression.}
    
 \end{table}
 

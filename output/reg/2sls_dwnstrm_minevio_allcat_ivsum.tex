@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{2sls_dwnstrm_minevio_allcat_ivsum} Effect of coal mines on mining violations (any violation category, CWSs at most one HUC12 down-stream)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccccccccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Nitrates} & \multicolumn{3}{c}{Arsenic} & \multicolumn{3}{c}{Inorganic chemicals} & \multicolumn{3}{c}{Radionuclides}\\
+         
+                                                                            & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF                    & 2SLS\\  
+         
+         \midrule 
+         num\_coal\_mines\_upstream\_sum                                    & 3.319$^{*}$   &               & 19.85$^{**}$  & 3.501$^{**}$  &               & 14.60$^{*}$   & 3.476$^{**}$  &               & 11.79         & 2.873         &                       & -2.390\\   
+                                                                            & (1.810)       &               & (9.491)       & (1.701)       &               & (7.953)       & (1.751)       &               & (8.697)       & (2.295)       &                       & (10.82)\\   
+         post95 $\times$ sulfur\_unified\_sum                               &               & -4.772$^{**}$ &               &               & -3.511$^{*}$  &               &               & -2.834        &               &               & 0.5745                &   \\   
+                                                                            &               & (2.199)       &               &               & (1.937)       &               &               & (2.121)       &               &               & (2.572)               &   \\   
+         
+         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_sum     &               &               & 27.52         &               &               & 27.52         &               &               & 27.52         &               &                       & 27.52\\  
+         
+          \\
+         
+         Observations                                                       & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225                 & 6,225\\  
+         R$^2$                                                              & 0.15791       & 0.15854       & 0.15854       & 0.17227       & 0.17191       & 0.17191       & 0.18769       & 0.18704       & 0.18704       & 0.24832       & 0.24760               & 0.24760\\  
+         Within R$^2$                                                       & 0.00122       & 0.00197       & 0.00197       & 0.00203       & 0.00160       & 0.00160       & 0.00167       & 0.00088       & 0.00088       & 0.00098       & $3.09\times 10^{-5}$  & $3.09\times 10^{-5}$\\   
+         
+          \\
+         
+         PWSID fixed effects                                                & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         year fixed effects                                                 & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is days out of the year in violation. Instrument is post95 interacted with mean coal sulfur content of the intake watershed (post95 x sulfur unified). All regressions include PWSID and year fixed effects. Standard errors clustered at PWSID level. Sample period 1985--2005.}
+   
+\end{table}
+
+

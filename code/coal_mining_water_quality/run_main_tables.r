@@ -86,7 +86,7 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
                                   storage_list_name = NULL, subheader = NULL) {
   controls            <- c("num_facilities")
   drop_controls_exact <- paste0("^(", paste(controls, collapse = "|"), ")$")
-  fe_str              <- "PWSID + STATE_CODE + year"
+  fe_str              <- "PWSID + year"
   controls_str        <- paste(controls, collapse = " + ")
   result <- list()
 
@@ -217,7 +217,7 @@ std_note <- paste0(
   "Dependent variable is days out of the year in violation. ",
   "Instrument is post95 interacted with mean coal sulfur content of the intake watershed ",
   "(post95 x sulfur unified). ",
-  "All regressions include PWSID, year, and state fixed effects. ",
+  "All regressions include PWSID and year fixed effects. ",
   "Standard errors clustered at PWSID level. ",
   "Sample period 1985--2005."
 )
@@ -230,9 +230,11 @@ nonmine_note <- paste0(
 )
 
 sample_specs <- list(
-  list(sample="dwnstrm",        dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most one HUC12 down-stream"),
-  list(sample="dwnstrmcolocate",dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified_mean",  instr="post95:sulfur_unified_mean", titlesamp="downstream and colocated PWS's"),
-  list(sample="dwnstrm2step",   dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most two HUC12's downstream of coal mines")
+  list(sample="dwnstrm",        suffix="",       dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most one HUC12 down-stream"),
+  list(sample="dwnstrm",        suffix="_ivsum", dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_sum",  instr="post95:sulfur_unified_sum",  titlesamp="CWSs at most one HUC12 down-stream"),
+  list(sample="dwnstrmcolocate",suffix="",       dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified_mean",  instr="post95:sulfur_unified_mean", titlesamp="downstream and colocated PWS's"),
+  list(sample="dwnstrm2step",   suffix="",       dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most two HUC12's downstream of coal mines"),
+  list(sample="dwnstrm2step",   suffix="_ivsum", dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream_sum",  instr="post95:sulfur_unified_sum",  titlesamp="CWSs at most two HUC12's downstream of coal mines")
 )
 vio_specs <- list(
   list(name="minevio",    allcat=c("nitrates_share_days","arsenic_share_days","inorganic_chemicals_share_days","radionuclides_share_days"),             mcl=c("nitrates_MCL_share_days","arsenic_MCL_share_days","inorganic_chemicals_MCL_share_days","radionuclides_MCL_share_days"),             mr=c("nitrates_MR_share_days","arsenic_MR_share_days","inorganic_chemicals_MR_share_days","radionuclides_MR_share_days"),             titlevio="mining violations"),
@@ -246,9 +248,9 @@ cat_specs <- list(
 
 for (sp in sample_specs) {
   for (vp in vio_specs) {
-    fs_store_name <- paste0("fs_store_", sp$sample, "_", vp$name)
+    fs_store_name <- paste0("fs_store_", sp$sample, sp$suffix, "_", vp$name)
     for (cp in cat_specs) {
-      fname     <- paste0("2sls_", sp$sample, "_", vp$name, "_", cp$name)
+      fname     <- paste0("2sls_", sp$sample, "_", vp$name, "_", cp$name, sp$suffix)
       tab_title <- paste0("Effect of coal mines on ", vp$titlevio, " (", cp$titlecat, ", ", sp$titlesamp, ")")
       varlist   <- vp[[cp$varkey]]
       cat("\nRunning:", fname, "\n")
@@ -259,7 +261,7 @@ for (sp in sample_specs) {
                            storage_list_name = fs_store_name,
                            subheader         = cp$titlecat)
     }
-    fs_outfile <- paste0("fs_", sp$sample, "_", vp$name)
+    fs_outfile <- paste0("fs_", sp$sample, "_", vp$name, sp$suffix)
     fs_title   <- paste0("First Stage: ", vp$titlevio, " (", sp$titlesamp, ")")
     cat("\nProducing first-stage table:", fs_outfile, "\n")
     first_stage_table(
