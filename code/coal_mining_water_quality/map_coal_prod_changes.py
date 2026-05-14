@@ -725,3 +725,99 @@ out_path = "Z:/ek559/mining_wq/output/fig/proportionatecircleprod_huc12_1985_200
 plt.savefig(out_path, dpi=200, bbox_inches="tight")
 plt.close()
 print(f"Saved: {out_path}")
+
+##########################################################################
+# Proportionate circle map: change in coal PRODUCTION, 1985-2005
+# All mining HUC12s (any HUC12 with > 0 production in at least one year)
+##########################################################################
+
+coal_all_full = pd.read_csv("Z:/ek559/mining_wq/clean_data/coal_huc_prod.csv", dtype={"huc12": str})
+
+# Restrict to HUC12s with positive production in at least one year 1985-2005
+active_all = (
+    coal_all_full[coal_all_full["year"].between(1985, 2005)]
+    .groupby("huc12")["production_short_tons_coal"]
+    .max()
+    .pipe(lambda s: s[s > 0].index)
+)
+
+coal_active = coal_all_full[coal_all_full["huc12"].isin(active_all)].copy()
+
+prod_1985_all = (coal_active[coal_active["year"] == 1985]
+                 .groupby("huc12")["production_short_tons_coal"].max()
+                 .rename("prod1985"))
+prod_2005_all = (coal_active[coal_active["year"] == 2005]
+                 .groupby("huc12")["production_short_tons_coal"].max()
+                 .rename("prod2005"))
+
+mine_chg_all = (pd.concat([prod_1985_all, prod_2005_all], axis=1)
+                .reset_index()
+                .fillna(0))
+mine_chg_all["change"] = mine_chg_all["prod2005"] - mine_chg_all["prod1985"]
+mine_chg_all["mag"] = mine_chg_all["change"].abs()
+print(f"All active mine HUC12s: {len(mine_chg_all)}  "
+      f"(increase: {(mine_chg_all['change'] > 0).sum()}, "
+      f"decrease: {(mine_chg_all['change'] < 0).sum()})")
+
+huc_attrs_all = pyogrio.read_dataframe(
+    r"Z:\ek559\sdwa_violations\WBD_HUC12_CONUS_pulled10262020\WBD_HUC12_CONUS_pulled10262020.shp",
+    columns=["huc12"]
+)
+huc_attrs_all["huc12"] = huc_attrs_all["huc12"].astype(str).str.strip()
+huc_attrs_all = huc_attrs_all[huc_attrs_all["huc12"].isin(mine_chg_all["huc12"])].copy()
+huc_attrs_all = huc_attrs_all.to_crs("EPSG:5070")
+huc_attrs_all["geometry"] = huc_attrs_all["geometry"].centroid
+
+mine_pts_all = huc_attrs_all.merge(mine_chg_all, on="huc12")
+mine_pts_all = gpd.GeoDataFrame(mine_pts_all, geometry="geometry", crs="EPSG:5070")
+print(f"All mine HUC12 centroids matched: {len(mine_pts_all)}")
+
+mag_nonzero_all = mine_pts_all.loc[mine_pts_all["mag"] > 0, "mag"].to_numpy()
+vmin_a, vmax_a = float(mag_nonzero_all.min()), float(mag_nonzero_all.max())
+S_MIN_A, S_MAX_A = 15, 500
+mine_pts_all["s"] = np.where(
+    mine_pts_all["mag"] <= 0, 0.0,
+    S_MIN_A + (mine_pts_all["mag"] - vmin_a) * (S_MAX_A - S_MIN_A) / (vmax_a - vmin_a + 1e-12)
+)
+
+fig, ax = plt.subplots(figsize=(11, 7))
+states_albers.plot(ax=ax, facecolor="white", edgecolor="0.65", linewidth=0.5)
+
+inc_all = mine_pts_all[mine_pts_all["change"] > 0]
+dec_all = mine_pts_all[mine_pts_all["change"] < 0]
+if not dec_all.empty:
+    dec_all.plot(ax=ax, markersize=dec_all["s"], color="tomato",    alpha=0.75, marker="o", linewidth=0)
+if not inc_all.empty:
+    inc_all.plot(ax=ax, markersize=inc_all["s"], color="steelblue", alpha=0.75, marker="o", linewidth=0)
+
+ax.set_axis_off()
+ax.set_title(
+    "Change in coal production (short tons) by HUC12, 1985 to 2005\n"
+    "All active mine HUC12s  |  Blue = increase, Red = decrease",
+    fontsize=11
+)
+
+ref_mags_a = np.array([vmax_a * 0.25, vmax_a * 0.5, vmax_a])
+ref_s_a    = S_MIN_A + (ref_mags_a - vmin_a) * (S_MAX_A - S_MIN_A) / (vmax_a - vmin_a + 1e-12)
+size_handles_a = [ax.scatter([], [], s=s, color="grey", alpha=0.6, edgecolors="k") for s in ref_s_a]
+size_labels_a  = [f"{int(v):,.0f} short tons" for v in ref_mags_a]
+leg1_a = ax.legend(size_handles_a, size_labels_a, title="|Change|", loc="lower left",
+                   bbox_to_anchor=(0.01, 0.05), frameon=True, fontsize=8)
+ax.add_artist(leg1_a)
+
+color_handles_a = [
+    Line2D([0], [0], marker="o", color="w", markerfacecolor="steelblue", markersize=9, label="Increase"),
+    Line2D([0], [0], marker="o", color="w", markerfacecolor="tomato",    markersize=9, label="Decrease"),
+]
+ax.legend(handles=color_handles_a, title="Direction", loc="lower right", fontsize=8)
+
+fig.text(0.5, 0.01,
+         "Circle area proportional to absolute change in coal production (short tons), 1985–2005.\n"
+         "All HUC12s with positive coal production in at least one year, 1985–2005.",
+         ha="center", fontsize=8, color="0.4")
+
+plt.tight_layout()
+out_path_all = "Z:/ek559/mining_wq/output/fig/proportionatecircleprod_diff_allminehuc12_1985_2005.png"
+plt.savefig(out_path_all, dpi=200, bbox_inches="tight")
+plt.close()
+print(f"Saved: {out_path_all}")
