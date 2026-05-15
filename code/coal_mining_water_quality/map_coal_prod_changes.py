@@ -821,3 +821,138 @@ out_path_all = "Z:/ek559/mining_wq/output/fig/proportionatecircleprod_diff_allmi
 plt.savefig(out_path_all, dpi=200, bbox_inches="tight")
 plt.close()
 print(f"Saved: {out_path_all}")
+
+##########################################################################
+# Proportionate circle maps (2-panel): upstream mine HUC12s, 1985-2005
+# Panel 1: change in coal production | Panel 2: change in active mine count
+# Upstream HUC12s = mine HUC12s upstream of downstream-only 2SLS CWSs
+# (reuses upstream_mine_hucs and coal from the section above)
+##########################################################################
+
+coal_up = coal_all[coal_all["huc12"].isin(upstream_mine_hucs)].copy()
+
+prod_1985_up = (coal_up[coal_up["year"] == 1985]
+                .groupby("huc12")["production_short_tons_coal"].max()
+                .rename("prod1985"))
+prod_2005_up = (coal_up[coal_up["year"] == 2005]
+                .groupby("huc12")["production_short_tons_coal"].max()
+                .rename("prod2005"))
+
+mine_1985_up = (coal_up[coal_up["year"] == 1985]
+                .groupby("huc12")["num_coal_mines"].max()
+                .rename("mines1985"))
+mine_2005_up = (coal_up[coal_up["year"] == 2005]
+                .groupby("huc12")["num_coal_mines"].max()
+                .rename("mines2005"))
+
+upstream_chg = (pd.concat([prod_1985_up, prod_2005_up, mine_1985_up, mine_2005_up], axis=1)
+                .reset_index()
+                .fillna(0))
+upstream_chg["prod_change"]  = upstream_chg["prod2005"]  - upstream_chg["prod1985"]
+upstream_chg["mines_change"] = upstream_chg["mines2005"] - upstream_chg["mines1985"]
+upstream_chg["prod_mag"]     = upstream_chg["prod_change"].abs()
+upstream_chg["mines_mag"]    = upstream_chg["mines_change"].abs()
+print(f"Upstream HUC12s: {len(upstream_chg)}  "
+      f"prod increase: {(upstream_chg['prod_change'] > 0).sum()}, "
+      f"decrease: {(upstream_chg['prod_change'] < 0).sum()}  |  "
+      f"mine increase: {(upstream_chg['mines_change'] > 0).sum()}, "
+      f"decrease: {(upstream_chg['mines_change'] < 0).sum()}")
+
+huc_up = pyogrio.read_dataframe(
+    r"Z:\ek559\sdwa_violations\WBD_HUC12_CONUS_pulled10262020\WBD_HUC12_CONUS_pulled10262020.shp",
+    columns=["huc12"]
+)
+huc_up["huc12"] = huc_up["huc12"].astype(str).str.strip()
+huc_up = huc_up[huc_up["huc12"].isin(upstream_chg["huc12"])].copy()
+huc_up = huc_up.to_crs("EPSG:5070")
+huc_up["geometry"] = huc_up["geometry"].centroid
+
+up_pts = huc_up.merge(upstream_chg, on="huc12")
+up_pts = gpd.GeoDataFrame(up_pts, geometry="geometry", crs="EPSG:5070")
+print(f"Upstream mine HUC12 centroids matched: {len(up_pts)}")
+
+def scale_bubble_sizes(change_series, s_min=15, s_max=500):
+    """Scale |change| to scatter marker sizes; return sizes array and (vmin, vmax) of nonzero mags."""
+    mag = change_series.abs()
+    nonzero = mag[mag > 0].to_numpy()
+    vmin_s, vmax_s = nonzero.min(), nonzero.max()
+    sizes = np.where(
+        mag <= 0, 0.0,
+        s_min + (mag - vmin_s) * (s_max - s_min) / (vmax_s - vmin_s + 1e-12)
+    )
+    return sizes, vmin_s, vmax_s
+
+S_MIN2, S_MAX2 = 15, 500
+prod_sizes_up, prod_vmin_up, prod_vmax_up = scale_bubble_sizes(up_pts["prod_change"],  S_MIN2, S_MAX2)
+mine_sizes_up, mine_vmin_up, mine_vmax_up = scale_bubble_sizes(up_pts["mines_change"], S_MIN2, S_MAX2)
+up_pts["s_prod"]  = prod_sizes_up
+up_pts["s_mines"] = mine_sizes_up
+
+bounds_up = up_pts.total_bounds
+buf_up = 150_000
+xlim_up = (bounds_up[0] - buf_up, bounds_up[2] + buf_up)
+ylim_up = (bounds_up[1] - buf_up, bounds_up[3] + buf_up)
+
+def draw_upstream_panel(ax, pts, s_col, change_col, vmin_v, vmax_v,
+                        s_min, s_max, title, unit_label):
+    states_albers.plot(ax=ax, facecolor="white", edgecolor="0.65", linewidth=0.5)
+    inc = pts[pts[change_col] > 0]
+    dec = pts[pts[change_col] < 0]
+    if not dec.empty:
+        dec.plot(ax=ax, markersize=dec[s_col], color="tomato",    alpha=0.75, marker="o", linewidth=0)
+    if not inc.empty:
+        inc.plot(ax=ax, markersize=inc[s_col], color="steelblue", alpha=0.75, marker="o", linewidth=0)
+    ax.set_xlim(*xlim_up)
+    ax.set_ylim(*ylim_up)
+    ax.set_axis_off()
+    ax.set_title(title, fontsize=11)
+
+    ref_v = np.array([vmax_v * 0.25, vmax_v * 0.5, vmax_v])
+    ref_s = s_min + (ref_v - vmin_v) * (s_max - s_min) / (vmax_v - vmin_v + 1e-12)
+    sz_handles = [ax.scatter([], [], s=s, color="grey", alpha=0.6, edgecolors="k") for s in ref_s]
+    sz_labels  = [f"{int(v):,.0f} {unit_label}" for v in ref_v]
+    leg1 = ax.legend(sz_handles, sz_labels, title="|Change|", loc="lower left",
+                     bbox_to_anchor=(0.01, 0.05), frameon=True, fontsize=8)
+    ax.add_artist(leg1)
+
+    color_handles = [
+        Line2D([0], [0], marker="o", color="w", markerfacecolor="steelblue", markersize=9, label="Increase"),
+        Line2D([0], [0], marker="o", color="w", markerfacecolor="tomato",    markersize=9, label="Decrease"),
+    ]
+    ax.legend(handles=color_handles, title="Direction", loc="lower right", fontsize=8)
+
+# Panel 1: change in coal production (short tons)
+fig, ax1 = plt.subplots(1, 1, figsize=(11, 7))
+draw_upstream_panel(
+    ax=ax1, pts=up_pts, s_col="s_prod", change_col="prod_change",
+    vmin_v=prod_vmin_up, vmax_v=prod_vmax_up, s_min=S_MIN2, s_max=S_MAX2,
+    title="Change in coal production (short tons), 1985–2005\nMine HUC12s upstream of CWS intakes  |  Blue = increase, Red = decrease",
+    unit_label="short tons"
+)
+fig.text(0.5, 0.01,
+         "Circle area proportional to absolute change in coal production (short tons), 1985–2005.\n"
+         "Mine HUC12s upstream of CWS intakes in the downstream-only 2SLS regression sample.",
+         ha="center", fontsize=8, color="0.4")
+plt.tight_layout()
+out_prod = "Z:/ek559/mining_wq/output/fig/proportionatecircle_upstream_prod_huc12_1985_2005.png"
+plt.savefig(out_prod, dpi=200, bbox_inches="tight")
+plt.close()
+print(f"Saved: {out_prod}")
+
+# Panel 2: change in number of active coal mines
+fig, ax2 = plt.subplots(1, 1, figsize=(11, 7))
+draw_upstream_panel(
+    ax=ax2, pts=up_pts, s_col="s_mines", change_col="mines_change",
+    vmin_v=mine_vmin_up, vmax_v=mine_vmax_up, s_min=S_MIN2, s_max=S_MAX2,
+    title="Change in number of active coal mines, 1985–2005\nMine HUC12s upstream of CWS intakes  |  Blue = increase, Red = decrease",
+    unit_label="mines"
+)
+fig.text(0.5, 0.01,
+         "Circle area proportional to absolute change in number of active coal mines, 1985–2005.\n"
+         "Mine HUC12s upstream of CWS intakes in the downstream-only 2SLS regression sample.",
+         ha="center", fontsize=8, color="0.4")
+plt.tight_layout()
+out_mines = "Z:/ek559/mining_wq/output/fig/proportionatecircle_upstream_mines_huc12_1985_2005.png"
+plt.savefig(out_mines, dpi=200, bbox_inches="tight")
+plt.close()
+print(f"Saved: {out_mines}")
