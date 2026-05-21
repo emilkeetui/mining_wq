@@ -428,3 +428,80 @@ Total: roughly 12–15 focused hours before this explainer is self-contained.
 - Nested fixed-point (Rust's NFXP algorithm) — this model uses the two-step CCP shortcut, which explicitly avoids it
 - Mixed logit / simulation methods (Train Ch. 6+) — not used here
 - Multi-agent / game-theoretic dynamic models — the CWS is a single agent; the regulator is treated as an exogenous response function
+
+---
+
+## Counterfactuals
+
+### What the model supports
+
+The recovered primitives are `k_MR` (in units of `c(enf)=1`), the action-conditional
+transitions `P_0, P_1`, and the comply-CCPs. A counterfactual modifies one primitive,
+re-solves `V̄(enf) − V̄(no_enf)` via the AM inversion, plugs into
+`Pr(MR|s) = 1 / (1 + exp(−Δv̄(s)))`, and weights by the empirical state distribution
+to get aggregate MR rates (and counts, when multiplied by N PWSID-years).
+
+**Important scope limit:** only MR is modeled as a choice. MCL / health-based
+violations are not the agent's action — "comply" means test-and-report. CF results
+speak to monitoring behavior, not health-violation rates. Pair with the reduced-form
+MCL estimates if the audience expects "violations" to mean health violations.
+
+**Regulator exogeneity:** the transition matrices are a fixed response function. A
+real policy change might endogenously shift `P_1` (regulator reallocates inspections);
+the model assumes it does not. Flag in one sentence per CF.
+
+### Headline counterfactuals
+
+1. **Probability MR triggers enforcement +50%.** Modify the MR-action transition
+   matrix: `p_01^m, p_11^m × 1.5` (cap at 1). Directly raises `Δπ(s)`. Cleanest
+   policy interpretation — the lever is regulator inspection allocation / formal-action
+   thresholds. Headline CF.
+2. **Persistence of enforcement once entered.** Increase `p_11^c` and `p_11^m`.
+   Raises the discounted enforcement-burden gap in
+   `V̄(enf) − V̄(no_enf)`. Policy lever: longer enforcement
+   periods before return-to-compliance.
+3. **Eliminate the ARP shock.** Set first-stage residual `v̂_t = 0` and/or replay
+   post-1995 years at pre-ARP mining-exposure quartiles. Quantifies how much of the
+   post-95 MR change was driven by the mining channel vs. other forces.
+4. **Zero out mining exposure.** Assign all CWS-years to the lowest mining-exposure
+   quartile; predicted MR difference is the model's estimate of the mining channel on
+   monitoring choices.
+5. **Heterogeneity by mining-exposure quartile.** Report CF (1) separately by quartile.
+   Tests whether deterrence bites differently at high-exposure CWSs — the relevant
+   margin for targeting policy.
+
+### Severity-of-enforcement CF (demoted, used only as sensitivity)
+
+**Why kept on the menu.** A "50% more severe enforcement" CF (`c(enf): 1 → 1.5`) is
+interpretable without a dollar anchor: it says the regulator finds *some* combination
+of tools (longer site visits, mandatory operator training, public notice requirements,
+capital improvement orders) that collectively makes one period of enforcement 50% more
+burdensome to the CWS in whatever units the CWS already weights it. Equivalently, the
+ratio `k_MR / c(enf)` falls to two-thirds of its estimated value.
+
+**Why demoted.** Without a dollar anchor and without a named policy lever, this is a
+sufficient-statistic statement — defensible but vague about implementation. A referee
+can ask "what policy actually does that?" and the answer is necessarily a menu. The
+probability CF (#1 above) has a named, costable lever (inspection allocation) and a
+direct mapping to EPA decisions, so it carries the headline.
+
+**Two roles severity still plays:**
+
+- **Internal sensitivity check.** Does the model respond reasonably to changes in the
+  cost vector? Diagnostic for the AM inversion, not a policy claim.
+- **Upper-bound benchmark.** "If the regulator could costlessly amplify the deterrent
+  by 50%, MR falls by at most Y%." Frames the probability CF against a frictionless
+  benchmark.
+
+### Counterfactuals deliberately not run
+
+- **Anything that requires moving `k_comply` alone.** Only `k_comply − k_MR` is
+  identified; the absolute level of `k_comply` is not. A compliance-subsidy CF would
+  shift the intercept by a chosen amount and report the implied MR drop — interpretable
+  but again unit-less, and weaker than the probability CF for the same reason severity
+  was demoted.
+- **Dollar-denominated welfare statements.** Would require external calibration of
+  `c(enf)` from EPA administrative cost records or compliance-cost estimates. Separate
+  exercise; not required for the headline numbers.
+- **Discount-factor variation.** Available as a robustness column (`β ∈ {0.90, 0.95, 0.99}`),
+  not a policy CF.
