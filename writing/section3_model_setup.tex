@@ -1,0 +1,334 @@
+% ============================================================
+% Section 3 — Structural model setup
+% Bridges CWS dynamic programming problem to Hotz--Miller log-odds CCP
+% Author: EK   Date: 2026-05-20
+% Requires: amsmath, amssymb (and \citep from natbib/biblatex)
+% ============================================================
+
+\section{A Dynamic Model of CWS Compliance}
+\label{sec:model}
+
+\subsection{Environment}
+
+Time is discrete and indexed by $t = 1, 2, \ldots$. A community water system
+(CWS) $i$ chooses an action $a_{it} \in \{0, 1\}$ each period, where $a_{it} = 1$
+denotes \emph{compliance} (conducting tests and reporting them) and $a_{it} = 0$
+denotes \emph{negligence}, which produces a monitoring-and-reporting (MR)
+violation. Compliance carries a per-period administrative cost $k_{\text{comply}}$;
+negligence avoids this cost but raises the probability of future enforcement and
+carries an implicit reputational/operational cost $k_{\text{MR}}$.
+
+\paragraph{State space.} The CWS faces a state $s_{it} = (x_{it}, \varepsilon_{it})$
+with two components:
+\begin{itemize}
+\item $x_{it} \in \mathcal{X}$ is the \emph{observed} state, including
+      enforcement status ($0 = $ no active enforcement, $1 = $ currently under
+      enforcement) and a discretized mining-exposure measure. $x_{it}$ is
+      observed by both the CWS and the econometrician.
+\item $\varepsilon_{it} = \big(\varepsilon_{it}(0), \varepsilon_{it}(1)\big)
+      \in \mathbb{R}^2$ is a vector of action-specific payoff shocks. The CWS
+      observes $\varepsilon_{it}$ before choosing $a_{it}$; the econometrician
+      never observes it. These shocks capture transitory variation in the
+      relative attractiveness of complying versus violating (e.g., temporary
+      staffing constraints, lab availability, managerial attention).
+\end{itemize}
+
+Per-period payoff is additively separable in $\varepsilon$:
+\begin{equation}
+U(a, x_{it}) + \varepsilon_{it}(a),
+\label{eq:flow}
+\end{equation}
+where $U(1, x) = -k_{\text{comply}} - c(x)$ and $U(0, x) = -k_{\text{MR}} - c(x)$,
+and $c(x)$ is the direct cost of being in enforcement state $x$ (normalized so
+that $c(0) = 0$ and $c(1) = 1$).\footnote{Because $c(x)$ depends only on the
+enforcement state and not on the action, it cancels from the flow-utility
+difference: $U(0, x) - U(1, x) = k_{\text{comply}} - k_{\text{MR}}$,
+independent of $x$. The enforcement cost $c(x)$ enters the estimating equation
+only through the continuation value $\bar V(x)$ in \eqref{eq:Vbar}, and only
+through the difference $\bar V(1) - \bar V(0)$.}
+
+\paragraph{Distributional and independence assumptions.} Following
+\citet{rust1987optimal} and \citet{hotz1993conditional}, we impose:
+\begin{description}
+\item[(A1) Additive separability.] Payoffs take the form in
+      \eqref{eq:flow}.
+\item[(A2) T1EV shocks.] The $\varepsilon_{it}(a)$ are i.i.d.\ across $i$,
+      $t$, and $a$, drawn from a Type-1 Extreme Value distribution. The scale
+      is normalized to one ($\sigma_\varepsilon \equiv 1$); together with
+      $c(1) = 1$ this fixes the model's units, so $k_{\text{MR}}$ is identified
+      in units of the enforcement-state cost $c(1)$ rather than dollars.
+\item[(A3) Conditional independence.] The transition density factors as
+      $f(x', \varepsilon' \mid x, \varepsilon, a) = f_x(x' \mid x, a)
+      \cdot f_\varepsilon(\varepsilon')$. That is, conditional on the current
+      observed state and action, next period's observed state $x'$ does not
+      depend on the current $\varepsilon$, and next period's $\varepsilon'$ is
+      drawn independently of the past.
+\end{description}
+Assumption (A3) is the Conditional Independence Assumption of
+\citet{rust1987optimal}. It is what makes $\varepsilon$ a transitory taste
+shock rather than a persistent unobservable, and is essential for the
+representation derived below.
+
+\subsection{The CWS's dynamic programming problem}
+
+The CWS chooses a policy $\{a_{it}\}$ to maximize the expected
+discounted sum of payoffs, $\mathbb{E}\sum_{j=0}^{\infty} \beta^{j}
+\big[ U(a_{i,t+j}, x_{i,t+j}) + \varepsilon_{i,t+j}(a_{i,t+j}) \big]$,
+with discount factor $\beta \in (0, 1)$ (set to $\beta = 0.95$ in
+estimation). By the principle of optimality, the value function over the
+\emph{full} state satisfies the Bellman equation
+\begin{equation}
+V(x, \varepsilon) = \max_{a \in \{0, 1\}} \Big\{
+U(a, x) + \varepsilon(a) + \beta \, \mathbb{E}\!\left[ V(x', \varepsilon')
+\,\big|\, x, a \right] \Big\}.
+\label{eq:bellman_full}
+\end{equation}
+
+\subsection{Integrating out the private shock}
+
+Equation~\eqref{eq:bellman_full} is intractable as written because $V$ depends on
+the unobserved $\varepsilon$. Under (A3), however, we can integrate
+$\varepsilon'$ out of the continuation. Define the \emph{choice-specific value
+function}
+\begin{equation}
+\bar v(a, x) \;\equiv\; U(a, x) + \beta \sum_{x'} \bar V(x') \, P(x' \mid x, a),
+\label{eq:vbar}
+\end{equation}
+where $P(x' \mid x, a) \equiv f_x(x' \mid x, a)$ is the action-conditional
+transition probability between observed states, and $\bar V(x)$ is the
+\emph{ex-ante} (or \emph{integrated}) value function
+\begin{equation}
+\bar V(x) \;\equiv\; \mathbb{E}_\varepsilon \!\left[ \max_{a}
+\big\{ \bar v(a, x) + \varepsilon(a) \big\} \right].
+\label{eq:Vbar}
+\end{equation}
+Under (A2), equation \eqref{eq:Vbar} has a closed form \citep{train2009discrete}:
+\begin{equation}
+\bar V(x) = \log \!\sum_{a \in \{0,1\}} \exp\!\left( \bar v(a, x) \right) + C,
+\label{eq:logsumexp}
+\end{equation}
+where $C$ is a constant (the Euler--Mascheroni term in the exact McFadden
+formula) that is the same for every $x$ and therefore cancels in every
+difference $\bar V(x) - \bar V(x')$ taken below.
+Equations~\eqref{eq:vbar}--\eqref{eq:logsumexp} together constitute a fixed
+point in $\bar v$ and $\bar V$ that depends only on the observed state $x$.
+
+\subsection{The Hotz--Miller representation}
+
+Given the choice-specific values $\bar v(a, x)$, the optimal action solves a
+static problem with deterministic payoffs and T1EV shocks:
+\begin{equation*}
+a^*(x, \varepsilon) = \arg\max_{a \in \{0,1\}}
+\big\{ \bar v(a, x) + \varepsilon(a) \big\}.
+\end{equation*}
+Standard logit algebra \citep[Ch.~3]{train2009discrete} yields the conditional
+choice probability
+\begin{equation}
+\Pr(a \mid x) = \frac{\exp\!\left( \bar v(a, x) \right)}
+{\sum_{a' \in \{0, 1\}} \exp\!\left( \bar v(a', x) \right)}.
+\label{eq:ccp}
+\end{equation}
+Taking log-odds between negligence ($a = 0$, MR) and compliance ($a = 1$):
+\begin{equation}
+\boxed{\;
+\log \!\left[ \frac{\Pr(\text{MR} \mid x)}{\Pr(\text{comply} \mid x)} \right]
+\;=\; \bar v(0, x) - \bar v(1, x)
+\;\equiv\; \Delta \bar v(x).
+\;}
+\label{eq:logodds}
+\end{equation}
+Equation~\eqref{eq:logodds} is the \citet{hotz1993conditional} representation
+theorem applied to our setting: the left-hand side is observed in the data
+(empirical log-odds within state $x$), and the right-hand side is a closed-form
+expression in structural primitives.
+
+\subsection{Computing the integrated value function in practice}
+\label{sec:vbar_computation}
+
+Equation~\eqref{eq:logsumexp} defines $\bar V(x)$ as the fixed point of a
+nonlinear logsumexp system. Solving it directly would require the nested
+fixed-point algorithm of \citet{rust1987optimal}, which the
+\citet{hotz1993conditional} representation is designed to avoid. We instead
+use the \citet{arcidiaconomiller2011} inversion, which expresses $\bar V$ as a
+closed-form linear function of observed CCPs.
+
+\paragraph{The Arcidiacono--Miller inversion.}
+Combining the CCP formula \eqref{eq:ccp} with the logsumexp expression
+\eqref{eq:logsumexp} and taking logs yields the identity\footnote{Algebra:
+\eqref{eq:ccp} gives $\bar v(a, x) =
+\log \hat\Pr(a \mid x) + \log \sum_{a'} \exp(\bar v(a', x))$;
+substituting \eqref{eq:logsumexp} delivers \eqref{eq:am_inversion}.}
+\begin{equation}
+\bar V(x) = \bar v(a, x) - \log \hat\Pr(a \mid x) + C,
+\qquad \text{for any } a \in \{0, 1\}.
+\label{eq:am_inversion}
+\end{equation}
+Equation~\eqref{eq:am_inversion} is exact under T1EV — it inverts the CCP
+mapping to express the integrated value in terms of any single choice-specific
+value plus a CCP correction. Choosing the comply action ($a = 1$) as the
+reference and substituting \eqref{eq:am_inversion} into the Bellman
+\eqref{eq:vbar} for $a = 1$ gives a linear system in $\bar v(1, \cdot)$ alone:
+\begin{equation}
+\bar v(1, x) = U(1, x) + \beta \sum_{x'} P(x' \mid x, 1)
+\big[ \bar v(1, x') - \log \hat\Pr(1 \mid x') \big]
++ \text{const}.
+\label{eq:vbar1_system}
+\end{equation}
+Stacking over the two enforcement states $x \in \{0, 1\}$, let
+$\boldsymbol{\bar v}_1 = (\bar v(1, 0), \bar v(1, 1))'$,
+$\boldsymbol{U}_1 = (U(1, 0), U(1, 1))'$, $P_1$ the $2 \times 2$ comply-action
+transition matrix, and $\boldsymbol{\ell}_1 = (\log \hat\Pr(1 \mid 0),
+\log \hat\Pr(1 \mid 1))'$. Then
+\begin{equation}
+\boldsymbol{\bar v}_1 = (I - \beta P_1)^{-1}
+\left[ \boldsymbol{U}_1 - \beta P_1 \boldsymbol{\ell}_1 \right]
++ \text{const} \cdot \mathbf{1},
+\label{eq:vbar1_solve}
+\end{equation}
+where the additive constant collects terms that are equal across $x$. Equation~\eqref{eq:vbar1_solve} is a $2 \times 2$ linear
+solve using \emph{only} the comply-action transition matrix $P_1$, the
+flow-utility primitives $U(1, \cdot)$, and the observed comply-CCPs
+$\hat\Pr(1 \mid x)$.
+
+\paragraph{What enters the estimating equation.} Applying
+\eqref{eq:am_inversion} to both states and differencing:
+\begin{equation}
+\bar V(1) - \bar V(0) = \big[\bar v(1, 1) - \bar v(1, 0)\big]
+- \big[\log \hat\Pr(1 \mid 1) - \log \hat\Pr(1 \mid 0)\big].
+\label{eq:vbar_diff}
+\end{equation}
+The constant in \eqref{eq:vbar1_solve} cancels in the difference. The first
+bracket comes from \eqref{eq:vbar1_solve}; the second is computed directly
+from sample CCPs. Together \eqref{eq:vbar1_solve}--\eqref{eq:vbar_diff} replace
+a nonlinear Bellman fixed point with one linear system and a log-CCP
+difference.
+
+\paragraph{Simplification: $k_{\text{comply}}$ drops out of $\bar V(1) - \bar V(0)$.}
+The flow utility under comply is $U(1, x) = -k_{\text{comply}} - c(x)$.
+Decompose $\boldsymbol{U}_1 = -k_{\text{comply}} \cdot \mathbf{1} -
+\boldsymbol{c}$, where $\boldsymbol{c} = (c(0), c(1))' = (0, 1)'$. Because
+$P_1$ is row-stochastic, $P_1 \mathbf{1} = \mathbf{1}$ and hence
+$(I - \beta P_1)^{-1} \mathbf{1} = (1 - \beta)^{-1} \mathbf{1}$, so the
+$k_{\text{comply}}$ term contributes $-k_{\text{comply}} / (1 - \beta)$
+\emph{uniformly} to both entries of $\boldsymbol{\bar v}_1$. It therefore
+cancels in the difference $\bar v(1, 1) - \bar v(1, 0)$. Substituting into
+\eqref{eq:vbar_diff} yields a closed form for the continuation-value
+difference that does \emph{not} depend on $k_{\text{comply}}$:
+\begin{equation}
+\bar V(1) - \bar V(0) =
+- \Delta_x \!\big[(I - \beta P_1)^{-1} \boldsymbol{c}\big]
+- \beta \, \Delta_x \!\big[(I - \beta P_1)^{-1} P_1 \boldsymbol{\ell}_1\big]
+- \Delta_x \boldsymbol{\ell}_1,
+\label{eq:vbar_diff_final}
+\end{equation}
+where $\Delta_x [w] \equiv w(1) - w(0)$ denotes the second-minus-first entry
+of a 2-vector indexed by the enforcement state $x \in \{0, 1\}$. The three
+terms have clean interpretations: the first is the discounted enforcement
+burden gap under the comply policy; the second is a T1EV-entropy correction
+weighted by the comply-action transitions; the third is the contemporaneous
+log-CCP gap.
+
+This simplification matters operationally. It means $\bar V(1) - \bar V(0)$
+can be constructed from data alone — the action-conditional transition matrix
+$P_1$, the empirical comply-CCPs $\hat\Pr(1 \mid x)$, and the normalized
+enforcement cost vector $\boldsymbol{c}$ — with no need to iterate over the
+unknown parameter $k_{\text{comply}}$. The
+intercept of the estimating equation \eqref{eq:estimating} then identifies the
+\emph{difference} $k_{\text{comply}} - k_{\text{MR}}$ directly, consistent with
+the fact that the additive level of $k_{\text{comply}}$ is not separately
+identified from the data.\footnote{Equations \eqref{eq:vbar1_solve} and \eqref{eq:vbar_diff}
+are exact at population CCPs. With sample CCPs $\hat\Pr(a \mid x)$ they
+inherit $O_p(N_x^{-1/2})$ sampling error, where $N_x$ is the cell size
+($\approx 780$ in our application). This propagates into the regression
+slope through $\bar V(1) - \bar V(0)$ as a generated-regressor error;
+standard errors in Section~\ref{sec:estimation} account for it via the
+bootstrap.}
+
+\paragraph{Comparison with the naive forward-simulation approach.}
+A frequent shortcut in the applied literature is to compute the value of the
+\emph{empirically observed policy}
+$V^*(x) = (I - \beta P^*)^{-1} c$, where $P^*(x' \mid x) = \sum_a
+\hat\Pr(a \mid x) P(x' \mid x, a)$, and treat $V^*(1) - V^*(0)$ as a proxy for
+$\bar V(1) - \bar V(0)$. This is *not* exact: $V^*$ ignores both the flow
+utility of choices under the policy and the T1EV entropy term
+$-\sum_a \hat\Pr(a \mid x') \log \hat\Pr(a \mid x')$, which
+varies with $x'$ through the CCPs. The difference $\bar V(1) - \bar V(0) -
+[V^*(1) - V^*(0)]$ is in general nonzero and state-dependent, biasing the
+regression slope. We use \eqref{eq:vbar1_solve}--\eqref{eq:vbar_diff}
+throughout and report $V^*$-based estimates in
+Appendix~\ref{app:naive_forwardsim} only as a diagnostic.
+
+\paragraph{No estimation fixed point.} The construction
+\eqref{eq:vbar1_solve}--\eqref{eq:vbar_diff_final} requires no iteration.
+Action-conditional transition probabilities $P(x' \mid x, a)$ and CCPs
+$\hat\Pr(a \mid x)$ are both estimated by tabulation; $\bar V(1) - \bar V(0)$
+is a closed-form function of them; the structural
+parameter $k_{\text{MR}}$ then comes from a single linear regression
+\eqref{eq:estimating}. There is no nested fixed point as in \citet{rust1987optimal}
+and no inner loop on $k_{\text{comply}}$ (which cancels, as shown above).
+
+\paragraph{Caveat: optimality of the empirical policy.} The inversion
+\eqref{eq:am_inversion} does, however, require that the empirical
+$\hat\Pr(a \mid x)$ be generated by the structural CCP \eqref{eq:ccp} — i.e.,
+that CWSs play the policy implied by the parameters we are recovering. This
+is an \emph{equilibrium} assumption (the data come from a stationary optimal
+policy), distinct from the \emph{computational} fixed point that the AM
+inversion replaces. It is the standard two-step assumption in the CCP
+literature \citep{hotzmillersanders1994, aguirregabiriamira2002,
+bajaribenkardlevin2007} and would be violated by, e.g., systematic learning or
+out-of-equilibrium play during the sample period. We report estimates from one
+iteration of the recursive updating procedure of \citet{aguirregabiriamira2002}
+as a robustness check in Section~\ref{sec:robustness_ccp_iter}.
+
+\subsection{Decomposition and estimating equation}
+
+Substituting \eqref{eq:vbar} into \eqref{eq:logodds} and collecting terms:
+\begin{equation}
+\Delta \bar v(x) = \underbrace{\big[ U(0, x) - U(1, x) \big]}_{\text{flow utility difference}}
++ \beta \underbrace{\sum_{x'} \bar V(x')
+\big[ P(x' \mid x, 0) - P(x' \mid x, 1) \big]}_{\text{continuation value difference}}.
+\label{eq:decomp}
+\end{equation}
+With two enforcement states ($x' \in \{0, 1\}$), the continuation term reduces
+to
+\begin{equation*}
+\beta \cdot \big[\bar V(1) - \bar V(0)\big] \cdot \Delta \pi(x),
+\quad \text{where} \quad
+\Delta \pi(x) \equiv \Pr(x' = 1 \mid x, \text{MR}) - \Pr(x' = 1 \mid x, \text{comply}).
+\end{equation*}
+$\Delta \pi(x) > 0$ encodes the dynamic deterrence channel: negligence raises
+the probability of being under enforcement next period. The estimating
+equation is therefore
+\begin{equation}
+\log \!\left[ \frac{\Pr(\text{MR} \mid x)}{\Pr(\text{comply} \mid x)} \right]
+= \underbrace{(k_{\text{comply}} - k_{\text{MR}})}_{\text{intercept}}
++ \underbrace{\beta \big[\bar V(1) - \bar V(0)\big]}_{\text{slope}}
+\cdot \Delta \pi(x) + \gamma \, \hat{v}_t,
+\label{eq:estimating}
+\end{equation}
+where $\hat{v}_t$ is the first-stage residual from regressing mining exposure on
+the ARP $\times$ sulfur instrument, included as a control function
+\citep{petrintrain2010, wooldridge2015control}. Under the scale normalization
+$\sigma_\varepsilon = 1$ from (A2), the intercept identifies
+$k_{\text{comply}} - k_{\text{MR}}$ directly once the slope identifies
+$\bar V(1) - \bar V(0)$; with $c(1) = 1$ this is in units of the
+enforcement-state cost.
+
+\subsection{Role of the private shock $\varepsilon$}
+
+The private shock $\varepsilon_{it}$ plays three distinct roles that are worth
+distinguishing from \emph{permanent} unobserved heterogeneity (e.g.,
+``compliant-by-culture'' types) in the sense of \citet{arcidiaconomiller2011}.
+First, $\varepsilon$ rationalizes within-state variation in observed choices:
+without it, all CWSs sharing the same $x$ would make identical decisions and
+choice \emph{probabilities} would be degenerate. Second, the T1EV assumption
+(A2) yields the closed-form invertible mapping between CCPs and
+choice-specific value differences in~\eqref{eq:logodds}, allowing us to
+estimate the model without solving the full Bellman fixed point. Third, the
+T1EV scale is the only free scale in the model, which is why we normalize it
+to one in (A2); together with $c(1) = 1$ this fixes the units in which
+$k_{\text{MR}}$ is recovered. Crucially,
+(A3) requires that $\varepsilon$ be i.i.d.\ across $(i, t, a)$, so it is a
+transitory taste shock, not a persistent type. We discuss permanent unobserved
+heterogeneity as a robustness check in
+Section~\ref{sec:robustness_unobs_heterogeneity}.

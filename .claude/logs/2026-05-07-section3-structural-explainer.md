@@ -55,29 +55,47 @@ The dynamic deterrence channel is the gap
 which is positive: violating raises tomorrow's enforcement probability. Without
 action-conditional transitions, Δπ(s) = 0 and the model collapses to static logit.
 
-### Forward simulating V₀(s)
+### Computing the integrated value function (Arcidiacono–Miller inversion)
 
-V₀(s) is the **expected present-discounted future cost** of being in state s
-today, assuming the CWS plays its optimal policy forever. Discount factor β=0.95.
+**Heuristic to keep in your head:** V̄(s) is the expected present-discounted
+future cost of being in state s today under the optimal policy. The simple
+intuition is "solve V̄ = (I − βP)⁻¹ · c" for some transition matrix P and cost
+vector c. *That intuition is correct up to two terms that the snippet derives
+explicitly* — see §"Computing the integrated value function in practice" in
+`writing/section3_model_setup.tex` for the rigorous version.
 
-If c(s) is the per-period enforcement cost — set c(no_enf)=0, c(enf)=1 as a
-**normalization** — and P is the optimal-policy-implied transition matrix, then
-V₀ solves the Bellman equation:
+**Why the naive formula isn't quite right.** "V̄ = (I − βP*)⁻¹ · c" where
+P*(s'|s) = Σ_a P̂(a|s) · P(s'|s, a) is the choice-weighted transition matrix
+*ignores* (a) the flow utility under the policy and (b) the T1EV entropy
+correction −σ_ε Σ_a P̂(a|s') log P̂(a|s'). Both are state-dependent and
+therefore bias V̄(enf) − V̄(no_enf).
+
+**What we actually compute (AM 2011 inversion).** The exact T1EV identity
+V̄(s) = v̄(a, s) − σ_ε · log P̂(a|s) + σ_ε · γ (any a) lets us solve a linear
+system using *only the comply-action transition matrix P_1*:
 
 ```
-V₀(s) = c(s) + β · Σ_{s'} P(s' | s) · V₀(s')
+v̄_1 = (I − β P_1)⁻¹ · [U_1 − σ_ε · β · P_1 · ℓ_1]   (+ irrelevant constant)
 ```
 
-For 2 states this is two linear equations:
+where U_1 = (U(comply, no_enf), U(comply, enf))' and ℓ_1 = (log P̂(comply|no_enf),
+log P̂(comply|enf))'. Then V̄(enf) − V̄(no_enf) comes out in closed form:
 
 ```
-V₀(no_enf) = 0 + β·[ p_00·V₀(no_enf) + p_01·V₀(enf) ]
-V₀(enf)    = 1 + β·[ p_10·V₀(no_enf) + p_11·V₀(enf) ]
+V̄(enf) − V̄(no_enf) = − Δ_s[(I − βP_1)⁻¹ · c]
+                       − σ_ε · β · Δ_s[(I − βP_1)⁻¹ · P_1 · ℓ_1]
+                       − σ_ε · Δ_s[ℓ_1]
 ```
 
-Solve the linear system. In matrix form: **V₀ = (I − βP)⁻¹ · c**. That's the
-"forward simulation" — for a 2-state model it's a closed-form matrix inverse.
-Larger models use Monte Carlo trajectories; you don't need to.
+where Δ_s[w] = w(enf) − w(no_enf). Term 1 is the discounted enforcement-burden
+gap (the object the naive "V₀ = (I − βP)⁻¹c" formula was reaching for, with
+P = P_1, not P*). Terms 2 and 3 are the T1EV-entropy corrections that the
+naive formula misses.
+
+**Key fact: k_comply drops out.** Because P_1 is row-stochastic, the
+k_comply-piece of U_1 contributes the same constant to both entries of v̄_1
+and cancels in the difference. So V̄(enf) − V̄(no_enf) is computable from
+(P_1, P̂(comply|·), c, σ_ε) alone — no inner loop on k_comply needed.
 
 ### Do you need explicit dollar costs of c(s)?
 
@@ -256,8 +274,16 @@ the simpler Hotz–Miller estimator suffices.
 
 ## Putting it together — the full algorithm
 
-1. Estimate P(s'|s, comply) and P(s'|s, MR) by counting transitions.
-2. Solve V₀ = (I − βP)⁻¹ · c using the optimal-policy P. (Iterate Steps 1–2 if needed: optimal P depends on choices, choices depend on V₀.)
+So the full estimation sequence is:
+
+1. Estimate P(s'|s, comply) and P(s'|s, MR) by counting transitions. Estimate
+   CCPs P̂(comply|s), P̂(MR|s) by counting choice frequencies in each state cell.
+2. Construct V̄(enf) − V̄(no_enf) in closed form via the AM (2011) inversion:
+   solve the 2×2 linear system v̄_1 = (I − β P_1)⁻¹·[U_1 − σ_ε β P_1 ℓ_1] using
+   *only* the comply-action transition P_1 and the comply-CCPs ℓ_1, then
+   difference and add the contemporaneous log-CCP gap. No iteration needed:
+   the action-conditional transitions and CCPs are tabulation outputs, V̄ is a
+   closed-form function of them, and k_comply cancels out of the difference.
 3. First-stage regression of contamination on ARP × sulfur; save residuals v̂_t.
 4. Compute observed log-odds log[Pr(MR|s, z) / Pr(comply|s, z)] within each (state, z) cell.
 5. Regress log-odds on the constructed continuation-value regressor and v̂_t. Intercept gives k_comply − k_MR.
