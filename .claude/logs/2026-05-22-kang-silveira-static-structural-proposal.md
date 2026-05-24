@@ -76,7 +76,7 @@ There is no regime shift in `e(·)` in the SDWA setting; the variation is in `x`
 1. **Threshold `θ*(x)`.** Estimate `Δê(x)` from a two-equation enforcement sub-model on the 268-PWSID enforcement subsample. With `c = 1`, `θ̂*(x) = Δê(x)`.
 2. **Compliance probability `p̂(x)`.** Probit (or logit) of `B_it` on `x_it` and the control-function residual `v̂_it` from the first stage.
 3. **Type distribution `F(·|x)`.** Parametrize `F(·|x)` flexibly (e.g., log-normal with mean and scale linear in `x`). Use the moment `F(θ̂*(x_k) | x_k) = 1 − p̂(x_k)` at each `x`-bin `k` to estimate the parameters by GMM. With ≥ 2 `x`-bins this is identified; with more bins it is overidentified.
-4. **Regulator preferences `γ(x), ψ(x)`.** Plug `θ̂*(x)`, `F̂(θ̂*|x)`, `f̂(θ̂*|x)` into the regulator FOC at each `x`-bin. Each bin gives one equation in `(γ(x), ψ(x))`. Across bins, parametrize `log γ(x)` and `log ψ(x)` as linear in `x` and estimate by nonlinear least squares (or GMM with the FOC residuals as moments).
+4. **Regulator preferences `γ(x), ψ(x)`.** Plug `θ̂*(x_it) = Δê(x_it)`, `F̂(θ̂*|x_it)`, `f̂(θ̂*|x_it)` into the regulator FOC at every observation `it`. Parametrize `log γ(x) = w_it'·β_γ` and `log ψ(x) = w_it'·β_ψ`. Estimate `(β_γ, β_ψ)` by NLS minimizing the sum of squared FOC residuals across all observations. The FOC is a structural restriction that must hold at every x, so every observation contributes a moment — overidentification is by N − 2K and lets us run a J-test for misspecification. The bin-level NLS variant (K = 4 IV-quartiles) is retained as a robustness column.
 
 The exclusion restriction (`z` enters only through `x`) is the same one the reduced-form 2SLS already imposes.
 
@@ -182,15 +182,15 @@ Construct the two-point schedule:
 
 With `c = 1`, the firm threshold is `θ̂*(x) = Δê(x)`.
 
-### Equation 3 — Compliance probability (firm side)
+### Equation 3 — Compliance probability (firm side, diagnostic only)
 
 ```
 p̂(x_it) = Pr(B_it = 1 | x_it, v̂_it) = Φ(α₀ + α_m·log(1 + m_it) + α_s·sulfur_it + x_it'·α_x + α_v·v̂_it)
 ```
 
-This is the discrete analogue of `G(a|x)`. Equivalent to the reduced-form probit on whether the CWS ever had an MR violation in the year, with the control-function correction for endogeneity of `m`.
+**Demoted to a diagnostic** as of the Option C switch (see Eq. 4 below). Used for: (i) §16 Check 3 — verifying `p̂(x)` is monotone in the IV; (ii) the robustness column comparing Option B (NLS on `1 − p̂`) against Option C (pseudo-likelihood); (iii) the model-fit check `1 − F̂(Δê(x_it)|x_it)` vs `p̂(x_it)` after estimation. Not on the main estimation path for `F(·|x)`.
 
-### Equation 4 — Type distribution `F(·|x)`
+### Equation 4 — Type distribution `F(·|x)` via pseudo-likelihood (Option C)
 
 Parametrize log-normal:
 
@@ -198,23 +198,51 @@ Parametrize log-normal:
 log θ | x ~ N(μ(x), σ²(x)),     μ(x) = w_it'·δ_μ,  log σ(x) = w_it'·δ_σ.
 ```
 
-Identify by matching the cross-`x`-bin moments
+Under the structural model `B_it = 1{θ_it ≥ Δê(x_it)}`, so
 
 ```
-F( θ̂*(x_k) | x_k ) = 1 − p̂(x_k),   k = 1, …, K bins.
+Pr(B_it = 1 | x_it) = 1 − Φ( η_it ),    η_it = [log Δê(x_it) − w_it'·δ_μ] / exp(w_it'·δ_σ).
 ```
 
-`K` ≥ 2 identifies a one-parameter F per bin; cross-bin restrictions (`δ_μ`, `δ_σ` linear in `x`) deliver overidentification. Estimate by GMM with bootstrap SEs (resample PWSIDs).
-
-### Equation 5 — Regulator FOC system
-
-At each `x`-bin `k`, the FOC
+Estimate `(δ_μ, δ_σ)` by maximizing the binary-outcome pseudo-likelihood
 
 ```
-γ(x_k) = θ̂*(x_k) · (1 + ψ(x_k)) + ψ(x_k) · ( 1 − F̂(θ̂*(x_k)|x_k) ) / f̂(θ̂*(x_k)|x_k)
+ℓ(δ) = Σ_it { B_it · log[1 − Φ(η_it)] + (1 − B_it) · log[Φ(η_it)] }.
 ```
 
-with `log γ(x) = β_γ' x_k + ν_k`, `log ψ(x) = β_ψ' x_k + ν_k'` estimated by nonlinear least squares on the bin-level residuals. Overidentified for `K ≥ 3`.
+This is a probit with `log Δê(x_it)` as a **known offset** and `w_it` (which includes `v̂_it` for the CF correction) entering μ and log σ. Uses raw `B_it` rather than the smoothed `p̂(x_it)`, avoiding propagation of Eq. 3 prediction error. PWSID-clustered bootstrap for SEs (resample PWSIDs, redo Eqs. 1, 2a, 2b, then the MLE; 500 reps).
+
+**Identification.** The same cross-`it` heterogeneity in `(B_it, Δê(x_it), w_it)` that would identify the original bin-level GMM identifies the pseudo-likelihood. The switch is an estimator change (MLE vs NLS/GMM on residual), not an identification change. Motivated by §16: cross-IV-bin variation in `Δê` is only ~6%, but observation-level variation has sd 18.4 days and p10–p90 = [109.7, 146.4] — Option C uses the full panel-level spread.
+
+**Robustness alternatives reported as table columns:**
+- Option A: GMM with PWSID-clustered HAC weight on moments `g_it = F(Δê(x_it)|x_it;δ) − (1−p̂(x_it))`.
+- Option B: NLS — `δ̂ = argmin Σ_it [F(Δê(x_it)|x_it;δ) − (1−p̂(x_it))]²`. Equivalent to A with identity weight.
+- Option C (primary): pseudo-likelihood as above.
+
+### Equation 5 — Regulator FOC system (observation-level NLS)
+
+At every observation `it`, the regulator FOC implies the residual
+
+```
+r_it(β_γ, β_ψ) = exp(w_it'·β_γ)
+               − Δê(x_it) · (1 + exp(w_it'·β_ψ))
+               − exp(w_it'·β_ψ) · (1 − F̂(Δê(x_it)|x_it)) / f̂(Δê(x_it)|x_it).
+```
+
+Estimate
+
+```
+(β̂_γ, β̂_ψ) = argmin Σ_it r_it(β_γ, β_ψ)².
+```
+
+Log-link parametrizations `log γ(x) = w_it'·β_γ` and `log ψ(x) = w_it'·β_ψ` keep γ, ψ > 0. With N = 6,232 observations and 2K parameters, the system is overidentified by N − 2K. Report the Hansen J-statistic as a misspecification test. PWSID-clustered bootstrap for SEs (resample PWSIDs, redo Eqs. 1, 2a, 2b, 4, 5).
+
+**Practical issues to flag in implementation:**
+
+- *Hazard tail*: `(1 − F̂)/f̂` can explode in the right tail of the log-normal. Diagnose with `summary(hazard)` and winsorize if extreme values dominate the NLS objective.
+- *Regulator-side `w_it`*: should arguably exclude the firm-side CF residual `v̂_it` — the regulator's preferences over harm reduction don't depend on first-stage residuals from a mining-exposure regression. Document the choice; report both inclusions as robustness.
+
+**Robustness alternative:** bin-level NLS with `k = 1, …, K = 4` IV-quartiles (the original §5 formulation). Reported alongside the observation-level estimates.
 
 ### Equation 6 — Recovered firm-level compliance cost (plug-in)
 
@@ -227,12 +255,18 @@ In the discrete-action setting `θ_i` is only set-identified at the unit level. 
 
 ### Equation 7 — Regulator EJ tests
 
+Under observation-level Eq. 5 with `log γ(x) = w_it'·β_γ`, the EJ coefficients are **already inside `β̂_γ`** at the positions corresponding to mining and sulfur. Reading them off directly:
+
 ```
-(7a)  log γ̂(x_it) = α₀ + α_m·log(1 + mining_it) + α_s·sulfur_it + w_it'·α_w + ξ_it
-(7b)  log ψ̂(x_it) = μ₀ + μ_m·log(1 + mining_it) + μ_s·sulfur_it + w_it'·μ_w + ζ_it
+α_m = β̂_γ[mining];   α_s = β̂_γ[sulfur]
+μ_m = β̂_ψ[mining];   μ_s = β̂_ψ[sulfur]
 ```
 
 `α_m < 0` ⟹ regulator perceives lower marginal harm per MR violation in mining-exposed CWSs. This is the headline EJ test.
+
+**Inference.** Use the PWSID-clustered bootstrap distribution of `β̂_γ`, `β̂_ψ` from the full Eqs. 1–5 pipeline (500 reps). Report point estimates with percentile intervals and signed one-sided p-values for the EJ hypothesis.
+
+**Honest framing.** Eq. 7 is a *reading off* of structural coefficients, not an independent regression on recovered `γ̂(x_it)`. The earlier two-step formulation (regress `log γ̂(x_it)` on mining covariates separately) was redundant once Eq. 5 already parametrizes log γ linearly in x. Reporting `β̂_γ`, `β̂_ψ` directly is the cleanest presentation.
 
 ---
 
@@ -244,11 +278,11 @@ In the discrete-action setting `θ_i` is only set-identified at the unit level. 
 | Eq. 2a | 268-PWSID enforcement panel | Probit | Pr̂(E=1 \| B, x) |
 | Eq. 2b | Same, E=1 subset | OLS (`feols`) | Ê[days_to_RTC \| B, x] |
 | Eq. 2 | Outputs of 2a, 2b | Construction | `ê(B \| x)`, `Δê(x)` |
-| Eq. 3 | Full panel | Probit with CF correction | `p̂(x)` |
-| Eq. 4 | `Δê(x_k)`, `p̂(x_k)` across bins | GMM (`gmm` or `nlminb`) | `δ_μ`, `δ_σ` ⟹ `F̂(·\|x)` |
-| Eq. 5 | Bin-level `(θ*, F, f)` | NLS | `γ̂(x)`, `ψ̂(x)` |
+| Eq. 3 (diagnostic) | Full panel | Probit with CF correction | `p̂(x)` — used for §16 Check 3 and robustness only |
+| Eq. 4 | Full panel: `B_it`, `Δê(x_it)`, `w_it` | Pseudo-likelihood MLE (probit with `log Δê` offset) | `δ_μ`, `δ_σ` ⟹ `F̂(·\|x)` |
+| Eq. 5 | Full panel `(Δê(x_it), F̂, f̂)` | NLS on observation-level FOC residuals | `β̂_γ`, `β̂_ψ` ⟹ `γ̂(x)`, `ψ̂(x)` |
 | Eq. 6 | Plug-in | — | Set bounds on `θ_i` |
-| Eq. 7a/b | `γ̂(x_it)`, `ψ̂(x_it)`, `x_it` | OLS w/ bootstrap SE | `α_m`, `μ_m` |
+| Eq. 7a/b | `β̂_γ`, `β̂_ψ` from Eq. 5 (mining/sulfur components) | Read off + PWSID-clustered bootstrap | `α_m`, `α_s`, `μ_m`, `μ_s` |
 
 ### 6.1 IV-bin construction
 
@@ -303,61 +337,100 @@ e_hat <- function(B_val, x_row) {
 }
 Delta_e_hat <- function(x_row) e_hat(1, x_row) - e_hat(0, x_row)
 
-# --- Eq. 3: compliance probability ---
+# --- Eq. 3 (DIAGNOSTIC ONLY): compliance probability ---
+# Used for §16 Check 3 (monotonicity of p̂ in IV) and as Option B robustness input.
+# Not on the main estimation path for F(·|x).
 fit_3 <- glm(B ~ log(1 + num_coal_mines_upstream_mean) + sulfur_unified_mean +
                num_facilities + POPULATION_SERVED_COUNT +
                factor(OWNER_TYPE_CODE) + factor(PRIMARY_SOURCE_CODE) + v_hat,
              family = binomial("probit"), data = panel)
 
-# --- Eq. 4: F(θ|x) via GMM moments ---
-# Build x-bins
-panel$xb <- ntile(predict(fit_1, type = "response"), 4)
+# --- Eq. 4: F(θ|x) via pseudo-likelihood (Option C) ---
+# Probit with log(Δê) as a known offset; w_it parametrizes μ(x) and log σ(x).
+# Identification: cross-it variation in (B_it, Δê(x_it), w_it).
+panel$log_delta_e <- log(sapply(seq_len(nrow(panel)), function(i) Delta_e_hat(panel[i, ])))
 
-bin_table <- panel |>
-  group_by(xb) |>
-  summarise(
-    theta_star = Delta_e_hat(across(everything(), median)),
-    p_hat      = mean(predict(fit_3, type = "response"))
-  )
+# w_it: covariates indexing F(·|x). Includes v_hat for the CF correction.
+W <- model.matrix(~ log(1 + num_coal_mines_upstream_mean) + sulfur_unified_mean +
+                    num_facilities + log(POPULATION_SERVED_COUNT + 1) +
+                    factor(OWNER_TYPE_CODE) + factor(PRIMARY_SOURCE_CODE) + v_hat,
+                  data = panel)
+K <- ncol(W)
 
-# Log-normal F(·|x): identify (mu_k, sigma_k) from (theta_star_k, p_hat_k)
-#   F(theta_star_k | mu_k, sigma_k) = 1 - p_hat_k
-# With cross-bin parametrization mu(x) = w'delta_mu, log sigma(x) = w'delta_sigma:
-gmm_moments <- function(par, data) {
-  delta_mu    <- par[1:p_mu]
-  delta_sigma <- par[(p_mu + 1):(p_mu + p_sigma)]
-  mu_k        <- as.matrix(data$w) %*% delta_mu
-  sigma_k     <- exp(as.matrix(data$w) %*% delta_sigma)
-  resid       <- plnorm(data$theta_star, mu_k, sigma_k) - (1 - data$p_hat)
-  cbind(resid, resid * data$w)
+loglik <- function(par) {
+  delta_mu    <- par[1:K]
+  delta_sigma <- par[(K + 1):(2 * K)]
+  mu_it       <- as.numeric(W %*% delta_mu)
+  sigma_it    <- exp(as.numeric(W %*% delta_sigma))
+  eta_it      <- (panel$log_delta_e - mu_it) / sigma_it
+  p1          <- pnorm(eta_it, lower.tail = FALSE)   # Pr(B = 1 | x) = 1 - Φ(η)
+  p1          <- pmin(pmax(p1, 1e-12), 1 - 1e-12)
+  -sum(panel$B * log(p1) + (1 - panel$B) * log(1 - p1))
 }
-fit_4 <- gmm::gmm(gmm_moments, x = bin_table, t0 = rep(0, p_mu + p_sigma))
 
-# --- Eq. 5: γ(x), ψ(x) via NLS on FOC residuals ---
-foc_resid <- function(par, bin_table, F_fit) {
-  beta_gamma <- par[1:p_g]; beta_psi <- par[(p_g+1):(p_g+p_p)]
-  gamma_k <- exp(as.matrix(bin_table$w) %*% beta_gamma)
-  psi_k   <- exp(as.matrix(bin_table$w) %*% beta_psi)
-  theta   <- bin_table$theta_star
-  F_pts   <- plnorm(theta, mu_k(F_fit, bin_table$w), sigma_k(F_fit, bin_table$w))
-  f_pts   <- dlnorm(theta, mu_k(F_fit, bin_table$w), sigma_k(F_fit, bin_table$w))
-  gamma_k - theta * (1 + psi_k) - psi_k * (1 - F_pts) / f_pts
+start <- c(rep(0, K), rep(log(0.5), K))
+fit_4 <- nlminb(start, loglik)
+delta_mu_hat    <- fit_4$par[1:K]
+delta_sigma_hat <- fit_4$par[(K + 1):(2 * K)]
+
+# Helper closures for downstream use (Eq. 5 and counterfactuals).
+mu_of    <- function(W_new) as.numeric(W_new %*% delta_mu_hat)
+sigma_of <- function(W_new) exp(as.numeric(W_new %*% delta_sigma_hat))
+F_of     <- function(theta, W_new) plnorm(theta, mu_of(W_new), sigma_of(W_new))
+f_of     <- function(theta, W_new) dlnorm(theta, mu_of(W_new), sigma_of(W_new))
+
+# Model-fit diagnostic: compare 1 - F̂(Δê|x) (structural) to p̂ from Eq. 3.
+panel$p_hat_struct <- 1 - F_of(exp(panel$log_delta_e), W)
+panel$p_hat_eq3    <- predict(fit_3, type = "response")
+# cor(panel$p_hat_struct, panel$p_hat_eq3) should be high if F is well-specified.
+
+# --- Eq. 5: γ(x), ψ(x) via observation-level NLS on FOC residuals ---
+# w_it: regressors for log γ and log ψ. By default use the same covariates as in W
+# (the Eq. 4 design matrix). Consider dropping v_hat from the regulator side —
+# regulator preferences need not depend on the firm-side first-stage residual.
+W_reg <- W
+K_reg <- ncol(W_reg)
+
+theta_star <- exp(panel$log_delta_e)            # Δê(x_it) on the levels scale
+F_pts <- F_of(theta_star, W)                    # closures from fit_4
+f_pts <- f_of(theta_star, W)
+hazard <- (1 - F_pts) / pmax(f_pts, 1e-12)      # guard against f → 0 in the tail
+
+# Diagnostic: hazard tail behavior
+summary(hazard); quantile(hazard, c(0.95, 0.99, 1.00))
+
+foc_resid_obs <- function(par) {
+  beta_gamma <- par[1:K_reg]
+  beta_psi   <- par[(K_reg + 1):(2 * K_reg)]
+  gamma_it   <- exp(as.numeric(W_reg %*% beta_gamma))
+  psi_it     <- exp(as.numeric(W_reg %*% beta_psi))
+  resid      <- gamma_it - theta_star * (1 + psi_it) - psi_it * hazard
+  sum(resid^2)
 }
-fit_5 <- nls.lm(par = rep(0, p_g + p_p), fn = foc_resid,
-                bin_table = bin_table, F_fit = fit_4)
 
-# --- Eq. 7: EJ tests on recovered γ, ψ ---
-panel$gamma_hat <- gamma_of(panel$x, fit_5)
-panel$psi_hat   <- psi_of(panel$x, fit_5)
+start_5 <- c(rep(0, K_reg), rep(0, K_reg))
+fit_5   <- nlminb(start_5, foc_resid_obs)
+beta_gamma_hat <- fit_5$par[1:K_reg]
+beta_psi_hat   <- fit_5$par[(K_reg + 1):(2 * K_reg)]
 
-fit_7a <- feols(log(gamma_hat) ~ log(1 + num_coal_mines_upstream_mean) +
-                  sulfur_unified_mean + num_facilities + POPULATION_SERVED_COUNT,
-                data = panel, cluster = ~PWSID)
-fit_7b <- feols(log(psi_hat) ~ log(1 + num_coal_mines_upstream_mean) +
-                  sulfur_unified_mean + num_facilities + POPULATION_SERVED_COUNT,
-                data = panel, cluster = ~PWSID)
+# Hansen J-stat at the converged residuals (misspecification check, overid by N - 2K).
+# Implement as N * resid' Ŵ resid with Ŵ = (cluster-robust moment variance)^-1.
 
-# Bootstrap SE: resample PWSIDs, redo Eqs. 1-5, store gamma/psi, repeat 500x
+panel$gamma_hat <- exp(as.numeric(W_reg %*% beta_gamma_hat))
+panel$psi_hat   <- exp(as.numeric(W_reg %*% beta_psi_hat))
+
+# --- Eq. 7: EJ tests — read off β̂_γ, β̂_ψ from Eq. 5 ---
+# Under observation-level Eq. 5 with log γ(x) = w'β_γ, the EJ coefficients ARE
+# β̂_γ at the mining/sulfur positions. No separate regression needed.
+ej_table <- data.frame(
+  param = colnames(W_reg),
+  beta_gamma = beta_gamma_hat,
+  beta_psi   = beta_psi_hat
+)
+# EJ headline test: ej_table[grep("upstream|sulfur", ej_table$param), ]
+
+# Bootstrap SE: resample PWSIDs, redo Eqs. 1, 2a, 2b, 4, 5; store β̂_γ, β̂_ψ; 500 reps.
+# Percentile intervals on the mining/sulfur components are the EJ test.
 
 saveRDS(list(fit_1, fit_2a, fit_2b, fit_3, fit_4, fit_5, fit_7a, fit_7b,
              panel),
@@ -518,7 +591,8 @@ The three §9 checks from the continuous variant have already been run (§15). T
 - Parametric form for `F(·|x)`: log-normal vs. Weibull vs. Gumbel. Report sensitivity.
 - Should `x`-bins be quartiles of the IV value, of the IV residual, or of the first-stage prediction? Each gives slightly different cross-bin variation.
 - Pool across mining-related contaminants (one `B_it`) or estimate separately for each? With binary outcomes, sparsity may force pooling regardless.
-- Bin count `K`: 4 vs. 8. More bins means more moments but smaller bins. K = 4 is the conservative starting choice.
+- Bin count `K` for the robustness display and CF Validation split: 4 vs. 8 quartiles. Main estimation is observation-level, so K is no longer load-bearing.
+- Should `w_it` in Eq. 5 (regulator side) exclude `v̂_it`? Default: include for consistency with Eq. 4; report both.
 
 ---
 
@@ -559,9 +633,11 @@ The binary-choice variant is feasible. The two relevant checks pass; the margina
 
 ### Implications for §7 pseudocode
 
-- **Eq. 4 implementation:** use observation-level moments `F(Δê(x_it) | x_it) = 1 − E[B_it | x_it, v̂_it]` rather than bin-level moments. The bin-level summary is for diagnostic display; identification leverages full `x` heterogeneity.
-- **Eq. 5 stays as written** — γ(x), ψ(x) parametrized linearly in `x` and estimated by NLS on bin-level FOC residuals.
-- **Bootstrap SEs:** required given the marginal cross-bin variation. Resample PWSIDs and redo Eqs. 1–5; report standard errors and percentile intervals.
+- **Eq. 4 implementation (updated 2026-05-24):** estimate `F(·|x)` by **pseudo-likelihood (Option C)** — a probit on `B_it` with `log Δê(x_it)` as a known offset and `w_it` (including `v̂_it`) parametrizing μ(x) and log σ(x). Uses raw `B_it` rather than the smoothed `p̂(x_it)` from Eq. 3, gaining efficiency and avoiding propagation of Eq. 3 prediction error. Identification leverages full observation-level `x` heterogeneity (sd of Δê = 18.4 days at the panel level vs 7.64 across bin medians).
+- **Eq. 3 demoted to diagnostic.** Retained for the §16 Check 3 monotonicity test, the Option B robustness column, and the post-estimation fit check `1 − F̂(Δê|x)` vs `p̂(x)`. Not on the main estimation path.
+- **Eq. 5 also moved to observation-level NLS (2026-05-24):** the regulator FOC is a pointwise restriction at every x, so every observation contributes a residual. With N = 6,232 and 2K parameters the system is overidentified by N − 2K, enabling a Hansen J-test for misspecification. The bin-level NLS (K = 4) is retained as a robustness column.
+- **Bootstrap SEs:** required. Resample PWSIDs and redo Eqs. 1, 2a, 2b, 4 (pseudo-likelihood), 5; report standard errors and percentile intervals.
+- **Robustness columns to report alongside Option C:** Option A (PWSID-clustered HAC GMM on residual moments) and Option B (NLS on `1 − p̂` residuals). Eq. 3 is needed to populate Options A and B.
 
 ### Next concrete step
 
