@@ -1,0 +1,61 @@
+% ============================================================
+% Table: Enforcement Action Types by Violation Category and Contaminant Group
+% Purpose: Distribution of specific enforcement actions (share of all actions
+%          in each group), 1985-2005. Mining = rules 331/332/333/340;
+%          non-mining = rules 110/111/121-123/140/310/320.
+% Sample:  CWSs in the downstream 2SLS sample (minehuc_downstream_of_mine==1 & minehuc_mine==0)
+% Source:  SDWA_VIOLATIONS_ENFORCEMENT.csv
+% N (enforcement actions): MR mining=3,430, MR non-mining=12,208, MCL mining=58, MCL non-mining=581
+% ============================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Enforcement Action Types by Violation Category and Contaminant Group, 1985--2005 (Downstream 2SLS Sample)}
+\label{tab:enf_action_type_dwnstrm}
+\small
+\begin{tabular}{llp{5.8cm}rrrr}
+\hline\hline
+\textbf{Cat.} & \textbf{Code} & \textbf{Description} & \textbf{MR} & \textbf{MR} & \textbf{MCL} & \textbf{MCL} \\
+ & & & \textbf{mining} & \textbf{non-mining} & \textbf{mining} & \textbf{non-mining} \\
+ & & & \textit{(N=3,430)} & \textit{(N=12,208)} & \textit{(N=58)} & \textit{(N=581)} \\
+\hline
+\addlinespace[4pt]
+\multicolumn{7}{l}{\textit{Formal enforcement}} \\
+\addlinespace[2pt]
+Formal & SFK & State Bilateral Compliance Agreement signed & 0.1 & 0.1 & 1.7 & 2.1 \\
+ & SFR & State Consent Decree/Judgement & 1.7 & 1.5 & 0.0 & 0.0 \\
+ & SFL & State Administrative/Compliance Order without penalty issued & 1.0 & 0.6 & 0.0 & 0.2 \\
+ & SFM & State Administrative Penalty assessed & 0.3 & 0.0 & 0.0 & 0.0 \\
+ & SFO & State Administrative/Compliance Order with penalty issued & 0.0 & 0.3 & 0.0 & 0.2 \\
+ & EFL & Federal Final Administrative Order issued & 0.0 & 0.0 & 0.0 & 0.0 \\
+ & SFQ & State Civil Case filed in State court & 0.0 & 0.0 & 0.0 & 0.0 \\
+ & SFV & State Criminal Case filed & 0.0 & 0.0 & 0.0 & 0.0 \\
+\addlinespace[4pt]
+\multicolumn{7}{l}{\textit{Informal enforcement}} \\
+\addlinespace[2pt]
+Informal & SIE & State Public Notification requested & 15.5 & 18.4 & 19.0 & 26.2 \\
+ & SIF & State Public Notification received & 8.6 & 8.9 & 10.3 & 23.9 \\
+ & SIA & State Violation/Reminder Notice & 15.9 & 15.2 & 20.7 & 11.2 \\
+ & SFJ & State Formal Notice of Violation issued & 16.8 & 16.9 & 12.1 & 8.3 \\
+ & SIC & State Technical Assistance Visit & 0.3 & 0.5 & 6.9 & 1.2 \\
+ & SO8 & State Other & 0.5 & 0.0 & 3.4 & 0.0 \\
+ & SIB & State Compliance Meeting conducted & 2.6 & 1.9 & 0.0 & 1.7 \\
+ & EFJ & Federal issued Formal Notice of Violation & 2.5 & 2.3 & 0.0 & 1.9 \\
+ & SFH & State Boil Water Order & 0.0 & 0.5 & 0.0 & 2.1 \\
+ & SO6 & State Intentional no-action & 0.4 & 0.0 & 1.7 & 0.2 \\
+ & SID & State Site Visit for enforcement purposes & 0.0 & 0.1 & 0.0 & 1.4 \\
+ & SFG & State Public Notification issued & 0.5 & 0.9 & 0.0 & 1.2 \\
+ & — & All other informal actions & 1.7 & 0.5 & 0.0 & 0.9 \\
+\addlinespace[4pt]
+\multicolumn{7}{l}{\textit{Resolving (compliance achieved)}} \\
+\addlinespace[2pt]
+Resolving & SOX & State Compliance achieved & 31.4 & 31.1 & 24.1 & 17.6 \\
+ & EOX & Federal Compliance achieved & 0.3 & 0.2 & 0.0 & 0.0 \\
+\hline\hline
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\textit{Notes:} Unit of observation is the enforcement action row in SDWA\_VIOLATIONS\_ENFORCEMENT.csv. Entries show the share (\%) of all enforcement actions within each column group that are of the specified type. Column groups are defined by violation category (MR = monitoring/reporting; MCL = maximum contaminant level) and contaminant group (mining = rules 331 nitrate, 332 arsenic, 333 inorganic chemicals, 340 radionuclides; non-mining = rules 110/111 total coliform, 121--123/140 surface/groundwater rule, 310 VOCs, 320 SOCs). Sample: CWSs in the downstream 2SLS sample (HUC12 at most two steps downstream of a coal mine, not colocated), 1985--2005 (349 CWSs; states: AL, CA, CO, FL, GA, IL, KS, KY, LA, MD, NC, NJ, NY, OH, OR, PA, SC, TN, UT, VA, WA, WV). A violation may generate multiple enforcement actions; rows are enforcement actions, not violations. Enforcement categories follow EPA SDWIS classification: \textit{Formal} = legally binding instruments (administrative orders, consent decrees, penalties, civil/criminal referrals); \textit{Informal} = advisory actions and notices (notices of violation, public notification requests, compliance meetings, technical assistance visits, intentional no-action); \textit{Resolving} = closure actions recording that the system returned to compliance. Code prefixes: S = state-initiated; E = federally initiated. SFJ = State Formal Notice of Violation (coded Informal in SDWIS because it precedes formal legal action). ``All other informal actions'' aggregates codes each below 1\% in every column group.
+\end{minipage}
+\end{table}

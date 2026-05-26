@@ -213,7 +213,133 @@ either:
 
 ---
 
-## 6. Applied real example: Navarro (2025), *On the Right Track*
+## 6. Implementing with individual-level data
+
+The sections above use **aggregate market shares** to invert logit demand. With
+individual-level choice data you skip the inversion and write the likelihood
+directly. The supply side and counterfactual fixed point are essentially unchanged.
+
+### Data structure
+
+One row per (consumer i, alternative j), or one row per consumer with a
+chosen-alternative column.
+
+| field | meaning |
+|---|---|
+| `i` | consumer ID |
+| `m` | market / time period (so prices and choice sets vary) |
+| `j ∈ {0, 1, 2}` | alternative (0 = outside good) |
+| `y_ij ∈ {0,1}` | 1 if i chose j |
+| `p_jm`, `x_jm` | price and attributes of j in market m |
+| `z_i` (optional) | demographics, for interactions with α, β |
+
+You need variation across **markets** (or time) in p and x — otherwise α and β
+aren't separately identified from a constant.
+
+### Demand estimation — MLE instead of share inversion
+
+Each consumer's choice probability is the same logit formula:
+
+    P(i picks j | p_m, x_m) = exp(α x_jm − β p_jm) / [1 + Σ_k exp(α x_km − β p_km)]
+
+Log-likelihood over the sample:
+
+    ℓ(α, β) = Σ_i Σ_j  y_ij · log P(i picks j)
+
+Maximize numerically (e.g. `mlogit` in R, `statsmodels` / `PyLogit` in Python,
+or hand-rolled via `optim` / `scipy.optimize`). With demographics, let
+β_i = β₀ + β₁ z_i to get heterogeneous price sensitivity — this is where
+individual data pays off relative to aggregate BLP, since you observe *who* chose
+*what*.
+
+**Endogeneity of price.** Same issue as the aggregate case: if p_jm correlates
+with an unobserved demand shock ξ_jm, MLE is biased. Two fixes:
+
+- **Control function** (Petrin–Train): first-stage regress p on cost shifters, get
+  residual v̂, include v̂ in the utility, then MLE.
+- **BLP with micro moments** (Berry–Levinsohn–Pakes + Petrin): match individual
+  choice moments and aggregate share moments jointly.
+
+If prices are regulated or otherwise plausibly exogenous (Navarro's case — Santiago
+bus fares are set by a regulator), plain MLE on individual choices is fine.
+
+### Supply estimation — virtually unchanged
+
+The supply side still operates at the **product × market** level. After estimating
+(α̂, β̂):
+
+1. Compute predicted market shares ŝ_jm by averaging individual probabilities:
+   `ŝ_jm = (1/N_m) Σ_i P̂(i picks j)`.
+2. Build the constructed marginal cost: `m̂c_jm = p_jm − 1 / [β̂ (1 − ŝ_jm)]`.
+3. Run the log-cost regression `ln(m̂c_jm) = ln(γ κ_j) + (γ−1) ln(q_jm) + u_jm`,
+   instrumenting `ln q_jm` with cost shifters.
+
+The only difference from the aggregate case is that ŝ_jm comes from averaging
+individual probabilities rather than being read off aggregate market data.
+
+### Counterfactual — fixed point is identical
+
+The Bertrand-Nash fixed point in (p₁, p₂) runs exactly as in Section 4. The only
+choice: when computing new shares at each iteration, either
+
+- **Plug new p into individual probabilities** and average across the sample
+  (preserves heterogeneity in β_i if estimated), or
+- **Use the closed-form logit share** with the average α, β (loses heterogeneity
+  but is faster).
+
+For welfare, consumer surplus is computed **per consumer** and summed:
+
+    CS_i = (1/β̂_i) · log[1 + Σ_j exp(α̂ x_j − β̂_i p_j*)]
+    ΔCS  = Σ_i (CS_i* − CS_i⁰)
+
+Heterogeneous β_i means the tax burden falls unequally across consumers — the
+distributional question that individual data answers and aggregate BLP cannot.
+
+### Concrete R sketch
+
+```r
+library(mlogit); library(fixest); library(data.table)
+
+# demand: long format, one row per (i, j)
+dt_long <- mlogit.data(dt, choice = "y", shape = "long",
+                       alt.var = "j", chid.var = "i", id.var = "i")
+dem <- mlogit(y ~ p + x | 0, data = dt_long)   # coef(dem) gives α, β
+
+# predicted shares per (j, m)
+shares <- dt[, .(s_hat = mean(predict(dem, .SD))), by = .(j, m)]
+
+# supply: construct mc, regress
+shares[, mc_hat := p - 1 / (coef(dem)["p"] * (1 - s_hat))]
+shares[, q := M * s_hat]
+sup <- feols(log(mc_hat) ~ 1 | 0 | log(q) ~ cost_shifter, data = shares)
+gamma_hat <- 1 + coef(sup)["fit_log(q)"]
+
+# counterfactual: iterate FOC until ||Δp|| < tol
+p_new <- p_obs
+repeat {
+  s <- logit_shares(p_new, alpha_hat, beta_hat, x)
+  mc <- gamma_hat * kappa_hat * (M * s)^(gamma_hat - 1)
+  p_next <- mc + 1 / (beta_hat * (1 - s))
+  p_next[1] <- p_next[1] + t          # per-unit tax on product 1
+  if (max(abs(p_next - p_new)) < 1e-8) break
+  p_new <- p_next
+}
+```
+
+### Summary: what changes vs. aggregate data
+
+| Step | Aggregate (BLP-style) | Individual-level |
+|---|---|---|
+| Demand estimation | Invert shares; IV regression | MLE on choice probabilities; control function for endogeneity |
+| Shares at new prices | Closed-form logit formula | Average individual probabilities (or same formula if homogeneous β) |
+| Welfare | Log-sum at market level | Log-sum per consumer; summed |
+| Distributional effects | Not identified | Identified via β_i × z_i interactions |
+| Supply estimation | Identical | Identical |
+| Counterfactual fixed point | Identical | Identical |
+
+---
+
+## 7. Applied real example: Navarro (2025), *On the Right Track*
 
 Navarro's job market paper applies exactly this template to public transit
 contracts in Santiago, Chile. The mapping is:

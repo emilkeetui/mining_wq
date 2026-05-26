@@ -1,0 +1,41 @@
+\begin{table}[htbp]
+\centering
+\caption{Relationship Between Site Visits and MR Violations (Downstream 2SLS Sample, 1985--2005)}
+\label{tab:site_visit_mr_link}
+\small
+\begin{tabular}{lrr}
+\hline\hline
+ & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{\%} \\
+\hline
+\multicolumn{3}{l}{\textit{Panel A: PWSID--year co-occurrence in the main regression panel}} \\
+\multicolumn{3}{l}{\footnotesize\textit{Base: 11,535 PWSID--years from the downstream 2SLS panel (349 CWSs $\times$ 1985--2005)}} \\[2pt]
+Site visit and MR violation & 224 & 1.9 \\
+Site visit only (no MR violation) & 982 & 8.5 \\
+MR violation only (no site visit) & 789 & 6.8 \\
+Neither & 9,540 & 82.7 \\
+\hline
+\multicolumn{3}{l}{\footnotesize Pr(MR violation $|$ visit year) = 18.6\%; Pr(MR violation $|$ no visit year) = 7.6\%} \\
+\multicolumn{3}{l}{\footnotesize Pr(visit $|$ MR violation year) = 22.1\%; Pr(visit $|$ no MR violation year) = 9.3\%} \\[6pt]
+\multicolumn{3}{l}{\textit{Panel B: Temporal proximity of site visit date to MR violation window}} \\
+\multicolumn{3}{l}{\footnotesize\textit{Base: 2,159 dated site visits matched to downstream CWSs}} \\[2pt]
+During active MR violation & 379 & 17.6 \\
+Within 365 days before MR begins & 258 & 11.9 \\
+Within 365 days after MR resolves & 213 & 9.9 \\
+Same PWSID, outside all windows & 968 & 44.8 \\
+No MR violations at this PWSID & 341 & 15.8 \\
+\hline
+\textit{Total} & 2,159 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel C: Site visits recorded as enforcement responses (SID code)}} \\
+\multicolumn{3}{l}{\footnotesize\textit{SID = ``State Site Visit for enforcement purposes'' in SDWA\_VIOLATIONS\_ENFORCEMENT}} \\[2pt]
+All SID enforcement actions (any violation type) & 29 & \\
+SID actions on MR violations & 12 & \\
+Unique MR violations linked to a SID action & 12 & 0.2 \\
+\multicolumn{3}{l}{\footnotesize (denominator: 6,374 unique MR violations in downstream sample)} \\
+\hline\hline
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\textit{Notes:} Sample is the strictly downstream 2SLS sample (\texttt{minehuc\_downstream\_of\_mine}=1, \texttt{minehuc\_mine}=0), 1985--2005 (349 CWSs). \textit{Panel A} uses the PWSID--year panel from \texttt{prod\_vio\_sulfur.parquet}; a year is coded as having a site visit (MR violation) if any visit (MR violation) begins in that calendar year. \textit{Panel B} classifies each site visit by its temporal relationship to the nearest active MR violation at the same PWSID: ``during'' means the visit date falls within an open violation window (begin $\le$ visit $\le$ RTC); the 365-day windows are mutually exclusive from ``during'' and applied in priority order. \textit{Panel C} uses \texttt{ENFORCEMENT\_ACTION\_TYPE\_CODE}=SID, which records site visits explicitly logged as enforcement responses to a specific violation. There is no shared foreign key between \texttt{SDWA\_SITE\_VISITS} and \texttt{SDWA\_VIOLATIONS\_ENFORCEMENT}; Panels A and B use temporal linkage by PWSID and date. MR = monitoring/reporting violation.
+\end{minipage}
+\end{table}
