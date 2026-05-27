@@ -1,0 +1,51 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:6yr_dwnstrm_nitrate_mean} Effect of coal mines on measured nitrate concentration (mean, CWSs at most one HUC12 downstream)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcc}
+         \toprule
+         
+          & \multicolumn{2}{c}{Mean nitrate conc. (mg/L)}\\
+         
+                                                                                & OLS           & 2SLS (CS)\\  
+         
+         \midrule 
+         Coal mines (upstream)                                                  & 0.0642        & 2.187\\   
+                                                                                & (0.0455)      & (2.268)\\   
+         
+         F-test (1st stage, CS, clustered), num\_coal\_mines\_upstream\_sum     &               & 1.57\\  
+         
+          \\
+         
+         Observations                                                           & 440           & 444\\  
+         R$^2$                                                                  & 0.87386       & 0.17825\\  
+         Within R$^2$                                                           & 0.01238       & 0.05290\\  
+         
+          \\
+         
+         PWSID fixed effects                                                    & $\checkmark$  & \\  
+         year fixed effects                                                     & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                                              &               & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   OLS column includes PWSID and year fixed effects. 2SLS (CS) column replaces PWSID FEs with STATE\_CODE + year FEs and instruments num\_coal\_mines\_upstream\_sum with sulfur\_unified\_sum (watershed sulfur content, cross-sectional). Identification in 2SLS (CS) relies on within-state variation in watershed sulfur content; the exclusion restriction may be violated if natural (non-mining) sulfur in bedrock independently affects water chemistry. Dependent variable is the mean measured concentration across all samples for a given CWS and year from the EPA 6-Year Review (1998--2005). Sample: CWSs at most one HUC12 downstream of a coal mine. Standard errors clustered at PWSID level. Rows with no 6-Year Review observation for the relevant chemical are excluded.}
+   
+\end{table}
+
+
