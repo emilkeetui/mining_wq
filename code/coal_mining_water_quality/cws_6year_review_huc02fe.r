@@ -119,6 +119,17 @@ note_base <- paste0(
 
 note_main  <- paste0("Sample period 1998--2011. ", note_base)
 note_2005  <- paste0("Sample period 1998--2005 (robustness). ", note_base)
+# Total coliform (TCR) data are available in the 6-Year Review only for 2006--2008 (SYR3).
+note_tc_main <- paste0(
+  "Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). ",
+  note_base,
+  " Outcome is the fraction of annual samples testing positive for total coliform ",
+  "under the Total Coliform Rule (40 CFR 141.63; 54 FR 27544, Jun 29 1989)."
+)
+note_tc_2005 <- paste0(
+  "Total coliform data available only for 2006--2008 (SYR3); ",
+  "no observations in the 1998--2005 robustness window. Table omitted."
+)
 
 dict_global <- c(
   VALUE                           = "Mean conc.",
@@ -129,12 +140,17 @@ dict_global <- c(
 
 # ---------------------------------------------------------------------------
 # Chemical groups (SDWA categories)
+# Each group may optionally specify:
+#   outcomes — "both" (default), "value_only", or "shr_only"
+#   dict     — named character vector passed to etable() dict=; defaults to dict_global
 # ---------------------------------------------------------------------------
 chem_groups <- list(
   list(
     group_label = "Inorganic Chemicals",
     file_label  = "inorg",
-    chems       = c("arsenic", "nitrate", "thallium")
+    chems       = c("arsenic", "nitrate", "thallium",
+                    "barium", "cadmium", "chromium", "mercury", "selenium")
+    # Silver excluded: secondary MCL only (40 CFR 143.3); no SYR2/SYR3 data.
   ),
   list(
     group_label = "Radionuclides",
@@ -146,31 +162,65 @@ chem_groups <- list(
     file_label  = "voc",
     chems       = c("benzene", "carbon tetrachloride",
                     "1,2-dichloroethane", "1,1-dichloroethylene",
-                    "1,1,1-trichloroethane", "vinyl chloride")
+                    "1,1,1-trichloroethane", "vinyl chloride",
+                    "p-dichlorobenzene", "trichloroethylene")
   ),
   list(
     group_label = "Synthetic Organic Chemicals (SOCs)",
     file_label  = "soc",
-    chems       = character(0)  # no SOC CHEMID records in current 6-Year Review parquet
+    chems       = c("2,4-D", "2,4,5-TP (Silvex)", "endrin",
+                    "lindane", "methoxychlor", "toxaphene")
+  ),
+  list(
+    group_label = "Total Coliforms",
+    file_label  = "tc",
+    chems       = c("total coliform"),
+    outcomes    = "value_only",   # VALUE = fraction of samples positive; share_above_mcl
+                                   # is identical after collapsing presence/absence data
+    note        = note_tc_main,   # TC-specific note (data 2006-2008 only)
+    dict        = c(
+      VALUE                           = "Frac. positive",
+      coal_prod_upstream_cumsum_10mst = "Cumul. upstream coal prod. (10M ST)",
+      num_facilities                  = "Num. intake facilities"
+    )
   )
 )
 
 # Pretty column-header labels for each chemical
 nice_chem <- function(x) {
   switch(x,
+    # IOCs
     "arsenic"                = "Arsenic",
     "nitrate"                = "Nitrate",
     "thallium"               = "Thallium",
+    "barium"                 = "Barium",
+    "cadmium"                = "Cadmium",
+    "chromium"               = "Chromium",
+    "mercury"                = "Mercury",
+    "selenium"               = "Selenium",
+    # SOCs
+    "2,4-D"                  = "2,4-D",
+    "2,4,5-TP (Silvex)"      = "Silvex",
+    "endrin"                 = "Endrin",
+    "lindane"                = "Lindane",
+    "methoxychlor"           = "Methoxychlor",
+    "toxaphene"              = "Toxaphene",
+    # VOCs
+    "benzene"                = "Benzene",
+    "carbon tetrachloride"   = "Carbon tet.",
+    "1,2-dichloroethane"     = "1,2-DCE",
+    "p-dichlorobenzene"      = "p-DCB",
+    "1,1-dichloroethylene"   = "1,1-DCE",
+    "1,1,1-trichloroethane"  = "1,1,1-TCA",
+    "trichloroethylene"      = "TCE",
+    "vinyl chloride"         = "Vinyl Cl.",
+    # Radionuclides
     "alpha particles"        = "Alpha part.",
     "beta particles"         = "Beta part.",
     "radium"                 = "Radium",
     "uranium"                = "Uranium",
-    "benzene"                = "Benzene",
-    "carbon tetrachloride"   = "Carbon tet.",
-    "1,2-dichloroethane"     = "1,2-DCE",
-    "1,1-dichloroethylene"   = "1,1-DCE",
-    "1,1,1-trichloroethane"  = "1,1,1-TCA",
-    "vinyl chloride"         = "Vinyl Cl.",
+    # Total Coliforms
+    "total coliform"         = "Total coliform",
     tools::toTitleCase(x)
   )
 }
@@ -181,6 +231,12 @@ nice_chem <- function(x) {
 #   note      — table footnote string
 #   file_sfx  — suffix appended to output file name (e.g. "" or "_2005")
 #   title_sfx — appended to table title (e.g. "" or ", robustness 1998--2005")
+#
+# Per-group options (set in chem_groups list):
+#   outcomes  — "both" (default): VALUE + share_above_mcl per chemical
+#               "value_only":    VALUE model only
+#               "shr_only":      share_above_mcl model only
+#   dict      — named character vector for etable(); defaults to dict_global
 # ---------------------------------------------------------------------------
 run_group_tables <- function(df, note, file_sfx, title_sfx) {
   for (grp in chem_groups) {
@@ -190,6 +246,10 @@ run_group_tables <- function(df, note, file_sfx, title_sfx) {
       cat("  No chemicals defined — skipping.\n")
       next
     }
+
+    outcomes_mode <- if (!is.null(grp$outcomes)) grp$outcomes else "both"
+    grp_dict      <- if (!is.null(grp$dict))     grp$dict     else dict_global
+    grp_note      <- if (!is.null(grp$note))     grp$note     else note
 
     models_list <- list()
     hdr_vec     <- character(0)
@@ -205,31 +265,35 @@ run_group_tables <- function(df, note, file_sfx, title_sfx) {
 
       nm <- nice_chem(chem)
 
-      m_val <- tryCatch(
-        feols(fml_val, data = d, cluster = ~PWSID),
-        error = function(e) { cat("  ERROR (VALUE):", conditionMessage(e), "\n"); NULL }
-      )
-      if (!is.null(m_val)) {
-        models_list <- c(models_list, list(m_val))
-        hdr_vec     <- c(hdr_vec, nm)
-        cat("  n_val =", m_val$nobs,
-            "| coef_val =", round(coef(m_val)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+      if (outcomes_mode %in% c("both", "value_only")) {
+        m_val <- tryCatch(
+          feols(fml_val, data = d, cluster = ~PWSID),
+          error = function(e) { cat("  ERROR (VALUE):", conditionMessage(e), "\n"); NULL }
+        )
+        if (!is.null(m_val)) {
+          models_list <- c(models_list, list(m_val))
+          hdr_vec     <- c(hdr_vec, nm)
+          cat("  n_val =", m_val$nobs,
+              "| coef_val =", round(coef(m_val)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+        }
       }
 
-      # share_above_mcl requires variation; skip if constant (e.g. all zeros)
-      shr_var <- var(d$share_above_mcl, na.rm = TRUE)
-      if (is.na(shr_var) || shr_var == 0) {
-        cat("  share_above_mcl is constant — skipping share model.\n")
-      } else {
-        m_shr <- tryCatch(
-          feols(fml_shr, data = d, cluster = ~PWSID),
-          error = function(e) { cat("  ERROR (share_above_mcl):", conditionMessage(e), "\n"); NULL }
-        )
-        if (!is.null(m_shr)) {
-          models_list <- c(models_list, list(m_shr))
-          hdr_vec     <- c(hdr_vec, nm)  # repeated name → multicolumn with m_val
-          cat("  n_shr =", m_shr$nobs,
-              "| coef_shr =", round(coef(m_shr)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+      if (outcomes_mode %in% c("both", "shr_only")) {
+        # share_above_mcl requires variation; skip if constant (e.g. all zeros)
+        shr_var <- var(d$share_above_mcl, na.rm = TRUE)
+        if (is.na(shr_var) || shr_var == 0) {
+          cat("  share_above_mcl is constant — skipping share model.\n")
+        } else {
+          m_shr <- tryCatch(
+            feols(fml_shr, data = d, cluster = ~PWSID),
+            error = function(e) { cat("  ERROR (share_above_mcl):", conditionMessage(e), "\n"); NULL }
+          )
+          if (!is.null(m_shr)) {
+            models_list <- c(models_list, list(m_shr))
+            hdr_vec     <- c(hdr_vec, nm)  # repeated name → multicolumn with m_val
+            cat("  n_shr =", m_shr$nobs,
+                "| coef_shr =", round(coef(m_shr)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+          }
         }
       }
     }
@@ -253,8 +317,8 @@ run_group_tables <- function(df, note, file_sfx, title_sfx) {
                                grp$group_label, " (6-Year Review, downstream CWSs",
                                title_sfx, ")"),
       label           = paste0("tab:6yr_huc02fe_", grp$file_label, file_sfx),
-      dict            = dict_global,
-      notes           = note,
+      dict            = grp_dict,
+      notes           = grp_note,
       postprocess.tex = move_notes_below_adjustbox,
       file            = out
     )
@@ -276,5 +340,6 @@ df6_2005 <- df6[df6$year <= 2005, ]
 cat("Rows (1998-2005):", nrow(df6_2005),
     "| year range:", min(df6_2005$year), "-", max(df6_2005$year), "\n")
 run_group_tables(df6_2005, note_2005, file_sfx = "_2005", title_sfx = ", robustness 1998--2005")
+# Total coliform has no obs in 1998-2005 (SYR3 only covers 2006-2008); no table produced.
 
 cat("\nDone.\n")

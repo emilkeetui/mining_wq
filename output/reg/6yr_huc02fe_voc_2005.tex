@@ -10,29 +10,29 @@
       
       %start:tab
       
-      \begin{tabular}{lcccccccc}
+      \begin{tabular}{lccccccccccc}
          \toprule
          
-          & Mean conc. & Share $>$ MCL & \multicolumn{5}{c}{Mean conc.} & Share $>$ MCL\\
+          & Mean conc. & Share $>$ MCL & \multicolumn{5}{c}{Mean conc.} & Share $>$ MCL & \multicolumn{2}{c}{Mean conc.} & Share $>$ MCL\\
          
-          & \multicolumn{2}{c}{Benzene} & Carbon tet. & 1,2-DCE & 1,1-DCE & 1,1,1-TCA & \multicolumn{2}{c}{Vinyl Cl.} \\ 
+          & \multicolumn{2}{c}{Benzene} & Carbon tet. & 1,2-DCE & 1,1-DCE & 1,1,1-TCA & \multicolumn{2}{c}{Vinyl Cl.} & p-DCB & \multicolumn{2}{c}{TCE} \\ 
          
-                                             & (1)                   & (2)                   & (3)           & (4)           & (5)             & (6)             & (7)                   & (8)\\  
+                                             & (1)                   & (2)                   & (3)           & (4)           & (5)             & (6)             & (7)                   & (8)                  & (9)             & (10)                  & (11)\\  
          
          \midrule 
-         Cumul. upstream coal prod. (10M ST) & 0.0073                & 0.0007                & -0.0318       & -0.0332       & -0.3017$^{***}$ & -0.2894$^{***}$ & -0.0056               & 0.0018\\   
-                                             & (0.0109)              & (0.0009)              & (0.0201)      & (0.0216)      & (0.0489)        & (0.0552)        & (0.0291)              & (0.0031)\\   
+         Cumul. upstream coal prod. (10M ST) & 0.0073                & 0.0007                & -0.0318       & -0.0332       & -0.3017$^{***}$ & -0.2894$^{***}$ & -0.0056               & 0.0018               & -0.3073$^{***}$ & 0.0102                & 0.0034\\   
+                                             & (0.0109)              & (0.0009)              & (0.0201)      & (0.0216)      & (0.0489)        & (0.0552)        & (0.0291)              & (0.0031)             & (0.0519)        & (0.0853)              & (0.0074)\\   
          
           \\
          
-         Within R$^2$                        & $1.46\times 10^{-5}$  & $1.65\times 10^{-5}$  & 0.00160       & 0.00157       & 0.08185         & 0.03825         & $3.76\times 10^{-5}$  & $4.6\times 10^{-5}$\\   
-         Observations                        & 333                   & 333                   & 333           & 333           & 333             & 333             & 331                   & 331\\  
-         R$^2$                               & 0.16729               & 0.19060               & 0.36346       & 0.35724       & 0.35397         & 0.36451         & 0.57057               & 0.34197\\  
+         Within R$^2$                        & $1.46\times 10^{-5}$  & $1.65\times 10^{-5}$  & 0.00160       & 0.00157       & 0.08185         & 0.03825         & $3.76\times 10^{-5}$  & $4.6\times 10^{-5}$  & 0.07258         & $3.53\times 10^{-6}$  & $3.42\times 10^{-5}$\\   
+         Observations                        & 333                   & 333                   & 333           & 333           & 333             & 333             & 331                   & 331                  & 333             & 333                   & 333\\  
+         R$^2$                               & 0.16729               & 0.19060               & 0.36346       & 0.35724       & 0.35397         & 0.36451         & 0.57057               & 0.34197              & 0.39230         & 0.29919               & 0.27389\\  
          
           \\
          
-         PWSID fixed effects                 & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$    & $\checkmark$    & $\checkmark$          & $\checkmark$\\   
-         huc02-year fixed effects            & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$    & $\checkmark$    & $\checkmark$          & $\checkmark$\\   
+         PWSID fixed effects                 & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$    & $\checkmark$    & $\checkmark$          & $\checkmark$         & $\checkmark$    & $\checkmark$          & $\checkmark$\\   
+         huc02-year fixed effects            & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$    & $\checkmark$    & $\checkmark$          & $\checkmark$         & $\checkmark$    & $\checkmark$          & $\checkmark$\\   
          
          \bottomrule
          

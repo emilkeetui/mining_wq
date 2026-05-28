@@ -2757,3 +2757,31 @@ for (sp in sample_specs) {
     }
   }
 }
+
+################################################
+# 2SLS Heterogeneity Analysis
+# This section estimates heterogeneous treatment effects by interacting the
+# instrument (post95 * sulfur_unified) with time-invariant characteristics
+# of CWSs. Each interaction produces a second endogenous regressor
+# (num_coal_mines_unified * characteristic) instrumented by the corresponding
+# interaction of the base instrument with the same characteristic. The
+# coefficient on the interaction term captures the differential effect of
+# an additional upstream mine for CWSs with that characteristic relative
+# to the base group.
+#
+# Candidate interactions:
+#   - Primary water source type (surface water vs. groundwater)
+#   - Ownership type (private vs. public)
+#   - Population served (large vs. small system)
+#
+# Primer specification (surface water example):
+#
+#   feols(viol ~ num_facilities | PWSID + year + state |
+#         num_coal_mines_unified + num_coal_mines_unified:surface_water ~
+#         post95:sulfur_unified + post95:sulfur_unified:surface_water,
+#         data = df, cluster = ~PWSID)
+#
+# Note: the main effect of surface_water is absorbed by the PWSID fixed
+# effect. Only the interaction with num_coal_mines_unified is identified.
+# Check both first-stage F-statistics (base and interaction) are > 10.
+################################################

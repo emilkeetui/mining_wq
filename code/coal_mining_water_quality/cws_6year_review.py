@@ -25,37 +25,83 @@ MERGED_OUTPUT = PROJECT_ROOT / "clean_data" / "cws_6year_review.parquet"
 
 KEEP_COLS = ["PWSID", "CHEMID_name", "DETECT", "VALUE", "UNITS", "YEAR"]
 
+# SYR3 chemicals where VALUE is always NaN and presence is encoded in
+# "Presence Indicator Code" (P = present, A = absent).  For these, read_syr3_txt
+# derives VALUE = 1.0 (P) / 0.0 (A) and sets UNITS = "binary".
+PRESENCE_ABSENCE_CHEMS: set[str] = {"total coliform"}
+
 # ---------------------------------------------------------------------------
 # MCL schedule and unit conversions
 # ---------------------------------------------------------------------------
-
+#
+# MCL source citations (for independent verification):
+#   Phase I VOCs  — 52 FR 25690 (Jul 8 1987); 40 CFR 141.61(a); effective Jan 9 1989
+#   Phase II IOCs/SOCs — 56 FR 3526 (Jan 30 1991); 40 CFR 141.61(c) & 141.62(b);
+#       compliance Jan 1 1993 (≥ 10,000 service connections), Jan 1 1994 (smaller)
+#   Arsenic rule  — 66 FR 6976 (Jan 22 2001); 40 CFR 141.62(b); compliance Jan 23 2006
+#   Uranium rule  — 65 FR 76708 (Dec 7 2000); 40 CFR 141.66(b); compliance Dec 8 2003
+#   Total Coliform Rule (TCR) — 54 FR 27544 (Jun 29 1989); 40 CFR 141.63;
+#       effective Dec 31 1990; individual-sample encoding: P = present (above MCL),
+#       A = absent (below MCL); replaced by RTCR Apr 1 2016 (outside study window)
+#
 # Each record: (CHEMID_name, year_min, year_max, mcl_value, mcl_unit)
 # year_min / year_max = None means open-ended (earliest / latest data).
 # Omitting a chemical entirely means no MCL applies → above_mcl = NaN.
 # To add a time-varying change, append a new record with the new year range.
 _MCL_RECORDS: list[tuple] = [
-    # Nitrate: 10 mg/L as N — stable throughout
+    # ---- Nitrate ----
+    # 40 CFR 141.62(b); Phase II; stable
     ("nitrate",               None, None, 10.000, "mg/L"),
-    # Arsenic: 0.05 mg/L until end of 2005; 0.01 mg/L from 2006 (compliance date Jan 23 2006)
+
+    # ---- Arsenic ----
+    # 40 CFR 141.62(b); Phase II then Arsenic rule
+    # 0.05 mg/L until end of 2005; 0.01 mg/L from 2006 (compliance date Jan 23 2006)
     ("arsenic",               None, 2005,  0.050, "mg/L"),
     ("arsenic",               2006, None,  0.010, "mg/L"),
-    # VOCs — stable MCLs (mg/L)
+
+    # ---- IOCs: Phase II rule, 40 CFR 141.62(b); all stable 1997–2011 ----
+    # 56 FR 3526 (Jan 30 1991); compliance Jan 1 1993
+    ("barium",                None, None,  2.000, "mg/L"),
+    ("cadmium",               None, None,  0.005, "mg/L"),
+    ("chromium",              None, None,  0.100, "mg/L"),  # total chromium
+    ("mercury",               None, None,  0.002, "mg/L"),  # inorganic mercury
+    ("selenium",              None, None,  0.050, "mg/L"),
+    ("thallium",              None, None,  0.002, "mg/L"),
+    # Silver: no primary NPDWR MCL (40 CFR 143.3 Secondary MCL only); excluded.
+
+    # ---- SOCs: Phase II rule, 40 CFR 141.61(c); all stable 1997–2011 ----
+    # 56 FR 3526 (Jan 30 1991); compliance Jan 1 1993
+    ("2,4-D",                 None, None,  0.070, "mg/L"),
+    ("2,4,5-TP (Silvex)",     None, None,  0.050, "mg/L"),
+    ("endrin",                None, None,  0.002, "mg/L"),
+    ("lindane",               None, None,  0.0002,"mg/L"),
+    ("methoxychlor",          None, None,  0.040, "mg/L"),
+    ("toxaphene",             None, None,  0.003, "mg/L"),
+
+    # ---- VOCs: Phase I rule, 40 CFR 141.61(a); all stable 1997–2011 ----
+    # 52 FR 25690 (Jul 8 1987); effective Jan 9 1989
     ("benzene",               None, None,  0.005, "mg/L"),
     ("carbon tetrachloride",  None, None,  0.005, "mg/L"),
     ("1,2-dichloroethane",    None, None,  0.005, "mg/L"),
+    ("p-dichlorobenzene",     None, None,  0.075, "mg/L"),  # 1,4-dichlorobenzene
     ("1,1-dichloroethylene",  None, None,  0.007, "mg/L"),
     ("1,1,1-trichloroethane", None, None,  0.200, "mg/L"),
+    ("trichloroethylene",     None, None,  0.005, "mg/L"),
     ("vinyl chloride",        None, None,  0.002, "mg/L"),
-    # Radionuclides
+
+    # ---- Radionuclides ----
     ("alpha particles",       None, None, 15.000, "pCi/L"),
-    # Gross beta: EPA screening level 50 pCi/L (Sr-90 proxy for 4 mrem/yr effective dose);
-    # data are always reported in pCi/L, so use the pCi/L proxy for the comparison.
+    # Gross beta: EPA 50 pCi/L screening level (Sr-90 proxy for 4 mrem/yr)
     ("beta particles",        None, None, 50.000, "pCi/L"),
     ("radium",                None, None,  5.000, "pCi/L"),   # combined Ra-226 + Ra-228
-    # Thallium: stable
-    ("thallium",              None, None,  0.002, "mg/L"),
     # Uranium: no federal MCL before compliance date Dec 8 2003 → first full year = 2004
     ("uranium",               2004, None,  0.030, "mg/L"),
+
+    # ---- Total Coliforms ----
+    # 40 CFR 141.63; TCR effective Dec 31 1990.
+    # VALUE is encoded as 1.0 = present (P), 0.0 = absent (A); units = "binary".
+    # above_mcl = 1 if VALUE > 0 (any coliform detected).
+    ("total coliform",        None, None,  0.0,   "binary"),
 ]
 
 # Conversion factors: (from_unit_normalized, to_unit_normalized) → multiply VALUE by factor.
@@ -68,6 +114,7 @@ _UNIT_CONV: dict[tuple[str, str], float] = {
     ("ng/l",    "mg/l"):    1e-6,
     ("pci/l",   "pci/l"):   1.0,
     ("mrem/yr", "mrem/yr"): 1.0,
+    ("binary",  "binary"):  1.0,   # total coliform presence indicator
 }
 
 
@@ -179,6 +226,11 @@ def read_syr3_txt(path: pathlib.Path, chem_name: str) -> pd.DataFrame:
       Detect                 → DETECT  (0 = non-detect, 1 = detect)
       Value                  → VALUE   (blank for non-detections)
       Unit                   → UNITS
+
+    For chemicals in PRESENCE_ABSENCE_CHEMS (e.g. total coliform), the Detect
+    column is always 0 and Value is always NaN.  VALUE and DETECT are instead
+    derived from the "Presence Indicator Code" column: P → 1.0, A → 0.0.
+    UNITS is set to "binary" so the MCL comparison in assign_mcl_and_above works.
     """
     df = pd.read_csv(path, sep="\t", low_memory=False)
 
@@ -194,6 +246,17 @@ def read_syr3_txt(path: pathlib.Path, chem_name: str) -> pd.DataFrame:
     df["UNITS"]      = df["UNITS"].astype(str).str.strip().where(lambda s: s != "nan")
     df["DETECT"]     = pd.to_numeric(df["DETECT"], errors="coerce")
     df["VALUE"]      = pd.to_numeric(df["VALUE"],  errors="coerce")
+
+    if chem_name in PRESENCE_ABSENCE_CHEMS and "Presence Indicator Code" in df.columns:
+        pic = df["Presence Indicator Code"].astype(str).str.strip()
+        df["VALUE"]  = pic.map({"P": 1.0, "A": 0.0})
+        df["DETECT"] = df["VALUE"]
+        df["UNITS"]  = "binary"
+        n_p = int((df["VALUE"] == 1.0).sum())
+        n_a = int((df["VALUE"] == 0.0).sum())
+        print(f"    [presence-absence] P={n_p:,}  A={n_a:,}  "
+              f"unresolved={int(df['VALUE'].isna().sum()):,}")
+
     return df[KEEP_COLS].copy()
 
 
@@ -414,19 +477,39 @@ def merge_to_2sls(df_chem: pd.DataFrame) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 CHEMICALS = [
+    # Inorganic Chemicals (IOCs) — 40 CFR 141.62(b)
     "arsenic",
     "nitrate",
+    "thallium",
+    "barium",
+    "cadmium",
+    "chromium",
+    "mercury",
+    "selenium",
+    "silver",           # no SYR2/SYR3 data — secondary MCL only (40 CFR 143.3); skipped
+    # Synthetic Organic Chemicals (SOCs) — 40 CFR 141.61(c)
+    "2,4-D",
+    "2,4,5-TP (Silvex)",
+    "endrin",
+    "lindane",
+    "methoxychlor",
+    "toxaphene",
+    # Volatile Organic Chemicals (VOCs) — 40 CFR 141.61(a)
     "benzene",
     "carbon tetrachloride",
     "1,2-dichloroethane",
+    "p-dichlorobenzene",
     "1,1-dichloroethylene",
     "1,1,1-trichloroethane",
+    "trichloroethylene",
     "vinyl chloride",
+    # Radionuclides
     "alpha particles",
     "beta particles",
     "radium",
-    "thallium",
     "uranium",
+    # Total Coliforms — SYR3 only (2006–2008); 40 CFR 141.63
+    "total coliform",
 ]
 
 if __name__ == "__main__":
