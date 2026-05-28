@@ -1,210 +1,463 @@
 # ============================================================
 # Script: cws_6year_review.py
 # Purpose: Build a PWSID-level panel from EPA 6-Year Review
-#          MDB files and merge to the main 2SLS dataset
-# Inputs:  - List of .mdb file paths (one per chemical)
-#          - List of chemical name strings (same length)
+#          data (SYR2 .mdb files + SYR3 .txt files) and merge
+#          to the main 2SLS dataset. User only sets CHEMICALS.
+# Inputs:  - raw_data/6_year_review_epa/six-year-review 2/**/*.mdb
+#          - raw_data/6_year_review_epa/six-year-review 3/**/*.txt
 #          - clean_data/cws_data/prod_vio_sulfur.parquet
-# Outputs: clean_data/cws_6year_review.parquet
-# Author: EK  Date: 2026-05-26
+# Outputs: - clean_data/cws_6year_review_chemicals.parquet  (pre-merge)
+#          - clean_data/cws_6year_review.parquet             (merged to 2SLS)
+# Author: EK  Date: 2026-05-27
 # ============================================================
 
 import pathlib
+import re
 import pyodbc
 import pandas as pd
 
-PROJECT_ROOT = pathlib.Path(r"Z:\ek559\mining_wq")
-MAIN_DATASET = PROJECT_ROOT / "clean_data" / "cws_data" / "prod_vio_sulfur.parquet"
-OUTPUT_PATH  = PROJECT_ROOT / "clean_data" / "cws_6year_review.parquet"
+PROJECT_ROOT  = pathlib.Path(r"Z:\ek559\mining_wq")
+SYR2_ROOT     = PROJECT_ROOT / "raw_data" / "6_year_review_epa" / "six-year-review 2"
+SYR3_ROOT     = PROJECT_ROOT / "raw_data" / "6_year_review_epa" / "six-year-review 3"
+MAIN_DATASET  = PROJECT_ROOT / "clean_data" / "cws_data" / "prod_vio_sulfur.parquet"
+CHEM_OUTPUT   = PROJECT_ROOT / "clean_data" / "cws_6year_review_chemicals.parquet"
+MERGED_OUTPUT = PROJECT_ROOT / "clean_data" / "cws_6year_review.parquet"
 
 KEEP_COLS = ["PWSID", "CHEMID_name", "DETECT", "VALUE", "UNITS", "YEAR"]
 
+# ---------------------------------------------------------------------------
+# MCL schedule and unit conversions
+# ---------------------------------------------------------------------------
 
-def build_6year_review(mdb_paths: list[str], chem_names: list[str]) -> pd.DataFrame:
+# Each record: (CHEMID_name, year_min, year_max, mcl_value, mcl_unit)
+# year_min / year_max = None means open-ended (earliest / latest data).
+# Omitting a chemical entirely means no MCL applies → above_mcl = NaN.
+# To add a time-varying change, append a new record with the new year range.
+_MCL_RECORDS: list[tuple] = [
+    # Nitrate: 10 mg/L as N — stable throughout
+    ("nitrate",               None, None, 10.000, "mg/L"),
+    # Arsenic: 0.05 mg/L until end of 2005; 0.01 mg/L from 2006 (compliance date Jan 23 2006)
+    ("arsenic",               None, 2005,  0.050, "mg/L"),
+    ("arsenic",               2006, None,  0.010, "mg/L"),
+    # VOCs — stable MCLs (mg/L)
+    ("benzene",               None, None,  0.005, "mg/L"),
+    ("carbon tetrachloride",  None, None,  0.005, "mg/L"),
+    ("1,2-dichloroethane",    None, None,  0.005, "mg/L"),
+    ("1,1-dichloroethylene",  None, None,  0.007, "mg/L"),
+    ("1,1,1-trichloroethane", None, None,  0.200, "mg/L"),
+    ("vinyl chloride",        None, None,  0.002, "mg/L"),
+    # Radionuclides
+    ("alpha particles",       None, None, 15.000, "pCi/L"),
+    # Gross beta: EPA screening level 50 pCi/L (Sr-90 proxy for 4 mrem/yr effective dose);
+    # data are always reported in pCi/L, so use the pCi/L proxy for the comparison.
+    ("beta particles",        None, None, 50.000, "pCi/L"),
+    ("radium",                None, None,  5.000, "pCi/L"),   # combined Ra-226 + Ra-228
+    # Thallium: stable
+    ("thallium",              None, None,  0.002, "mg/L"),
+    # Uranium: no federal MCL before compliance date Dec 8 2003 → first full year = 2004
+    ("uranium",               2004, None,  0.030, "mg/L"),
+]
+
+# Conversion factors: (from_unit_normalized, to_unit_normalized) → multiply VALUE by factor.
+# Normalized = lowercase with all whitespace removed.
+# Only same-dimension pairs are listed; incompatible unit pairs return NaN (no comparison).
+_UNIT_CONV: dict[tuple[str, str], float] = {
+    ("mg/l",    "mg/l"):    1.0,
+    ("ug/l",    "mg/l"):    1e-3,
+    ("µg/l",    "mg/l"):    1e-3,
+    ("ng/l",    "mg/l"):    1e-6,
+    ("pci/l",   "pci/l"):   1.0,
+    ("mrem/yr", "mrem/yr"): 1.0,
+}
+
+
+# ---------------------------------------------------------------------------
+# Name normalization and catalog building
+# ---------------------------------------------------------------------------
+
+def normalize_chem(s: str) -> str:
     """
-    Reads each MDB file, tags it with the chemical name, extracts year from
-    DATE, and stacks all chemicals into one master dataframe.
+    Reduce a chemical name or filename stem to a spaceless lowercase key
+    for fuzzy matching across SYR2 and SYR3 naming conventions.
 
-    NOTE on merge cardinality: the 6-year review data are sample-level
-    (many samples per PWSID per year), while the 2SLS dataset is one row
-    per PWSID x year. Merging produces a many-to-one join: many 6-year-review
-    rows match each single 2SLS row. The merged file therefore has more rows
-    than the 2SLS dataset.
-
-    Parameters
-    ----------
-    mdb_paths : list of str
-        Full paths to .mdb files.
-    chem_names : list of str
-        Chemical name labels corresponding to each .mdb file.
-
-    Returns
-    -------
-    pd.DataFrame
-        Merged dataframe (6-year review columns + all 2SLS columns).
+    Handles:
+      - SYR2 _ChemNNNN[_update] suffixes
+      - Qualifiers: (as N), (Gross beta), (inorganic), (total), _combined
+      - Square vs round brackets (Benzo[a]pyrene vs benzo(a)pyrene)
+      - CamelCase run-together names (CarbonTetrachloride)
+      - Radium-226_228 series numbers
+      - Underscore / hyphen / space separator variants
     """
-    if len(mdb_paths) != len(chem_names):
-        raise ValueError(
-            f"mdb_paths ({len(mdb_paths)}) and chem_names ({len(chem_names)}) "
-            "must have the same length."
-        )
+    s = s.lower()
+    s = re.sub(r"_chem\d+.*$", "", s)                    # strip _Chem1005[_update]
+    s = re.sub(r"\s*\(gross\s+beta\)", "", s)             # strip (Gross beta)
+    s = re.sub(r"\s*\(as\s+[a-z]+\)", "", s)              # strip (as n), (as nitrogen)
+    s = re.sub(r"\s*\((inorganic|total|combined)\)", "", s)
+    s = re.sub(r"[_\-]?(combined|total)\s*$", "", s)      # trailing _combined / -total
+    s = re.sub(r"[\[\]\(\)]", "", s)                      # strip all brackets
+    s = re.sub(r"\b\d{2,}\b", "", s)                      # strip 2+ digit numbers (226, 228)
+    s = re.sub(r"[-_,\s]+", " ", s)                       # normalize all separators → space
+    return s.strip().replace(" ", "")                     # spaceless key for substring matching
 
-    master = pd.DataFrame()
 
-    for mdb_path, chem_name in zip(mdb_paths, chem_names):
-        print(f"  Reading {pathlib.Path(mdb_path).name}  ->  CHEMID_name = '{chem_name}'")
+def _build_catalog(root: pathlib.Path, glob: str) -> dict[str, pathlib.Path]:
+    catalog: dict[str, pathlib.Path] = {}
+    for p in root.rglob(glob):
+        key = normalize_chem(p.stem)
+        if key in catalog:
+            print(f"  [WARN] duplicate normalized key '{key}': "
+                  f"{catalog[key].name} vs {p.name} — keeping first")
+        else:
+            catalog[key] = p
+    return catalog
 
-        conn_str = r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=" + str(mdb_path)
-        conn = pyodbc.connect(conn_str)
 
-        # Each MDB contains exactly one table; discover it dynamically.
-        cursor = conn.cursor()
-        tables = [row.table_name for row in cursor.tables(tableType="TABLE")]
-        if not tables:
-            raise RuntimeError(f"No tables found in {mdb_path}")
-        table_name = tables[0]
+def find_file(
+    chem_name: str,
+    catalog: dict[str, pathlib.Path],
+    source: str,
+) -> pathlib.Path | None:
+    """
+    Three-pass matching:
+      1. Exact normalized key
+      2. Query key is a substring of a catalog key   (e.g. "radium" in "combinedradium")
+      3. Catalog key is a substring of the query key (e.g. "uranium" in "uraniumcombined")
+    Returns None and prints a warning if nothing matches.
+    """
+    query_key = normalize_chem(chem_name)
 
-        cursor.execute(f"SELECT * FROM [{table_name}]")
-        cols = [desc[0] for desc in cursor.description]
-        rows = cursor.fetchall()
+    if query_key in catalog:
+        return catalog[query_key]
+
+    hits = [k for k in catalog if query_key in k]
+    if not hits:
+        hits = [k for k in catalog if k in query_key]
+
+    if not hits:
+        return None
+    if len(hits) > 1:
+        print(f"  [WARN] '{chem_name}' matches multiple {source} entries: "
+              f"{[catalog[k].name for k in hits]}. Using first.")
+    return catalog[hits[0]]
+
+
+# ---------------------------------------------------------------------------
+# File readers — both return a DataFrame with exactly KEEP_COLS
+# ---------------------------------------------------------------------------
+
+def read_syr2_mdb(path: pathlib.Path, chem_name: str) -> pd.DataFrame:
+    """Read a SYR2 Access .mdb file via pyodbc."""
+    conn_str = r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=" + str(path)
+    conn = pyodbc.connect(conn_str)
+    cursor = conn.cursor()
+    tables = [r.table_name for r in cursor.tables(tableType="TABLE")]
+    if not tables:
         conn.close()
-        df = pd.DataFrame.from_records(rows, columns=cols)
+        raise RuntimeError(f"No tables in {path}")
+    cursor.execute(f"SELECT * FROM [{tables[0]}]")
+    cols = [d[0] for d in cursor.description]
+    rows = cursor.fetchall()
+    conn.close()
 
-        df["YEAR"]       = pd.to_datetime(df["DATE"]).dt.year
-        df["CHEMID_name"] = chem_name
+    df = pd.DataFrame.from_records(rows, columns=cols)
+    df["YEAR"]       = pd.to_datetime(df["DATE"]).dt.year
+    df["CHEMID_name"] = chem_name
+    df["PWSID"]      = df["PWSID"].astype(str).str.strip()
+    df["UNITS"]      = df["UNITS"].astype(str).str.strip().where(lambda s: s != "nan")
+    df["DETECT"]     = pd.to_numeric(df["DETECT"], errors="coerce")
+    df["VALUE"]      = pd.to_numeric(df["VALUE"],  errors="coerce")
+    return df[KEEP_COLS].copy()
 
-        df = df[KEEP_COLS].copy()
 
-        # Compute summary stats at PWSID-YEAR level and collapse
-        grp = df.groupby(["PWSID", "YEAR"])["VALUE"]
-        df["mean"]   = grp.transform("mean")
-        df["median"] = grp.transform("median")
-        df["max"]    = grp.transform("max")
-        df["min"]    = grp.transform("min")
+def read_syr3_txt(path: pathlib.Path, chem_name: str) -> pd.DataFrame:
+    """
+    Read a SYR3 tab-delimited .txt file.
 
-        df = (
-            df.groupby(["PWSID", "CHEMID_name", "YEAR"], as_index=False)
-            .agg(VALUE=("VALUE", "mean"), UNITS=("UNITS", "first"),
-                 mean=("mean", "first"), median=("median", "first"),
-                 max=("max", "first"), min=("min", "first"))
-        )
+    SYR3 column mapping → KEEP_COLS:
+      PWSID                  → PWSID
+      Sample Collection Date → YEAR  (extract year)
+      Detect                 → DETECT  (0 = non-detect, 1 = detect)
+      Value                  → VALUE   (blank for non-detections)
+      Unit                   → UNITS
+    """
+    df = pd.read_csv(path, sep="\t", low_memory=False)
 
-        master = pd.concat([master, df], ignore_index=True)
-        print(f"    {len(df):,} PWSID-year rows  |  master total: {len(master):,} rows")
+    df = df.rename(columns={
+        "Sample Collection Date": "_DATE",
+        "Detect": "DETECT",
+        "Value":  "VALUE",
+        "Unit":   "UNITS",
+    })
+    df["YEAR"]       = pd.to_datetime(df["_DATE"]).dt.year
+    df["CHEMID_name"] = chem_name
+    df["PWSID"]      = df["PWSID"].astype(str).str.strip()
+    df["UNITS"]      = df["UNITS"].astype(str).str.strip().where(lambda s: s != "nan")
+    df["DETECT"]     = pd.to_numeric(df["DETECT"], errors="coerce")
+    df["VALUE"]      = pd.to_numeric(df["VALUE"],  errors="coerce")
+    return df[KEEP_COLS].copy()
 
-    print(f"\nMaster dataframe: {len(master):,} rows x {master.shape[1]} columns")
 
-    # ------------------------------------------------------------------
-    # Merge to main 2SLS dataset
-    # ------------------------------------------------------------------
-    print(f"\nReading main 2SLS dataset from {MAIN_DATASET}")
-    main_df = pd.read_parquet(MAIN_DATASET, engine="pyarrow")
-    print(f"  Main dataset: {len(main_df):,} rows × {main_df.shape[1]} columns")
-    print(f"  Year range: {main_df['year'].min()} – {main_df['year'].max()}")
+# ---------------------------------------------------------------------------
+# Core pipeline
+# ---------------------------------------------------------------------------
 
-    # Align key types before joining
+def build_chemical_panel(chemicals: list[str]) -> pd.DataFrame:
+    """
+    Auto-discover SYR2 (.mdb) and SYR3 (.txt) files for each chemical,
+    read and stack into a sample-level DataFrame with columns KEEP_COLS.
+    Both rounds are included when available; time windows do not overlap
+    (SYR2 ≈ 1998–2005, SYR3 ≈ 2006–2011).
+    """
+    syr2_catalog = _build_catalog(SYR2_ROOT, "*.mdb")
+    syr3_catalog = _build_catalog(SYR3_ROOT, "*.txt")
+    print(f"Catalog: {len(syr2_catalog)} SYR2 files, {len(syr3_catalog)} SYR3 files\n")
+
+    frames: list[pd.DataFrame] = []
+
+    for chem_name in chemicals:
+        syr2_path = find_file(chem_name, syr2_catalog, "SYR2")
+        syr3_path = find_file(chem_name, syr3_catalog, "SYR3")
+
+        if syr2_path is None and syr3_path is None:
+            print(f"  [WARN] '{chem_name}': no file found in SYR2 or SYR3 — skipped")
+            continue
+
+        print(f"  {chem_name}:")
+        if syr2_path:
+            df2 = read_syr2_mdb(syr2_path, chem_name)
+            print(f"    SYR2 {syr2_path.name}: {len(df2):,} rows | "
+                  f"years {df2['YEAR'].min()}–{df2['YEAR'].max()}")
+            frames.append(df2)
+        else:
+            print(f"    SYR2: not found")
+
+        if syr3_path:
+            df3 = read_syr3_txt(syr3_path, chem_name)
+            print(f"    SYR3 {syr3_path.name}: {len(df3):,} rows | "
+                  f"years {df3['YEAR'].min()}–{df3['YEAR'].max()}")
+            frames.append(df3)
+        else:
+            print(f"    SYR3: not found")
+
+    if not frames:
+        raise RuntimeError("No chemical data loaded. Check CHEMICALS list and raw data paths.")
+
+    master = pd.concat(frames, ignore_index=True)
     master["PWSID"] = master["PWSID"].astype(str)
     master["YEAR"]  = master["YEAR"].astype("int64")
+
+    print(f"\nSample-level panel: {len(master):,} rows × {master.shape[1]} columns")
+    print(f"Chemicals loaded:   {sorted(master['CHEMID_name'].unique())}")
+    print(f"Year range:         {master['YEAR'].min()}–{master['YEAR'].max()}")
+    return master
+
+
+def assign_mcl_and_above(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add above_mcl flag to sample-level data using the time-varying _MCL_RECORDS schedule.
+
+    Algorithm:
+      1. For each MCL record, mark matching rows (by chemical + year range) with the MCL value
+         and its unit.
+      2. Normalize both UNITS and mcl_unit to lowercase-no-spaces, look up a conversion
+         factor from _UNIT_CONV.  Pairs with incompatible dimensions produce NaN → excluded.
+      3. above_mcl = 1.0  if VALUE (converted to MCL units) > mcl
+                   = 0.0  if VALUE ≤ mcl
+                   = NaN  if VALUE or mcl is missing, or units are incompatible.
+
+    To add a new chemical or a regulatory change, append a record to _MCL_RECORDS.
+    """
+    df = df.copy()
+    df["mcl"]      = float("nan")
+    df["mcl_unit"] = None
+
+    for chem_name, y_min, y_max, mcl_val, mcl_unit in _MCL_RECORDS:
+        mask = df["CHEMID_name"] == chem_name
+        if y_min is not None:
+            mask = mask & (df["YEAR"] >= y_min)
+        if y_max is not None:
+            mask = mask & (df["YEAR"] <= y_max)
+        df.loc[mask, "mcl"]      = mcl_val
+        df.loc[mask, "mcl_unit"] = mcl_unit
+
+    def _norm(s: pd.Series) -> pd.Series:
+        return s.fillna("").str.lower().str.replace(r"\s+", "", regex=True)
+
+    data_unit_norm = _norm(df["UNITS"])
+    mcl_unit_norm  = _norm(df["mcl_unit"].astype(str).where(df["mcl_unit"].notna()))
+
+    conv_factor = pd.Series(
+        [_UNIT_CONV.get((d, m), float("nan"))
+         for d, m in zip(data_unit_norm, mcl_unit_norm)],
+        index=df.index, dtype=float,
+    )
+
+    df["above_mcl"] = float("nan")
+    has_valid = df["VALUE"].notna() & df["mcl"].notna() & conv_factor.notna()
+    value_adj = df.loc[has_valid, "VALUE"] * conv_factor[has_valid]
+    df.loc[has_valid, "above_mcl"] = (value_adj > df.loc[has_valid, "mcl"]).astype(float)
+
+    n_valid = int(has_valid.sum())
+    n_above = int((df["above_mcl"] == 1.0).sum())
+    print(f"\nMCL assignment: {n_valid:,} readings with valid MCL comparison; "
+          f"{n_above:,} ({100 * n_above / max(n_valid, 1):.1f}%) exceed MCL")
+
+    return df.drop(columns=["mcl", "mcl_unit"])
+
+
+def collapse_to_pwsid_year(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Collapse sample-level data to PWSID × CHEMID_name × YEAR.
+    VALUE           = mean of all samples that year.
+    DETECT          = 1 if any sample that year was a detection.
+    UNITS           = the common unit for all readings (after mixed-unit filter).
+    share_above_mcl = share of readings exceeding the applicable MCL (NaN if no MCL applies).
+
+    Groups where more than one distinct non-null unit appears within a
+    PWSID × chemical × year cell are dropped before collapsing, since averaging
+    values in incompatible units is undefined. NaN units are treated as absent
+    unit information and do not themselves cause a group to be dropped.
+    """
+    # Count distinct non-null units per group (nunique excludes NaN by default)
+    unit_nunique = (
+        df.groupby(["PWSID", "CHEMID_name", "YEAR"])["UNITS"]
+        .nunique()
+        .reset_index(name="_unit_nunique")
+    )
+    df = df.merge(unit_nunique, on=["PWSID", "CHEMID_name", "YEAR"])
+
+    mixed = df["_unit_nunique"] > 1
+    if mixed.any():
+        n_groups = df.loc[mixed, ["PWSID", "CHEMID_name", "YEAR"]].drop_duplicates().shape[0]
+        n_rows   = int(mixed.sum())
+        print(f"\n  [WARN] dropping {n_groups:,} PWSID×chemical×year groups "
+              f"({n_rows:,} rows) with mixed units:")
+        summary = (
+            df.loc[mixed]
+            .groupby(["CHEMID_name", "UNITS"])
+            .size()
+            .reset_index(name="n_rows")
+        )
+        print(summary.to_string(index=False))
+
+    df = df.loc[~mixed].drop(columns=["_unit_nunique"])
+
+    agg_spec: dict = dict(
+        VALUE  = ("VALUE",  "mean"),
+        DETECT = ("DETECT", "max"),
+        UNITS  = ("UNITS",  "first"),   # all non-null units in group are identical after filter
+    )
+    if "above_mcl" in df.columns:
+        agg_spec["share_above_mcl"] = ("above_mcl", "mean")
+
+    collapsed = (
+        df.groupby(["PWSID", "CHEMID_name", "YEAR"], as_index=False)
+        .agg(**agg_spec)
+    )
+
+    out_cols = ["PWSID", "CHEMID_name", "DETECT", "VALUE", "UNITS", "YEAR"]
+    if "share_above_mcl" in collapsed.columns:
+        out_cols.append("share_above_mcl")
+    collapsed = collapsed[out_cols].copy()
+
+    print(f"\nCollapsed: {len(collapsed):,} PWSID × chemical × year rows")
+    if "share_above_mcl" in collapsed.columns:
+        n_mcl = collapsed["share_above_mcl"].notna().sum()
+        print(f"  share_above_mcl non-null for {n_mcl:,} rows "
+              f"({100 * n_mcl / max(len(collapsed), 1):.1f}%)")
+    return collapsed
+
+
+def merge_to_2sls(df_chem: pd.DataFrame) -> pd.DataFrame:
+    """
+    Left-join the chemical panel onto the main 2SLS dataset.
+    The 2SLS dataset is expanded to one row per PWSID × year × chemical
+    so that every combination is present; VALUE/DETECT are NaN where no
+    chemical observation exists for that PWSID-year.
+    """
+    print(f"\nReading 2SLS dataset: {MAIN_DATASET}")
+    main_df = pd.read_parquet(MAIN_DATASET, engine="pyarrow")
+    print(f"  {len(main_df):,} rows × {main_df.shape[1]} columns | "
+          f"years {main_df['year'].min()}–{main_df['year'].max()}")
+
     main_df["PWSID"] = main_df["PWSID"].astype(str)
     main_df["year"]  = main_df["year"].astype("int64")
+    df_chem["PWSID"] = df_chem["PWSID"].astype(str)
+    df_chem["YEAR"]  = df_chem["YEAR"].astype("int64")
 
-    # ------------------------------------------------------------------
-    # Cardinality check
-    # ------------------------------------------------------------------
-    left_keys  = master.groupby(["PWSID", "YEAR"]).size()
-    right_keys = main_df.groupby(["PWSID", "year"]).size()
-
-    left_dup  = (left_keys > 1).sum()
-    right_dup = (right_keys > 1).sum()
-
-    print(
-        f"\n[MERGE CARDINALITY NOTICE]\n"
-        f"  6-year review: {left_dup:,} of {len(left_keys):,} (PWSID, year) keys "
-        f"have >1 sample row -- many-to-one merge expected.\n"
-        f"  2SLS dataset:  {right_dup:,} of {len(right_keys):,} (PWSID, year) keys "
-        f"have >1 row (should be 0 for a clean panel).\n"
-        f"  Result will have MORE rows than the 2SLS dataset because each 2SLS "
-        f"observation can match multiple sample readings."
-    )
-
-    # Expand main 2SLS dataset: one row per PWSID × year × chemical.
-    # Then left-join 6-year review data so that every PWSID-year-chemical
-    # combination is present; VALUE is NaN where no chemical observation exists.
-    unique_chems = master[["CHEMID_name"]].drop_duplicates()
+    unique_chems  = df_chem[["CHEMID_name"]].drop_duplicates()
     main_expanded = main_df.merge(unique_chems, how="cross")
-    print(
-        f"\nExpanded 2SLS dataset: {len(main_expanded):,} rows "
-        f"({len(main_df):,} PWSID-years × {len(unique_chems):,} chemicals)"
-    )
+    print(f"\nExpanded 2SLS: {len(main_expanded):,} rows "
+          f"({len(main_df):,} PWSID-years × {len(unique_chems):,} chemicals)")
 
     merged = main_expanded.merge(
-        master,
+        df_chem,
         left_on=["PWSID", "year", "CHEMID_name"],
         right_on=["PWSID", "YEAR", "CHEMID_name"],
         how="left",
-    )
-    # Drop the redundant YEAR column from master (equals year for matched rows)
-    merged = merged.drop(columns=["YEAR"], errors="ignore")
+    ).drop(columns=["YEAR"], errors="ignore")
 
-    n_missing = merged["VALUE"].isna().sum()
-    print(
-        f"\nMerged dataframe: {len(merged):,} rows × {merged.shape[1]} columns\n"
-        f"  VALUE missing (no 6-year-review obs): {n_missing:,} "
-        f"({100 * n_missing / len(merged):.1f}%)"
-    )
+    n_miss = merged["VALUE"].isna().sum()
+    print(f"\nMerged: {len(merged):,} rows × {merged.shape[1]} columns")
+    print(f"  VALUE missing (no 6yr-review obs): {n_miss:,} "
+          f"({100 * n_miss / len(merged):.1f}%)")
 
-    # ------------------------------------------------------------------
-    # Write output
-    # ------------------------------------------------------------------
-    if OUTPUT_PATH.exists():
-        print(f"WARNING: {OUTPUT_PATH} already exists — overwriting")
-
-    merged["PWSID"] = merged["PWSID"].astype(str)
-    merged["year"]  = merged["year"].astype("int64")
-
-    print(merged.dtypes)
-    merged.to_parquet(OUTPUT_PATH, index=False, engine="pyarrow")
-
-    verify = pd.read_parquet(OUTPUT_PATH, engine="pyarrow")
-    print(f"\nWritten {len(verify):,} rows × {verify.shape[1]} columns to {OUTPUT_PATH}")
+    right_dup = (main_df.groupby(["PWSID", "year"]).size() > 1).sum()
+    if right_dup > 0:
+        print(f"  [WARN] {right_dup:,} duplicate (PWSID, year) keys in 2SLS dataset")
 
     return merged
 
 
 # ---------------------------------------------------------------------------
-# Example invocation (edit paths/names as needed before running directly)
+# Entry point — edit CHEMICALS and run
 # ---------------------------------------------------------------------------
-if __name__ == "__main__":
-    mdb_files = [
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part2_1\Arsenic_Chem1005.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\nitrate-as-n-_chem1040_update_mdb\Nitrate (as N)_Chem1040_update.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part2_1\Benzene_Chem2990.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part2_1\CarbonTetrachloride_Chem2982.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part1_1\1,2-Dichloroethane_Chem2980.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part1_1\1,1-Dichloroethylene_Chem2977.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part1_1\1,1,1-Trichloroethane_Chem2981.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part6\VinylChloride_Chem2976.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part2_1\Alpha Particles_Chem4000.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part2_1\Beta Particles (Gross beta)_Chem4100.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part2_1\Combined Radium-226_228_Chem4010.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part6\Thallium_Chem1085.mdb",
-        r"Z:\ek559\mining_wq\raw_data\6_year_review_epa\six-year-review 2\sixyearreview_2_dh_part6\Uranium_Chem4006.mdb",
-    ]
-    chem_labels = [
-        "arsenic",
-        "nitrate",
-        "benzene",
-        "carbon tetrachloride",
-        "1,2-dichloroethane",
-        "1,1-dichloroethylene",
-        "1,1,1-trichloroethane",
-        "vinyl chloride",
-        "alpha particles",
-        "beta particles",
-        "radium",
-        "thallium",
-        "uranium",
-    ]
 
-    result = build_6year_review(mdb_files, chem_labels)
+CHEMICALS = [
+    "arsenic",
+    "nitrate",
+    "benzene",
+    "carbon tetrachloride",
+    "1,2-dichloroethane",
+    "1,1-dichloroethylene",
+    "1,1,1-trichloroethane",
+    "vinyl chloride",
+    "alpha particles",
+    "beta particles",
+    "radium",
+    "thallium",
+    "uranium",
+]
+
+if __name__ == "__main__":
+    # Step 1: read all SYR2 + SYR3 files for requested chemicals
+    master = build_chemical_panel(CHEMICALS)
+
+    # Step 2: attach above_mcl flag at sample level
+    master = assign_mcl_and_above(master)
+
+    # Step 3: collapse to PWSID × CHEMID_name × YEAR
+    collapsed = collapse_to_pwsid_year(master)
+
+    # Step 4: write pre-merge chemical dataset
+    if CHEM_OUTPUT.exists():
+        print(f"\nWARNING: {CHEM_OUTPUT} already exists — overwriting")
+    print(collapsed.dtypes)
+    collapsed.to_parquet(CHEM_OUTPUT, index=False, engine="pyarrow")
+    v = pd.read_parquet(CHEM_OUTPUT, engine="pyarrow")
+    print(f"Written {len(v):,} rows × {v.shape[1]} columns to {CHEM_OUTPUT}")
+
+    # Step 5: merge to 2SLS dataset
+    merged = merge_to_2sls(collapsed)
+
+    # Step 6: write merged output
+    if MERGED_OUTPUT.exists():
+        print(f"\nWARNING: {MERGED_OUTPUT} already exists — overwriting")
+    merged["PWSID"] = merged["PWSID"].astype(str)
+    merged["year"]  = merged["year"].astype("int64")
+    print(merged.dtypes)
+    merged.to_parquet(MERGED_OUTPUT, index=False, engine="pyarrow")
+    v2 = pd.read_parquet(MERGED_OUTPUT, engine="pyarrow")
+    print(f"Written {len(v2):,} rows × {v2.shape[1]} columns to {MERGED_OUTPUT}")
+
     print("\nDone.")

@@ -1,0 +1,48 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:6yr_huc02fe_vinyl_chloride_mean} Effect of cumulative upstream coal production on mean vinyl chloride concentration}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lc}
+         \toprule
+         
+                                                 & Mean vinyl chloride conc.\\  
+         
+                                                 & (1)\\  
+         
+         \midrule 
+         Cumulative upstream coal prod. (10M ST) & -0.0056\\   
+                                                 & (0.0291)\\   
+         
+          \\
+         
+         Within R$^2$                            & $3.76\times 10^{-5}$\\   
+         Observations                            & 331\\  
+         R$^2$                                   & 0.57057\\  
+         
+          \\
+         
+         PWSID fixed effects                     & $\checkmark$\\   
+         huc02-year fixed effects                & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Dependent variable is the mean measured concentration across all samples for a given CWS and year from the EPA 6-Year Review (1998--2005). Explanatory variable is the cumulative coal production (since 1985, in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12, interacted with year). Monthly sample-share controls are not available in the aggregated parquet and are omitted. Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level.}
+   
+\end{table}
+
+
