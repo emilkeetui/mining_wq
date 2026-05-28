@@ -1,0 +1,50 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:6yr_huc02fe_voc_2005} Effect of cumulative upstream coal production on Volatile Organic Chemicals (VOCs) (6-Year Review, downstream CWSs, robustness 1998--2005)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccccc}
+         \toprule
+         
+          & Mean conc. & Share $>$ MCL & \multicolumn{5}{c}{Mean conc.} & Share $>$ MCL\\
+         
+          & \multicolumn{2}{c}{Benzene} & Carbon tet. & 1,2-DCE & 1,1-DCE & 1,1,1-TCA & \multicolumn{2}{c}{Vinyl Cl.} \\ 
+         
+                                             & (1)                   & (2)                   & (3)           & (4)           & (5)             & (6)             & (7)                   & (8)\\  
+         
+         \midrule 
+         Cumul. upstream coal prod. (10M ST) & 0.0073                & 0.0007                & -0.0318       & -0.0332       & -0.3017$^{***}$ & -0.2894$^{***}$ & -0.0056               & 0.0018\\   
+                                             & (0.0109)              & (0.0009)              & (0.0201)      & (0.0216)      & (0.0489)        & (0.0552)        & (0.0291)              & (0.0031)\\   
+         
+          \\
+         
+         Within R$^2$                        & $1.46\times 10^{-5}$  & $1.65\times 10^{-5}$  & 0.00160       & 0.00157       & 0.08185         & 0.03825         & $3.76\times 10^{-5}$  & $4.6\times 10^{-5}$\\   
+         Observations                        & 333                   & 333                   & 333           & 333           & 333             & 333             & 331                   & 331\\  
+         R$^2$                               & 0.16729               & 0.19060               & 0.36346       & 0.35724       & 0.35397         & 0.36451         & 0.57057               & 0.34197\\  
+         
+          \\
+         
+         PWSID fixed effects                 & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$    & $\checkmark$    & $\checkmark$          & $\checkmark$\\   
+         huc02-year fixed effects            & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$    & $\checkmark$    & $\checkmark$          & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample period 1998--2005 (robustness). Within each chemical, columns show (1) mean measured concentration and (2) share of annual samples exceeding the MCL, both from the EPA 6-Year Review. Explanatory variable is cumulative coal production since 1985 (in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12 interacted with year). Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level.}
+   
+\end{table}
+
+
