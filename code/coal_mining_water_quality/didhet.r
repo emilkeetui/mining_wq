@@ -125,17 +125,17 @@ full <- full[full$PWSID!="WV3303401",]
 sulfur_variation <- full %>%
   group_by(PWSID) %>%
   summarise(
-    n_distinct_sulfur = n_distinct(sulfur_unified),
-    sd_sulfur         = sd(sulfur_unified, na.rm = TRUE),
-    min_sulfur        = min(sulfur_unified, na.rm = TRUE),
-    max_sulfur        = max(sulfur_unified, na.rm = TRUE),
+    n_distinct_sulfur = n_distinct(sulfur_unified_mean),
+    sd_sulfur         = sd(sulfur_unified_mean, na.rm = TRUE),
+    min_sulfur        = min(sulfur_unified_mean, na.rm = TRUE),
+    max_sulfur        = max(sulfur_unified_mean, na.rm = TRUE),
     range_sulfur      = max_sulfur - min_sulfur,
     n_years           = n_distinct(year)
   ) %>%
   filter(n_distinct_sulfur > 1) %>%
   arrange(desc(range_sulfur))
 
-cat("PWSIDs with time-varying sulfur_unified:", nrow(sulfur_variation), "\n")
+cat("PWSIDs with time-varying sulfur_unified_mean:", nrow(sulfur_variation), "\n")
 print(sulfur_variation)
 full <- full[full$PWSID!="WV3303401",]
 
@@ -321,9 +321,9 @@ stackmineviobytreat(c("voc_share_days",
 # high-sulfur downstream-colocated/low-sulfur downstream-colocated
 
 full$sulfur_location <- "High sulfur upstream"
-full$sulfur_location[(full$minehuc_upstream_of_mine == 1) & (full$HighSulfur == "Low sulfur")] <- "Low sulfur upstream"
-full$sulfur_location[(full$minehuc_upstream_of_mine == 0) & (full$HighSulfur == "High sulfur")] <- "High sulfur downstream/colocated"
-full$sulfur_location[(full$minehuc_upstream_of_mine == 0) & (full$HighSulfur == "Low sulfur")] <- "Low sulfur downstream/colocated"
+full$sulfur_location[(full$minehuc_upstream_of_mine == "Upstream of mining") & (full$HighSulfur == "Low sulfur")] <- "Low sulfur upstream"
+full$sulfur_location[(full$minehuc_upstream_of_mine == "Colocated/Downstream of mining") & (full$HighSulfur == "High sulfur")] <- "High sulfur downstream/colocated"
+full$sulfur_location[(full$minehuc_upstream_of_mine == "Colocated/Downstream of mining") & (full$HighSulfur == "Low sulfur")] <- "Low sulfur downstream/colocated"
 
 stackmineviobytreat(c("nitrates_share_days",
                         "arsenic_share_days",
@@ -381,7 +381,7 @@ stackmineviobytreat(c("nitrates_share_days",
                         "arsenic_share_days",
                         "inorganic_chemicals_share_days",
                         "radionuclides_share_days"), 
-                      full[full$minehuc_upstream_of_mine == 0 & full$year>1984 & full$year<2006,], 
+                      full[full$minehuc_upstream_of_mine == "Colocated/Downstream of mining" & full$year>1984 & full$year<2006,], 
                       c("Days of the year PWSs spent in violation"), 
                       c("Nitrates",
                         "Arsenic",
@@ -397,7 +397,7 @@ stackmineviobytreat(c("voc_share_days",
                         "soc_share_days",
                         "surface_ground_water_rule_share_days",
                         "total_coliform_share_days"), 
-                      full[full$minehuc_upstream_of_mine == 0 & full$year>1984 & full$year<2006,], 
+                      full[full$minehuc_upstream_of_mine == "Colocated/Downstream of mining" & full$year>1984 & full$year<2006,], 
                       c("Days of the year PWSs spent in violation"), 
                       c("Volatile Organic Chemicals",
                         "Synthetic Organic Chemicals",
@@ -411,7 +411,7 @@ stackmineviobytreat(c("voc_share_days",
 stackmineviobytreat(c("num_violations",
                   "num_mining_violations",
                   "num_non_mining_violations"), 
-                      full[full$minehuc_upstream_of_mine == 0 & full$year>1984 & full$year<2006,], 
+                      full[full$minehuc_upstream_of_mine == "Colocated/Downstream of mining" & full$year>1984 & full$year<2006,], 
                       c("Number of violations in a year PWSs"), 
                       c("Total",
                         "Mining related",
@@ -471,13 +471,13 @@ pwssum <- pwssum %>%
          "Filtration in place" = FILTRATION_STATUS_CODE_FIL,
          "Wholesaler"= IS_WHOLESALER_IND,
          "PWS N Source HUC12" = num_hucs,
-         "HUC12 N coal mine upstream"=num_coal_mines_upstream,
+         "HUC12 N coal mine upstream"=num_coal_mines_upstream_mean,
          "HUC12 N coal mine colocated"=num_coal_mines_colocated,
-         "HUC12 coal tons upstream"=production_short_tons_coal_upstream,
+         "HUC12 coal tons upstream"=production_short_tons_coal_upstream_mean,
          "HUC12 coal tons colocated"=production_short_tons_coal_colocated,
          "HUC12 avg coal BTU upstream"=btu_upstream,
          "HUC12 avg coal BTU colocated"=btu_colocated,
-         "HUC12 avg coal sulfur upstream"=sulfur_upstream,
+         "HUC12 avg coal sulfur upstream"=sulfur_upstream_mean,
          "HUC12 avg coal sulfur colocated"=sulfur_colocated,
          "Source protected"=SOURCE_WATER_PROTECTION_CODE_Y,
          "Source treated"=IS_SOURCE_TREATED_IND_Y,
@@ -1219,11 +1219,11 @@ first_stage_table <- function(storage_list_name, outfile, title = NULL,
 tsls_reg_output(
   full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine == 1), ],
   c("nitrates_share", "arsenic_share", "inorganic_chemicals_share", "radionuclides_share"),
-  c("num_coal_mines_unified"),
+  c("num_coal_mines_unified_mean"),
   "olsrf2sls_nummine_mine_vio_1985to2005colocate_coalunified",
   "Effect of number of mines on PWS violations (only colocated PWS's)",
   "olsrf2sls_nummine_mine_vio_1985to2005colocate_coalunified",
-  "post95*sulfur_unified",
+  "post95*sulfur_unified_mean",
   storage_list_name = "fs_store_minevio",
   subheader         = "Colocated"
 )
@@ -1231,36 +1231,36 @@ tsls_reg_output(
 tsls_reg_output(
   full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine == 0), ],
   c("nitrates_share", "arsenic_share", "inorganic_chemicals_share", "radionuclides_share"),
-  c("num_coal_mines_upstream"),
+  c("num_coal_mines_upstream_mean"),
   "olsrf2sls_nummine_mine_vio_1985to2005dwnstrm_coalunified",
   "Effect of number of mines on PWS violations (only downstream PWS's)",
   "olsrf2sls_nummine_mine_vio_1985to2005dwnstrm_coalunified",
-  "post95*sulfur_unified",
+  "post95*sulfur_unified_mean",
   storage_list_name = "fs_store_minevio",
   subheader         = "Downstream"
 )
 
-tsls_reg_output(full[full$minehuc_upstream_of_mine == 0, ],
+tsls_reg_output(full[full$minehuc_upstream_of_mine == "Colocated/Downstream of mining", ],
                 c("nitrates_share",
                 "arsenic_share",
                 "inorganic_chemicals_share",
                 "radionuclides_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_mine_vio_1985to2005colocateddownstream_coalunified",
                 "Effect of number of mines on PWS violations (colocated and downstream PWS's)",
                 "olsrf2sls_nummine_mine_vio_1985to2005colocateddownstream_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 tsls_reg_output(full,
                 c("nitrates_share",
                 "arsenic_share",
                 "inorganic_chemicals_share",
                 "radionuclides_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_mine_vio_1985to2005allhucs_coalunified",
                 "Effect of number of mines on PWS violations (all PWS's)",
                 "olsrf2sls_nummine_mine_vio_1985to2005allhucs_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 # After all coalunified calls, produce the combined first-stage table
 first_stage_table(
@@ -1288,13 +1288,13 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine
                 "arsenic_share",
                 "inorganic_chemicals_share",
                 "radionuclides_share"),
-                c("num_coal_mines_upstream"),
+                c("num_coal_mines_upstream_mean"),
                 "olsrf2sls_nummine_mine_vio_1985to2005dwnstrm",
                 "Effect of number of mines on PWS violations (only downstream PWS's)",
                 "olsrf2sls_nummine_mine_vio_1985to2005dwnstrm",
-                "post95*sulfur_upstream")
+                "post95*sulfur_upstream_mean")
 
-tsls_reg_output(full[full$minehuc_upstream_of_mine==0,],
+tsls_reg_output(full[full$minehuc_upstream_of_mine == "Colocated/Downstream of mining",],
                 c("nitrates_share",
                 "arsenic_share",
                 "inorganic_chemicals_share",
@@ -1333,13 +1333,13 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine
                 "arsenic",
                 "inorganic_chemicals",
                 "radionuclides"),
-                c("num_coal_mines_upstream"),
+                c("num_coal_mines_upstream_mean"),
                 "olsrf2sls_nummine_mine_vio_binary_1985to2005dwnstrm",
                 "Effect of number of mines on PWS violations (only downstream PWS's)",
                 "olsrf2sls_nummine_mine_vio_binary_1985to2005dwnstrm",
-                "post95*sulfur_upstream")
+                "post95*sulfur_upstream_mean")
 
-tsls_reg_output(full[full$minehuc_upstream_of_mine==0,],
+tsls_reg_output(full[full$minehuc_upstream_of_mine == "Colocated/Downstream of mining",],
                 c("nitrates",
                 "arsenic",
                 "inorganic_chemicals",
@@ -1369,33 +1369,33 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine
                   "surface_ground_water_rule_share",
                   "voc_share",
                   "soc_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_non_mine_vio_1985to2005colocate_coalunified",
                 "Effect of number of mines on PWS violations (only colocated PWS's)",
                 "olsrf2sls_nummine_non_mine_vio_1985to2005colocate_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine == 0),],
                 c("total_coliform_share",
                   "surface_ground_water_rule_share",
                   "voc_share",
                   "soc_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_non_mine_vio_1985to2005dwnstrm_coalunified",
                 "Effect of number of mines on PWS violations (only downstream PWS's)",
                 "olsrf2sls_nummine_non_mine_vio_1985to2005dwnstrm_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 tsls_reg_output(full,
                 c("total_coliform_share",
                   "surface_ground_water_rule_share",
                   "voc_share",
                   "soc_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_non_mine_vio_1985to2005allhucs_coalunified",
                 "Effect of number of mines on PWS violations (all PWS's)",
                 "olsrf2sls_nummine_non_mine_vio_1985to2005allhucs_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 ## number of mines related violations and robustness checks 
 tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine == 1),],
@@ -1414,13 +1414,13 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine
                   "surface_ground_water_rule_share",
                   "voc_share",
                   "soc_share"),
-                c("num_coal_mines_upstream"),
+                c("num_coal_mines_upstream_mean"),
                 "olsrf2sls_nummine_non_mine_vio_1985to2005dwnstrm",
                 "Effect of number of mines on PWS violations (only downstream PWS's)",
                 "olsrf2sls_nummine_non_mine_vio_1985to2005dwnstrm",
-                "post95*sulfur_upstream")
+                "post95*sulfur_upstream_mean")
 
-tsls_reg_output(full[full$minehuc_upstream_of_mine==0,],
+tsls_reg_output(full[full$minehuc_upstream_of_mine == "Colocated/Downstream of mining",],
                 c("total_coliform_share",
                   "surface_ground_water_rule_share",
                   "voc_share",
@@ -1459,13 +1459,13 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine
                   "surface_ground_water_rule",
                   "voc",
                   "soc"),
-                c("num_coal_mines_upstream"),
+                c("num_coal_mines_upstream_mean"),
                 "olsrf2sls_nummine_non_mine_vio_binary_1985to2005dwnstrm",
                 "Effect of number of mines on PWS violations (only downstream PWS's)",
                 "olsrf2sls_nummine_non_mine_vio_binary_1985to2005dwnstrm",
-                "post95*sulfur_upstream")
+                "post95*sulfur_upstream_mean")
 
-tsls_reg_output(full[full$minehuc_upstream_of_mine==0,],
+tsls_reg_output(full[full$minehuc_upstream_of_mine == "Colocated/Downstream of mining",],
                 c("total_coliform",
                   "surface_ground_water_rule",
                   "voc",
@@ -1495,31 +1495,31 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine
                 c("num_violations",
                   "num_mining_violations",
                   "num_non_mining_violations"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_count_vio_1985to2005colocate_coalunified",
                 "Effect of number of mines on PWS violations (only colocated PWS's)",
                 "olsrf2sls_nummine_count_vio_1985to2005colocate_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine == 0),],
                 c("num_violations",
                   "num_mining_violations",
                   "num_non_mining_violations"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_count_vio_1985to2005dwnstrm_coalunified",
                 "Effect of number of mines on PWS violations (only downstream PWS's)",
                 "olsrf2sls_nummine_count_vio_1985to2005dwnstrm_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 tsls_reg_output(full,
                 c("num_violations",
                   "num_mining_violations",
                   "num_non_mining_violations"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_count_vio_1985to2005allhucs_coalunified",
                 "Effect of number of mines on PWS violations (all PWS's)",
                 "olsrf2sls_nummine_count_vio_1985to2005allhucs_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 ## number of mines related violations and robustness checks 
 tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine == 1),],
@@ -1536,11 +1536,11 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine
                 c("num_violations",
                   "num_mining_violations",
                   "num_non_mining_violations"),
-                c("num_coal_mines_upstream"),
+                c("num_coal_mines_upstream_mean"),
                 "olsrf2sls_nummine_count_vio_1985to2005dwnstrm",
                 "Effect of number of mines on PWS violations (only downstream PWS's)",
                 "olsrf2sls_nummine_count_vio_1985to2005dwnstrm",
-                "post95*sulfur_upstream")
+                "post95*sulfur_upstream_mean")
 
 tsls_reg_output(full,
                 c("num_violations",
@@ -1562,11 +1562,11 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine
                 "arsenic_share",
                 "inorganic_chemicals_share",
                 "radionuclides_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_mine_vio_1990to2000colocate_coalunified",
                 "Effect of number of mines on PWS violations 1990-2000 (only colocated PWS's)",
                 "olsrf2sls_nummine_mine_vio_1990to2000colocate_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine == 0)
                      & (1990<=full$year & full$year<=2000),],
@@ -1574,22 +1574,22 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine
                 "arsenic_share",
                 "inorganic_chemicals_share",
                 "radionuclides_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_mine_vio_1990to2000dwnstrm_coalunified",
                 "Effect of number of mines on PWS violations 1990-2000 (only downstream PWS's)",
                 "olsrf2sls_nummine_mine_vio_1990to2000dwnstrm_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 tsls_reg_output(full[(1990<=full$year & full$year<=2000),],
                 c("nitrates_share",
                 "arsenic_share",
                 "inorganic_chemicals_share",
                 "radionuclides_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_mine_vio_1990to2000allhucs_coalunified",
                 "Effect of number of mines on PWS violations 1990-2000 (all PWS's)",
                 "olsrf2sls_nummine_mine_vio_1990to2000allhucs_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 ## number of mines related violations and robustness checks 
 tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine == 1)
@@ -1610,11 +1610,11 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine
                 "arsenic_share",
                 "inorganic_chemicals_share",
                 "radionuclides_share"),
-                c("num_coal_mines_upstream"),
+                c("num_coal_mines_upstream_mean"),
                 "olsrf2sls_nummine_mine_vio_1990to2000dwnstrm",
                 "Effect of number of mines on PWS violations 1990-2000 (only downstream PWS's)",
                 "olsrf2sls_nummine_mine_vio_1990to2000dwnstrm",
-                "post95*sulfur_upstream")
+                "post95*sulfur_upstream_mean")
 
 tsls_reg_output(full[(1990<=full$year & full$year<=2000),],
                 c("nitrates_share",
@@ -1636,11 +1636,11 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine
                   "surface_ground_water_rule_share",
                   "voc_share",
                   "soc_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_non_mine_vio_1990to2000colocate_coalunified",
                 "Effect of number of mines on PWS violations 1990-2000 (only colocated PWS's)",
                 "olsrf2sls_nummine_non_mine_vio_1990to2000colocate_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine == 0)&
                     (1990<=full$year & full$year<=2000),],
@@ -1648,22 +1648,22 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine
                   "surface_ground_water_rule_share",
                   "voc_share",
                   "soc_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_non_mine_vio_1990to2000dwnstrm_coalunified",
                 "Effect of number of mines on PWS violations 1990-2000 (only downstream PWS's)",
                 "olsrf2sls_nummine_non_mine_vio_1990to2000dwnstrm_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 tsls_reg_output(full[(1990<=full$year & full$year<=2000),],
                 c("total_coliform_share",
                   "surface_ground_water_rule_share",
                   "voc_share",
                   "soc_share"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_non_mine_vio_1990to2000allhucs_coalunified",
                 "Effect of number of mines on PWS violations 1990-2000 (all PWS's)",
                 "olsrf2sls_nummine_non_mine_vio_1990to2000allhucs_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 ## number of mines related violations and robustness checks 
 tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine == 1) &
@@ -1684,11 +1684,11 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine
                   "surface_ground_water_rule_share",
                   "voc_share",
                   "soc_share"),
-                c("num_coal_mines_upstream"),
+                c("num_coal_mines_upstream_mean"),
                 "olsrf2sls_nummine_non_mine_vio_1990to2000dwnstrm",
                 "Effect of number of mines on PWS violations 1990-2000 (only downstream PWS's)",
                 "olsrf2sls_nummine_non_mine_vio_1990to2000dwnstrm",
-                "post95*sulfur_upstream")
+                "post95*sulfur_upstream_mean")
 
 tsls_reg_output(full[(1990<=full$year & full$year<=2000),],
                 c("total_coliform_share",
@@ -1710,32 +1710,32 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine
                 c("num_violations",
                   "num_mining_violations",
                   "num_non_mining_violations"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_count_vio_1990to2000colocate_coalunified",
                 "Effect of number of mines on PWS violations 1990-2000 (only colocated PWS's)",
                 "olsrf2sls_nummine_count_vio_1990to2000colocate_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine == 0) &
                     (1990<=full$year & full$year<=2000),],
                 c("num_violations",
                   "num_mining_violations",
                   "num_non_mining_violations"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_count_vio_1990to2000dwnstrm_coalunified",
                 "Effect of number of mines on PWS violations 1990-2000 (only downstream PWS's)",
                 "olsrf2sls_nummine_count_vio_1990to2000dwnstrm_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 tsls_reg_output(full[(1990<=full$year & full$year<=2000),],
                 c("num_violations",
                   "num_mining_violations",
                   "num_non_mining_violations"),
-                c("num_coal_mines_unified"),
+                c("num_coal_mines_unified_mean"),
                 "olsrf2sls_nummine_count_vio_1990to2000allhucs_coalunified",
                 "Effect of number of mines on PWS violations 1990-2000 (all PWS's)",
                 "olsrf2sls_nummine_count_vio_1990to2000allhucs_coalunified",
-                "post95*sulfur_unified")
+                "post95*sulfur_unified_mean")
 
 ## number of mines related violations and robustness checks 
 tsls_reg_output(full[(full$minehuc_downstream_of_mine == 0) & (full$minehuc_mine == 1) &
@@ -1754,11 +1754,11 @@ tsls_reg_output(full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine
                 c("num_violations",
                   "num_mining_violations",
                   "num_non_mining_violations"),
-                c("num_coal_mines_upstream"),
+                c("num_coal_mines_upstream_mean"),
                 "olsrf2sls_nummine_count_vio_1990to2000dwnstrm",
                 "Effect of number of mines on PWS violations 1990-2000 (only downstream PWS's)",
                 "olsrf2sls_nummine_count_vio_1990to2000dwnstrm",
-                "post95*sulfur_upstream")
+                "post95*sulfur_upstream_mean")
 
 tsls_reg_output(full[(1990<=full$year & full$year<=2000),],
                 c("num_violations",
@@ -2608,6 +2608,7 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
   result <- list()
 
   for (y in varlist) {
+    dset_y <- dset[!is.na(dset[[y]]), ]
     f_ols <- as.formula(
       paste0(y, " ~ ", paste(coalvar, collapse = "+"), " + ", controls_str,
              " | ", fe_str)
@@ -2621,18 +2622,29 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
              " | ", paste(coalvar, collapse = "+"), " ~ ", instr_str)
     )
 
-    mods <- tryCatch({
-      list(
-        OLS = fixest::feols(f_ols, data = dset, cluster = ~ PWSID),
-        RF  = fixest::feols(f_rf,  data = dset, cluster = ~ PWSID),
-        IV  = fixest::feols(f_iv,  data = dset, cluster = ~ PWSID)
-      )
-    }, error = function(e) {
-      cat("  Skipping", y, "—", conditionMessage(e), "\n")
-      NULL
-    })
+    ols <- tryCatch(fixest::feols(f_ols, data = dset_y, cluster = ~ PWSID),
+                    error = function(e) { cat("  Skipping OLS", y, "—", conditionMessage(e), "\n"); NULL })
+    rf  <- tryCatch(fixest::feols(f_rf,  data = dset_y, cluster = ~ PWSID),
+                    error = function(e) { cat("  Skipping RF",  y, "—", conditionMessage(e), "\n"); NULL })
+    iv  <- tryCatch(fixest::feols(f_iv,  data = dset_y, cluster = ~ PWSID),
+                    error = function(e) { cat("  Skipping IV",  y, "—", conditionMessage(e), "\n"); NULL })
 
-    if (!is.null(mods)) result[[y]] <- mods
+    # Clustered first-stage F-stat: feols ivf1 uses HC1 SEs; t^2 from the
+    # clustered first-stage regression is the correct clustered F-stat.
+    f_clustered <- NA_real_
+    if (!is.null(iv)) {
+      f_fs  <- as.formula(paste0(coalvar[1], " ~ ", instr_str, " + ", controls_str, " | ", fe_str))
+      fs_cl <- tryCatch(fixest::feols(f_fs, data = dset_y, cluster = ~ PWSID), error = function(e) NULL)
+      if (!is.null(fs_cl)) {
+        t_cl        <- coef(fs_cl)[instr_str] / se(fs_cl)[instr_str]
+        f_clustered <- round(t_cl^2, 2)
+      }
+    }
+
+    if (!is.null(ols) && !is.null(rf) && !is.null(iv))
+      result[[y]] <- list(OLS = ols, RF = rf, IV = iv, f_clustered = f_clustered)
+    else
+      cat("  Dropping", y, "— not all three models succeeded\n")
   }
 
   if (length(result) == 0) {
@@ -2645,17 +2657,27 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
     recursive = FALSE
   )
 
+  # Inject clustered F-stat via extralines (blank for OLS/RF, value for IV)
+  f_label <- paste0("F-test (1st stage, clustered), ", paste(coalvar, collapse = "+"))
+  f_vec   <- unlist(lapply(names(result), function(y) {
+    fc <- result[[y]]$f_clustered
+    c("", "", if (is.na(fc)) "" else format(round(fc, 2), nsmall = 2))
+  }))
+  el        <- list(f_vec)
+  names(el) <- f_label
+
   etable_args <- c(
     model_list,
     list(
-      fitstat        = ~ . + ivf1,
-      style.tex      = style.tex("aer", adjustbox = TRUE),
-      tex            = TRUE,
-      drop           = drop_controls_exact,
-      title          = title,
-      label          = label,
+      fitstat         = ~ .,
+      style.tex       = style.tex("aer", adjustbox = TRUE),
+      tex             = TRUE,
+      drop            = drop_controls_exact,
+      title           = title,
+      label           = label,
+      extralines      = el,
       postprocess.tex = move_notes_below_adjustbox,
-      file           = paste0("Z:/ek559/mining_wq/output/reg/", regoutname, ".tex")
+      file            = paste0("Z:/ek559/mining_wq/output/reg/", regoutname, ".tex")
     )
   )
   if (!is.null(dict))  etable_args$dict  <- dict
@@ -2689,15 +2711,15 @@ sample_specs <- list(
   list(
     sample    = "dwnstrm",
     dset      = full_unbal[(full_unbal$minehuc_downstream_of_mine == 1) & (full_unbal$minehuc_mine == 0), ],
-    coalvar   = "num_coal_mines_upstream",
-    instr     = "post95*sulfur_unified",
+    coalvar   = "num_coal_mines_upstream_sum",
+    instr     = "post95:sulfur_unified_mean",
     titlesamp = "downstream PWS's"
   ),
   list(
     sample    = "dwnstrmcolocate",
     dset      = full_unbal[full_unbal$minehuc_upstream_of_mine == "Colocated/Downstream of mining", ],
-    coalvar   = "num_coal_mines_unified",
-    instr     = "post95*sulfur_unified",
+    coalvar   = "num_coal_mines_unified_mean",
+    instr     = "post95:sulfur_unified_mean",
     titlesamp = "downstream and colocated PWS's"
   )
 )
@@ -2762,8 +2784,8 @@ for (sp in sample_specs) {
 # Endogenous: base mine count + 3 interactions. Each interaction is instrumented
 # by the corresponding post95:sulfur_unified_mean interaction. Main effects of
 # the moderators are absorbed by PWSID FE (time-invariant within CWS).
-# TODO: main 2SLS dwnstrmcolocate sample has ~6,225 obs; this yields 19,450 — investigate why
-het_data <- full_unbal[full_unbal$minehuc_upstream_of_mine == "Colocated/Downstream of mining", ]
+# Sample: downstream-only CWSs — same filter as 2sls_dwnstrm_*.tex (~6,225 obs).
+het_data <- full_unbal[(full_unbal$minehuc_downstream_of_mine == 1) & (full_unbal$minehuc_mine == 0), ]
 het_data$owner_private <- ifelse(het_data$OWNER_TYPE_CODE == "P", 1, 0)
 het_data$large_system  <- ifelse(
   het_data$POPULATION_SERVED_COUNT >= median(het_data$POPULATION_SERVED_COUNT, na.rm = TRUE),
@@ -2773,10 +2795,10 @@ het_data$large_system  <- ifelse(
 het_reg <- fixest::feols(
   nitrates_share_days ~ num_facilities |
     PWSID + STATE_CODE + year |
-    num_coal_mines_unified_mean +
-    num_coal_mines_unified_mean:large_system +
-    num_coal_mines_unified_mean:owner_private +
-    num_coal_mines_unified_mean:PRIMARY_SOURCE_CODE_SW ~
+    num_coal_mines_upstream_sum +
+    num_coal_mines_upstream_sum:large_system +
+    num_coal_mines_upstream_sum:owner_private +
+    num_coal_mines_upstream_sum:PRIMARY_SOURCE_CODE_SW ~
     post95:sulfur_unified_mean +
     post95:sulfur_unified_mean:large_system +
     post95:sulfur_unified_mean:owner_private +
@@ -2789,16 +2811,16 @@ cat("Heterogeneity first-stage F-statistics:\n")
 print(fitstat(het_reg, ~ ivf1))
 
 het_dict <- c(
-  num_coal_mines_unified_mean                          = "Coal mines (unified)",
-  "num_coal_mines_unified_mean:large_system"           = "  × Large system",
-  "num_coal_mines_unified_mean:owner_private"          = "  × Private ownership",
-  "num_coal_mines_unified_mean:PRIMARY_SOURCE_CODE_SW" = "  × Surface water source",
+  num_coal_mines_upstream_sum                          = "Coal mines (upstream sum)",
+  "num_coal_mines_upstream_sum:large_system"           = "  × Large system",
+  "num_coal_mines_upstream_sum:owner_private"          = "  × Private ownership",
+  "num_coal_mines_upstream_sum:PRIMARY_SOURCE_CODE_SW" = "  × Surface water source",
   num_facilities                                       = "Number of facilities"
 )
 
 het_note <- paste0(
   "Heterogeneity analysis (not main results). ",
-  "Sample: colocated and downstream CWS. ",
+  "Sample: downstream CWS (same as main downstream 2SLS tables). ",
   "Outcome: nitrates violation days. ",
   "Large system = above-median population served. ",
   "All regressions include PWSID, year, and state fixed effects. ",

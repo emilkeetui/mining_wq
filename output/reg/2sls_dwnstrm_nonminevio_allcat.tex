@@ -1,52 +1,36 @@
 
 \begin{table}[htbp]
-   
-   \caption{\label{2sls_dwnstrm_nonminevio_allcat} Effect of coal mines on non-mining violations (any violation category, CWSs at most one HUC12 down-stream)}
+   \caption{\label{2sls_dwnstrm_nonminevio_allcat} Effect of coal mines on non-mining violations (any violation category, downstream PWS's)}
    \bigskip
-   
    \centering
-   
    \begin{adjustbox}{width = \textwidth, center}
-      
       %start:tab
-      
-      \begin{tabular}{lcccccc}
+      \begin{tabular}{lcccccccccccc}
          \toprule
-         
-          & \multicolumn{3}{c}{Total coliform} & \multicolumn{3}{c}{VOCs}\\
-         
-                                                                             & OLS           & RF                    & 2SLS                  & OLS           & RF            & 2SLS\\  
-         
+          & \multicolumn{3}{c}{Total coliform} & \multicolumn{3}{c}{Surface/grdwtr rule} & \multicolumn{3}{c}{VOCs} & \multicolumn{3}{c}{SOCs}\\
+                                                                            & (1)           & (2)                   & (3)                   & (4)           & (5)           & (6)           & (7)           & (8)           & (9)           & (10)          & (11)           & (12)\\  
          \midrule 
-         num\_coal\_mines\_upstream\_mean                                    & -0.8782$^{*}$ &                       & 2.642                 & -4.072        &               & 13.99\\   
-                                                                             & (0.4761)      &                       & (6.422)               & (2.649)       &               & (21.71)\\   
-         post95 $\times$ sulfur\_unified\_mean                               &               & -0.1354               &                       &               & -0.8393       &   \\   
-                                                                             &               & (0.3315)              &                       &               & (1.206)       &   \\   
-         
-         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_mean     &               &                       & 8.36                  &               &               & 9.87\\  
-         
+         Coal mines (upstream sum)                                          & -0.3461       &                       & 0.8818                & 1.074         &               & 7.146         & -1.392        &               & 4.532         & 3.890$^{**}$  &                & 19.80$^{**}$\\   
+                                                                            & (0.2750)      &                       & (2.149)               & (0.7368)      &               & (4.812)       & (1.376)       &               & (6.788)       & (1.743)       &                & (8.530)\\   
+         Number of facilities                                               & -0.3413       & -0.2718               & 0.2525                & 4.279$^{**}$  & 2.714$^{*}$   & 7.722$^{*}$   & 6.953$^{***}$ & 7.136$^{***}$ & 10.31$^{**}$  & -4.351        & -10.16$^{***}$ & 6.293\\   
+                                                                            & (0.4029)      & (0.5055)              & (1.068)               & (1.899)       & (1.459)       & (3.932)       & (1.597)       & (1.562)       & (4.254)       & (2.875)       & (3.840)        & (4.765)\\   
+         post95 $\times$ sulfur\_unified\_mean                              &               & -0.1354               &                       &               & -1.324        &               &               & -0.8393       &               &               & -4.442$^{**}$  &   \\   
+                                                                            &               & (0.3323)              &                       &               & (0.8607)      &               &               & (1.209)       &               &               & (1.829)        &   \\   
+         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_sum     &               &                       & 17.00                 &               &               & 20.89         &               &               & 20.89         &               &                & 24.80\\  
           \\
-         
-         Observations                                                        & 4,254         & 4,254                 & 4,254                 & 4,576         & 4,576         & 4,576\\  
-         R$^2$                                                               & 0.21599       & 0.21549               & 0.21549               & 0.13902       & 0.13862       & 0.13862\\  
-         Within R$^2$                                                        & 0.00071       & $6.42\times 10^{-5}$  & $6.42\times 10^{-5}$  & 0.00057       & 0.00011       & 0.00011\\  
-         
+         Observations                                                       & 4,254         & 4,254                 & 4,254                 & 4,576         & 4,576         & 4,576         & 4,576         & 4,576         & 4,576         & 5,556         & 5,556          & 5,556\\  
+         R$^2$                                                              & 0.21576       & 0.21549               & 0.21549               & 0.60006       & 0.60020       & 0.60020       & 0.13876       & 0.13862       & 0.13862       & 0.19813       & 0.19849        & 0.19849\\  
+         Within R$^2$                                                       & 0.00041       & $6.42\times 10^{-5}$  & $6.42\times 10^{-5}$  & 0.00069       & 0.00103       & 0.00103       & 0.00026       & 0.00011       & 0.00011       & 0.00276       & 0.00321        & 0.00321\\  
           \\
-         
-         PWSID fixed effects                                                 & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                                  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         
+         PWSID fixed effects                                                & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$\\   
+         STATE\_CODE fixed effects                                          & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$\\   
+         year fixed effects                                                 & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$\\   
          \bottomrule
-         
       \end{tabular}
-      
       %end:tab
-      
-      
    \end{adjustbox}
-      {\tiny\linespread{1}\selectfont \par \raggedright 
-   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is days out of the year in violation. Instrument is post95 interacted with mean coal sulfur content of the intake watershed (post95 x sulfur unified). All regressions include PWSID and year fixed effects. Standard errors clustered at PWSID level. Sample period 1985--2005. The number of observations differs across columns because non-mining violation rules (total coliform, VOCs) were implemented during the sample period; years prior to each rule's implementation are coded as missing and excluded from the regression.}
-   
+   \par \raggedright 
+   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is days out of the year in violation. Instrument is post95 interacted with mean coal sulfur content of the intake watershed (post95 x sulfur unified). All regressions include PWSID, year, and state fixed effects. Standard errors clustered at PWSID level. Sample period 1985--2005.
 \end{table}
 
 
