@@ -2758,30 +2758,63 @@ for (sp in sample_specs) {
   }
 }
 
-################################################
-# 2SLS Heterogeneity Analysis
-# This section estimates heterogeneous treatment effects by interacting the
-# instrument (post95 * sulfur_unified) with time-invariant characteristics
-# of CWSs. Each interaction produces a second endogenous regressor
-# (num_coal_mines_unified * characteristic) instrumented by the corresponding
-# interaction of the base instrument with the same characteristic. The
-# coefficient on the interaction term captures the differential effect of
-# an additional upstream mine for CWSs with that characteristic relative
-# to the base group.
-#
-# Candidate interactions:
-#   - Primary water source type (surface water vs. groundwater)
-#   - Ownership type (private vs. public)
-#   - Population served (large vs. small system)
-#
-# Primer specification (surface water example):
-#
-#   feols(viol ~ num_facilities | PWSID + year + state |
-#         num_coal_mines_unified + num_coal_mines_unified:surface_water ~
-#         post95:sulfur_unified + post95:sulfur_unified:surface_water,
-#         data = df, cluster = ~PWSID)
-#
-# Note: the main effect of surface_water is absorbed by the PWSID fixed
-# effect. Only the interaction with num_coal_mines_unified is identified.
-# Check both first-stage F-statistics (base and interaction) are > 10.
-################################################
+# ── Heterogeneity: mine effects by surface water, ownership, system size ──────
+# Endogenous: base mine count + 3 interactions. Each interaction is instrumented
+# by the corresponding post95:sulfur_unified_mean interaction. Main effects of
+# the moderators are absorbed by PWSID FE (time-invariant within CWS).
+# TODO: main 2SLS dwnstrmcolocate sample has ~6,225 obs; this yields 19,450 — investigate why
+het_data <- full_unbal[full_unbal$minehuc_upstream_of_mine == "Colocated/Downstream of mining", ]
+het_data$owner_private <- ifelse(het_data$OWNER_TYPE_CODE == "P", 1, 0)
+het_data$large_system  <- ifelse(
+  het_data$POPULATION_SERVED_COUNT >= median(het_data$POPULATION_SERVED_COUNT, na.rm = TRUE),
+  1, 0
+)
+
+het_reg <- fixest::feols(
+  nitrates_share_days ~ num_facilities |
+    PWSID + STATE_CODE + year |
+    num_coal_mines_unified_mean +
+    num_coal_mines_unified_mean:large_system +
+    num_coal_mines_unified_mean:owner_private +
+    num_coal_mines_unified_mean:PRIMARY_SOURCE_CODE_SW ~
+    post95:sulfur_unified_mean +
+    post95:sulfur_unified_mean:large_system +
+    post95:sulfur_unified_mean:owner_private +
+    post95:sulfur_unified_mean:PRIMARY_SOURCE_CODE_SW,
+  data    = het_data,
+  cluster = ~PWSID
+)
+
+cat("Heterogeneity first-stage F-statistics:\n")
+print(fitstat(het_reg, ~ ivf1))
+
+het_dict <- c(
+  num_coal_mines_unified_mean                          = "Coal mines (unified)",
+  "num_coal_mines_unified_mean:large_system"           = "  × Large system",
+  "num_coal_mines_unified_mean:owner_private"          = "  × Private ownership",
+  "num_coal_mines_unified_mean:PRIMARY_SOURCE_CODE_SW" = "  × Surface water source",
+  num_facilities                                       = "Number of facilities"
+)
+
+het_note <- paste0(
+  "Heterogeneity analysis (not main results). ",
+  "Sample: colocated and downstream CWS. ",
+  "Outcome: nitrates violation days. ",
+  "Large system = above-median population served. ",
+  "All regressions include PWSID, year, and state fixed effects. ",
+  "Standard errors clustered at PWSID level. ",
+  "Sample period 1985--2005."
+)
+
+etable(
+  het_reg,
+  fitstat         = ~ . + ivf1,
+  style.tex       = style.tex("aer", adjustbox = TRUE),
+  tex             = TRUE,
+  title           = "Heterogeneous Effects of Coal Mines on Nitrate Violations",
+  label           = "tab:het_unified",
+  dict            = het_dict,
+  notes           = het_note,
+  postprocess.tex = move_notes_below_adjustbox,
+  file            = "Z:/ek559/mining_wq/output/reg/2sls_het_unified_minevio_ivsum.tex"
+)
