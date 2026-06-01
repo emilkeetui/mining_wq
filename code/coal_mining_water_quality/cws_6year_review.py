@@ -406,9 +406,10 @@ def collapse_to_pwsid_year(df: pd.DataFrame) -> pd.DataFrame:
     df = df.loc[~mixed].drop(columns=["_unit_nunique"])
 
     agg_spec: dict = dict(
-        VALUE  = ("VALUE",  "mean"),
-        DETECT = ("DETECT", "max"),
-        UNITS  = ("UNITS",  "first"),   # all non-null units in group are identical after filter
+        VALUE            = ("VALUE",  "mean"),
+        DETECT           = ("DETECT", "max"),
+        UNITS            = ("UNITS",  "first"),   # all non-null units in group are identical after filter
+        num_measurements = ("VALUE",  "count"),
     )
     if "above_mcl" in df.columns:
         agg_spec["share_above_mcl"] = ("above_mcl", "mean")
@@ -418,7 +419,7 @@ def collapse_to_pwsid_year(df: pd.DataFrame) -> pd.DataFrame:
         .agg(**agg_spec)
     )
 
-    out_cols = ["PWSID", "CHEMID_name", "DETECT", "VALUE", "UNITS", "YEAR"]
+    out_cols = ["PWSID", "CHEMID_name", "DETECT", "VALUE", "UNITS", "YEAR", "num_measurements"]
     if "share_above_mcl" in collapsed.columns:
         out_cols.append("share_above_mcl")
     collapsed = collapsed[out_cols].copy()

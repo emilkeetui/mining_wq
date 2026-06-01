@@ -2818,25 +2818,71 @@ het_dict <- c(
   num_facilities                                       = "Number of facilities"
 )
 
-het_note <- paste0(
-  "Heterogeneity analysis (not main results). ",
-  "Sample: downstream CWS (same as main downstream 2SLS tables). ",
-  "Outcome: nitrates violation days. ",
-  "Large system = above-median population served. ",
-  "All regressions include PWSID, year, and state fixed effects. ",
-  "Standard errors clustered at PWSID level. ",
-  "Sample period 1985--2005."
-)
+# ── Heterogeneity tables: mining/non-mining × allcat/mcl/mr ──────────────────
+# Mirrors the downstream 2sls_dwnstrm_*_*.tex loop above.
+# For each (vio_spec, cat_spec) pair, runs the het IV for every outcome in
+# varlist and stacks the models in one etable column per outcome.
+for (vp in vio_specs) {
+  for (cp in cat_specs) {
 
-etable(
-  het_reg,
-  fitstat         = ~ . + ivf1,
-  style.tex       = style.tex("aer", adjustbox = TRUE),
-  tex             = TRUE,
-  title           = "Heterogeneous Effects of Coal Mines on Nitrate Violations",
-  label           = "tab:het_unified",
-  dict            = het_dict,
-  notes           = het_note,
-  postprocess.tex = move_notes_below_adjustbox,
-  file            = "Z:/ek559/mining_wq/output/reg/2sls_het_unified_minevio_ivsum.tex"
-)
+    varlist   <- vp[[cp$varkey]]
+    fname     <- paste0("2sls_het_unified_", vp$name, "_ivsum_", cp$name)
+    tab_title <- paste0("Heterogeneous Effects of Coal Mines on ",
+                        gsub("(^|\\s)(\\w)", "\\1\\U\\2", vp$titlevio, perl = TRUE),
+                        " (", cp$titlecat, ", downstream CWS's)")
+
+    cat("Running:", fname, "\n")
+
+    het_models <- list()
+    for (y in varlist) {
+      dset_y <- het_data[!is.na(het_data[[y]]), ]
+      m <- tryCatch(
+        fixest::feols(
+          as.formula(paste0(
+            y, " ~ num_facilities | PWSID + STATE_CODE + year |",
+            " num_coal_mines_upstream_sum +",
+            " num_coal_mines_upstream_sum:large_system +",
+            " num_coal_mines_upstream_sum:owner_private +",
+            " num_coal_mines_upstream_sum:PRIMARY_SOURCE_CODE_SW ~",
+            " post95:sulfur_unified_mean +",
+            " post95:sulfur_unified_mean:large_system +",
+            " post95:sulfur_unified_mean:owner_private +",
+            " post95:sulfur_unified_mean:PRIMARY_SOURCE_CODE_SW"
+          )),
+          data    = dset_y,
+          cluster = ~PWSID
+        ),
+        error = function(e) { cat("  Skipping", y, "—", conditionMessage(e), "\n"); NULL }
+      )
+      if (!is.null(m)) het_models[[y]] <- m
+    }
+
+    if (length(het_models) == 0) {
+      cat("  No estimable outcomes for", fname, "— skipping etable.\n")
+      next
+    }
+
+    het_note_dyn <- paste0(
+      "Heterogeneity analysis (not main results). ",
+      "Sample: downstream CWS (same as main downstream 2SLS tables). ",
+      "Outcomes: ", cp$titlecat, " for ", vp$titlevio, ". ",
+      "Large system = above-median population served. ",
+      "All regressions include PWSID, year, and state fixed effects. ",
+      "Standard errors clustered at PWSID level. ",
+      "Sample period 1985--2005."
+    )
+
+    etable(
+      het_models,
+      fitstat         = ~ . + ivf1,
+      style.tex       = style.tex("aer", adjustbox = TRUE),
+      tex             = TRUE,
+      title           = tab_title,
+      label           = paste0("tab:", fname),
+      dict            = c(het_dict, vio_dict),
+      notes           = het_note_dyn,
+      postprocess.tex = move_notes_below_adjustbox,
+      file            = paste0("Z:/ek559/mining_wq/output/reg/", fname, ".tex")
+    )
+  }
+}

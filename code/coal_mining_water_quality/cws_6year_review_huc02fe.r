@@ -99,8 +99,9 @@ cat("Rows with non-missing VALUE:", nrow(df6),
 # ---------------------------------------------------------------------------
 # Regression formulas
 # ---------------------------------------------------------------------------
-fml_val <- VALUE           ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
-fml_shr <- share_above_mcl ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
+fml_val <- VALUE            ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
+fml_shr <- share_above_mcl  ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
+fml_cnt <- num_measurements ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
 
 # ---------------------------------------------------------------------------
 # Table notes
@@ -327,6 +328,110 @@ run_group_tables <- function(df, note, file_sfx, title_sfx) {
 }
 
 # ---------------------------------------------------------------------------
+# Notes and dict for count (num_measurements) tables
+# ---------------------------------------------------------------------------
+note_cnt_base <- paste0(
+  "Outcome is the number of annual measurements of the analyte recorded ",
+  "for each CWS in the EPA 6-Year Review. ",
+  "Explanatory variable is cumulative coal production since 1985 ",
+  "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
+  "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
+  "interacted with year). ",
+  "Sample: CWSs at most one HUC12 downstream of a coal mine ",
+  "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0). ",
+  "Standard errors clustered at PWSID level."
+)
+
+note_cnt_main <- paste0("Sample period 1998--2011. ", note_cnt_base)
+note_cnt_2005 <- paste0("Sample period 1998--2005 (robustness). ", note_cnt_base)
+note_tc_cnt_main <- paste0(
+  "Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). ",
+  note_cnt_base,
+  " Number of presence/absence coliform tests conducted under the Total Coliform Rule ",
+  "(40 CFR 141.63; 54 FR 27544, Jun 29 1989)."
+)
+
+dict_cnt <- c(
+  num_measurements                = "Num. measurements",
+  coal_prod_upstream_cumsum_10mst = "Cumul. upstream coal prod. (10M ST)",
+  num_facilities                  = "Num. intake facilities"
+)
+
+# ---------------------------------------------------------------------------
+# run_count_tables(): same chemical groups as run_group_tables() but with
+#   num_measurements as the sole outcome (one column per chemical).
+# ---------------------------------------------------------------------------
+run_count_tables <- function(df, note, file_sfx, title_sfx) {
+  for (grp in chem_groups) {
+    cat("\n--- Count | Group:", grp$group_label, file_sfx, "---\n")
+
+    if (length(grp$chems) == 0) {
+      cat("  No chemicals defined — skipping.\n")
+      next
+    }
+
+    grp_note <- if (!is.null(grp$note)) {
+      # Replace TC-specific note with count equivalent
+      note_tc_cnt_main
+    } else {
+      note
+    }
+
+    models_list <- list()
+    hdr_vec     <- character(0)
+
+    for (chem in grp$chems) {
+      d <- df[df$CHEMID_name == chem, ]
+      cat("  Chemical:", chem, "| n rows:", nrow(d), "\n")
+
+      if (nrow(d) < 30) {
+        cat("  Skipping — too few obs.\n")
+        next
+      }
+
+      nm <- nice_chem(chem)
+
+      m_cnt <- tryCatch(
+        feols(fml_cnt, data = d, cluster = ~PWSID),
+        error = function(e) { cat("  ERROR (num_measurements):", conditionMessage(e), "\n"); NULL }
+      )
+      if (!is.null(m_cnt)) {
+        models_list <- c(models_list, list(m_cnt))
+        hdr_vec     <- c(hdr_vec, nm)
+        cat("  n_cnt =", m_cnt$nobs,
+            "| coef_cnt =", round(coef(m_cnt)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+      }
+    }
+
+    if (length(models_list) == 0) {
+      cat("  No models estimated — skipping table output.\n")
+      next
+    }
+
+    out <- file.path(OUTPUT_DIR,
+                     paste0("6yr_huc02fe_cnt_", grp$file_label, file_sfx, ".tex"))
+
+    etable(
+      models_list,
+      headers         = hdr_vec,
+      fitstat         = ~ . + n + r2,
+      style.tex       = style.tex("aer", adjustbox = TRUE),
+      tex             = TRUE,
+      drop            = "^num_facilities$",
+      title           = paste0("Effect of cumulative upstream coal production on ",
+                               "number of measurements — ", grp$group_label,
+                               " (6-Year Review, downstream CWSs", title_sfx, ")"),
+      label           = paste0("tab:6yr_huc02fe_cnt_", grp$file_label, file_sfx),
+      dict            = dict_cnt,
+      notes           = grp_note,
+      postprocess.tex = move_notes_below_adjustbox,
+      file            = out
+    )
+    cat("  Written:", out, "\n")
+  }
+}
+
+# ---------------------------------------------------------------------------
 # Main run: 1998-2011 (all rows with non-missing VALUE)
 # ---------------------------------------------------------------------------
 cat("=== MAIN SAMPLE: 1998-2011 ===\n")
@@ -341,5 +446,15 @@ cat("Rows (1998-2005):", nrow(df6_2005),
     "| year range:", min(df6_2005$year), "-", max(df6_2005$year), "\n")
 run_group_tables(df6_2005, note_2005, file_sfx = "_2005", title_sfx = ", robustness 1998--2005")
 # Total coliform has no obs in 1998-2005 (SYR3 only covers 2006-2008); no table produced.
+
+# ---------------------------------------------------------------------------
+# Count tables: num_measurements as outcome
+# ---------------------------------------------------------------------------
+cat("\n=== COUNT TABLES (num_measurements): MAIN SAMPLE 1998-2011 ===\n")
+run_count_tables(df6, note_cnt_main, file_sfx = "", title_sfx = "")
+
+cat("\n=== COUNT TABLES (num_measurements): ROBUSTNESS 1998-2005 ===\n")
+run_count_tables(df6_2005, note_cnt_2005, file_sfx = "_2005", title_sfx = ", robustness 1998--2005")
+# Total coliform has no obs in 1998-2005; no cnt_tc_2005 table produced.
 
 cat("\nDone.\n")

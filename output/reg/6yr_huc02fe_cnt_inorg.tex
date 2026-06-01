@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:6yr_huc02fe_cnt_inorg} Effect of cumulative upstream coal production on number of measurements — Inorganic Chemicals (6-Year Review, downstream CWSs)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccccc}
+         \toprule
+         
+          & \multicolumn{8}{c}{Num. measurements}\\
+         
+                                             & Arsenic       & Nitrate       & Thallium      & Barium         & Cadmium       & Chromium      & Mercury       & Selenium \\   
+         
+                                             & (1)           & (2)           & (3)           & (4)            & (5)           & (6)           & (7)           & (8)\\  
+         
+         \midrule 
+         Cumul. upstream coal prod. (10M ST) & -0.2835       & -0.2647       & -0.1816       & -0.0389        & -0.1994       & -0.2207       & -0.2497       & -0.3366\\   
+                                             & (0.2847)      & (0.3704)      & (0.2652)      & (0.0930)       & (0.2632)      & (0.2682)      & (0.2845)      & (0.2789)\\   
+         Num. intake facilities              & -0.1214       & -0.1709       &               & 0.9039$^{***}$ &               &               &               &   \\   
+                                             & (0.1287)      & (0.1526)      &               & (0.0502)       &               &               &               &   \\   
+         
+          \\
+         
+         Within R$^2$                        & 0.00245       & 0.00198       & 0.00054       & 0.01144        & 0.00191       & 0.00212       & 0.00283       & 0.00787\\  
+         Observations                        & 390           & 1,136         & 324           & 550            & 326           & 343           & 324           & 341\\  
+         R$^2$                               & 0.75068       & 0.86241       & 0.30117       & 0.41144        & 0.47225       & 0.45822       & 0.45782       & 0.45976\\  
+         
+          \\
+         
+         PWSID fixed effects                 & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         huc02-year fixed effects            & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample period 1998--2011. Outcome is the number of annual measurements of the analyte recorded for each CWS in the EPA 6-Year Review. Explanatory variable is cumulative coal production since 1985 (in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12 interacted with year). Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level.}
+   
+\end{table}
+
+
