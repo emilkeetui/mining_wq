@@ -44,3 +44,17 @@ Before context compression (triggered automatically):
 
 Plans survive compression. The plan mode system saves them to `~/.claude/plans/`.
 Reference them after compression with the recovery checklist above.
+
+## For All Tasks: Before Acting
+
+Even when plan mode is not triggered:
+- State assumptions explicitly — don't silently choose one interpretation.
+- If multiple interpretations exist, surface them and ask.
+- If a simpler approach exists, say so and push back.
+- If something is unclear, stop and name what's confusing before proceeding.
+
+## When Editing Existing Code
+
+- Touch only what the task requires — don't improve adjacent code or formatting.
+- If you notice unrelated dead code, mention it; don't delete it.
+- Remove only the imports, variables, or functions that *your* changes made unused.

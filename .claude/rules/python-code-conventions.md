@@ -28,6 +28,7 @@
 - Variable names must match the CLAUDE.md glossary exactly
 - No hardcoded absolute paths — use `pathlib.Path` relative to the project root
 - `random.seed()` / `np.random.seed()` required in any script using randomness
+- Match the style of surrounding code — indentation, spacing, naming patterns
 
 ## Parquet I/O
 

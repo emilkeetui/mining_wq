@@ -18,6 +18,7 @@
 - Variable names must match the CLAUDE.md glossary exactly (e.g., `sulfur_unified`, not `avg_sulfur`)
 - No hardcoded absolute paths — use paths relative to the project root or passed as arguments
 - `set.seed()` required in any script that uses randomness
+- Match the style of surrounding code — indentation, spacing, naming patterns
 
 ## Parquet I/O
 

@@ -248,5 +248,3 @@ If any of the following apply, **stop and ask** rather than proceeding:
 1. The task requires writing to `raw_data/`
 2. The operation will take >10 minutes or produce >500 MB of output
 3. A file already exists at the output path
-
----

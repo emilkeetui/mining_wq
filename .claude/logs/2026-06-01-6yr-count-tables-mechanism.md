@@ -27,6 +27,21 @@ agg_spec = dict(
 )
 ```
 
+## Completed (2026-06-01)
+
+1. Added `VALUE_max = ("VALUE", "max")` to `agg_spec` in `cws_6year_review.py` and updated `out_cols`.
+2. Rebuilt parquet: 6,346,747 rows × 9 cols (chemicals); 1,308,582 rows × 235 cols (main).
+3. Added `fml_max` formula to `cws_6year_review_huc02fe.r`.
+4. Updated `dict_cnt` with `VALUE = "Mean concentration"` and `VALUE_max = "Max concentration"`.
+5. Extended `run_count_tables()` to estimate 3 models per chemical (cnt, val, max), grouped under multicolumn chemical header.
+6. Script ran exit 0; all 10 cnt tables written to `output/reg/6yr_huc02fe_cnt_*.tex`.
+
+Notable findings from the logs:
+- Nitrate: `coef_cnt = -0.26`, `coef_val = +0.054`, `coef_max = +0.065` — fewer measurements but higher concentrations with more coal production. Interesting pattern.
+- Inorganics generally: `coef_cnt` negative (fewer measurements), `coef_val/max` small positive.
+- SOCs: `coef_cnt` large positive (~3.1–3.5) — CWSs in high-production areas do *more* SOC testing.
+- Radium/beta particles: collinear with FEs — too few obs, models error gracefully.
+
 ## Next Steps (pick up here)
 1. **Option A — add max to Python build script**: Add `VALUE_max = ("VALUE", "max")` to
    `agg_spec` in `cws_6year_review.py`, re-run the build, and write a new parquet.

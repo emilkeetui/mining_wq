@@ -102,6 +102,7 @@ cat("Rows with non-missing VALUE:", nrow(df6),
 fml_val <- VALUE            ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
 fml_shr <- share_above_mcl  ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
 fml_cnt <- num_measurements ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
+fml_max <- VALUE_max         ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
 
 # ---------------------------------------------------------------------------
 # Table notes
@@ -353,13 +354,16 @@ note_tc_cnt_main <- paste0(
 
 dict_cnt <- c(
   num_measurements                = "Num. measurements",
+  VALUE                           = "Mean concentration",
+  VALUE_max                       = "Max concentration",
   coal_prod_upstream_cumsum_10mst = "Cumul. upstream coal prod. (10M ST)",
   num_facilities                  = "Num. intake facilities"
 )
 
 # ---------------------------------------------------------------------------
 # run_count_tables(): same chemical groups as run_group_tables() but with
-#   num_measurements as the sole outcome (one column per chemical).
+#   num_measurements, mean VALUE, and max VALUE as outcomes (three columns
+#   per chemical, grouped under a multicolumn header).
 # ---------------------------------------------------------------------------
 run_count_tables <- function(df, note, file_sfx, title_sfx) {
   for (grp in chem_groups) {
@@ -401,6 +405,28 @@ run_count_tables <- function(df, note, file_sfx, title_sfx) {
         cat("  n_cnt =", m_cnt$nobs,
             "| coef_cnt =", round(coef(m_cnt)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
       }
+
+      m_val <- tryCatch(
+        feols(fml_val, data = d, cluster = ~PWSID),
+        error = function(e) { cat("  ERROR (VALUE mean):", conditionMessage(e), "\n"); NULL }
+      )
+      if (!is.null(m_val)) {
+        models_list <- c(models_list, list(m_val))
+        hdr_vec     <- c(hdr_vec, nm)
+        cat("  n_val =", m_val$nobs,
+            "| coef_val =", round(coef(m_val)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+      }
+
+      m_max <- tryCatch(
+        feols(fml_max, data = d, cluster = ~PWSID),
+        error = function(e) { cat("  ERROR (VALUE max):", conditionMessage(e), "\n"); NULL }
+      )
+      if (!is.null(m_max)) {
+        models_list <- c(models_list, list(m_max))
+        hdr_vec     <- c(hdr_vec, nm)
+        cat("  n_max =", m_max$nobs,
+            "| coef_max =", round(coef(m_max)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+      }
     }
 
     if (length(models_list) == 0) {
@@ -419,7 +445,7 @@ run_count_tables <- function(df, note, file_sfx, title_sfx) {
       tex             = TRUE,
       drop            = "^num_facilities$",
       title           = paste0("Effect of cumulative upstream coal production on ",
-                               "number of measurements — ", grp$group_label,
+                               "measurements and concentration — ", grp$group_label,
                                " (6-Year Review, downstream CWSs", title_sfx, ")"),
       label           = paste0("tab:6yr_huc02fe_cnt_", grp$file_label, file_sfx),
       dict            = dict_cnt,

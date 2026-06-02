@@ -37,7 +37,7 @@ There are many CWSs indexed by `i`, one regulator.
 **Firm primitives.**
 - Type `θ_i ~ F(·|x_i)`, with `x_i` a vector of CWS attributes (mining exposure, sulfur, size, primacy state, …). `θ` is the firm's idiosyncratic cost of compliance.
 - Action `B_i ∈ {0, 1}`. Observed: number of MR-violation-days in year `t` is `365·B_it` (Check 1 of §15 confirms `B` is the right granularity).
-- Compliance saving: `θ·c`, where `c = b(0) − b(1) > 0` is the gross resource saving from non-compliance. Normalize `c = 1` (one scale normalization, analogous to K&S `b'(a₀) = 1`).
+- Compliance saving: `θ·c`, where `c = b(0) − b(1) > 0` is the gross resource saving from non-compliance. `b(·)` is a **common** effort function — the same for all CWSs; `θ_i` is the idiosyncratic scaling. Normalize `c = 1` (scale normalization: only the product `θ·c` appears in the model, so the scale of `θ` and `c` are not separately identified; K&S impose the equivalent normalization by pinning the **type** `θ̃(a₀, post) = 1` at a reference action — Proposition 2 and fn. 33, p. 2972 of JPE; they do **not** normalize `b'(a₀) = 1`).
 
 **Regulator primitives.**
 - Knows `F(θ|x)`, observes `B_i` (and `x_i`) but not `θ_i`.
@@ -137,18 +137,32 @@ PWSID × year, 1985–2005, downstream-only sample:
 **Instrument.**
 - `z_it = post95 × sulfur_unified_mean`. First-stage F = 13.6 (from Priority 0 checks).
 
-**Enforcement (regulator action).**
-- `any_enforcement_it = 1` if any formal or informal SDWA enforcement action recorded that year for CWS `i`. Constructed from the 268 PWSIDs with enforcement records.
-- `days_to_RTC_it` = days from violation onset to return-to-compliance. Median 183, mean 332.
+**Enforcement (regulator action) — formal/informal split (updated 2026-06-01).**
+
+From `SDWA_VIOLATIONS_ENFORCEMENT.csv`, filtered to enforcement subsample (268 PWSIDs with any enforcement record, 1985–2005):
+
+| Variable | Definition | Obs in sample | Pr(=1\|B=1) | Pr(=1\|B=0) |
+|---|---|---|---|---|
+| `formal_enf_it` | Any formal SDWA enforcement action that year (SFJ, SFL, SFM, SFO, SFQ, SFR, EFL, …) | 218 PWSID-years | 10.2% | 2.7% |
+| `informal_enf_it` | Any informal enforcement action that year (SIA, SIB, SIC, SID, …) | ~2,100 PWSID-years | 57.5% | 14.3% |
+| `days_to_RTC_it` | Days from violation onset to return-to-compliance, by enforcement type | 771 obs for formal; ~4,500 for informal | — | — |
+
+The dominant formal action is **SFR (State Consent Decree/Judgement)**. The B-conditional gap is strong for both types (ratio ~3.8× for formal, ~4.0× for informal), supporting probit identification of φ_B in both Eqs. 2a.
+
+**Sanitary surveys (monitoring intensity covariate).**
+From `SDWA_SITE_VISITS.csv` (SNSV, SNSP, L1SS, L2SS, SSVF codes):
+- `any_snsv_it = 1` if any sanitary survey visit in that PWSID-year. N = 910 PWSID-years, 270 PWSIDs.
+- Survey rate: 14.04% when B=1, 14.62% when B=0 — essentially no B-conditional gap.
+- Sanitary surveys are scheduled inspections, not violation-triggered enforcement. They enter **W** as a monitoring-intensity covariate for F(θ|x), not Δê.
 
 **Covariates `x_it`.**
-- `num_facilities`, `POPULATION_SERVED_COUNT`, `OWNER_TYPE_CODE`, `PRIMARY_SOURCE_CODE`, `sulfur_unified`, plus state and year fixed effects.
+- `num_facilities`, `POPULATION_SERVED_COUNT`, `OWNER_TYPE_CODE`, `PRIMARY_SOURCE_CODE`, `sulfur_unified`, `any_snsv`, plus state and year fixed effects.
 
 ### 4.3 Data quality caveats
 
 - **MCL violations remain too sparse for separate structural treatment.** Only 4.4% of downstream CWSs ever report an MCL violation in mining-related contaminants. Model is restricted to MR margin.
-- **Penalty amounts are not in dollars.** As in the continuous version, the regulator's "expected penalty" is reconstructed from `Pr(enforcement) × E[days-to-RTC]`.
-- **Sanitary surveys are sparse.** Used as time-invariant covariate, not state.
+- **Penalty amounts are not in dollars.** The regulator's "expected penalty" is reconstructed from `Pr(enforcement type) × E[days-to-RTC | enforcement type]`, separately for formal and informal actions.
+- **Relative deterrence κ is not directly observed.** The weight of informal vs formal enforcement is estimated as a free parameter (κ) in Eq. 4's pseudo-likelihood. Primary spec sets κ = 0 (formal only); κ free is a robustness column.
 
 ---
 
@@ -164,23 +178,41 @@ m_it = π·z_it + x_it'·ρ + η_i + τ_t + ν_it
 
 Save `v̂_it`. The exclusion restriction is the standard 2SLS one.
 
-### Equation 2 — Enforcement burden by action and `x`
+### Equation 2 — Enforcement burden by action and `x` (updated 2026-06-01)
 
-Estimate two equations on the 268-PWSID enforcement subsample:
+Estimate **four** equations on the enforcement subsample. Mining (`log(1+m_it)`) enters all four, allowing Δê to vary with mining exposure — the key channel for the EJ enforcement laxity finding (h3 2SLS: formal enforcement −0.087\*\*\* on `num_coal_mines_upstream`).
 
+**Formal enforcement equations** (111 PWSIDs, 218 PWSID-years positive):
 ```
-(2a)  Pr(E_it = 1 | B_it, x_it, v̂_it) = Φ(φ₀ + φ_B·B_it + x_it'·φ_x + φ_v·v̂_it)
-(2b)  log(days_to_RTC_it + 1) | E_it = 1  = ξ₀ + ξ_B·B_it + x_it'·ξ_x + u_it
-```
-
-Construct the two-point schedule:
-
-```
-ê(B | x) = Pr̂(E = 1 | B, x) · Ê[days_to_RTC | E = 1, B, x],   B ∈ {0, 1}
-Δê(x)    = ê(1 | x) − ê(0 | x)
+(2a_formal)  Pr(E_formal_it = 1 | B_it, x_it, v̂_it) = Φ(φ₀ + φ_B·B_it + φ_m·log(1+m_it) + x_it'·φ_x + φ_v·v̂_it)
+(2b_formal)  log(days_to_RTC_it + 1) | E_formal = 1  = ξ₀ + ξ_B·B_it + ξ_m·log(1+m_it) + x_it'·ξ_x + u_it
 ```
 
-With `c = 1`, the firm threshold is `θ̂*(x) = Δê(x)`.
+**Informal enforcement equations** (267 PWSIDs, ~2,100 PWSID-years positive):
+```
+(2a_informal)  Pr(E_informal_it = 1 | B_it, x_it, v̂_it) = Φ(ψ₀ + ψ_B·B_it + ψ_m·log(1+m_it) + x_it'·ψ_x + ψ_v·v̂_it)
+(2b_informal)  log(days_to_RTC_it + 1) | E_informal = 1 (& E_formal = 0)  = ζ₀ + ζ_B·B_it + ζ_m·log(1+m_it) + x_it'·ζ_x + u_it
+```
+
+Expected signs: `φ_m < 0` (EJ enforcement laxity — less formal enforcement in mining areas, consistent with h3 2SLS); `ψ_m ≥ 0` (informal enforcement neutral or higher in mining areas).
+
+Construct type-specific two-point schedules and the composite Δê:
+
+```
+ê_formal(B | x)   = Pr̂(E_formal = 1 | B, x) · Ê[days_to_RTC | E_formal = 1, B, x]
+ê_informal(B | x) = Pr̂(E_informal = 1 | B, x) · Ê[days_to_RTC | E_informal = 1, B, x]
+
+Δê_formal(x)   = ê_formal(1 | x) − ê_formal(0 | x)
+Δê_informal(x) = ê_informal(1 | x) − ê_informal(0 | x)
+
+Δê(x) = Δê_formal(x) + κ · Δê_informal(x)
+```
+
+`κ ∈ [0,1]` = relative deterrence weight of informal vs formal enforcement.
+**Primary spec:** `κ = 0` (formal enforcement only drives the threshold — most conservative and structurally cleanest).
+**Robustness:** `κ` estimated jointly as a free scalar in Eq. 4's pseudo-likelihood.
+
+With `c = 1`, the firm threshold is `θ̂*(x) = Δê(x) = Δê_formal(x)` (primary spec).
 
 ### Equation 3 — Compliance probability (firm side, diagnostic only)
 
@@ -210,7 +242,15 @@ Estimate `(δ_μ, δ_σ)` by maximizing the binary-outcome pseudo-likelihood
 ℓ(δ) = Σ_it { B_it · log[1 − Φ(η_it)] + (1 − B_it) · log[Φ(η_it)] }.
 ```
 
-This is a probit with `log Δê(x_it)` as a **known offset** and `w_it` (which includes `v̂_it` for the CF correction) entering μ and log σ. Uses raw `B_it` rather than the smoothed `p̂(x_it)`, avoiding propagation of Eq. 3 prediction error. PWSID-clustered bootstrap for SEs (resample PWSIDs, redo Eqs. 1, 2a, 2b, then the MLE; 500 reps).
+This is a probit with `log Δê(x_it)` as a **known offset** (where `Δê = Δê_formal` in the primary spec) and `w_it` (which includes `v̂_it` and `any_snsv_it` for monitoring intensity) entering μ and log σ. Uses raw `B_it` rather than the smoothed `p̂(x_it)`, avoiding propagation of Eq. 3 prediction error. PWSID-clustered bootstrap for SEs (resample PWSIDs, redo Eqs. 1, 2a_formal, 2a_informal, 2b_formal, 2b_informal, 4, 5; 500 reps).
+
+**W matrix (updated 2026-06-01):**
+```
+w_it = [1, log(1+m_it), sulfur_it, num_facilities_it, log(pop_it+1),
+        factor(OWNER_TYPE_CODE), factor(PRIMARY_SOURCE_CODE),
+        factor(state), any_snsv_it, v̂_it]
+```
+`any_snsv_it` controls for monitoring intensity — survey frequency affects compliance cost distributions independently of the enforcement schedule.
 
 **Identification.** The same cross-`it` heterogeneity in `(B_it, Δê(x_it), w_it)` that would identify the original bin-level GMM identifies the pseudo-likelihood. The switch is an estimator change (MLE vs NLS/GMM on residual), not an identification change. Motivated by §16: cross-IV-bin variation in `Δê` is only ~6%, but observation-level variation has sd 18.4 days and p10–p90 = [109.7, 146.4] — Option C uses the full panel-level spread.
 
@@ -235,7 +275,9 @@ Estimate
 (β̂_γ, β̂_ψ) = argmin Σ_it r_it(β_γ, β_ψ)².
 ```
 
-Log-link parametrizations `log γ(x) = w_it'·β_γ` and `log ψ(x) = w_it'·β_ψ` keep γ, ψ > 0. With N = 6,232 observations and 2K parameters, the system is overidentified by N − 2K. Report the Hansen J-statistic as a misspecification test. PWSID-clustered bootstrap for SEs (resample PWSIDs, redo Eqs. 1, 2a, 2b, 4, 5).
+Log-link parametrizations `log γ(x) = w_it'·β_γ` and `log ψ(x) = w_it'·β_ψ` keep γ, ψ > 0. With N = 6,232 observations and 2K parameters, the system is overidentified by N − 2K. Report the Hansen J-statistic as a misspecification test. PWSID-clustered bootstrap for SEs (resample PWSIDs, redo Eqs. 1, 2a_formal, 2a_informal, 2b_formal, 2b_informal, 4, 5).
+
+`Δê(x_it)` in the FOC residual uses the formal-only schedule (primary spec), so φ_m from Eq. 2a_formal feeds directly into the regulator primitive identification: where formal enforcement is lower (mining areas), the threshold θ\* is lower, which changes the hazard term and thus the estimated γ and ψ.
 
 **Practical issues to flag in implementation:**
 
@@ -275,12 +317,14 @@ Under observation-level Eq. 5 with `log γ(x) = w_it'·β_γ`, the EJ coefficien
 | Step | Input data | Estimator | Output |
 |---|---|---|---|
 | Eq. 1 | Full panel | OLS (`feols`) | `v̂_it` |
-| Eq. 2a | 268-PWSID enforcement panel | Probit | Pr̂(E=1 \| B, x) |
-| Eq. 2b | Same, E=1 subset | OLS (`feols`) | Ê[days_to_RTC \| B, x] |
-| Eq. 2 | Outputs of 2a, 2b | Construction | `ê(B \| x)`, `Δê(x)` |
-| Eq. 3 (diagnostic) | Full panel | Probit with CF correction | `p̂(x)` — used for §16 Check 3 and robustness only |
-| Eq. 4 | Full panel: `B_it`, `Δê(x_it)`, `w_it` | Pseudo-likelihood MLE (probit with `log Δê` offset) | `δ_μ`, `δ_σ` ⟹ `F̂(·\|x)` |
-| Eq. 5 | Full panel `(Δê(x_it), F̂, f̂)` | NLS on observation-level FOC residuals | `β̂_γ`, `β̂_ψ` ⟹ `γ̂(x)`, `ψ̂(x)` |
+| Eq. 2a_formal | Enforcement panel (111 PWSIDs with formal actions) | Probit | Pr̂(E_formal=1 \| B, m, x) |
+| Eq. 2b_formal | Formal E=1 subset (771 obs with RTC) | OLS (`feols`) | Ê[days_to_RTC \| E_formal=1, B, m, x] |
+| Eq. 2a_informal | Enforcement panel (267 PWSIDs with informal actions) | Probit | Pr̂(E_informal=1 \| B, m, x) |
+| Eq. 2b_informal | Informal E=1 subset (E_formal=0) | OLS (`feols`) | Ê[days_to_RTC \| E_informal=1, B, m, x] |
+| Eq. 2 | Outputs of 2a/2b by type | Construction | `Δê_formal(x)`, `Δê(x) = Δê_formal + κ·Δê_informal` |
+| Eq. 3 (diagnostic) | Full panel | Probit with CF correction | `p̂(x)` — §16 Check 3 and robustness only |
+| Eq. 4 | Full panel: `B_it`, `Δê_formal(x_it)`, `w_it` (incl. `any_snsv`) | Pseudo-likelihood MLE (probit with `log Δê_formal` offset) | `δ_μ`, `δ_σ` ⟹ `F̂(·\|x)` |
+| Eq. 5 | Full panel `(Δê_formal(x_it), F̂, f̂)` | NLS on observation-level FOC residuals | `β̂_γ`, `β̂_ψ` ⟹ `γ̂(x)`, `ψ̂(x)` |
 | Eq. 6 | Plug-in | — | Set bounds on `θ_i` |
 | Eq. 7a/b | `β̂_γ`, `β̂_ψ` from Eq. 5 (mining/sulfur components) | Read off + PWSID-clustered bootstrap | `α_m`, `α_s`, `μ_m`, `μ_s` |
 
@@ -319,23 +363,59 @@ fit_1 <- feols(num_coal_mines_upstream_mean ~ I(post95*sulfur_unified_mean) +
                data = panel, cluster = ~PWSID)
 panel$v_hat <- residuals(fit_1)
 
-# --- Eq. 2a, 2b: enforcement schedule ---
-# (load enforcement file, merge, build any_enforcement and days_to_RTC, as in priority0)
+# --- Eq. 2: enforcement schedule — formal/informal split (updated 2026-06-01) ---
+# Load enforcement file; construct separate formal and informal annual indicators.
+# Mining (log(1+m)) enters both 2a and 2b so Δê varies with mining exposure.
 
-fit_2a <- glm(any_enforcement ~ B + num_facilities + POPULATION_SERVED_COUNT +
-                factor(OWNER_TYPE_CODE) + factor(PRIMARY_SOURCE_CODE) + v_hat,
-              family = binomial("probit"), data = enf_panel)
+# formal_enf: ENF_ACTION_CATEGORY == "Formal" (SFJ/SFL/SFM/SFO/SFQ/SFR/EFL/...)
+# informal_enf: ENF_ACTION_CATEGORY == "Informal" (SIA/SIB/SIC/SID/...)
+# any_snsv: VISIT_REASON_CODE %in% c("SNSV","SNSP","L1SS","L2SS","SSVF") from SDWA_SITE_VISITS.csv
+# — any_snsv enters W (monitoring intensity covariate) but NOT Δê (no B-conditional gap: 14.0% vs 14.6%)
 
-fit_2b <- feols(log(days_to_RTC + 1) ~ B + num_facilities + POPULATION_SERVED_COUNT |
-                  OWNER_TYPE_CODE + PRIMARY_SOURCE_CODE,
-                data = filter(enf_panel, any_enforcement == 1))
+# Eq. 2a_formal: probit for formal enforcement
+fit_2a_formal <- glm(formal_enf ~ B + log(1 + num_coal_mines_upstream) +
+                       num_facilities + POPULATION_SERVED_COUNT +
+                       factor(OWNER_TYPE_CODE) + factor(PRIMARY_SOURCE_CODE) +
+                       factor(state) + v_hat,
+                     family = binomial("probit"), data = enf_panel)
 
-e_hat <- function(B_val, x_row) {
-  p <- predict(fit_2a, newdata = cbind(B = B_val, x_row), type = "response")
-  d <- exp(predict(fit_2b, newdata = cbind(B = B_val, x_row))) - 1
-  p * d
-}
-Delta_e_hat <- function(x_row) e_hat(1, x_row) - e_hat(0, x_row)
+# Eq. 2a_informal: probit for informal enforcement
+fit_2a_informal <- glm(informal_enf ~ B + log(1 + num_coal_mines_upstream) +
+                         num_facilities + POPULATION_SERVED_COUNT +
+                         factor(OWNER_TYPE_CODE) + factor(PRIMARY_SOURCE_CODE) +
+                         factor(state) + v_hat,
+                       family = binomial("probit"), data = enf_panel)
+
+# Eq. 2b_formal: log days-to-RTC | formal enforcement = 1
+fit_2b_formal <- feols(log(days_to_RTC + 1) ~ B + log(1 + num_coal_mines_upstream) +
+                         num_facilities + POPULATION_SERVED_COUNT |
+                         OWNER_TYPE_CODE + PRIMARY_SOURCE_CODE,
+                       data = filter(enf_panel, formal_enf == 1, !is.na(days_to_RTC)))
+
+# Eq. 2b_informal: log days-to-RTC | informal only (not formal) = 1
+fit_2b_informal <- feols(log(days_to_RTC + 1) ~ B + log(1 + num_coal_mines_upstream) +
+                           num_facilities + POPULATION_SERVED_COUNT |
+                           OWNER_TYPE_CODE + PRIMARY_SOURCE_CODE,
+                         data = filter(enf_panel, informal_enf == 1, formal_enf == 0, !is.na(days_to_RTC)))
+
+# Construct Δê_formal and Δê_informal at panel level
+# Primary spec: κ = 0 (formal enforcement only drives threshold θ*)
+panel$e_formal_B0 <- predict(fit_2a_formal,   newdata = cbind(B=0L, panel_pred), type="response") *
+                     (exp(predict(fit_2b_formal,   newdata = cbind(B=0L, panel_pred))) - 1)
+panel$e_formal_B1 <- predict(fit_2a_formal,   newdata = cbind(B=1L, panel_pred), type="response") *
+                     (exp(predict(fit_2b_formal,   newdata = cbind(B=1L, panel_pred))) - 1)
+panel$Delta_e_formal <- pmax(panel$e_formal_B1 - panel$e_formal_B0, 1e-6)
+
+panel$e_informal_B0 <- predict(fit_2a_informal, newdata = cbind(B=0L, panel_pred), type="response") *
+                       (exp(predict(fit_2b_informal, newdata = cbind(B=0L, panel_pred))) - 1)
+panel$e_informal_B1 <- predict(fit_2a_informal, newdata = cbind(B=1L, panel_pred), type="response") *
+                       (exp(predict(fit_2b_informal, newdata = cbind(B=1L, panel_pred))) - 1)
+panel$Delta_e_informal <- pmax(panel$e_informal_B1 - panel$e_informal_B0, 1e-6)
+
+# Primary Δê: formal only (κ = 0); robustness: κ estimated in pseudo-likelihood
+kappa <- 0   # set to 0 for primary; estimate via nlminb for robustness
+panel$Delta_e     <- panel$Delta_e_formal + kappa * panel$Delta_e_informal
+panel$log_delta_e <- log(panel$Delta_e)
 
 # --- Eq. 3 (DIAGNOSTIC ONLY): compliance probability ---
 # Used for §16 Check 3 (monotonicity of p̂ in IV) and as Option B robustness input.
@@ -350,11 +430,12 @@ fit_3 <- glm(B ~ log(1 + num_coal_mines_upstream_mean) + sulfur_unified_mean +
 # Identification: cross-it variation in (B_it, Δê(x_it), w_it).
 panel$log_delta_e <- log(sapply(seq_len(nrow(panel)), function(i) Delta_e_hat(panel[i, ])))
 
-# w_it: covariates indexing F(·|x). Includes v_hat for the CF correction.
-W <- model.matrix(~ log(1 + num_coal_mines_upstream_mean) + sulfur_unified_mean +
+# w_it: covariates for F(·|x). Includes state FEs, any_snsv (monitoring intensity), v_hat.
+W <- model.matrix(~ log(1 + num_coal_mines_upstream) + sulfur_unified +
                     num_facilities + log(POPULATION_SERVED_COUNT + 1) +
-                    factor(OWNER_TYPE_CODE) + factor(PRIMARY_SOURCE_CODE) + v_hat,
-                  data = panel)
+                    factor(OWNER_TYPE_CODE) + factor(PRIMARY_SOURCE_CODE) +
+                    factor(state) + any_snsv + v_hat,
+                  data = panel_cc)
 K <- ncol(W)
 
 loglik <- function(par) {
@@ -520,13 +601,13 @@ The three §9 checks from the continuous variant have already been run (§15). T
 | Setting | California NPDES wastewater | Federal SDWA drinking water |
 | Firm | 288 wastewater plants | 340 CWSs |
 | Violation | Effluent count, observed monetarily | MR violation indicator, 365-day binary |
-| Penalty | Dollar amount per violation | Two-point: `(e(0\|x), e(1\|x))` = Pr × duration |
+| Penalty | Dollar amount per violation | Two-point: `(e(0\|x), e(1\|x))` = Pr(formal enforcement) × duration; κ-weighted composite with informal as robustness |
 | Type θ | Compliance cost | CWS compliance cost (set-identified at unit level) |
 | Identification regime | 2 penalty regimes (pre/post 2006) | 1 regime + IV on `x` |
 | Identification machinery | T^H, T^V transforms | Probit threshold + cross-bin GMM |
 | Time structure | Static | Static |
 | Choice | Continuous a | Binary `B ∈ {0, 1}` |
-| Primitives | F, b', γ, ψ | F (parametric), c (normalized), γ, ψ |
+| Primitives | F, b', γ, ψ | F (parametric), c = 1 (scale norm, analogous to K&S type norm θ̃(a₀)=1 not b'(a₀)=1), γ, ψ |
 | Counterfactuals | 4 (uniform, linear, first-best, green) | 5 (above + no-mining decomposition) |
 | Main risk | n/a | IV exclusion + monotonicity of `p̂(x)` in IV |
 | Target venue | JPE | JPubEcon / AEJ:Applied |
@@ -576,13 +657,14 @@ The three §9 checks from the continuous variant have already been run (§15). T
 
 ## 13. Next Steps
 
-1. Run `binary_feasibility.r` (§9). The first execution is reported in §16 below.
-2. If feasibility passes, draft `code/coal_mining_water_quality/structural_ks_binary.r` following the pseudocode in §7.
-3. Estimate Eqs. 1–3 first; report sanity checks (first-stage F, predicted enforcement burden, probit fit).
-4. Implement Eq. 4 (cross-bin GMM for `F`) — this is the lift; budget ~1–2 weeks given the simpler identification.
-5. Implement Eq. 5 (regulator FOC NLS) — ~3 days.
-6. Bootstrap SEs (resample PWSIDs, redo the pipeline; 500 reps).
-7. Counterfactuals CF1–CF5 and the validation exercise.
+1. ~~Run `binary_feasibility.r` (§9).~~ **Done** — see §16.
+2. ~~Draft `structural_ks_binary.r` per §7 pseudocode.~~ **Done** — initial version written and test-run 2026-06-01.
+3. ~~Implement Eqs. 1–5, bootstrap, counterfactuals.~~ **Done** — v1 with `any_enforcement` ran but produced `δ_μ[mining] < 0` (see §17 motivation).
+4. **Now:** Update `structural_ks_binary.r` to implement the formal/informal split per §17 — Eqs. 2a_formal, 2a_informal, 2b_formal, 2b_informal; add mining to all four; add `any_snsv` to W. Re-run test (N_BOOT = 0) to verify `δ_μ[mining]` sign flips positive.
+5. Run bootstrap (N_BOOT = 500) overnight after sign verified.
+6. Estimate κ (robustness column, κ free in pseudo-likelihood).
+7. Counterfactuals CF1–CF5 with formal-only Δê; recheck CF5 decomposition.
+8. CF Validation (OOS Q4 correlation) — check whether `any_snsv` in W improves the Q4 fit.
 
 ---
 
@@ -593,6 +675,10 @@ The three §9 checks from the continuous variant have already been run (§15). T
 - Pool across mining-related contaminants (one `B_it`) or estimate separately for each? With binary outcomes, sparsity may force pooling regardless.
 - Bin count `K` for the robustness display and CF Validation split: 4 vs. 8 quartiles. Main estimation is observation-level, so K is no longer load-bearing.
 - Should `w_it` in Eq. 5 (regulator side) exclude `v̂_it`? Default: include for consistency with Eq. 4; report both.
+- **NEW:** Is κ > 0 and distinguishable from zero? If κ ≈ 0, the formal-only primary spec is validated empirically, not just assumed.
+- **NEW:** Does `any_snsv` in W improve the OOS Q4 validation correlation (currently 0.087)? The Q4 anomaly may partly reflect monitoring-intensity composition at high IV values.
+- **NEW:** Does `φ_m` in Eq. 2a_formal confirm the h3 2SLS sign (negative) in the probit framework with v̂? This is the structural counterpart to the reduced-form h3 result.
+- **NEW:** With formal-only Δê lower for mining CWSs, does `δ_μ[mining]` turn positive (compliance costs higher in mining areas)? This is the diagnostic for whether the enforcement model revision resolves the sign problem.
 
 ---
 
@@ -636,9 +722,226 @@ The binary-choice variant is feasible. The two relevant checks pass; the margina
 - **Eq. 4 implementation (updated 2026-05-24):** estimate `F(·|x)` by **pseudo-likelihood (Option C)** — a probit on `B_it` with `log Δê(x_it)` as a known offset and `w_it` (including `v̂_it`) parametrizing μ(x) and log σ(x). Uses raw `B_it` rather than the smoothed `p̂(x_it)` from Eq. 3, gaining efficiency and avoiding propagation of Eq. 3 prediction error. Identification leverages full observation-level `x` heterogeneity (sd of Δê = 18.4 days at the panel level vs 7.64 across bin medians).
 - **Eq. 3 demoted to diagnostic.** Retained for the §16 Check 3 monotonicity test, the Option B robustness column, and the post-estimation fit check `1 − F̂(Δê|x)` vs `p̂(x)`. Not on the main estimation path.
 - **Eq. 5 also moved to observation-level NLS (2026-05-24):** the regulator FOC is a pointwise restriction at every x, so every observation contributes a residual. With N = 6,232 and 2K parameters the system is overidentified by N − 2K, enabling a Hansen J-test for misspecification. The bin-level NLS (K = 4) is retained as a robustness column.
-- **Bootstrap SEs:** required. Resample PWSIDs and redo Eqs. 1, 2a, 2b, 4 (pseudo-likelihood), 5; report standard errors and percentile intervals.
+- **Bootstrap SEs:** required. Resample PWSIDs and redo Eqs. 1, 2a_formal, 2a_informal, 2b_formal, 2b_informal, 4 (pseudo-likelihood), 5; report standard errors and percentile intervals.
 - **Robustness columns to report alongside Option C:** Option A (PWSID-clustered HAC GMM on residual moments) and Option B (NLS on `1 − p̂` residuals). Eq. 3 is needed to populate Options A and B.
+- **Enforcement split (updated 2026-06-01):** `Δê` is now constructed from formal enforcement only (primary) or formal + κ·informal (robustness). See §17 for full motivation and data feasibility assessment. `any_snsv` added to W. Mining enters Eqs. 2a and 2b directly.
 
-### Next concrete step
+### Status
 
-Write `code/coal_mining_water_quality/structural_ks_binary.r` per §7 with the Eq. 4 moment-condition change above. Budget ~2 weeks to first draft of Eqs. 1–5; ~1 week for counterfactuals; bootstrap is overnight wall-time once code is debugged.
+`structural_ks_binary.r` (v1) written and run 2026-06-01. Produced `δ_μ[mining] < 0` due to conflation of formal/informal enforcement in `any_enforcement`. Revision to formal/informal split pending — see §17 and §13 step 4.
+
+---
+
+## 17. Enforcement Model Revision — Formal/Informal Split (2026-06-01)
+
+### Motivation
+
+The first test run of `structural_ks_binary.r` (with state FEs in W) produced `δ_μ[mining] < 0` — the type distribution assigns lower mean compliance cost to mining-exposed CWSs. This is economically backwards: physical mining contamination raises the administrative burden of MR monitoring and reporting, and should push `δ_μ[mining] > 0`. Two diagnostics identified the root cause:
+
+1. **h3_enf_d12.tex** (2SLS, col 6): `any_formal` coefficient on `num_coal_mines_upstream` = **−0.087\*\*\*** — mining CWSs receive significantly *less* formal enforcement, supporting EJ enforcement laxity on the deterrent margin.
+2. **h2_snsv_d12.tex** (2SLS): sanitary survey coefficient = **+0.141\*\*\*** — mining CWSs receive significantly *more* monitoring visits.
+3. The current `any_enforcement` variable collapses formal (deterrent), informal (low-deterrence), and resolving actions into a single binary. Because informal enforcement dominates (45K informal vs 773 formal actions in sample), the aggregate Δê is insensitive to the EJ laxity in formal enforcement.
+4. With Δê approximately equal across mining/non-mining CWSs (formal laxity masked by informal volume), the pseudo-likelihood has no enforcement channel to explain the mining violation gap and sets `δ_μ[mining] < 0` instead.
+
+### Data Availability Assessment (2026-06-01)
+
+**SDWA_VIOLATIONS_ENFORCEMENT.csv** in the downstream 1985–2005 sample (340 PWSIDs, 6,232 obs):
+
+| Type | Raw actions | PWSIDs | PWSID-years | Pr(E=1\|B=1) | Pr(E=1\|B=0) | Feasible in Δê? |
+|---|---|---|---|---|---|---|
+| Formal | 773 | 111 | 218 | **10.2%** | 2.7% | **Yes** — strong B-gap, 771 RTC obs for 2b |
+| Informal | 12,702 | 267 | ~2,100+ | **57.5%** | 14.3% | **Yes** — very thick, strong B-gap |
+| Any (current) | 19,870 | 268 | ~2,900 | ~60% | ~17% | Yes — current spec, becomes robustness |
+
+**SDWA_SITE_VISITS.csv** (SNSV, SNSP, L1SS, L2SS, SSVF codes):
+
+| Type | PWSID-years | Pr(visit\|B=1) | Pr(visit\|B=0) | Role |
+|---|---|---|---|---|
+| Sanitary surveys | 910 | **14.04%** | **14.62%** | **W covariate only** — no B-conditional gap, zero deterrence content |
+
+Sanitary surveys are scheduled inspections independent of violations (gap of 0.58 pp is noise). Including them in Δê would add zero enforcement differential. They belong in W as a monitoring-intensity covariate for F(θ|x).
+
+Formal enforcement dominant type: **SFR (State Consent Decree/Judgement)** = 473 records — the most binding category.
+
+### Revised Model Structure
+
+**New two-point schedule:**
+
+```
+Δê(x_it) = Δê_formal(x_it) + κ · Δê_informal(x_it)
+
+ê_formal(B|x)   = Pr̂(E_formal=1|B,x) · Ê[days_to_RTC|E_formal=1,B,x]
+ê_informal(B|x) = Pr̂(E_informal=1|B,x) · Ê[days_to_RTC|E_informal=1,B,x]
+Δê_formal       = ê_formal(1|x) − ê_formal(0|x)
+Δê_informal     = ê_informal(1|x) − ê_informal(0|x)
+```
+
+`κ ∈ [0,1]` = relative deterrence weight of informal vs formal enforcement.
+**Primary spec:** `κ = 0` (formal only, cleanest interpretation).
+**Robustness:** `κ` estimated jointly in pseudo-likelihood as a free parameter (adds one scalar to Eq. 4 log-likelihood).
+
+### Revised Equations 2a and 2b
+
+Mining (`log(1+num_coal_mines_upstream)`) enters **both** enforcement equations directly, so Δê varies with mining exposure — enabling the enforcement laxity channel.
+
+**Eq. 2a_formal:**
+```
+Pr(E_formal_it = 1 | B_it, x_it, v̂_it) = Φ(φ₀ + φ_B·B_it + φ_m·log(1+m_it) + x_it'·φ_x + φ_v·v̂_it)
+```
+
+**Eq. 2a_informal:**
+```
+Pr(E_informal_it = 1 | B_it, x_it, v̂_it) = Φ(ψ₀ + ψ_B·B_it + ψ_m·log(1+m_it) + x_it'·ψ_x + ψ_v·v̂_it)
+```
+
+**Eq. 2b_formal** (on `E_formal = 1` subset):
+```
+log(days_to_RTC_it + 1) = ξ₀ + ξ_B·B_it + ξ_m·log(1+m_it) + x_it'·ξ_x + u_it
+```
+
+**Eq. 2b_informal** (on `E_informal = 1` subset, `E_formal = 0`):
+```
+log(days_to_RTC_it + 1) = ζ₀ + ζ_B·B_it + ζ_m·log(1+m_it) + x_it'·ζ_x + u_it
+```
+
+Expected signs: `φ_m < 0` (EJ laxity — less formal enforcement in mining areas), `ψ_m ≥ 0` (informal enforcement similar or more in mining areas).
+
+### Revised W Matrix (Eqs. 4 and 5)
+
+Add `any_snsv` (sanitary survey indicator, lagged or contemporaneous) as a monitoring-intensity covariate. More monitored CWSs face higher detection risk and may have different compliance cost distributions. Exclusion from Δê is justified by the near-zero B-conditional gap.
+
+```r
+W <- model.matrix(
+  ~ log(1 + num_coal_mines_upstream) + sulfur_unified +
+    num_facilities + log(POPULATION_SERVED_COUNT + 1) +
+    factor(OWNER_TYPE_CODE) + factor(PRIMARY_SOURCE_CODE) +
+    factor(state) + any_snsv + v_hat,
+  data = panel_cc
+)
+```
+
+### Expected Identification Consequences
+
+With `φ_m < 0` (from Eq. 2a_formal — as h3 already documents causally):
+- Δê_formal is **lower** for mining CWSs
+- The pseudo-likelihood offset `log(Δê)` is smaller for mining obs
+- The pseudo-likelihood can fit high violation rates in mining areas through lower Δê (enforcement laxity), and the residual falls on `δ_μ[mining]`
+- **Expected result:** `δ_μ[mining] > 0` (higher compliance costs from physical contamination burden), consistent with economic priors
+
+### Identification of κ (robustness)
+
+In the pseudo-likelihood with composite offset:
+```
+η_it = (log(Δê_formal + κ·Δê_informal) − w_it'·δ_μ) / exp(w_it'·δ_σ)
+```
+κ enters the offset nonlinearly. Identification comes from cross-CWS variation in the ratio `Δê_informal / Δê_formal`: CWSs where informal and formal schedules differ most informatively bound κ. With the enforcement subsample showing large heterogeneity in enforcement type composition, κ should be identified. Estimate as `κ = exp(κ_par)` (constrained positive) with starting value `κ_par = log(0.3)`.
+
+### Updated Bootstrap Protocol
+
+Resample PWSIDs, redo Eqs. 1, **2a_formal, 2a_informal, 2b_formal, 2b_informal**, 4, 5. All five enforcement equations must be re-estimated in each bootstrap rep. Add robustness rep with `κ` free (500 reps as before).
+
+### Open Questions Added
+
+- Does `φ_m` in Eq. 2a_formal have the expected negative sign after conditioning on PWSID + year + state FEs? (Already answered in reduced form by h3 2SLS, but needs reconfirmation in the probit framework with v̂.)
+- Is κ > 0 and statistically distinguishable from zero? If κ ≈ 0 (formal-only), the simpler primary spec is validated.
+- With `any_snsv` in W: does survey monitoring absorb the Q4 OOS validation failure? The Q4 anomaly may partly reflect higher monitoring intensity in high-IV CWSs.
+
+### Implementation Status
+
+- [x] Add formal/informal indicators and `any_snsv` to `structural_ks_binary.r` data loading
+- [x] Replace fits 2a/2b with 2a_formal, 2a_informal, 2b_formal, 2b_informal
+- [x] Add mining to all four enforcement equations
+- [x] Construct composite Δê with κ = 0 (primary) and κ free (robustness)
+- [x] Add `any_snsv` to W and W_reg
+- [x] Re-run test (N_BOOT = 0) — **sign flip DID NOT resolve** (see §18)
+- [ ] Re-run bootstrap (N_BOOT = 500) overnight after sign verified
+
+---
+
+## 18. Test-Run Results — Formal/Informal Split (2026-06-01)
+
+Script ran cleanly (exit 0, N_BOOT=0). Key outputs:
+
+| Check | Result |
+|---|---|
+| Formal enforcement: 111 PWSIDs, Pr(formal=1)=0.095 | ✓ matches prior count |
+| Informal: 267 PWSIDs, Pr(informal=1)=0.223 | ✓ |
+| any_snsv: 907 PWSID-years | ✓ loaded |
+| φ_m_formal = −0.360 (t=−2.93) | ✓ EJ enforcement laxity confirmed in probit |
+| φ_m_informal = −0.294 (t=−3.94) | Both types show laxity (unexpected for informal) |
+| ξ_m_formal = −0.485 (t=−2.18) | Shorter days-to-RTC in mining areas when formally enforced |
+| cor(mines_upstream, Δê_formal) = −0.683 | ✓ Enforcement differential is strongly lower for mining CWSs |
+| Δê_formal: mean=26.7, sd=9.5 days | Much smaller scale than combined (was ~135 days) |
+| **δ_μ[mining] = −1.051 — NEGATIVE** | **Sign flip NOT resolved** |
+| Hazard tail: max=5×10¹³ >> q99=1929 | Log-normal badly conditioned in right tail; winsorized |
+
+### Root Cause Analysis
+
+The formal-only Δê has `cor(mines, Δê_formal) = −0.683` — so strongly negative that the pseudo-likelihood offset `log(Δê_formal)` already **over-explains** the mining violation gap by itself. Mining CWSs have log(Δê_formal) ≈ 0.683 SDs lower, which pushes Pr(B=1) upward even before μ(x) is fit. The residual that falls on δ_μ[mining] is then **negative** (the model needs to lower the compliance-cost mean to keep Pr(B=1) from exceeding the observed 11%).
+
+The §17 hypothesis was: "lower Δê in mining areas → the pseudo-likelihood uses the offset channel instead of δ_μ." That part is correct, but the offset channel over-corrects: `Δê_formal` is so small (26.7 days mean vs 137 for informal) that even small mining-related reductions in Δê become large in log-space and dominate.
+
+### Candidate Explanations and Next Diagnostics
+
+1. **Scale mismatch**: Formal-only Δê (26.7 days) is structurally too small a deterrent to explain 11% violation rates. The log-normal with offset log(26.7) ≈ 3.28 and empirical mean violation rate 11% implies μ̄ ≈ 3.28 − qnorm(0.89) ≈ 3.28 − 1.23 = 2.05 — but mining has much lower Δê, so the model compensates with lower μ.
+
+2. **Both φ_m and ξ_m are negative for formal**: The product `Pr(E_formal|B=1,x) × E[days|B=1,x]` falls faster with mining than `Pr(E_formal|B=0,x) × E[days|B=0,x]`, compressing Δê_formal in mining areas. This compression drives most of the offset channel.
+
+3. **Log-normal misspecification**: Hazard tail explosion (`max/q99 > 25,000`) suggests the log-normal is poorly specified at the tails. Alternative: use κ > 0 (add informal to Δê to increase scale and reduce the negative correlation).
+
+### Next Steps (Priority Order)
+
+1. **Try κ = 1 (formal + informal combined)** — `Δê = Δê_formal + Δê_informal` (mean ~163 days, with smaller relative gap). This reduces the dominance of the enforcement laxity channel and may allow δ_μ[mining] to be positive. Single-line change: `kappa <- 1`.
+
+2. **Try κ free (estimated in pseudo-likelihood)** — estimate κ jointly with δ_μ, δ_σ as planned in the robustness spec. κ̂ should tell us how much informal weight is needed to resolve the sign.
+
+3. **Check raw bin means of Δê by mining quartile** — verify whether the formal-only schedule actually has structural content at the observation level that identification can use.
+
+4. **Consider composite schedule without separating by RTC duration** — if ξ_m estimates are noisy (217 obs in formal_e1), the 2b step may be amplifying the laxity signal. Try Δê = Pr̂(E_formal|B=1) − Pr̂(E_formal|B=0) only (drop the RTC duration step).
+
+---
+
+## 19. κ Profile Test and Decision to Abandon — 2026-06-02
+
+### What was tried
+
+`structural_kappa_profile.r` was run with:
+- `factor(state)` added to all four enforcement equations (Eqs. 2a_formal, 2a_informal, 2b_formal, 2b_informal) — state regulatory heterogeneity placed in Δê where it belongs structurally
+- `factor(state)` removed from W — reduces K from ~39 to 17 columns (~20 events per parameter, up from ~9)
+- κ grid: {0, 0.1, 0.2, 0.3, 0.5, 0.8, 1.0}
+
+### Results
+
+| κ | log-lik | δ_μ[mining] | converged |
+|---|---------|-------------|-----------|
+| 0.0 | −1999.2 | +1.374 | No (iter limit) |
+| 0.1 | −1989.8 | −0.690 | No (iter limit) |
+| 0.2 | −1992.8 | −0.525 | Yes |
+| 0.3 | −1995.8 | −0.019 | Yes |
+| 0.5 | −2002.9 | −0.020 | No (iter limit) |
+| 0.8 | −1998.3 | −0.306 | Yes |
+| 1.0 | −1996.2 | +1373 | No (diverged) |
+
+Sign-flip interpolated at κ ≈ 0.067. δ_μ[mining] < 0 for all converged points in κ ∈ [0.1, 0.8].
+
+### Why δ_μ[mining] < 0 is persistent
+
+The enforcement schedule Δê has `cor(mining, Δê_formal) = −0.137` at the panel level. The enforcement equations in Eqs. 2a/2b absorb the state-level component of this laxity; the within-state component remains. Mining appears in both W (compliance cost μ) and the enforcement equations (Δê). The model splits mining's effect between the two channels. With enforcement laxity dominating — mining areas face weaker enforcement, pushing up B=1 through lower Δê — the residual effect on μ is negative. The enforcement channel more than accounts for the high violation rates in mining areas, leaving compliance costs structurally *lower* in mining areas once enforcement is controlled for.
+
+### Modelling options considered and rejected
+
+Three options were considered to recover δ_μ[mining] > 0:
+
+1. **Drop `log(mines)` from 2a/2b enforcement equations** — enforces an exclusion restriction that mining does not affect enforcement intensity. Not defensible given the h3 2SLS result (formal enforcement −0.087*** on upstream mines).
+
+2. **Replace `log(mines)` in W with the instrument `post95 × sulfur_unified`** — changes δ_μ from "effect of mining on compliance cost" to "effect of ARP-driven mining decline on compliance cost." Conflates the first stage with the structural object of interest; loses the quantity-of-mining interpretation.
+
+3. **Drop `log(mines)` from W entirely, rely only on v_hat** — imposes δ_μ[mining] = 0 by assumption. Turns the model into a pure enforcement-heterogeneity model (regulatory capture story), abandoning the compliance cost channel.
+
+None of these options recover the compliance cost interpretation without an unjustifiable restriction. The negative sign is not a numerical artifact — it reflects the structural tension that enforcement laxity in mining areas fully explains the high MR violation rate, leaving no role for elevated compliance costs.
+
+### Decision
+
+**The structural model is abandoned.** The result δ_μ[mining] < 0 is economically implausible as a compliance cost parameter (mining raises raw water contamination burden; compliance should be more expensive, not less). There is no modelling fix that resolves this without imposing an exclusion restriction that contradicts established reduced-form evidence or changing the interpretation of the structural object so fundamentally that the original research question is no longer answered.
+
+The enforcement laxity finding (mining areas receive less formal enforcement) is robust and well-identified from the reduced form. The next step is to explore this enforcement channel directly with reduced-form and descriptive tools outside the structural framework — see the enforcement exploration plan (2026-06-02 session log).

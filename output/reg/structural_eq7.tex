@@ -1,0 +1,58 @@
+\makeatletter
+\@ifclassloaded{beamer}{%
+  \begin{adjustbox}{max width=\linewidth, max totalheight=0.78\textheight, center}%
+}{%
+  \begin{adjustbox}{max width=\linewidth, center}%
+}%
+\makeatother
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{$\hat{\beta}_\gamma$ (perceived harm)} & \multicolumn{2}{c}{$\hat{\beta}_\psi$ (enforcement cost)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Covariate & Estimate & 95\% CI & Estimate & 95\% CI \\
+\midrule
+Intercept & 2.588 &  & -4.298 &  \\
+$\log(1+\text{mines})$ & -0.946 &  & 0.773 &  \\
+Sulfur \% & -0.004 &  & -0.061 &  \\
+N facilities & 0.046 &  & -0.051 &  \\
+$\log$ population & -0.035 &  & -0.161 &  \\
+OWNER_TYPE_CODE: L & -0.386 &  & 2.103 &  \\
+OWNER_TYPE_CODE: M & -1.042 &  & 2.654 &  \\
+OWNER_TYPE_CODE: N & -0.319 &  & -1.775 &  \\
+OWNER_TYPE_CODE: NA & -0.368 &  & 3.580 &  \\
+OWNER_TYPE_CODE: P & -0.344 &  & 1.766 &  \\
+OWNER_TYPE_CODE: S & -1.204 &  & -0.013 &  \\
+PRIMARY_SOURCE_CODE: GW & 1.427 &  & 1.178 &  \\
+PRIMARY_SOURCE_CODE: GWP & 1.273 &  & 3.735 &  \\
+PRIMARY_SOURCE_CODE: SW & 1.277 &  & 0.383 &  \\
+PRIMARY_SOURCE_CODE: SWP & 1.658 &  & 1.067 &  \\
+state: AL & 0.077 &  & -3.603 &  \\
+state: CA & 0.066 &  & 0.391 &  \\
+state: CO & 0.035 &  & -1.176 &  \\
+state: FL & 0.107 &  & 0.594 &  \\
+state: GA & 0.019 &  & -3.049 &  \\
+state: IL & 0.056 &  & -3.270 &  \\
+state: KS & 0.057 &  & 0.606 &  \\
+state: KY & 0.066 &  & -3.056 &  \\
+state: LA & -0.052 &  & -0.228 &  \\
+state: MD & -0.029 &  & -2.726 &  \\
+state: NC & 0.040 &  & -0.705 &  \\
+state: NJ & 0.084 &  & 0.556 &  \\
+state: NY & -0.031 &  & -4.426 &  \\
+state: OH & 0.092 &  & -0.982 &  \\
+state: OR & 0.016 &  & 0.106 &  \\
+state: PA & 0.029 &  & -2.234 &  \\
+state: SC & -0.060 &  & -0.550 &  \\
+state: TN & -0.168 &  & -13.790 &  \\
+state: UT & 0.072 &  & 0.390 &  \\
+state: VA & 0.024 &  & -1.830 &  \\
+state: WA & 0.065 &  & 0.195 &  \\
+state: WV & 0.051 &  & -3.355 &  \\
+Sanitary survey & -0.001 &  & -0.147 &  \\
+CF residual $\hat{v}$ & -0.402 &  & 0.596 &  \\
+\bottomrule
+\end{tabular}
+\par \raggedright
+\footnotesize Notes: Eq.\ 5 observation-level NLS on 6232 PWSID-years (downstream, 1985--2005). Log-normal $F(\theta|x)$ from Eq.\ 4 pseudo-likelihood (formal-only $\Delta\hat{e}$). 95\% CIs from PWSID-clustered percentile bootstrap (0 reps). $\alpha_m < 0$ indicates regulator perceives lower marginal harm in mining-exposed CWSs.
+\par
+\end{adjustbox}
