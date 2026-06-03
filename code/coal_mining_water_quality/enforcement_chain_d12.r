@@ -7,12 +7,14 @@
 #          Also diagnoses the 2005 enforcement spike.
 # Inputs:
 #   clean_data/cws_data/prod_vio_sulfur_4step.parquet
+#   clean_data/cws_data/prod_vio_sulfur.parquet
 #   Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_SITE_VISITS.csv
 #   Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.csv
 # Outputs:
 #   output/reg/h2_visits_d12.tex
 #   output/reg/h2_snsv_d12.tex
 #   output/reg/h3_enf_d12.tex
+#   output/reg/h3_inf_formal_d12.tex
 # Author: EK  Date: 2026-04-28
 # ============================================================
 
@@ -36,6 +38,18 @@ ids_d12    <- unique(d12$PWSID)
 panel_size <- nrow(d12)
 cat(sprintf("D1-D2 panel: %d PWSIDs x %d PWSID-years\n\n",
             length(ids_d12), panel_size))
+
+# ── Step 1b: Load D1 main panel (prod_vio_sulfur.parquet, same sample as didhet.r) ──
+cat("Loading D1 main panel (prod_vio_sulfur.parquet)...\n")
+main_pvs  <- read_parquet("clean_data/cws_data/prod_vio_sulfur.parquet")
+d1_main   <- main_pvs[main_pvs$minehuc_downstream_of_mine == 1 &
+                       main_pvs$minehuc_mine == 0 &
+                       main_pvs$year >= 1985 & main_pvs$year <= 2005 &
+                       main_pvs$PWSID != "WV3303401", ]
+ids_d1_main <- unique(d1_main$PWSID)
+cat(sprintf("D1 main panel: %d PWSIDs x %d PWSID-years\n\n",
+            length(ids_d1_main), nrow(d1_main)))
+rm(main_pvs); gc()
 
 # ── Step 2: Site visits ───────────────────────────────────────────────────────
 cat("Reading SDWA_SITE_VISITS.csv (355 MB)...\n")
@@ -77,7 +91,8 @@ enf <- fread(file.path(SDWA, "SDWA_VIOLATIONS_ENFORCEMENT.csv"),
              select = c("PWSID", "COMPL_PER_BEGIN_DATE", "NON_COMPL_PER_BEGIN_DATE",
                         "CALCULATED_RTC_DATE", "ENF_ACTION_CATEGORY",
                         "VIOLATION_CATEGORY_CODE", "ENF_ORIGINATOR_CODE"))
-enf <- enf[PWSID %in% ids_d12]
+ids_all <- union(ids_d12, ids_d1_main)
+enf <- enf[PWSID %in% ids_all]
 
 enf[, year := as.integer(substr(trimws(COMPL_PER_BEGIN_DATE),
                                 nchar(trimws(COMPL_PER_BEGIN_DATE)) - 3,
@@ -112,12 +127,15 @@ cat(sprintf("  Median: %.0f days  Mean: %.0f days\n",
 formal_d12 <- enf[ENF_ACTION_CATEGORY == "Formal"]
 enf_agg <- enf[, .(n_enf         = .N,
                     any_enf       = TRUE,
+                    any_informal  = any(ENF_ACTION_CATEGORY == "Informal", na.rm = TRUE),
                     any_formal    = any(ENF_ACTION_CATEGORY == "Formal", na.rm = TRUE),
                     mean_rtc_days = mean(days_to_rtc, na.rm = TRUE)),
                 by = .(PWSID, year)]
-cat(sprintf("\nPWSID-years with >=1 enf action: %d / %d (%.1f%%)\n",
+cat(sprintf("\nPWSID-years with >=1 enf action:   %d / %d (%.1f%%)\n",
     nrow(enf_agg), panel_size, 100 * nrow(enf_agg) / panel_size))
-cat(sprintf("PWSID-years with formal action:  %d (%.1f%%)\n",
+cat(sprintf("PWSID-years with informal action:  %d (%.1f%%)\n",
+    sum(enf_agg$any_informal), 100 * sum(enf_agg$any_informal) / panel_size))
+cat(sprintf("PWSID-years with formal action:    %d (%.1f%%)\n",
     sum(enf_agg$any_formal), 100 * sum(enf_agg$any_formal) / panel_size))
 cat(sprintf("Unique PWSIDs with formal action: %d (%.1f%%)\n",
     length(unique(formal_d12$PWSID)),
@@ -172,16 +190,18 @@ panel <- d12 %>%
   left_join(as.data.frame(sv_agg),  by = c("PWSID", "year")) %>%
   left_join(as.data.frame(enf_agg), by = c("PWSID", "year"))
 
-panel$n_visits[is.na(panel$n_visits)]     <- 0L
-panel$any_snsv[is.na(panel$any_snsv)]     <- FALSE
-panel$any_enf[is.na(panel$any_enf)]       <- FALSE
-panel$any_formal[is.na(panel$any_formal)] <- FALSE
+panel$n_visits[is.na(panel$n_visits)]         <- 0L
+panel$any_snsv[is.na(panel$any_snsv)]         <- FALSE
+panel$any_enf[is.na(panel$any_enf)]           <- FALSE
+panel$any_informal[is.na(panel$any_informal)] <- FALSE
+panel$any_formal[is.na(panel$any_formal)]     <- FALSE
 # mean_rtc_days: leave NA for PWSID-years with no enforcement (outcome is conditional)
 
 # Convert binary outcomes to integer for LPM
-panel$any_snsv   <- as.integer(panel$any_snsv)
-panel$any_formal <- as.integer(panel$any_formal)
-panel$any_enf    <- as.integer(panel$any_enf)
+panel$any_snsv     <- as.integer(panel$any_snsv)
+panel$any_enf      <- as.integer(panel$any_enf)
+panel$any_informal <- as.integer(panel$any_informal)
+panel$any_formal   <- as.integer(panel$any_formal)
 
 cat(sprintf("Regression panel: %d PWSID-years\n", nrow(panel)))
 cat(sprintf("Mean n_visits: %.3f  (SD: %.3f)\n",
@@ -194,6 +214,22 @@ stopifnot("post95"            %in% names(panel))
 stopifnot("sulfur_upstream"   %in% names(panel))
 stopifnot("num_coal_mines_upstream" %in% names(panel))
 stopifnot("STATE_CODE"        %in% names(panel))
+
+# D1 main panel (prod_vio_sulfur.parquet, one step downstream, same as didhet.r "dwnstrm")
+cat("\nBuilding D1 main regression panel...\n")
+panel_d1 <- d1_main %>%
+  left_join(as.data.frame(enf_agg), by = c("PWSID", "year"))
+panel_d1$any_enf[is.na(panel_d1$any_enf)]           <- FALSE
+panel_d1$any_informal[is.na(panel_d1$any_informal)] <- FALSE
+panel_d1$any_formal[is.na(panel_d1$any_formal)]     <- FALSE
+panel_d1$any_enf      <- as.integer(panel_d1$any_enf)
+panel_d1$any_informal <- as.integer(panel_d1$any_informal)
+panel_d1$any_formal   <- as.integer(panel_d1$any_formal)
+cat(sprintf("D1 main panel: %d PWSID-years\n", nrow(panel_d1)))
+cat(sprintf("any_informal = 1 in %d (%.1f%%)\n",
+    sum(panel_d1$any_informal), 100 * mean(panel_d1$any_informal)))
+cat(sprintf("any_formal   = 1 in %d (%.1f%%)\n",
+    sum(panel_d1$any_formal),   100 * mean(panel_d1$any_formal)))
 
 # ── Step 5: H2 regression ────────────────────────────────────────────────────
 cat("\n=== H2: Regulator site visits ~ mining (D1-D2) ===\n")
@@ -237,10 +273,12 @@ cat(sprintf("\nFirst-stage F-stat (H2b): %.1f\n", fitstat(iv_b, "ivf")[[1]]$stat
 
 # ── Step 5c: H3 — formal enforcement actions ──────────────────────────────────
 cat("\n=== H3: Enforcement actions ~ mining (D1-D2) ===\n")
-cat(sprintf("any_enf    = 1 in %d PWSID-years (%.1f%%)\n",
-    sum(panel$any_enf),    100 * mean(panel$any_enf)))
-cat(sprintf("any_formal = 1 in %d PWSID-years (%.1f%%)\n",
-    sum(panel$any_formal), 100 * mean(panel$any_formal)))
+cat(sprintf("any_enf      = 1 in %d PWSID-years (%.1f%%)\n",
+    sum(panel$any_enf),      100 * mean(panel$any_enf)))
+cat(sprintf("any_informal = 1 in %d PWSID-years (%.1f%%)\n",
+    sum(panel$any_informal), 100 * mean(panel$any_informal)))
+cat(sprintf("any_formal   = 1 in %d PWSID-years (%.1f%%)\n",
+    sum(panel$any_formal),   100 * mean(panel$any_formal)))
 cat(sprintf("mean_rtc_days available in %d PWSID-years\n",
     sum(!is.na(panel$mean_rtc_days))))
 
@@ -277,6 +315,64 @@ cat("\n--- OLS (any_formal) ---\n");         print(summary(ols_f))
 cat("\n--- Reduced form (any_formal) ---\n"); print(summary(rf_f))
 cat("\n--- 2SLS (any_formal) ---\n");        print(summary(iv_f))
 cat(sprintf("\nFirst-stage F-stat (H3b): %.1f\n", fitstat(iv_f, "ivf")[[1]]$stat))
+
+# H3a2: informal enforcement only (binary)
+fml_ols_i <- any_informal ~ num_coal_mines_upstream + num_facilities |
+             PWSID + year + STATE_CODE
+fml_rf_i  <- any_informal ~ post95:sulfur_upstream  + num_facilities |
+             PWSID + year + STATE_CODE
+fml_iv_i  <- any_informal ~ num_facilities | PWSID + year + STATE_CODE |
+             num_coal_mines_upstream ~ post95:sulfur_upstream
+
+ols_i <- feols(fml_ols_i, data = panel, cluster = ~PWSID)
+rf_i  <- feols(fml_rf_i,  data = panel, cluster = ~PWSID)
+iv_i  <- feols(fml_iv_i,  data = panel, cluster = ~PWSID)
+
+cat("\n--- OLS (any_informal) ---\n");         print(summary(ols_i))
+cat("\n--- Reduced form (any_informal) ---\n"); print(summary(rf_i))
+cat("\n--- 2SLS (any_informal) ---\n");        print(summary(iv_i))
+cat(sprintf("\nFirst-stage F-stat (H3a2): %.1f\n", fitstat(iv_i, "ivf")[[1]]$stat))
+
+# ── H3 on D1 main panel (prod_vio_sulfur.parquet, num_coal_mines_upstream_sum) ──
+cat("\n=== H3 (D1 main): Informal/formal enforcement ~ mining ===\n")
+
+fml_ols_id1 <- any_informal ~ num_coal_mines_upstream_sum + num_facilities |
+               PWSID + year + STATE_CODE
+fml_rf_id1  <- any_informal ~ post95:sulfur_unified_mean  + num_facilities |
+               PWSID + year + STATE_CODE
+fml_iv_id1  <- any_informal ~ num_facilities | PWSID + year + STATE_CODE |
+               num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean
+
+ols_id1 <- feols(fml_ols_id1, data = panel_d1, cluster = ~PWSID)
+rf_id1  <- feols(fml_rf_id1,  data = panel_d1, cluster = ~PWSID)
+iv_id1  <- feols(fml_iv_id1,  data = panel_d1, cluster = ~PWSID)
+
+fml_ols_fd1 <- any_formal ~ num_coal_mines_upstream_sum + num_facilities |
+               PWSID + year + STATE_CODE
+fml_rf_fd1  <- any_formal ~ post95:sulfur_unified_mean  + num_facilities |
+               PWSID + year + STATE_CODE
+fml_iv_fd1  <- any_formal ~ num_facilities | PWSID + year + STATE_CODE |
+               num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean
+
+ols_fd1 <- feols(fml_ols_fd1, data = panel_d1, cluster = ~PWSID)
+rf_fd1  <- feols(fml_rf_fd1,  data = panel_d1, cluster = ~PWSID)
+iv_fd1  <- feols(fml_iv_fd1,  data = panel_d1, cluster = ~PWSID)
+
+# Clustered first-stage F-stat: t^2 from separate clustered first-stage regression.
+# fixest ivf uses HC1 SEs; this is the cluster-robust version (same approach as didhet.r).
+f_fs_d1 <- feols(num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean + num_facilities |
+                 PWSID + year + STATE_CODE, data = panel_d1, cluster = ~PWSID)
+t_cl_d1 <- coef(f_fs_d1)["post95:sulfur_unified_mean"] /
+            se(f_fs_d1)["post95:sulfur_unified_mean"]
+f_cl_d1 <- round(t_cl_d1^2, 2)
+cat(sprintf("Clustered first-stage F-stat (D1 main): %.2f\n", f_cl_d1))
+
+cat("\n--- OLS (any_informal, D1 main) ---\n");         print(summary(ols_id1))
+cat("\n--- Reduced form (any_informal, D1 main) ---\n"); print(summary(rf_id1))
+cat("\n--- 2SLS (any_informal, D1 main) ---\n");        print(summary(iv_id1))
+cat("\n--- OLS (any_formal, D1 main) ---\n");           print(summary(ols_fd1))
+cat("\n--- Reduced form (any_formal, D1 main) ---\n");  print(summary(rf_fd1))
+cat("\n--- 2SLS (any_formal, D1 main) ---\n");         print(summary(iv_fd1))
 
 # ── H3b robustness: sample restrictions ──────────────────────────────────────
 cat("\n=== H3b ROBUSTNESS: sample restrictions (any_formal) ===\n")
@@ -427,6 +523,40 @@ etable(ols_e, rf_e, iv_e, ols_f, rf_f, iv_f,
 wrap_for_beamer(out_tex_h3)
 cat(sprintf("\nTable saved to: %s\n", out_tex_h3))
 if (file.exists(out_tex_h3) && file.info(out_tex_h3)$size > 0) {
+  cat("Output verified: file exists and is non-zero.\n")
+} else {
+  stop("Output file missing or empty — check etable() call.")
+}
+
+# H3 table: informal vs formal, D1 main sample (one step downstream, same as didhet.r)
+out_tex_h3_inf <- file.path(ROOT, "output/reg/h3_inf_formal_d12.tex")
+inf_d1_pct <- 100 * mean(panel_d1$any_informal)
+frm_d1_pct <- 100 * mean(panel_d1$any_formal)
+f_label_d1 <- "F-test (1st stage, clustered), num_coal_mines_upstream_sum"
+f_vec_d1   <- c("", "", format(round(f_cl_d1, 2), nsmall = 2),
+                "", "", format(round(f_cl_d1, 2), nsmall = 2))
+el_d1 <- list(f_vec_d1)
+names(el_d1) <- f_label_d1
+
+etable(ols_id1, rf_id1, iv_id1, ols_fd1, rf_fd1, iv_fd1,
+       title   = "H3: Effect of Coal Mining on Enforcement Actions by Type (D1 Downstream Sample)",
+       headers = c("Informal (OLS)", "Informal (RF)", "Informal (2SLS)",
+                   "Formal (OLS)",   "Formal (RF)",   "Formal (2SLS)"),
+       notes   = paste0("D1 downstream sample (minehuc_downstream_of_mine = 1, minehuc_mine = 0). ",
+                        "Cols 1-3: informal enforcement action (",
+                        sprintf("%.1f", inf_d1_pct), "% of panel). ",
+                        "Cols 4-6: formal enforcement action (",
+                        sprintf("%.1f", frm_d1_pct), "% of panel). ",
+                        "Treatment: num_coal_mines_upstream_sum. ",
+                        "Instrument: post95 x sulfur_unified_mean. SEs clustered at PWSID level."),
+       fitstat    = ~r2 + n,
+       extralines = el_d1,
+       file    = out_tex_h3_inf,
+       replace = TRUE)
+
+wrap_for_beamer(out_tex_h3_inf)
+cat(sprintf("\nTable saved to: %s\n", out_tex_h3_inf))
+if (file.exists(out_tex_h3_inf) && file.info(out_tex_h3_inf)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")
 } else {
   stop("Output file missing or empty — check etable() call.")

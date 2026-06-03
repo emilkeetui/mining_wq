@@ -945,3 +945,34 @@ None of these options recover the compliance cost interpretation without an unju
 **The structural model is abandoned.** The result δ_μ[mining] < 0 is economically implausible as a compliance cost parameter (mining raises raw water contamination burden; compliance should be more expensive, not less). There is no modelling fix that resolves this without imposing an exclusion restriction that contradicts established reduced-form evidence or changing the interpretation of the structural object so fundamentally that the original research question is no longer answered.
 
 The enforcement laxity finding (mining areas receive less formal enforcement) is robust and well-identified from the reduced form. The next step is to explore this enforcement channel directly with reduced-form and descriptive tools outside the structural framework — see the enforcement exploration plan (2026-06-02 session log).
+
+---
+
+## 20. Core Diagnosis — The Observed-vs-Latent Asymmetry (2026-06-02)
+
+The biggest issue right now is an asymmetry between the two channels that drive MR
+violations:
+
+- **Enforcement actions are recorded in the SDWA data — you can regress on them directly.**
+  Mining → less formal enforcement is IV-identified in `h3_inf_formal_d12.tex` (2SLS −0.0565***, F = 27.84).
+- **Compliance cost θ is a latent primitive — it is never in any dataset.** Nothing observes
+  the cost a CWS bears to comply on a given contaminant.
+
+So "I can measure the enforcement channel but not the cost channel" is partly just "one is
+observed and one isn't." The structural model was the attempt to back out the latent θ, and
+it failed to identify it — **not because θ(m) is flat, but because mining moves enforcement
+(λ) and compliance cost (θ) together with no wedge between them.** Both enter the single
+violation index η = (log Δê − μ)/σ through the same regressor m, so the data pin down only
+the total ∂η/∂m, not the split. With the enforcement schedule estimated externally and
+strongly negative in m, the cost slope δ_μ[mining] is left as a residual and turns negative.
+
+**Implication for testing Prop 2 (mining → higher compliance cost).** Because θ is latent
+and not separable inside this model, the cost channel must be tested *outside* the structural
+framework, by measuring the cost-driver directly rather than backing it out:
+- The first link, mining → more raw water contamination, **is now confirmed in the 6-year
+  review data.** This establishes the contamination burden that Prop 2 posits as the source
+  of higher compliance cost, without relying on the latent θ.
+- Remaining direct tests of θ(m): contaminant-specificity of the MR response (AMD-linked vs
+  non-mining placebos — enforcement laxity is contaminant-agnostic, contamination cost is
+  contaminant-specific), and direct expenditure / treatment-technology proxies where data
+  permit.
