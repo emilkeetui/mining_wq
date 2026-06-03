@@ -184,7 +184,14 @@ SOC violation | `soc` |
  
 **Violation categories:** MCL (max contaminant level), MR (monitoring/reporting), TT (treatment technique) — outcome name contains `_MCL`, `_MR`, `_TT`. If outcome name does not contain MCL, MR, or TT then violation measures the time (in share of year or number of days) that any violation occured.
 
-**Mining vs. non-mining violations:** Nitrates, arsenic, inorganic chemicals, and radionuclides are the "mining-related" outcomes. Total coliform, surface/groundwater rule, and VOCs are "non-mining" placebo outcomes. The SOC PAH (Benzopyrene) is associated with coal mining but not regulated until 1992 which makes SOCs a difficult placebo and mining violation.
+**Mining-related outcomes (moving forward):** Use **inorganic chemicals** and **radionuclides** as the mining-related outcomes (inorganic chemicals encompasses nitrates and arsenic as sub-contaminants).
+
+**Chemical placebos are deprecated — do NOT use VOC, SOC, or total coliform as placebos.** These are not clean placebos because coal mining affects them directly or indirectly:
+- **SOC:** some SOC PAHs (e.g. Benzopyrene) are produced during coal mining, so mining raises rather than leaves unaffected this outcome.
+- **VOC:** in general equilibrium, farming does not occur where there is active mining, so VOCs associated with fertilizers and pesticides are *less* present near mines — mining shifts this outcome.
+- **Total coliform:** can rise alongside inorganic chemicals, since nutrients such as nitrates aid coliform growth, so it co-moves with the treatment.
+
+**Placebo strategy going forward:** rely on **temporal placebos** (e.g. pre-period / timing tests) and **geographical placebos** (e.g. upstream vs. downstream HUCs) rather than other-chemical placebos.
 
 | N intake facilities (main control) | `num_facilities` |
 | N source HUC12s for the PWS | `num_hucs` |

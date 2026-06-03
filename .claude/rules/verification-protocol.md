@@ -43,6 +43,9 @@
 After generating 2SLS tables:
 - First-stage F-statistic > 10 (weak instrument rule of thumb)
 - Reduced-form coefficient sign matches 2SLS sign
-- Placebo outcomes (total coliform, VOCs, SOCs) have near-zero or insignificant 2SLS estimates
-- Mining-related outcomes (nitrates, arsenic, inorganic chemicals, radionuclides) show
+- Mining-related outcomes (inorganic chemicals, radionuclides) show
   positive and significant 2SLS estimates in the primary specification
+- Do NOT use VOC, SOC, or total coliform as chemical placebos — coal mining affects them
+  directly or indirectly (SOC PAHs produced by mining; VOCs lower where farming is displaced
+  by mining; total coliform co-moves with inorganic chemicals via nitrate nutrients).
+  Use temporal or geographical placebos instead.
