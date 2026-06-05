@@ -29,7 +29,7 @@ cat("Non-NA POPULATION_SERVED_COUNT:", sum(!is.na(full$POPULATION_SERVED_COUNT))
 dset <- full %>%
   filter(minehuc_downstream_of_mine == 1,
          minehuc_mine == 0,
-         num_coal_mines_upstream > 0,
+         num_coal_mines_upstream_sum > 0,
          !is.na(POPULATION_SERVED_COUNT))
 
 cat("Downstream + active mine rows:", nrow(dset), "\n")
@@ -49,7 +49,8 @@ pop_state_period <- pop_state_year %>%
   )) %>%
   filter(!is.na(period)) %>%
   group_by(STATE_CODE, period) %>%
-  summarise(avg_pop = mean(pop_exposed, na.rm = TRUE), .groups = "drop")
+  summarise(avg_pop = sum(pop_exposed, na.rm = TRUE), .groups = "drop") %>%
+  mutate(avg_pop = if_else(period == "early", avg_pop / 5, avg_pop / 6))
 
 # Net change: late minus early
 pop_wide <- pop_state_period %>%
@@ -61,6 +62,14 @@ print(pop_state_period %>% arrange(desc(avg_pop)))
 
 cat("\nNet changes (largest declines):\n")
 print(pop_wide %>% arrange(net_change) %>% head(10))
+
+cat("\nNational average of avg_dwn_cws_s by period (mean across states):\n")
+nat_avg <- pop_state_period %>%
+  group_by(period) %>%
+  summarise(national_avg = mean(avg_pop, na.rm = TRUE),
+            n_states      = n(),
+            .groups = "drop")
+print(nat_avg)
 
 # ── Shapefile ──────────────────────────────────────────────────────────────────
 exclude <- c("AK", "HI", "PR", "VI", "GU", "MP", "AS")

@@ -786,14 +786,14 @@ states_albers.plot(ax=ax, facecolor="white", edgecolor="0.65", linewidth=0.5)
 inc_all = mine_pts_all[mine_pts_all["change"] > 0]
 dec_all = mine_pts_all[mine_pts_all["change"] < 0]
 if not dec_all.empty:
-    dec_all.plot(ax=ax, markersize=dec_all["s"], color="tomato",    alpha=0.75, marker="o", linewidth=0)
+    dec_all.plot(ax=ax, markersize=dec_all["s"], color="steelblue", alpha=0.75, marker="o", linewidth=0)
 if not inc_all.empty:
-    inc_all.plot(ax=ax, markersize=inc_all["s"], color="steelblue", alpha=0.75, marker="o", linewidth=0)
+    inc_all.plot(ax=ax, markersize=inc_all["s"], color="tomato",    alpha=0.75, marker="o", linewidth=0)
 
 ax.set_axis_off()
 ax.set_title(
     "Change in coal production (short tons) by HUC12, 1985 to 2005\n"
-    "All active mine HUC12s  |  Blue = increase, Red = decrease",
+    "All active mine HUC12s  |  Red = increase, Blue = decrease",
     fontsize=11
 )
 
@@ -806,8 +806,8 @@ leg1_a = ax.legend(size_handles_a, size_labels_a, title="|Change|", loc="lower l
 ax.add_artist(leg1_a)
 
 color_handles_a = [
-    Line2D([0], [0], marker="o", color="w", markerfacecolor="steelblue", markersize=9, label="Increase"),
-    Line2D([0], [0], marker="o", color="w", markerfacecolor="tomato",    markersize=9, label="Decrease"),
+    Line2D([0], [0], marker="o", color="w", markerfacecolor="tomato",    markersize=9, label="Increase"),
+    Line2D([0], [0], marker="o", color="w", markerfacecolor="steelblue", markersize=9, label="Decrease"),
 ]
 ax.legend(handles=color_handles_a, title="Direction", loc="lower right", fontsize=8)
 
@@ -939,18 +939,131 @@ plt.savefig(out_prod, dpi=200, bbox_inches="tight")
 plt.close()
 print(f"Saved: {out_prod}")
 
-# Panel 2: change in number of active coal mines
-fig, ax2 = plt.subplots(1, 1, figsize=(11, 7))
-draw_upstream_panel(
-    ax=ax2, pts=up_pts, s_col="s_mines", change_col="mines_change",
-    vmin_v=mine_vmin_up, vmax_v=mine_vmax_up, s_min=S_MIN2, s_max=S_MAX2,
-    title="Change in number of active coal mines, 1985–2005\nMine HUC12s upstream of CWS intakes  |  Blue = increase, Red = decrease",
-    unit_label="mines"
+##########################################################################
+# Proportionate circle map: population of downstream CWSs, 1985-2005
+# Circles at intake HUC12 centroids, sized by avg population served,
+# colored red where upstream mining rose and blue where it fell.
+##########################################################################
+
+# Population of downstream-only CWSs (not colocated, >=1 upstream mine)
+# huc12 is not in prod_vio_sulfur.parquet; get PWSID → huc12 from intake file
+intake_map = pd.read_excel(
+    "Z:/ek559/water_instrument/cws_intake_hucs/PWS_Loctations_HUC12_A_I_2022Q2.xlsx",
+    dtype={"HUC_12": str, "FACILITY_ID": str}
+)[["HUC_12", "PWSID"]].rename(columns={"HUC_12": "huc12"}).drop_duplicates()
+intake_map["huc12"] = intake_map["huc12"].str.strip().str.zfill(12)
+
+# Restrict intake map to HUC12s classified as downstream-of-mine in prod_s
+ds_huc12s = set(prod_s[prod_s["minehuc"] == "downstream_of_mine"]["huc12"].astype(str).str.zfill(12))
+intake_map = intake_map[intake_map["huc12"].isin(ds_huc12s)]
+
+pvs = pq.read_table(
+    "Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
+    columns=["PWSID", "year", "POPULATION_SERVED_COUNT",
+             "minehuc_downstream_of_mine", "minehuc_mine", "num_coal_mines_upstream_sum"]
+).to_pandas()
+
+dwn = pvs[
+    (pvs["minehuc_downstream_of_mine"] == 1) &
+    (pvs["minehuc_mine"] == 0) &
+    (pvs["num_coal_mines_upstream_sum"] > 0) &
+    (pvs["year"].between(1985, 2005)) &
+    pvs["POPULATION_SERVED_COUNT"].notna()
+].copy()
+
+# Merge with intake map to assign huc12 to each PWSID
+dwn_huc = dwn.merge(intake_map, on="PWSID")
+
+# Average population per PWSID across years, then sum to intake HUC12
+pop_huc = (dwn_huc
+    .groupby(["PWSID", "huc12"], as_index=False)["POPULATION_SERVED_COUNT"].mean()
+    .groupby("huc12", as_index=False)["POPULATION_SERVED_COUNT"].sum()
+    .rename(columns={"POPULATION_SERVED_COUNT": "pop_served"})
 )
+print(f"Downstream CWS intake HUC12s with population data: {len(pop_huc)}")
+
+# Link each intake HUC12 to its upstream mine HUC12(s) via fromhuc
+ds_from = (prod_s[prod_s["minehuc"] == "downstream_of_mine"][["huc12", "fromhuc"]]
+    .drop_duplicates().dropna(subset=["fromhuc"]))
+ds_from = ds_from.copy()
+ds_from["huc12"]   = ds_from["huc12"].astype(str).str.zfill(12)
+ds_from["fromhuc"] = ds_from["fromhuc"].apply(lambda x: str(int(float(x))).zfill(12))
+
+# Net production change per intake HUC12 (sum over all its upstream mine HUC12s)
+mine_chg_lkp = mine_chg_all[["huc12", "change"]].copy()
+mine_chg_lkp["huc12"] = mine_chg_lkp["huc12"].astype(str).str.zfill(12)
+net_chg = (ds_from
+    .merge(mine_chg_lkp, left_on="fromhuc", right_on="huc12", suffixes=("_intake", "_mine"))
+    .groupby("huc12_intake", as_index=False)["change"].sum()
+    .rename(columns={"huc12_intake": "huc12", "change": "net_mine_chg"})
+)
+
+pop_dir = pop_huc.merge(net_chg, on="huc12")
+print(f"Downstream HUC12s with population + mine-change direction: {len(pop_dir)}")
+
+# HUC12 centroids for downstream intake HUCs
+huc_dwn = pyogrio.read_dataframe(
+    r"Z:\ek559\sdwa_violations\WBD_HUC12_CONUS_pulled10262020\WBD_HUC12_CONUS_pulled10262020.shp",
+    columns=["huc12"]
+)
+huc_dwn["huc12"] = huc_dwn["huc12"].astype(str).str.strip().str.zfill(12)
+huc_dwn = huc_dwn[huc_dwn["huc12"].isin(pop_dir["huc12"])].copy()
+huc_dwn = huc_dwn.to_crs("EPSG:5070")
+huc_dwn["geometry"] = huc_dwn["geometry"].centroid
+
+dwn_pts = gpd.GeoDataFrame(
+    huc_dwn.merge(pop_dir, on="huc12"),
+    geometry="geometry", crs="EPSG:5070"
+)
+print(f"Downstream CWS HUC12 centroids matched: {len(dwn_pts)}")
+
+# Scale bubble sizes proportional to population
+pop_arr     = dwn_pts["pop_served"].to_numpy()
+pop_nonzero = pop_arr[pop_arr > 0]
+pop_vmin, pop_vmax = float(pop_nonzero.min()), float(pop_nonzero.max())
+S_MIN_D, S_MAX_D = 10, 600
+dwn_pts["s_pop"] = np.where(
+    dwn_pts["pop_served"] <= 0, 0.0,
+    S_MIN_D + (dwn_pts["pop_served"] - pop_vmin) * (S_MAX_D - S_MIN_D) / (pop_vmax - pop_vmin + 1e-12)
+)
+
+inc_d = dwn_pts[dwn_pts["net_mine_chg"] > 0]
+dec_d = dwn_pts[dwn_pts["net_mine_chg"] <= 0]
+
+fig, ax_d = plt.subplots(figsize=(11, 7))
+states_albers.plot(ax=ax_d, facecolor="white", edgecolor="0.65", linewidth=0.5)
+if not dec_d.empty:
+    dec_d.plot(ax=ax_d, markersize=dec_d["s_pop"],  color="steelblue", alpha=0.75, marker="o", linewidth=0)
+if not inc_d.empty:
+    inc_d.plot(ax=ax_d, markersize=inc_d["s_pop"],  color="tomato",    alpha=0.75, marker="o", linewidth=0)
+
+ax_d.set_axis_off()
+ax_d.set_title(
+    "Population served by CWSs one HUC12 downstream of coal mining, 1985–2005\n"
+    "Circle area ∝ population  |  Red = upstream mining rose, Blue = upstream mining fell",
+    fontsize=11
+)
+
+# Size legend (population)
+ref_pop   = np.array([pop_vmax * 0.25, pop_vmax * 0.5, pop_vmax])
+ref_s_p   = S_MIN_D + (ref_pop - pop_vmin) * (S_MAX_D - S_MIN_D) / (pop_vmax - pop_vmin + 1e-12)
+sz_p_hnd  = [ax_d.scatter([], [], s=s, color="grey", alpha=0.6, edgecolors="k") for s in ref_s_p]
+sz_p_lbl  = [f"{int(v):,.0f} people" for v in ref_pop]
+leg_pop   = ax_d.legend(sz_p_hnd, sz_p_lbl, title="Pop. served", loc="lower left",
+                        bbox_to_anchor=(0.01, 0.05), frameon=True, fontsize=8)
+ax_d.add_artist(leg_pop)
+
+color_handles_d = [
+    Line2D([0], [0], marker="o", color="w", markerfacecolor="tomato",    markersize=9, label="Mining rose"),
+    Line2D([0], [0], marker="o", color="w", markerfacecolor="steelblue", markersize=9, label="Mining fell"),
+]
+ax_d.legend(handles=color_handles_d, title="Upstream mining", loc="lower right", fontsize=8)
+
 fig.text(0.5, 0.01,
-         "Circle area proportional to absolute change in number of active coal mines, 1985–2005.\n"
-         "Mine HUC12s upstream of CWS intakes in the downstream-only 2SLS regression sample.",
+         "Circle area proportional to avg. population served by CWSs with intakes one HUC12 downstream of an active coal mine HUC12.\n"
+         "Color based on net change in coal production in the upstream mine HUC12, 1985–2005.",
          ha="center", fontsize=8, color="0.4")
+
 plt.tight_layout()
 out_mines = "Z:/ek559/mining_wq/output/fig/proportionatecircle_upstream_mines_huc12_1985_2005.png"
 plt.savefig(out_mines, dpi=200, bbox_inches="tight")
