@@ -160,21 +160,23 @@ max_log <- max(abs(map_change$net_log), na.rm = TRUE)
 caption_chg <- paste(strwrap(paste0(
   "Change in average annual population served by CWSs downstream of active coal mines ",
   "(2000\u20132005 average minus 1985\u20131989 average), by state. ",
-  "Red indicates states where fewer people were exposed to upstream coal mining after ",
-  "ARP Phase I (1995). Blue indicates increased exposure. Color scale is symmetric ",
+  "Red indicates states where more people were exposed to upstream coal mining after ",
+  "ARP Phase I (1995). Blue indicates decreased exposure. Color scale is symmetric ",
   "log\u2081\u2080-transformed to show both large declines (Appalachia) and small shifts together. ",
   "The pattern reflects coal production shifting from densely populated Appalachian ",
   "watersheds toward sparsely populated western regions following the ARP-induced ",
-  "decline in high-sulfur eastern coal."
+  "decline in high-sulfur eastern coal. ",
+  "Downstream status is based on the full HUC12 flow network with no limit on the number ",
+  "of watershed hops between a CWS and its upstream mine."
 ), width = 120), collapse = "\n")
 
 p_change <- map_change %>%
   ggplot() +
   geom_sf(aes(fill = net_log), color = "grey30", linewidth = 0.2) +
   scale_fill_gradient2(
-    low      = "#b2182b",
+    low      = "#2166ac",
     mid      = "white",
-    high     = "#2166ac",
+    high     = "#b2182b",
     midpoint = 0,
     limits   = c(-max_log, max_log),
     breaks   = brk_log,

@@ -974,6 +974,19 @@ dwn = pvs[
 # Merge with intake map to assign huc12 to each PWSID
 dwn_huc = dwn.merge(intake_map, on="PWSID")
 
+# Year-specific population totals (deduplicate by PWSID to avoid double-counting
+# CWSs with multiple intake HUC12s)
+pop_1985 = int(
+    dwn_huc[dwn_huc["year"] == 1985]
+    .drop_duplicates(subset=["PWSID", "year"])["POPULATION_SERVED_COUNT"].sum()
+)
+pop_2005 = int(
+    dwn_huc[dwn_huc["year"] == 2005]
+    .drop_duplicates(subset=["PWSID", "year"])["POPULATION_SERVED_COUNT"].sum()
+)
+pop_net_change = pop_2005 - pop_1985
+print(f"Pop 1-HUC downstream 1985: {pop_1985:,}  2005: {pop_2005:,}  net: {pop_net_change:+,}")
+
 # Average population per PWSID across years, then sum to intake HUC12
 pop_huc = (dwn_huc
     .groupby(["PWSID", "huc12"], as_index=False)["POPULATION_SERVED_COUNT"].mean()
@@ -1060,8 +1073,9 @@ color_handles_d = [
 ax_d.legend(handles=color_handles_d, title="Upstream mining", loc="lower right", fontsize=8)
 
 fig.text(0.5, 0.01,
-         "Circle area proportional to avg. population served by CWSs with intakes one HUC12 downstream of an active coal mine HUC12.\n"
-         "Color based on net change in coal production in the upstream mine HUC12, 1985–2005.",
+         f"Circle area proportional to avg. population served by CWSs with intakes one HUC12 downstream of an active coal mine HUC12.\n"
+         f"Color based on net change in coal production in the upstream mine HUC12, 1985–2005.\n"
+         f"The total population one HUC12 downstream of active coal mines in 1985 was {pop_1985:,} and in 2005 was {pop_2005:,}. Net change of {pop_net_change:+,}.",
          ha="center", fontsize=8, color="0.4")
 
 plt.tight_layout()
