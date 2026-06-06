@@ -483,4 +483,213 @@ cat("\n=== COUNT TABLES (num_measurements): ROBUSTNESS 1998-2005 ===\n")
 run_count_tables(df6_2005, note_cnt_2005, file_sfx = "_2005", title_sfx = ", robustness 1998--2005")
 # Total coliform has no obs in 1998-2005; no cnt_tc_2005 table produced.
 
+# ---------------------------------------------------------------------------
+# Value-only inorganic table: mean concentration only, no R^2 rows, no
+# num_facilities row in display (variable kept in regression).
+# Output: 6yr_huc02fe_inorg_val.tex
+# ---------------------------------------------------------------------------
+cat("\n=== INORGANIC CHEMICALS — MEAN CONCENTRATION ONLY ===\n")
+{
+  grp_inorg <- chem_groups[[1]]  # inorganic chemicals
+  # Thallium excluded: 86% of values cluster at two detection-limit values
+  # (0.001 and 0.002 mg/L), making OLS on mean concentration unreliable.
+  inorg_val_chems <- setdiff(grp_inorg$chems, "thallium")
+
+  note_val <- paste0(
+    "Sample period 1998--2011. ",
+    "Outcome is mean measured analyte concentration from the EPA 6-Year Review. ",
+    "Explanatory variable is cumulative coal production since 1985 ",
+    "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
+    "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
+    "interacted with year). ",
+    "Sample: CWSs at most one HUC12 downstream of a coal mine ",
+    "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0). ",
+    "Standard errors clustered at PWSID level."
+  )
+
+  models_val <- list()
+  hdr_val    <- character(0)
+
+  for (chem in inorg_val_chems) {
+    d <- df6[df6$CHEMID_name == chem, ]
+    cat("  Chemical:", chem, "| n rows:", nrow(d), "\n")
+    if (nrow(d) < 30) { cat("  Skipping — too few obs.\n"); next }
+
+    m <- tryCatch(
+      feols(fml_val, data = d, cluster = ~PWSID),
+      error = function(e) { cat("  ERROR:", conditionMessage(e), "\n"); NULL }
+    )
+    if (!is.null(m)) {
+      models_val <- c(models_val, list(m))
+      hdr_val    <- c(hdr_val, paste0(nice_chem(chem), " (mg/L)"))
+      cat("  n =", m$nobs,
+          "| coef =", round(coef(m)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+    }
+  }
+
+  out_val <- file.path(OUTPUT_DIR, "6yr_huc02fe_inorg_val.tex")
+  etable(
+    models_val,
+    headers         = hdr_val,
+    fitstat         = ~ n,            # observations only; no R^2 or Within R^2
+    style.tex       = style.tex("aer", adjustbox = TRUE),
+    tex             = TRUE,
+    drop            = "Num\\.",       # matches "Num. intake facilities" label (dict active)
+    title           = paste0("Effect of cumulative upstream coal production on ",
+                             "mean inorganic chemical concentration ",
+                             "(6-Year Review, downstream CWSs)"),
+    label           = "tab:6yr_huc02fe_inorg_val",
+    dict            = dict_global,
+    notes           = note_val,
+    postprocess.tex = move_notes_below_adjustbox,
+    file            = out_val
+  )
+  cat("  Written:", out_val, "\n")
+
+  # -------------------------------------------------------------------------
+  # Summary statistics for 6yr_huc02fe_inorg_val.tex
+  # Rows: one per inorganic chemical (VALUE) + one for cumulative coal production
+  # Sample: complete cases used in each chemical's feols regression
+  # -------------------------------------------------------------------------
+  cat("\n--- Summary statistics for inorg_val ---\n")
+
+  sum_rows  <- list()
+  coal_list <- list()
+
+  for (chem in inorg_val_chems) {
+    d_s <- df6[df6$CHEMID_name == chem, ]
+    if (nrow(d_s) < 30) next
+
+    m_s <- tryCatch(
+      feols(fml_val, data = d_s, cluster = ~PWSID),
+      error = function(e) NULL
+    )
+    if (is.null(m_s)) next
+
+    keep_s <- complete.cases(d_s[, c("VALUE", "coal_prod_upstream_cumsum_10mst",
+                                      "num_facilities", "huc02", "year", "PWSID")])
+    d_reg_s <- d_s[keep_s, ]
+    cat("  ", chem, ": n_complete =", nrow(d_reg_s), "| feols nobs =", m_s$nobs, "\n")
+
+    sum_rows[[chem]] <- data.frame(
+      variable = paste0(nice_chem(chem), " (mg/L)"),
+      mean_val = mean(d_reg_s$VALUE),
+      sd_val   = sd(d_reg_s$VALUE),
+      n_obs    = nrow(d_reg_s),
+      stringsAsFactors = FALSE
+    )
+    coal_list[[chem]] <- d_reg_s[, c("PWSID", "year", "coal_prod_upstream_cumsum_10mst")]
+  }
+
+  # Coal production: unique PWSID x year pairs across all regression samples
+  coal_df <- unique(do.call(rbind, coal_list))
+  sum_rows[["coal"]] <- data.frame(
+    variable = "Cumul. upstream coal prod. (10M ST)",
+    mean_val = mean(coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE),
+    sd_val   = sd(coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE),
+    n_obs    = sum(!is.na(coal_df$coal_prod_upstream_cumsum_10mst)),
+    stringsAsFactors = FALSE
+  )
+
+  sum_df <- do.call(rbind, sum_rows)
+
+  fmt_num <- function(x) {
+    if (is.na(x)) return("---")
+    a <- abs(x)
+    if (a == 0)   return("0.0000")
+    if (a < 1e-4) return(sprintf("%.2e", x))
+    if (a < 1)    return(sprintf("%.4f", x))
+    if (a < 100)  return(sprintf("%.3f", x))
+    return(sprintf("%.2f", x))
+  }
+  fmt_n <- function(x) formatC(x, format = "d", big.mark = ",")
+
+  note_ss <- paste0(
+    "Sample period 1998--2011. ",
+    "Statistics computed on the sample used in each chemical's regression in ",
+    "Table~\\ref{tab:6yr_huc02fe_inorg_val}. ",
+    "For cumulative upstream coal production, statistics are computed over unique ",
+    "PWSID$\\times$year pairs that appear in at least one regression sample. ",
+    "Sample: CWSs at most one HUC12 downstream of a coal mine ",
+    "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0)."
+  )
+
+  tex_ss <- c(
+    "",
+    "\\begin{table}[htbp]",
+    paste0("   \\caption{\\label{tab:6yr_huc02fe_inorg_val_sumstats} ",
+           "Summary statistics: inorganic chemical concentrations and cumulative upstream coal production}"),
+    "   \\bigskip",
+    "   \\centering",
+    "   \\begin{adjustbox}{width = 0.75\\textwidth, center}",
+    "      \\begin{tabular}{lccc}",
+    "         \\toprule",
+    "         Variable & Mean & Std.\\ Dev. & $N$ \\\\",
+    "         \\midrule"
+  )
+
+  for (i in seq_len(nrow(sum_df))) {
+    r <- sum_df[i, ]
+    tex_ss <- c(tex_ss, paste0(
+      "         ", r$variable, " & ",
+      fmt_num(r$mean_val), " & ",
+      fmt_num(r$sd_val), " & ",
+      fmt_n(r$n_obs), " \\\\"
+    ))
+  }
+
+  tex_ss <- c(tex_ss,
+    "         \\bottomrule",
+    "      \\end{tabular}",
+    "   \\end{adjustbox}",
+    paste0("   {\\tiny\\linespread{1}\\selectfont \\par \\raggedright ", note_ss, "}"),
+    "\\end{table}",
+    ""
+  )
+
+  out_ss <- file.path(PROJECT_ROOT, "output", "sum", "6yr_huc02fe_inorg_val_sumstats.tex")
+  writeLines(tex_ss, out_ss)
+  cat("  Written:", out_ss, "\n")
+}
+
+# ---------------------------------------------------------------------------
+# Scatter plot: beta particle mean concentration vs cumulative upstream coal
+# production. Each point = one PWSID-year observation.
+# ---------------------------------------------------------------------------
+cat("\n=== SCATTER: beta particles vs cumulative upstream coal production ===\n")
+suppressPackageStartupMessages(library(ggplot2))
+
+beta_df <- df6[df6$CHEMID_name == "beta particles", ]
+cat("Beta particles observations:", nrow(beta_df), "\n")
+cat("Unique PWSIDs:", length(unique(beta_df$PWSID)), "\n")
+
+# Aggregate to PWSID mean for annotation counts
+beta_pwsid <- aggregate(
+  cbind(VALUE, coal_prod_upstream_cumsum_10mst) ~ PWSID,
+  data  = beta_df,
+  FUN   = mean
+)
+
+p_beta <- ggplot(beta_df,
+                 aes(x = coal_prod_upstream_cumsum_10mst, y = VALUE)) +
+  geom_point(alpha = 0.55, size = 2, colour = "#2c6fad") +
+  geom_smooth(method = "lm", se = TRUE, colour = "#d62728",
+              linewidth = 0.85, fill = "#d62728", alpha = 0.15) +
+  scale_x_continuous(name = "Cumulative upstream coal production since 1985\n(10 million short tons)") +
+  scale_y_continuous(name = "Mean beta particle concentration\n(pCi/L, EPA 6-Year Review)") +
+  annotate("text", x = Inf, y = Inf,
+           label = paste0("N = ", nrow(beta_df), " PWSID-years\n",
+                          length(unique(beta_df$PWSID)), " unique CWSs"),
+           hjust = 1.05, vjust = 1.4, size = 3, colour = "grey30") +
+  theme_classic(base_size = 11) +
+  theme(
+    axis.line   = element_line(colour = "black"),
+    panel.grid  = element_blank()
+  )
+
+out_scatter <- file.path(PROJECT_ROOT, "output", "fig",
+                         "beta_particles_vs_cumcoal_scatter.png")
+ggsave(out_scatter, p_beta, width = 6, height = 4.5, dpi = 300)
+cat("Written:", out_scatter, "\n")
+
 cat("\nDone.\n")
