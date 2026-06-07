@@ -150,9 +150,10 @@ chem_groups <- list(
   list(
     group_label = "Inorganic Chemicals",
     file_label  = "inorg",
+    # Cadmium (1.8%) and mercury (1.6%) dropped by Ravalli et al. detection-rate filter
+    # (DETECT_RATE_MIN = 0.10 in cws_6year_review.py). Silver excluded: secondary MCL only.
     chems       = c("arsenic", "nitrate", "thallium",
-                    "barium", "cadmium", "chromium", "mercury", "selenium")
-    # Silver excluded: secondary MCL only (40 CFR 143.3); no SYR2/SYR3 data.
+                    "barium", "chromium", "selenium")
   ),
   list(
     group_label = "Radionuclides",
@@ -484,20 +485,22 @@ run_count_tables(df6_2005, note_cnt_2005, file_sfx = "_2005", title_sfx = ", rob
 # Total coliform has no obs in 1998-2005; no cnt_tc_2005 table produced.
 
 # ---------------------------------------------------------------------------
-# Value-only inorganic table: mean concentration only, no R^2 rows, no
-# num_facilities row in display (variable kept in regression).
+# Share-above-MCL inorganic table: share of samples exceeding applicable MCL,
+# no R^2 rows, no num_facilities row in display (variable kept in regression).
 # Output: 6yr_huc02fe_inorg_val.tex
 # ---------------------------------------------------------------------------
-cat("\n=== INORGANIC CHEMICALS — MEAN CONCENTRATION ONLY ===\n")
+cat("\n=== INORGANIC CHEMICALS — SHARE ABOVE MCL ===\n")
 {
   grp_inorg <- chem_groups[[1]]  # inorganic chemicals
-  # Thallium excluded: 86% of values cluster at two detection-limit values
-  # (0.001 and 0.002 mg/L), making OLS on mean concentration unreliable.
+  # Thallium excluded: 86% of values cluster at two detection-limit values,
+  # making share_above_mcl unreliable (near-zero variance in binary exceedance).
   inorg_val_chems <- setdiff(grp_inorg$chems, "thallium")
 
   note_val <- paste0(
     "Sample period 1998--2011. ",
-    "Outcome is mean measured analyte concentration from the EPA 6-Year Review. ",
+    "Outcome is the mean measured concentration of the analyte in a given CWS-year ",
+    "from the EPA 6-Year Review (Ravalli et al.~2022 cleaning). ",
+    "For arsenic, the MCL is 0.050 mg/L through 2005 and 0.010 mg/L from 2006 onward. ",
     "Explanatory variable is cumulative coal production since 1985 ",
     "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
     "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
@@ -521,9 +524,9 @@ cat("\n=== INORGANIC CHEMICALS — MEAN CONCENTRATION ONLY ===\n")
     )
     if (!is.null(m)) {
       models_val <- c(models_val, list(m))
-      hdr_val    <- c(hdr_val, paste0(nice_chem(chem), " (mg/L)"))
+      hdr_val    <- c(hdr_val, nice_chem(chem))
       cat("  n =", m$nobs,
-          "| coef =", round(coef(m)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+          "| coef =", round(coef(m)["coal_prod_upstream_cumsum_10mst"], 6), "\n")
     }
   }
 
@@ -536,7 +539,7 @@ cat("\n=== INORGANIC CHEMICALS — MEAN CONCENTRATION ONLY ===\n")
     tex             = TRUE,
     drop            = "Num\\.",       # matches "Num. intake facilities" label (dict active)
     title           = paste0("Effect of cumulative upstream coal production on ",
-                             "mean inorganic chemical concentration ",
+                             "mean measured concentration ",
                              "(6-Year Review, downstream CWSs)"),
     label           = "tab:6yr_huc02fe_inorg_val",
     dict            = dict_global,
@@ -548,13 +551,24 @@ cat("\n=== INORGANIC CHEMICALS — MEAN CONCENTRATION ONLY ===\n")
 
   # -------------------------------------------------------------------------
   # Summary statistics for 6yr_huc02fe_inorg_val.tex
-  # Rows: one per inorganic chemical (VALUE) + one for cumulative coal production
+  # Rows: one per inorganic chemical (share_above_mcl) + one for cumulative coal prod
   # Sample: complete cases used in each chemical's feols regression
   # -------------------------------------------------------------------------
   cat("\n--- Summary statistics for inorg_val ---\n")
 
   sum_rows  <- list()
   coal_list <- list()
+
+  # MCL labels sourced from _MCL_RECORDS in cws_6year_review.py
+  mcl_labels <- c(
+    "arsenic"  = "Pre-2006: 0.050 mg/L, 2006+: 0.010 mg/L",
+    "nitrate"  = "10.0 mg/L",
+    "barium"   = "2.000 mg/L",
+    "cadmium"  = "0.005 mg/L",
+    "chromium" = "0.100 mg/L",
+    "mercury"  = "0.002 mg/L",
+    "selenium" = "0.050 mg/L"
+  )
 
   for (chem in inorg_val_chems) {
     d_s <- df6[df6$CHEMID_name == chem, ]
@@ -566,16 +580,18 @@ cat("\n=== INORGANIC CHEMICALS — MEAN CONCENTRATION ONLY ===\n")
     )
     if (is.null(m_s)) next
 
-    keep_s <- complete.cases(d_s[, c("VALUE", "coal_prod_upstream_cumsum_10mst",
+    keep_s <- complete.cases(d_s[, c("VALUE", "VALUE_max", "coal_prod_upstream_cumsum_10mst",
                                       "num_facilities", "huc02", "year", "PWSID")])
     d_reg_s <- d_s[keep_s, ]
     cat("  ", chem, ": n_complete =", nrow(d_reg_s), "| feols nobs =", m_s$nobs, "\n")
 
     sum_rows[[chem]] <- data.frame(
-      variable = paste0(nice_chem(chem), " (mg/L)"),
-      mean_val = mean(d_reg_s$VALUE),
-      sd_val   = sd(d_reg_s$VALUE),
-      n_obs    = nrow(d_reg_s),
+      variable  = paste0(nice_chem(chem), " (mg/L)"),
+      mcl_label = ifelse(chem %in% names(mcl_labels), mcl_labels[[chem]], "---"),
+      mean_val  = mean(d_reg_s$VALUE,     na.rm = TRUE),
+      max_val   = max(d_reg_s$VALUE_max,  na.rm = TRUE),
+      sd_val    = sd(d_reg_s$VALUE,       na.rm = TRUE),
+      n_obs     = nrow(d_reg_s),
       stringsAsFactors = FALSE
     )
     coal_list[[chem]] <- d_reg_s[, c("PWSID", "year", "coal_prod_upstream_cumsum_10mst")]
@@ -583,11 +599,14 @@ cat("\n=== INORGANIC CHEMICALS — MEAN CONCENTRATION ONLY ===\n")
 
   # Coal production: unique PWSID x year pairs across all regression samples
   coal_df <- unique(do.call(rbind, coal_list))
+  coal_df <- coal_df[!duplicated(coal_df[, c("PWSID", "year")]), ]
   sum_rows[["coal"]] <- data.frame(
-    variable = "Cumul. upstream coal prod. (10M ST)",
-    mean_val = mean(coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE),
-    sd_val   = sd(coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE),
-    n_obs    = sum(!is.na(coal_df$coal_prod_upstream_cumsum_10mst)),
+    variable  = "Cumul. upstream coal prod. (10M ST)",
+    mcl_label = "---",
+    mean_val  = mean(coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE),
+    max_val   = max(coal_df$coal_prod_upstream_cumsum_10mst,  na.rm = TRUE),
+    sd_val    = sd(coal_df$coal_prod_upstream_cumsum_10mst,   na.rm = TRUE),
+    n_obs     = sum(!is.na(coal_df$coal_prod_upstream_cumsum_10mst)),
     stringsAsFactors = FALSE
   )
 
@@ -618,13 +637,13 @@ cat("\n=== INORGANIC CHEMICALS — MEAN CONCENTRATION ONLY ===\n")
     "",
     "\\begin{table}[htbp]",
     paste0("   \\caption{\\label{tab:6yr_huc02fe_inorg_val_sumstats} ",
-           "Summary statistics: inorganic chemical concentrations and cumulative upstream coal production}"),
+           "Summary statistics: mean concentration for inorganic chemicals and cumulative upstream coal production}"),
     "   \\bigskip",
     "   \\centering",
-    "   \\begin{adjustbox}{width = 0.75\\textwidth, center}",
-    "      \\begin{tabular}{lccc}",
+    "   \\begin{adjustbox}{width = 0.9\\textwidth, center}",
+    "      \\begin{tabular}{lp{3.8cm}cccc}",
     "         \\toprule",
-    "         Variable & Mean & Std.\\ Dev. & $N$ \\\\",
+    "         Variable & MCL & Mean & Max & Std.\\ Dev. & $N$ \\\\",
     "         \\midrule"
   )
 
@@ -632,7 +651,9 @@ cat("\n=== INORGANIC CHEMICALS — MEAN CONCENTRATION ONLY ===\n")
     r <- sum_df[i, ]
     tex_ss <- c(tex_ss, paste0(
       "         ", r$variable, " & ",
+      r$mcl_label, " & ",
       fmt_num(r$mean_val), " & ",
+      fmt_num(r$max_val), " & ",
       fmt_num(r$sd_val), " & ",
       fmt_n(r$n_obs), " \\\\"
     ))

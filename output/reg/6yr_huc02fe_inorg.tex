@@ -10,32 +10,31 @@
       
       %start:tab
       
-      \begin{tabular}{lccccccccccc}
+      \begin{tabular}{lcccccc}
          \toprule
          
-          & Mean conc. & Share $>$ MCL & \multicolumn{2}{c}{Mean conc.} & Share $>$ MCL & \multicolumn{2}{c}{Mean conc.} & Share $>$ MCL & \multicolumn{3}{c}{Mean conc.}\\
+          & Mean conc. & Share $>$ MCL & \multicolumn{4}{c}{Mean conc.}\\
          
-          & \multicolumn{2}{c}{Arsenic} & Nitrate & \multicolumn{2}{c}{Thallium} & Barium & \multicolumn{2}{c}{Cadmium} & Chromium & Mercury & Selenium \\ 
+          & \multicolumn{2}{c}{Arsenic} & Nitrate & Barium & Chromium & Selenium \\ 
          
-                                             & (1)            & (2)                   & (3)           & (4)                     & (5)                   & (6)            & (7)            & (8)                 & (9)            & (10)          & (11)\\  
+                                             & (1)            & (2)                   & (3)           & (4)            & (5)            & (6)\\  
          
          \midrule 
-         Cumul. upstream coal prod. (10M ST) & 0.0027$^{***}$ & -0.0062               & 0.0544        & 0.0006$^{***}$          & 0.0049                & -0.0125        & 0.0013$^{***}$ & $0\times 10^{-16}$  & 0.0033$^{***}$ & -0.0001       & 0.0052$^{**}$\\   
-                                             & (0.0007)       & (0.0065)              & (0.0744)      & ($7.88\times 10^{-5}$)  & (0.0070)              & (0.0174)       & (0.0003)       & (NaN)               & (0.0008)       & (0.0002)      & (0.0023)\\   
-         Num. intake facilities              & -0.0010        & 0.0003                & -0.1489       &                         &                       & 0.0410$^{***}$ &                &                     &                &               &   \\   
-                                             & (0.0014)       & (0.0003)              & (0.2048)      &                         &                       & (0.0139)       &                &                     &                &               &   \\   
+         Cumul. upstream coal prod. (10M ST) & 0.0027$^{***}$ & -0.0062               & 0.0544        & -0.0125        & 0.0033$^{***}$ & 0.0052$^{**}$\\   
+                                             & (0.0007)       & (0.0065)              & (0.0744)      & (0.0174)       & (0.0008)       & (0.0023)\\   
+         Num. intake facilities              & -0.0010        & 0.0003                & -0.1489       & 0.0410$^{***}$ &                &   \\   
+                                             & (0.0014)       & (0.0003)              & (0.2048)      & (0.0139)       &                &   \\   
          
           \\
          
-         Standard-Errors & \multicolumn{7}{c}{PWSID} & not-available & \multicolumn{3}{c}{PWSID} \\ 
-         Within R$^2$                        & 0.02534        & $5.48\times 10^{-5}$  & 0.00068       & 0.01578                 & $3.86\times 10^{-5}$  & 0.00189        & 0.02954        & NaN                 & 0.00575        & 0.00307       & 0.01301\\  
-         Observations                        & 390            & 390                   & 1,136         & 324                     & 324                   & 550            & 326            & 326                 & 343            & 324           & 341\\  
-         R$^2$                               & 0.89983        & 0.86563               & 0.90805       & 0.65441                 & 0.28617               & 0.58719        & 0.75081        & NaN                 & 0.69798        & 0.72372       & 0.55652\\  
+         Within R$^2$                        & 0.02534        & $5.48\times 10^{-5}$  & 0.00068       & 0.00189        & 0.00575        & 0.01301\\  
+         Observations                        & 390            & 390                   & 1,136         & 550            & 343            & 341\\  
+         R$^2$                               & 0.89983        & 0.86563               & 0.90805       & 0.58719        & 0.69798        & 0.55652\\  
          
           \\
          
-         PWSID fixed effects                 & $\checkmark$   & $\checkmark$          & $\checkmark$  & $\checkmark$            & $\checkmark$          & $\checkmark$   & $\checkmark$   & $\checkmark$        & $\checkmark$   & $\checkmark$  & $\checkmark$\\   
-         huc02-year fixed effects            & $\checkmark$   & $\checkmark$          & $\checkmark$  & $\checkmark$            & $\checkmark$          & $\checkmark$   & $\checkmark$   & $\checkmark$        & $\checkmark$   & $\checkmark$  & $\checkmark$\\   
+         PWSID fixed effects                 & $\checkmark$   & $\checkmark$          & $\checkmark$  & $\checkmark$   & $\checkmark$   & $\checkmark$\\   
+         huc02-year fixed effects            & $\checkmark$   & $\checkmark$          & $\checkmark$  & $\checkmark$   & $\checkmark$   & $\checkmark$\\   
          
          \bottomrule
          

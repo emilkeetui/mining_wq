@@ -3,6 +3,10 @@
 # Purpose: Build a PWSID-level panel from EPA 6-Year Review
 #          data (SYR2 .mdb files + SYR3 .txt files) and merge
 #          to the main 2SLS dataset. User only sets CHEMICALS.
+#          A single detection-rate filter is applied: chemicals
+#          whose national share of records above the LOD is below
+#          DETECT_RATE_MIN are dropped (presence/absence chemicals
+#          are exempt).
 # Inputs:  - raw_data/6_year_review_epa/six-year-review 2/**/*.mdb
 #          - raw_data/6_year_review_epa/six-year-review 3/**/*.txt
 #          - clean_data/cws_data/prod_vio_sulfur.parquet
@@ -24,6 +28,11 @@ CHEM_OUTPUT   = PROJECT_ROOT / "clean_data" / "cws_6year_review_chemicals.parque
 MERGED_OUTPUT = PROJECT_ROOT / "clean_data" / "cws_6year_review.parquet"
 
 KEEP_COLS = ["PWSID", "CHEMID_name", "DETECT", "VALUE", "UNITS", "YEAR"]
+
+# Detection-rate filter threshold: chemicals whose national share of records
+# above the LOD (DETECT == 1) is below this value are dropped. Presence/absence
+# chemicals (total coliform) are exempt. Set to 0.0 to keep all chemicals.
+DETECT_RATE_MIN = 0.10
 
 # SYR3 chemicals where VALUE is always NaN and presence is encoded in
 # "Presence Indicator Code" (P = present, A = absent).  For these, read_syr3_txt
@@ -116,6 +125,36 @@ _UNIT_CONV: dict[tuple[str, str], float] = {
     ("mrem/yr", "mrem/yr"): 1.0,
     ("binary",  "binary"):  1.0,   # total coliform presence indicator
 }
+
+# Unit dimension + factor to that dimension's base unit (mass conc base = mg/L,
+# radionuclide base = pCi/L). Used by normalize_units.
+_UNIT_DIM: dict[str, tuple[str, float]] = {
+    "mg/l":    ("mass",   1.0),
+    "ug/l":    ("mass",   1e-3),
+    "µg/l":    ("mass",   1e-3),
+    "ng/l":    ("mass",   1e-6),
+    "pci/l":   ("radio",  1.0),
+    "mrem/yr": ("dose",   1.0),
+    "binary":  ("binary", 1.0),
+}
+
+
+# ---------------------------------------------------------------------------
+# Small helpers
+# ---------------------------------------------------------------------------
+
+def _norm_unit(s) -> str:
+    if s is None or (isinstance(s, float) and pd.isna(s)):
+        return ""
+    return str(s).strip().lower().replace(" ", "")
+
+
+def _unit_dim_factor(units: pd.Series) -> tuple[pd.Series, pd.Series]:
+    """Map a units Series → (dimension Series, factor-to-base Series)."""
+    n = units.map(_norm_unit)
+    dim = n.map(lambda x: _UNIT_DIM.get(x, (None, float("nan")))[0])
+    fac = n.map(lambda x: _UNIT_DIM.get(x, (None, float("nan")))[1]).astype(float)
+    return dim, fac
 
 
 # ---------------------------------------------------------------------------
@@ -315,6 +354,51 @@ def build_chemical_panel(chemicals: list[str]) -> pd.DataFrame:
     return master
 
 
+def normalize_units(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Convert mass-concentration readings to mg/L and radionuclide readings to
+    pCi/L, rewriting UNITS to the base unit. Non-detect rows (VALUE / UNITS NaN)
+    are untouched. Normalizing to a single base unit per dimension prevents
+    spurious mixed-unit drops in collapse_to_pwsid_year.
+    """
+    df = df.copy()
+    dim, fac = _unit_dim_factor(df["UNITS"])
+    is_mass  = dim.eq("mass")
+    is_radio = dim.eq("radio")
+    df.loc[is_mass,  "VALUE"] = df.loc[is_mass,  "VALUE"] * fac[is_mass]
+    df.loc[is_mass,  "UNITS"] = "mg/L"
+    df.loc[is_radio, "VALUE"] = df.loc[is_radio, "VALUE"] * fac[is_radio]
+    df.loc[is_radio, "UNITS"] = "pCi/L"
+    print(f"\nUnit normalization: {int(is_mass.sum()):,} mass->mg/L, "
+          f"{int(is_radio.sum()):,} radio->pCi/L")
+    return df
+
+
+def report_detection_rates(df: pd.DataFrame, min_rate: float) -> pd.DataFrame:
+    """
+    Compute, per chemical, the national share of records above the LOD
+    (DETECT == 1) and drop chemicals below min_rate. Presence/absence
+    chemicals (total coliform) are exempt. Set min_rate = 0 to keep all.
+    """
+    above = (df["DETECT"] == 1).astype(float)
+    rates = above.groupby(df["CHEMID_name"]).mean().sort_values()
+
+    print("\nDetection rates (share of records above LOD):")
+    drop: list[str] = []
+    for chem, r in rates.items():
+        below = (r < min_rate) and (chem not in PRESENCE_ABSENCE_CHEMS)
+        flag = "   <-- below threshold (dropped)" if below else ""
+        print(f"  {chem:28s} {100 * r:5.1f}%{flag}")
+        if below:
+            drop.append(chem)
+
+    if drop:
+        print(f"\nDetection-rate filter (< {100 * min_rate:.0f}%): dropping {len(drop)} "
+              f"chemicals: {drop}")
+        df = df.loc[~df["CHEMID_name"].isin(drop)].copy()
+    return df
+
+
 def assign_mcl_and_above(df: pd.DataFrame) -> pd.DataFrame:
     """
     Add above_mcl flag to sample-level data using the time-varying _MCL_RECORDS schedule.
@@ -366,6 +450,56 @@ def assign_mcl_and_above(df: pd.DataFrame) -> pd.DataFrame:
           f"{n_above:,} ({100 * n_above / max(n_valid, 1):.1f}%) exceed MCL")
 
     return df.drop(columns=["mcl", "mcl_unit"])
+
+
+def _attach_mcl(df: pd.DataFrame) -> tuple[pd.Series, pd.Series]:
+    """
+    Look up the applicable MCL (and unit) per row from _MCL_RECORDS and return
+    (value_adj, mcl), where value_adj is VALUE converted into the MCL's units
+    (NaN where units are incompatible or VALUE missing). Used by drop_gross_outliers.
+    """
+    mcl      = pd.Series(float("nan"), index=df.index)
+    mcl_unit = pd.Series(None, index=df.index, dtype="object")
+
+    for chem_name, y_min, y_max, mcl_val, mcl_unit_v in _MCL_RECORDS:
+        mask = df["CHEMID_name"] == chem_name
+        if y_min is not None:
+            mask = mask & (df["YEAR"] >= y_min)
+        if y_max is not None:
+            mask = mask & (df["YEAR"] <= y_max)
+        mcl.loc[mask]      = mcl_val
+        mcl_unit.loc[mask] = mcl_unit_v
+
+    def _norm(s: pd.Series) -> pd.Series:
+        return s.fillna("").str.lower().str.replace(r"\s+", "", regex=True)
+
+    data_unit_norm = _norm(df["UNITS"])
+    mcl_unit_norm  = _norm(mcl_unit.astype(str).where(mcl_unit.notna()))
+
+    conv_factor = pd.Series(
+        [_UNIT_CONV.get((d, m), float("nan")) for d, m in zip(data_unit_norm, mcl_unit_norm)],
+        index=df.index, dtype=float,
+    )
+    value_adj = df["VALUE"] * conv_factor
+    return value_adj, mcl
+
+
+def drop_gross_outliers(df: pd.DataFrame, factor: float = 100.0) -> pd.DataFrame:
+    """
+    Drop records whose concentration exceeds factor × MCL (default 100×), treated
+    as likely data-entry errors. Only rows with a valid MCL and a compatible unit
+    are eligible; all others are kept.
+    """
+    value_adj, mcl = _attach_mcl(df)
+    gross = value_adj.notna() & mcl.notna() & (value_adj > factor * mcl)
+    n = int(gross.sum())
+    if n:
+        by = df.loc[gross].groupby("CHEMID_name").size()
+        print(f"\nGross-outlier drop (> {factor:g}x MCL): {n:,} rows")
+        print(by.to_string())
+    else:
+        print(f"\nGross-outlier drop (> {factor:g}x MCL): 0 rows")
+    return df.loc[~gross].copy()
 
 
 def collapse_to_pwsid_year(df: pd.DataFrame) -> pd.DataFrame:
@@ -518,13 +652,22 @@ if __name__ == "__main__":
     # Step 1: read all SYR2 + SYR3 files for requested chemicals
     master = build_chemical_panel(CHEMICALS)
 
-    # Step 2: attach above_mcl flag at sample level
+    # Step 2: unit normalization (mass -> mg/L, radionuclides -> pCi/L)
+    master = normalize_units(master)
+
+    # Step 3: detection-rate filter — drop chemicals < DETECT_RATE_MIN above LOD
+    master = report_detection_rates(master, DETECT_RATE_MIN)
+
+    # Step 4: attach above_mcl flag at sample level
     master = assign_mcl_and_above(master)
 
-    # Step 3: collapse to PWSID × CHEMID_name × YEAR
+    # Step 5: gross-outlier exclusion — drop records > 100 × MCL
+    master = drop_gross_outliers(master)
+
+    # Step 6: collapse to PWSID × CHEMID_name × YEAR
     collapsed = collapse_to_pwsid_year(master)
 
-    # Step 4: write pre-merge chemical dataset
+    # Step 7: write pre-merge chemical dataset
     if CHEM_OUTPUT.exists():
         print(f"\nWARNING: {CHEM_OUTPUT} already exists — overwriting")
     print(collapsed.dtypes)
@@ -532,10 +675,10 @@ if __name__ == "__main__":
     v = pd.read_parquet(CHEM_OUTPUT, engine="pyarrow")
     print(f"Written {len(v):,} rows × {v.shape[1]} columns to {CHEM_OUTPUT}")
 
-    # Step 5: merge to 2SLS dataset
+    # Step 8: merge to 2SLS dataset
     merged = merge_to_2sls(collapsed)
 
-    # Step 6: write merged output
+    # Step 9: write merged output
     if MERGED_OUTPUT.exists():
         print(f"\nWARNING: {MERGED_OUTPUT} already exists — overwriting")
     merged["PWSID"] = merged["PWSID"].astype(str)
