@@ -46,10 +46,23 @@ library(magrittr)
 #################################################
 # Plotting coal production relationship to sulfur
 #################################################
-# Restrict to mine HUC12s co-located or upstream of CWSs (prod_sulfur.csv is CWS-matched)
-huccoal <- read.csv("Z:/ek559/mining_wq/clean_data/prod_sulfur.csv")
-huccoal <- huccoal[huccoal$minehuc == "mine" & huccoal$year < 2006 & huccoal$year > 1984, ]
-huccoal$HighSulfur <- ifelse(huccoal$sulfur_colocated > 1.5, "High sulfur (>1.5%)", "Low sulfur (<=1.5%)")
+# Build mine HUC12 × year panel from both sources in prod_sulfur.csv:
+#   (1) minehuc=="mine" rows: huc12 IS the mine HUC12, characteristics in _colocated columns
+#   (2) minehuc=="downstream_of_mine" rows: fromhuc IS the mine HUC12, characteristics in _upstream columns
+# Deduplicate by mine HUC12 × year so each mine appears once.
+ps <- read.csv("Z:/ek559/mining_wq/clean_data/prod_sulfur.csv")
+ps <- ps[ps$year > 1984 & ps$year < 2006, ]
+
+mine_colocated <- ps[ps$minehuc == "mine",
+                     c("huc12", "year", "num_coal_mines_colocated", "sulfur_colocated")]
+names(mine_colocated) <- c("mine_huc12", "year", "num_mines", "sulfur")
+
+mine_upstream <- ps[ps$minehuc == "downstream_of_mine",
+                    c("fromhuc", "year", "num_coal_mines_upstream", "sulfur_upstream")]
+names(mine_upstream) <- c("mine_huc12", "year", "num_mines", "sulfur")
+
+huccoal <- unique(rbind(mine_colocated, mine_upstream))
+huccoal$HighSulfur <- ifelse(huccoal$sulfur > 1.5, "High sulfur (>1.5%)", "Low sulfur (<=1.5%)")
 
 # Define shared color scale
 color_values <- c("High sulfur (>1.5%)" = "blue", "Low sulfur (<=1.5%)" = "red")
@@ -57,8 +70,8 @@ color_values <- c("High sulfur (>1.5%)" = "blue", "Low sulfur (<=1.5%)" = "red")
 # Left plot: before 1995
 p_before <- huccoal %>%
   filter(year < 1995) %>%
-  ggplot(aes(x = num_coal_mines_colocated,
-             y = sulfur_colocated,
+  ggplot(aes(x = num_mines,
+             y = sulfur,
              color = HighSulfur)) +
   geom_point(alpha = 0.5, size = 1.5) +
   geom_smooth(method = "lm", se = FALSE, linewidth = 0.9) +
@@ -74,8 +87,8 @@ p_before <- huccoal %>%
 # Right plot: 1995 and after
 p_after <- huccoal %>%
   filter(year >= 1995) %>%
-  ggplot(aes(x = num_coal_mines_colocated,
-             y = sulfur_colocated,
+  ggplot(aes(x = num_mines,
+             y = sulfur,
              color = HighSulfur)) +
   geom_point(alpha = 0.5, size = 1.5) +
   geom_smooth(method = "lm", se = FALSE, linewidth = 0.9) +
@@ -91,7 +104,7 @@ p_after <- huccoal %>%
 # Combine with a shared legend
 (p_before + p_after) +
   plot_layout(guides = "collect") &
-  plot_annotation(title = "HUC12 sulfur (%) and number of coal mines: mine HUC12s co-located or upstream of CWSs") &
+  plot_annotation(title = "HUC12 sulfur (%) and number of coal mines: mine HUC12s upstream of CWSs in 2SLS sample") &
   theme(legend.position = "bottom")
 
 ggsave("Z:/ek559/mining_wq/output/fig/scatterhuccoalsulfur.png", width = 8, height = 6, dpi = 500)
