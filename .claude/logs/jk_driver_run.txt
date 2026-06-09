@@ -1,0 +1,94 @@
+
+Attaching package: 'arrow'
+
+The following object is masked from 'package:utils':
+
+    timestamp
+
+Warning message:
+package 'arrow' was built under R version 4.5.3 
+Warning message:
+package 'fixest' was built under R version 4.5.3 
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'ggplot2' was built under R version 4.5.3 
+Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
+Warning message:
+package 'sf' was built under R version 4.5.3 
+To enable caching of data, set `options(tigris_use_cache = TRUE)`
+in your R script or .Rprofile.
+Warning message:
+package 'tigris' was built under R version 4.5.3 
+Sample loaded:  6232  obs
+Unique states:  19 
+Dropping sparse states (< 30 obs):  08, KS, LA 
+After sparse filter:  6177  obs,  16  states
+
+Estimating full-sample 2SLS...
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+Beta: 13.6142 (SE: 8.2782)  95% CI: [-2.6110, 29.8395]
+First-stage F: 292.23  N: 6170
+
+Running jackknife (leave-one-state-out)...
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+NOTE: 6/0 fixed-effect singletons were removed (6 observations).
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+ERROR in run_iv: Not compatible with requested type: [type=NULL; target=double]. 
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+NOTE: 3/0 fixed-effect singletons were removed (3 observations).
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+NOTE: 5/0 fixed-effect singletons were removed (5 observations).
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0 fixed-effect singletons were removed (7 observations).
+Jackknife results:
+   state_excluded   beta     se delta_beta fstat_first
+1              AL  13.60  8.500    0.01005     276.807
+2              CO  12.33  8.213    1.28791     283.291
+3              FL  16.28  8.160   -2.66838     289.657
+4              GA  11.86 10.372    1.75429     181.194
+5              IL  13.68  8.138   -0.06592     294.902
+6              KY  13.39  6.829    0.22483     520.133
+7              MD     NA     NA         NA          NA
+8              NC  13.48  8.298    0.13286     290.191
+9              OH  14.72  8.550   -1.10289     300.441
+10             PA -18.89 54.807   32.50469       9.285
+11             SC  13.34  8.270    0.26981     290.679
+12             TN  13.65  8.386   -0.03670     284.330
+13             UT  13.71  8.365   -0.09220     285.114
+14             VA  14.36  8.532   -0.74667     252.551
+15             WA  13.31  8.189    0.30799     296.220
+16             WV  15.53  8.686   -1.91352     300.765
+
+Generating caterpillar plot...
+Warning message:
+Removed 1 row containing missing values or values outside the scale range
+(`geom_pointrange()`). 
+Saved: output/fig/jackknife_state_caterpillar.png
+Generating choropleth map...
+Saved: output/fig/jackknife_state_map.png
+
+=== JACKKNIFE SUMMARY ===
+Full-sample β̂: 13.6142  SE: 8.2782  95% CI: [-2.6110, 29.8395]
+First-stage F: 292.23  N obs: 6170
+States in jackknife: 16
+Range of leave-one-out β̂: [NA, NA]
+Max |Δβ|: NA (state: PA)
+
+Figures saved to output/fig/

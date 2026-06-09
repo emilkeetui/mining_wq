@@ -137,7 +137,8 @@ dict_global <- c(
   VALUE                           = "Mean conc.",
   share_above_mcl                 = "Share $>$ MCL",
   coal_prod_upstream_cumsum_10mst = "Cumul. upstream coal prod. (10M ST)",
-  num_facilities                  = "Num. intake facilities"
+  num_facilities                  = "Num. intake facilities",
+  "PWSID"                         = "CWS"
 )
 
 # ---------------------------------------------------------------------------
@@ -358,7 +359,8 @@ dict_cnt <- c(
   VALUE                           = "Mean concentration",
   VALUE_max                       = "Max concentration",
   coal_prod_upstream_cumsum_10mst = "Cumul. upstream coal prod. (10M ST)",
-  num_facilities                  = "Num. intake facilities"
+  num_facilities                  = "Num. intake facilities",
+  "PWSID"                         = "CWS"
 )
 
 # ---------------------------------------------------------------------------

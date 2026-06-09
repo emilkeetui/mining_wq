@@ -55,7 +55,7 @@ rm(main_pvs); gc()
 cat("Reading SDWA_SITE_VISITS.csv (355 MB)...\n")
 sv <- fread(file.path(SDWA, "SDWA_SITE_VISITS.csv"),
             select = c("PWSID", "VISIT_DATE", "VISIT_REASON_CODE", "AGENCY_TYPE_CODE"))
-sv <- sv[PWSID %in% ids_d12]
+sv <- sv[PWSID %in% union(ids_d12, ids_d1_main)]
 
 # Parse year from last 4 chars of VISIT_DATE (handles MM/DD/YYYY)
 sv[, year := as.integer(substr(trimws(VISIT_DATE),
@@ -218,7 +218,11 @@ stopifnot("STATE_CODE"        %in% names(panel))
 # D1 main panel (prod_vio_sulfur.parquet, one step downstream, same as didhet.r "dwnstrm")
 cat("\nBuilding D1 main regression panel...\n")
 panel_d1 <- d1_main %>%
+  left_join(as.data.frame(sv_agg),  by = c("PWSID", "year")) %>%
   left_join(as.data.frame(enf_agg), by = c("PWSID", "year"))
+panel_d1$n_visits[is.na(panel_d1$n_visits)]         <- 0L
+panel_d1$any_snsv[is.na(panel_d1$any_snsv)]         <- FALSE
+panel_d1$any_snsv     <- as.integer(panel_d1$any_snsv)
 panel_d1$any_enf[is.na(panel_d1$any_enf)]           <- FALSE
 panel_d1$any_informal[is.na(panel_d1$any_informal)] <- FALSE
 panel_d1$any_formal[is.na(panel_d1$any_formal)]     <- FALSE
@@ -251,25 +255,31 @@ cat("\n--- 2SLS (H2) ---\n");   print(summary(iv))
 cat(sprintf("\nFirst-stage F-stat: %.1f\n", fitstat(iv, "ivf")[[1]]$stat))
 
 # ── Step 5b: H2b — sanitary survey binary (LPM) ──────────────────────────────
-cat("\n=== H2b: Any sanitary survey (SNSV binary, LPM) ~ mining (D1-D2) ===\n")
-cat(sprintf("any_snsv = 1 in %d / %d PWSID-years (%.1f%%)\n",
-    sum(panel$any_snsv), nrow(panel), 100 * mean(panel$any_snsv)))
+cat("\n=== H2b: Any sanitary survey (SNSV binary, LPM) ~ mining (D1 main panel) ===\n")
+cat(sprintf("any_snsv = 1 in %d / %d CWS-years (%.1f%%)\n",
+    sum(panel_d1$any_snsv), nrow(panel_d1), 100 * mean(panel_d1$any_snsv)))
 
-fml_ols_b <- any_snsv ~ num_coal_mines_upstream + num_facilities |
-             PWSID + year + STATE_CODE
-fml_rf_b  <- any_snsv ~ post95:sulfur_upstream  + num_facilities |
-             PWSID + year + STATE_CODE
-fml_iv_b  <- any_snsv ~ num_facilities | PWSID + year + STATE_CODE |
-             num_coal_mines_upstream ~ post95:sulfur_upstream
+fml_ols_b <- any_snsv ~ num_coal_mines_upstream_sum + num_facilities |
+             PWSID + year
+fml_rf_b  <- any_snsv ~ post95:sulfur_unified_mean  + num_facilities |
+             PWSID + year
+fml_iv_b  <- any_snsv ~ num_facilities | PWSID + year |
+             num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean
 
-ols_b <- feols(fml_ols_b, data = panel, cluster = ~PWSID)
-rf_b  <- feols(fml_rf_b,  data = panel, cluster = ~PWSID)
-iv_b  <- feols(fml_iv_b,  data = panel, cluster = ~PWSID)
+ols_b <- feols(fml_ols_b, data = panel_d1, cluster = ~PWSID)
+rf_b  <- feols(fml_rf_b,  data = panel_d1, cluster = ~PWSID)
+iv_b  <- feols(fml_iv_b,  data = panel_d1, cluster = ~PWSID)
 
-cat("\n--- OLS (any_snsv) ---\n");         print(summary(ols_b))
-cat("\n--- Reduced form (any_snsv) ---\n"); print(summary(rf_b))
-cat("\n--- 2SLS (any_snsv) ---\n");        print(summary(iv_b))
-cat(sprintf("\nFirst-stage F-stat (H2b): %.1f\n", fitstat(iv_b, "ivf")[[1]]$stat))
+# Clustered first-stage F-stat (no state FE, matches table spec)
+f_fs_b <- feols(num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean + num_facilities |
+                PWSID + year, data = panel_d1, cluster = ~PWSID)
+t_cl_b <- coef(f_fs_b)["post95:sulfur_unified_mean"] / se(f_fs_b)["post95:sulfur_unified_mean"]
+f_cl_b <- round(t_cl_b^2, 2)
+
+cat("\n--- OLS (any_snsv, D1) ---\n");         print(summary(ols_b))
+cat("\n--- Reduced form (any_snsv, D1) ---\n"); print(summary(rf_b))
+cat("\n--- 2SLS (any_snsv, D1) ---\n");        print(summary(iv_b))
+cat(sprintf("\nClustered first-stage F-stat (H2b, D1): %.2f\n", f_cl_b))
 
 # ── Step 5c: H3 — formal enforcement actions ──────────────────────────────────
 cat("\n=== H3: Enforcement actions ~ mining (D1-D2) ===\n")
@@ -337,10 +347,10 @@ cat(sprintf("\nFirst-stage F-stat (H3a2): %.1f\n", fitstat(iv_i, "ivf")[[1]]$sta
 cat("\n=== H3 (D1 main): Informal/formal enforcement ~ mining ===\n")
 
 fml_ols_id1 <- any_informal ~ num_coal_mines_upstream_sum + num_facilities |
-               PWSID + year + STATE_CODE
+               PWSID + year
 fml_rf_id1  <- any_informal ~ post95:sulfur_unified_mean  + num_facilities |
-               PWSID + year + STATE_CODE
-fml_iv_id1  <- any_informal ~ num_facilities | PWSID + year + STATE_CODE |
+               PWSID + year
+fml_iv_id1  <- any_informal ~ num_facilities | PWSID + year |
                num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean
 
 ols_id1 <- feols(fml_ols_id1, data = panel_d1, cluster = ~PWSID)
@@ -348,10 +358,10 @@ rf_id1  <- feols(fml_rf_id1,  data = panel_d1, cluster = ~PWSID)
 iv_id1  <- feols(fml_iv_id1,  data = panel_d1, cluster = ~PWSID)
 
 fml_ols_fd1 <- any_formal ~ num_coal_mines_upstream_sum + num_facilities |
-               PWSID + year + STATE_CODE
+               PWSID + year
 fml_rf_fd1  <- any_formal ~ post95:sulfur_unified_mean  + num_facilities |
-               PWSID + year + STATE_CODE
-fml_iv_fd1  <- any_formal ~ num_facilities | PWSID + year + STATE_CODE |
+               PWSID + year
+fml_iv_fd1  <- any_formal ~ num_facilities | PWSID + year |
                num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean
 
 ols_fd1 <- feols(fml_ols_fd1, data = panel_d1, cluster = ~PWSID)
@@ -361,7 +371,7 @@ iv_fd1  <- feols(fml_iv_fd1,  data = panel_d1, cluster = ~PWSID)
 # Clustered first-stage F-stat: t^2 from separate clustered first-stage regression.
 # fixest ivf uses HC1 SEs; this is the cluster-robust version (same approach as didhet.r).
 f_fs_d1 <- feols(num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean + num_facilities |
-                 PWSID + year + STATE_CODE, data = panel_d1, cluster = ~PWSID)
+                 PWSID + year, data = panel_d1, cluster = ~PWSID)
 t_cl_d1 <- coef(f_fs_d1)["post95:sulfur_unified_mean"] /
             se(f_fs_d1)["post95:sulfur_unified_mean"]
 f_cl_d1 <- round(t_cl_d1^2, 2)
@@ -484,17 +494,34 @@ if (file.exists(out_tex) && file.info(out_tex)$size > 0) {
   stop("Output file missing or empty — check etable() call.")
 }
 
-out_tex_b <- file.path(ROOT, "output/reg/h2_snsv_d12.tex")
+out_tex_b   <- file.path(ROOT, "output/reg/h2_snsv_d12.tex")
+f_label_b   <- "F-test (1st stage, clustered), Upstream coal mines (sum)"
+f_vec_b     <- c("", "", format(f_cl_b, nsmall = 2))
+el_b        <- list(f_vec_b)
+names(el_b) <- f_label_b
+
+dict_b <- c(
+  "any_snsv"                        = "Any sanitary visit",
+  "num_coal_mines_upstream_sum"     = "Upstream coal mines (sum)",
+  "fit_num_coal_mines_upstream_sum" = "Upstream coal mines (sum)",
+  "post95:sulfur_unified_mean"      = "post95 $\\times$ Upstream sulfur \\%",
+  "PWSID"                           = "CWS"
+)
+
 etable(ols_b, rf_b, iv_b,
-       title   = "H2b: Effect of Coal Mining on Sanitary Survey Probability (D1-D2, LPM)",
-       headers = c("OLS", "Reduced form", "2SLS"),
-       notes   = paste0("D1-D2 downstream sample. Outcome: any sanitary survey (SNSV) in PWSID-year. ",
-                        "N = ", nrow(panel), " PWSID-years. ",
-                        "Instrument: post95 x sulfur_upstream. ",
-                        "SEs clustered at PWSID level."),
-       fitstat = ~r2 + n + ivf,
-       file    = out_tex_b,
-       replace = TRUE)
+       title      = "Effect of Coal Mining on Sanitary Survey Probability (D1 Downstream Sample, LPM)",
+       headers    = c("OLS", "Reduced form", "2SLS"),
+       dict       = dict_b,
+       drop       = "num_facilities",
+       extralines = el_b,
+       fitstat    = ~n,
+       notes      = paste0("D1 downstream sample (minehuc_downstream_of_mine = 1, minehuc_mine = 0). ",
+                           "Outcome: any sanitary survey (SNSV) in CWS-year. ",
+                           "N = ", nrow(panel_d1), " CWS-years. ",
+                           "Treatment: num_coal_mines_upstream_sum. ",
+                           "Instrument: post95 x sulfur_unified_mean. SEs clustered at CWS level."),
+       file       = out_tex_b,
+       replace    = TRUE)
 
 wrap_for_beamer(out_tex_b)
 cat(sprintf("\nTable saved to: %s\n", out_tex_b))
@@ -532,27 +559,38 @@ if (file.exists(out_tex_h3) && file.info(out_tex_h3)$size > 0) {
 out_tex_h3_inf <- file.path(ROOT, "output/reg/h3_inf_formal_d12.tex")
 inf_d1_pct <- 100 * mean(panel_d1$any_informal)
 frm_d1_pct <- 100 * mean(panel_d1$any_formal)
-f_label_d1 <- "F-test (1st stage, clustered), num_coal_mines_upstream_sum"
+f_label_d1 <- "F-test (1st stage, clustered), Upstream coal mines (sum)"
 f_vec_d1   <- c("", "", format(round(f_cl_d1, 2), nsmall = 2),
                 "", "", format(round(f_cl_d1, 2), nsmall = 2))
 el_d1 <- list(f_vec_d1)
 names(el_d1) <- f_label_d1
 
+dict_enf <- c(
+  "any_informal"                    = "Any informal enf",
+  "any_formal"                      = "Any formal enf",
+  "num_coal_mines_upstream_sum"     = "Upstream coal mines (sum)",
+  "fit_num_coal_mines_upstream_sum" = "Upstream coal mines (sum)",
+  "post95:sulfur_unified_mean"      = "post95 $\\times$ Upstream sulfur \\%",
+  "PWSID"                           = "CWS"
+)
+
 etable(ols_id1, rf_id1, iv_id1, ols_fd1, rf_fd1, iv_fd1,
-       title   = "H3: Effect of Coal Mining on Enforcement Actions by Type (D1 Downstream Sample)",
-       headers = c("Informal (OLS)", "Informal (RF)", "Informal (2SLS)",
-                   "Formal (OLS)",   "Formal (RF)",   "Formal (2SLS)"),
-       notes   = paste0("D1 downstream sample (minehuc_downstream_of_mine = 1, minehuc_mine = 0). ",
-                        "Cols 1-3: informal enforcement action (",
-                        sprintf("%.1f", inf_d1_pct), "% of panel). ",
-                        "Cols 4-6: formal enforcement action (",
-                        sprintf("%.1f", frm_d1_pct), "% of panel). ",
-                        "Treatment: num_coal_mines_upstream_sum. ",
-                        "Instrument: post95 x sulfur_unified_mean. SEs clustered at PWSID level."),
-       fitstat    = ~r2 + n,
+       title      = "Effect of Coal Mining on Enforcement Actions by Type (D1 Downstream Sample)",
+       headers    = c("Informal (OLS)", "Informal (RF)", "Informal (2SLS)",
+                      "Formal (OLS)",   "Formal (RF)",   "Formal (2SLS)"),
+       dict       = dict_enf,
+       drop       = "num_facilities",
        extralines = el_d1,
-       file    = out_tex_h3_inf,
-       replace = TRUE)
+       fitstat    = ~n,
+       notes      = paste0("D1 downstream sample (minehuc_downstream_of_mine = 1, minehuc_mine = 0). ",
+                           "Cols 1-3: informal enforcement action (",
+                           sprintf("%.1f", inf_d1_pct), "% of panel). ",
+                           "Cols 4-6: formal enforcement action (",
+                           sprintf("%.1f", frm_d1_pct), "% of panel). ",
+                           "Treatment: num_coal_mines_upstream_sum. ",
+                           "Instrument: post95 x sulfur_unified_mean. SEs clustered at CWS level."),
+       file       = out_tex_h3_inf,
+       replace    = TRUE)
 
 wrap_for_beamer(out_tex_h3_inf)
 cat(sprintf("\nTable saved to: %s\n", out_tex_h3_inf))

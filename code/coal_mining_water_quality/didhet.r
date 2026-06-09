@@ -67,39 +67,83 @@ huccoal <- huccoal[huccoal$huc12 %in% active_scatter_hucs, ]
 cat("Scatter sample — upstream mine HUC12s with >= 1 mine year:", length(active_scatter_hucs), "\n")
 cat("Scatter sample rows:", nrow(huccoal), "\n")
 
-# Left plot: before 1995
-p_before <- huccoal %>%
-  filter(year < 1995) %>%
-  ggplot(aes(x = num_coal_mines_colocated, y = sulfur_colocated)) +
-  geom_point(alpha = 0.4, size = 1.5, color = "steelblue") +
-  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.9) +
-  labs(
-    title = "Before 1995",
-    x     = "Number of coal mines",
-    y     = "Sulfur (%)"
-  ) +
-  theme_bw()
+huccoal$HighSulfur <- ifelse(huccoal$sulfur_colocated >= 1.5,
+                             "High sulfur (>=1.5%)",
+                             "Low sulfur (<1.5%)")
+scatter_colors <- c("High sulfur (>=1.5%)" = "blue", "Low sulfur (<1.5%)" = "red")
 
-# Right plot: 1995 and after
-p_after <- huccoal %>%
-  filter(year >= 1995) %>%
-  ggplot(aes(x = num_coal_mines_colocated, y = sulfur_colocated)) +
-  geom_point(alpha = 0.4, size = 1.5, color = "steelblue") +
-  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.9) +
+# Left plot: up to and including 1995
+p_before <- huccoal %>%
+  filter(year <= 1995) %>%
+  ggplot(aes(x = num_coal_mines_colocated, y = sulfur_colocated, color = HighSulfur)) +
+  geom_point(alpha = 0.4, size = 1.5) +
+  geom_smooth(aes(group = HighSulfur), method = "lm", se = FALSE, color = "black", linewidth = 0.9) +
+  scale_color_manual(values = scatter_colors, name = "Sulfur category") +
   labs(
-    title = "1995 and After",
+    title = "Up to and Including 1995",
     x     = "Number of coal mines",
     y     = "Sulfur (%)"
   ) +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+# Right plot: after 1995
+p_after <- huccoal %>%
+  filter(year > 1995) %>%
+  ggplot(aes(x = num_coal_mines_colocated, y = sulfur_colocated, color = HighSulfur)) +
+  geom_point(alpha = 0.4, size = 1.5) +
+  geom_smooth(aes(group = HighSulfur), method = "lm", se = FALSE, color = "black", linewidth = 0.9) +
+  scale_color_manual(values = scatter_colors, name = "Sulfur category") +
+  labs(
+    title = "After 1995",
+    x     = "Number of coal mines",
+    y     = "Sulfur (%)"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
 
 (p_before + p_after) +
+  plot_layout(guides = "collect") &
   plot_annotation(
     title   = "HUC12 sulfur (%) vs. number of coal mines",
-    caption = "Sample: mine HUC12s upstream of downstream-only 2SLS CWS intakes, no CWS intake, >= 1 active mine year 1985-2005."
-  )
+    caption = "Sample: mine HUC12s (D1) upstream of downstream-only 2SLS CWS intakes, >= 1 active mine year 1985-2005."
+  ) &
+  theme(legend.position = "bottom")
 
 ggsave("Z:/ek559/mining_wq/output/fig/scatterhuccoalsulfur.png", width = 8, height = 5, dpi = 500)
+
+# Pooled version: single color, single best-fit line per panel
+p_before_pooled <- huccoal %>%
+  filter(year <= 1995) %>%
+  ggplot(aes(x = num_coal_mines_colocated, y = sulfur_colocated)) +
+  geom_point(alpha = 0.4, size = 1.5, color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.9) +
+  labs(
+    title = "Up to and Including 1995",
+    x     = "Number of coal mines",
+    y     = "Sulfur (%)"
+  ) +
+  theme_bw()
+
+p_after_pooled <- huccoal %>%
+  filter(year > 1995) %>%
+  ggplot(aes(x = num_coal_mines_colocated, y = sulfur_colocated)) +
+  geom_point(alpha = 0.4, size = 1.5, color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.9) +
+  labs(
+    title = "After 1995",
+    x     = "Number of coal mines",
+    y     = "Sulfur (%)"
+  ) +
+  theme_bw()
+
+(p_before_pooled + p_after_pooled) +
+  plot_annotation(
+    title   = "HUC12 sulfur (%) vs. number of coal mines",
+    caption = "Sample: mine HUC12s (D1) upstream of downstream-only 2SLS CWS intakes, >= 1 active mine year 1985-2005."
+  )
+
+ggsave("Z:/ek559/mining_wq/output/fig/scatterhuccoalsulfur_pooled.png", width = 8, height = 5, dpi = 500)
 
 
 ########################

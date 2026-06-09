@@ -1,0 +1,42 @@
+% ============================================================
+% Table: Regulator Response by IOC Violation Type, 1985--2005
+% Purpose: Share of violations receiving each type of regulator response,
+%          conditional on violation category (MR vs MCL) for IOC rules
+%          (nitrate 331, arsenic 332, inorganic chemicals 333).
+% Sample:  All CWSs in states represented in the main 2SLS sample.
+% Source:  SDWA_VIOLATIONS_ENFORCEMENT.csv
+% N IOC MR:  139,521 violations
+% N IOC MCL: 7,927 violations
+% ============================================================
+
+\label{tab:reg_response_ioc_main_states}
+\begin{adjustbox}{max width=\textwidth, max totalheight=\textheight, keepaspectratio, center}
+\begin{minipage}{\textwidth}
+\begin{tabular}{lrr}
+\hline\hline
+\textbf{Regulator response} & \textbf{IOC MR} & \textbf{IOC MCL} \\
+\hline
+\textit{N violations} & 139,521 & 7,927 \\
+\addlinespace[3pt]
+\multicolumn{3}{l}{\textit{Enforcement intensity}} \\
+\addlinespace[1pt]
+No enforcement received (\%) & 20.6 & 13.7 \\
+Any enforcement received (\%) & 79.4 & 86.3 \\
+\quad Informal (\%) & 17.6 & 14.2 \\
+\quad Resolving (\%) & 54.0 & 30.4 \\
+\quad Formal (\%) & 7.8 & 41.7 \\
+Federal enforcement (\%) & 3.4 & 19.1 \\
+Major violation (\%) & 98.5 & 0.0 \\
+\addlinespace[3pt]
+\multicolumn{3}{l}{\textit{Return to compliance}} \\
+\addlinespace[1pt]
+Status: Resolved (\%) & 59.6 & 57.2 \\
+Status: Archived (\%) & 40.4 & 42.8 \\
+Status: Open (\%) & 0.0 & 0.0 \\
+Median days to compliance & 1094 & 91 \\
+Mean days to compliance & 730 & 237 \\
+\hline\hline
+\end{tabular}
+\end{minipage}
+\end{adjustbox}
+\par\smallskip{\tiny Unit of observation: violation (unique VIOLATION\_ID). Sample: all 72,596 CWSs in states represented in the main 2SLS sample, 1985--2005 (AL, AZ, CA, CO, FL, GA, IL, KS, KY, LA, MD, MI, MO, MS, NC, NJ, NY, OH, OR, PA, SC, TN, TX, UT, VA, WA, WV). IOC rules: nitrate (331), arsenic (332), inorganic chemicals (333). Multiple enforcement actions per violation assigned the most severe (Formal $>$ Resolving $>$ Informal). Days to compliance = CALCULATED\_RTC\_DATE $-$ NON\_COMPL\_PER\_BEGIN\_DATE. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.csv.}

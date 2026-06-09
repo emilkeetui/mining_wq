@@ -10,29 +10,25 @@
 \centering
 \begin{tabular}{lcccccc}
    \tabularnewline \midrule \midrule
-   Dependent Variables: & \multicolumn{3}{c}{any\_informal} & \multicolumn{3}{c}{any\_formal}\\
-                                                                      & Informal (OLS) & Informal (RF)  & Informal (2SLS) & Formal (OLS)    & Formal (RF)    & Formal (2SLS) \\   
-   Model:                                                             & (1)            & (2)            & (3)             & (4)             & (5)            & (6)\\  
+   Dependent Variables: & \multicolumn{3}{c}{Any informal enf} & \multicolumn{3}{c}{Any formal enf}\\
+                                                            & Informal (OLS) & Informal (RF) & Informal (2SLS) & Formal (OLS)    & Formal (RF)    & Formal (2SLS) \\   
+   Model:                                                   & (1)            & (2)           & (3)             & (4)             & (5)            & (6)\\  
    \midrule
    \emph{Variables}\\
-   num\_coal\_mines\_upstream\_sum                                    & 0.0084         &                & -0.0056         & -0.0169$^{***}$ &                & -0.0565$^{***}$\\   
-                                                                      & (0.0079)       &                & (0.0401)        & (0.0045)        &                & (0.0205)\\   
-   num\_facilities                                                    & 0.2045$^{***}$ & 0.1995$^{***}$ & 0.1944$^{***}$  & 0.0474$^{***}$  & 0.0700$^{***}$ & 0.0187\\   
-                                                                      & (0.0137)       & (0.0148)       & (0.0303)        & (0.0053)        & (0.0073)       & (0.0146)\\   
-   post95 $\times$ sulfur\_unified\_mean                              &                & 0.0014         &                 &                 & 0.0145$^{***}$ &   \\   
-                                                                      &                & (0.0102)       &                 &                 & (0.0052)       &   \\   
-   F-test (1st stage, clustered), num\_coal\_mines\_upstream\_sum     &                &                & 27.84           &                 &                & 27.84\\  
+   Upstream coal mines (sum)                                & 0.0084         &               & -0.0056         & -0.0169$^{***}$ &                & -0.0565$^{***}$\\   
+                                                            & (0.0079)       &               & (0.0400)        & (0.0045)        &                & (0.0204)\\   
+   post95 $\times$ Upstream sulfur \%                       &                & 0.0014        &                 &                 & 0.0145$^{***}$ &   \\   
+                                                            &                & (0.0102)      &                 &                 & (0.0052)       &   \\   
+   F-test (1st stage, clustered), Upstream coal mines (sum) &                &               & 27.94           &                 &                & 27.94\\  
    \midrule
    \emph{Fixed-effects}\\
-   PWSID                                                              & Yes            & Yes            & Yes             & Yes             & Yes            & Yes\\  
-   year                                                               & Yes            & Yes            & Yes             & Yes             & Yes            & Yes\\  
-   STATE\_CODE                                                        & Yes            & Yes            & Yes             & Yes             & Yes            & Yes\\  
+   CWS                                                      & Yes            & Yes           & Yes             & Yes             & Yes            & Yes\\  
+   year                                                     & Yes            & Yes           & Yes             & Yes             & Yes            & Yes\\  
    \midrule
    \emph{Fit statistics}\\
-   R$^2$                                                              & 0.24303        & 0.24284        & 0.24284         & 0.21401         & 0.21243        & 0.21243\\  
-   Observations                                                       & 6,225          & 6,225          & 6,225           & 6,225           & 6,225          & 6,225\\  
+   Observations                                             & 6,225          & 6,225         & 6,225           & 6,225           & 6,225          & 6,225\\  
    \midrule \midrule
-   \multicolumn{7}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+   \multicolumn{7}{l}{\emph{Clustered (CWS) standard-errors in parentheses}}\\
    \multicolumn{7}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
 \end{tabular}
  
@@ -40,5 +36,5 @@
 \end{adjustbox}
 
 \par \raggedright
-D1 downstream sample (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Cols 1-3: informal enforcement action (19.0\% of panel). Cols 4-6: formal enforcement action (3.5\% of panel). Treatment: num\_coal\_mines\_upstream\_sum. Instrument: post95 x sulfur\_unified\_mean. SEs clustered at PWSID level.
+D1 downstream sample (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Cols 1-3: informal enforcement action (19.0\% of panel). Cols 4-6: formal enforcement action (3.5\% of panel). Treatment: num\_coal\_mines\_upstream\_sum. Instrument: post95 x sulfur\_unified\_mean. SEs clustered at CWS level.
 \par

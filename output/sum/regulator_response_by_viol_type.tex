@@ -1,74 +1,42 @@
 % ============================================================
-% Tables: Regulator Response by Violation Type, 1985--2005
+% Table: Regulator Response by IOC Violation Type, 1985--2005
 % Purpose: Share of violations receiving each type of regulator response,
-%          conditional on violation category (MR vs MCL) and
-%          contaminant group (mining vs non-mining).
+%          conditional on violation category (MR vs MCL) for IOC rules
+%          (nitrate 331, arsenic 332, inorganic chemicals 333).
+% Sample:  Main downstream 2SLS sample (one step downstream, not colocated).
 % Source:  SDWA_VIOLATIONS_ENFORCEMENT.csv
-% N MR:    558,208 violations
-% N MCL:   43,576 violations
+% N IOC MR:  1,273 violations
+% N IOC MCL: 16 violations
 % ============================================================
 
-\begin{frame}{Regulator Response: MR Violations, 1985--2005}
-\label{tab:reg_response_mr}
+\begin{frame}{Regulator Response by IOC Violation Type, 1985--2005}
+\label{tab:reg_response_ioc}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{lrrr}
+\begin{tabular}{lrr}
 \hline\hline
-\textbf{Regulator response} & \textbf{All MR} & \textbf{Mining MR} & \textbf{Non-mining MR} \\
+\textbf{Regulator response} & \textbf{IOC MR} & \textbf{IOC MCL} \\
 \hline
-\textit{N violations} & 558,208 & 131,435 & 393,105 \\
+\textit{N violations} & 1,273 & 16 \\
 \addlinespace[3pt]
-\multicolumn{4}{l}{\textit{Enforcement intensity}} \\
+\multicolumn{3}{l}{\textit{Enforcement intensity}} \\
 \addlinespace[1pt]
-No enforcement received (\%) & 10.3 & 19.4 & 7.6 \\
-Any enforcement received (\%) & 89.7 & 80.6 & 92.4 \\
-\quad Informal (\%) & 17.5 & 20.2 & 17.9 \\
-\quad Resolving (\%) & 60.8 & 52.2 & 62.4 \\
-\quad Formal (\%) & 11.4 & 8.2 & 12.1 \\
-Federal enforcement (\%) & 5.4 & 3.7 & 5.1 \\
-Major violation (\%) & 80.6 & 98.2 & 79.1 \\
+No enforcement received (\%) & 2.5 & 0.0 \\
+Any enforcement received (\%) & 97.5 & 100.0 \\
+\quad Informal (\%) & 23.6 & 31.2 \\
+\quad Resolving (\%) & 66.9 & 62.5 \\
+\quad Formal (\%) & 6.9 & 6.2 \\
+Federal enforcement (\%) & 6.6 & 0.0 \\
+Major violation (\%) & 98.4 & 0.0 \\
 \addlinespace[3pt]
-\multicolumn{4}{l}{\textit{Return to compliance}} \\
+\multicolumn{3}{l}{\textit{Return to compliance}} \\
 \addlinespace[1pt]
-Status: Resolved (\%) & 68.2 & 58.0 & 69.9 \\
-Status: Archived (\%) & 31.7 & 42.0 & 30.1 \\
-Status: Open (\%) & 0.1 & 0.0 & 0.0 \\
-Median days to compliance & 214 & 1094 & 91 \\
-Mean days to compliance & 469 & 749 & 340 \\
+Status: Resolved (\%) & 73.8 & 68.8 \\
+Status: Archived (\%) & 26.2 & 31.2 \\
+Status: Open (\%) & 0.0 & 0.0 \\
+Median days to compliance & 364 & 364 \\
+Mean days to compliance & 511 & 420 \\
 \hline\hline
 \end{tabular}%
 }
-{\tiny Unit of observation: violation (unique VIOLATION\_ID). Sample: 56,842 CWSs in states represented in the downstream 2SLS sample, 1985--2005 (AL, CA, CO, FL, GA, IL, KS, KY, LA, MD, NC, NJ, NY, OH, OR, PA, SC, TN, UT, VA, WA, WV). Mining rules: nitrate (331), arsenic (332), inorganic chemicals (333), radionuclides (340). Non-mining rules: total coliform (110/111), surface/groundwater rule (121--123/140), VOCs (310), SOCs (320). Multiple enforcement actions per violation assigned the most severe (Formal $>$ Resolving $>$ Informal). Days to compliance = CALCULATED\_RTC\_DATE $-$ NON\_COMPL\_PER\_BEGIN\_DATE. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.csv.}
-\end{frame}
-
-
-\begin{frame}{Regulator Response: MCL Violations, 1985--2005}
-\label{tab:reg_response_mcl}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lrrr}
-\hline\hline
-\textbf{Regulator response} & \textbf{All MCL} & \textbf{Mining MCL} & \textbf{Non-mining MCL} \\
-\hline
-\textit{N violations} & 43,576 & 8,787 & 30,554 \\
-\addlinespace[3pt]
-\multicolumn{4}{l}{\textit{Enforcement intensity}} \\
-\addlinespace[1pt]
-No enforcement received (\%) & 8.1 & 6.9 & 9.3 \\
-Any enforcement received (\%) & 91.9 & 93.1 & 90.7 \\
-\quad Informal (\%) & 33.8 & 15.1 & 43.0 \\
-\quad Resolving (\%) & 39.5 & 36.2 & 38.6 \\
-\quad Formal (\%) & 18.6 & 41.8 & 9.1 \\
-Federal enforcement (\%) & 6.4 & 9.2 & 5.5 \\
-Major violation (\%) & 0.0 & 0.0 & 0.0 \\
-\addlinespace[3pt]
-\multicolumn{4}{l}{\textit{Return to compliance}} \\
-\addlinespace[1pt]
-Status: Resolved (\%) & 52.3 & 69.1 & 42.8 \\
-Status: Archived (\%) & 47.7 & 30.9 & 57.2 \\
-Status: Open (\%) & 0.0 & 0.0 & 0.0 \\
-Median days to compliance & 30 & 91 & 30 \\
-Mean days to compliance & 86 & 301 & 21 \\
-\hline\hline
-\end{tabular}%
-}
-{\tiny Unit of observation: violation (unique VIOLATION\_ID). Sample: 56,842 CWSs in states represented in the downstream 2SLS sample, 1985--2005 (AL, CA, CO, FL, GA, IL, KS, KY, LA, MD, NC, NJ, NY, OH, OR, PA, SC, TN, UT, VA, WA, WV). Mining rules: nitrate (331), arsenic (332), inorganic chemicals (333), radionuclides (340). Non-mining rules: total coliform (110/111), surface/groundwater rule (121--123/140), VOCs (310), SOCs (320). Multiple enforcement actions per violation assigned the most severe (Formal $>$ Resolving $>$ Informal). Days to compliance = CALCULATED\_RTC\_DATE $-$ NON\_COMPL\_PER\_BEGIN\_DATE. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.csv.}
+{\tiny Unit of observation: violation (unique VIOLATION\_ID). Sample: 349 CWSs in the main downstream 2SLS sample (one step downstream, not colocated with mines), 1985--2005 (AL, CA, CO, FL, GA, IL, KS, KY, LA, MD, NC, NJ, NY, OH, OR, PA, SC, TN, UT, VA, WA, WV). IOC rules: nitrate (331), arsenic (332), inorganic chemicals (333). Multiple enforcement actions per violation assigned the most severe (Formal $>$ Resolving $>$ Informal). Days to compliance = CALCULATED\_RTC\_DATE $-$ NON\_COMPL\_PER\_BEGIN\_DATE. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.csv.}
 \end{frame}

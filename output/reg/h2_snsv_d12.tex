@@ -10,29 +10,25 @@
 \centering
 \begin{tabular}{lccc}
    \tabularnewline \midrule \midrule
-   Dependent Variable: & \multicolumn{3}{c}{any\_snsv}\\
-                                                     & OLS            & Reduced form    & 2SLS \\   
-   Model:                                            & (1)            & (2)             & (3)\\  
+   Dependent Variable: & \multicolumn{3}{c}{Any sanitary visit}\\
+                                                            & OLS      & Reduced form    & 2SLS \\   
+   Model:                                                   & (1)      & (2)             & (3)\\  
    \midrule
    \emph{Variables}\\
-   num\_coal\_mines\_upstream                        & -0.0036        &                 & 0.1410$^{***}$\\   
-                                                     & (0.0057)       &                 & (0.0522)\\   
-   num\_facilities                                   & 0.0221$^{***}$ & 0.0218$^{***}$  & 0.0234$^{***}$\\   
-                                                     & (0.0081)       & (0.0078)        & (0.0085)\\   
-   post95 $\times$ sulfur\_upstream                  &                & -0.0233$^{***}$ &   \\   
-                                                     &                & (0.0068)        &   \\   
+   Upstream coal mines (sum)                                & 0.0106   &                 & 0.1406$^{***}$\\   
+                                                            & (0.0067) &                 & (0.0487)\\   
+   post95 $\times$ Upstream sulfur \%                       &          & -0.0360$^{***}$ &   \\   
+                                                            &          & (0.0103)        &   \\   
+   F-test (1st stage, clustered), Upstream coal mines (sum) &          &                 & 27.94\\  
    \midrule
    \emph{Fixed-effects}\\
-   PWSID                                             & Yes            & Yes             & Yes\\  
-   year                                              & Yes            & Yes             & Yes\\  
-   STATE\_CODE                                       & Yes            & Yes             & Yes\\  
+   CWS                                                      & Yes      & Yes             & Yes\\  
+   year                                                     & Yes      & Yes             & Yes\\  
    \midrule
    \emph{Fit statistics}\\
-   R$^2$                                             & 0.26689        & 0.26850         & 0.26850\\  
-   Observations                                      & 13,671         & 13,671          & 13,671\\  
-   F-test (1st stage), num\_coal\_mines\_upstream    &                &                 & 475.38\\  
+   Observations                                             & 6,225    & 6,225           & 6,225\\  
    \midrule \midrule
-   \multicolumn{4}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+   \multicolumn{4}{l}{\emph{Clustered (CWS) standard-errors in parentheses}}\\
    \multicolumn{4}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
 \end{tabular}
  
@@ -40,5 +36,5 @@
 \end{adjustbox}
 
 \par \raggedright
-D1-D2 downstream sample. Outcome: any sanitary survey (SNSV) in PWSID-year. N = 14721 PWSID-years. Instrument: post95 x sulfur\_upstream. SEs clustered at PWSID level.
+D1 downstream sample (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Outcome: any sanitary survey (SNSV) in CWS-year. N = 6232 CWS-years. Treatment: num\_coal\_mines\_upstream\_sum. Instrument: post95 x sulfur\_unified\_mean. SEs clustered at CWS level.
 \par

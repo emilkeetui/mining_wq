@@ -1,0 +1,133 @@
+% ============================================================
+% 6yr_data_cleaning_summary.tex
+% Methods note: cleaning of EPA Six-Year Review contaminant
+% concentration data for the inorganic-chemical analysis.
+% Mirrors Ravalli et al. (2022, Lancet Planet. Health) appendix,
+% applied to the full national panel before the downstream-CWS cut.
+% Requires: booktabs. Include with \input{output/6yr_data_cleaning_summary}.
+% ============================================================
+
+\section{Cleaning of EPA Six-Year Review concentration data}
+\label{sec:6yr_cleaning}
+
+Measured contaminant concentrations are drawn from the U.S.\ EPA Six-Year
+Review compliance-monitoring database, pooling the Second Six-Year Review
+(SYR2, sample years 1998--2005) and Third Six-Year Review (SYR3, 2006--2011).
+We clean these records following the procedure of Ravalli et al.\
+(2022),\footnote{Ravalli F, Yu Y, Bostick BC, et al.\ Sociodemographic
+inequalities in uranium and other metals in community water systems across the
+USA, 2006--11: a cross-sectional study. \emph{Lancet Planet Health} 2022;
+\textbf{6}: e320--30 (Supplementary appendix~2).} with one deliberate
+departure described in Section~\ref{subsec:mdl}. All cleaning is performed on
+the \emph{full national} sample of community water systems---before the analysis
+sample is restricted to systems located downstream of a coal mine---so that
+detection-rate screening, limit-of-detection imputation, and outlier removal
+exploit the entire monitoring record rather than the small downstream subsample.
+
+\subsection{Cleaning steps}
+
+\begin{enumerate}
+
+  \item \textbf{Community water systems only.} We retain records from community
+    water systems (CWS) and drop transient and non-transient non-community
+    systems, consistent with our focus on systems serving residential
+    populations year-round. This removes roughly 23\% of raw monitoring records.
+
+  \item \textbf{Unit normalization.} All mass-concentration readings are
+    converted to mg/L and all radionuclide readings to pCi/L, so that records
+    reported in $\mu$g/L, ng/L, or other units are placed on a common scale
+    before averaging.
+
+  \item \textbf{Limit-of-detection substitution.} Non-detect samples---which the
+    database reports with a missing concentration---are assigned a value equal
+    to the reported limit of detection (LOD) divided by $\sqrt{2}$, the standard
+    convention used by the CDC and other federal agencies when summarizing
+    environmental concentration data. A record's own reported LOD is used when it
+    is reported in mg/L or $\mu$g/L and does not exceed 5~$\mu$g/L (the reliable
+    range); otherwise the LOD is taken from a per-chemical method detection limit
+    (MDL), as described in Section~\ref{subsec:mdl}. Imputing non-detects, rather
+    than discarding them, is the main reason the analysis sample roughly doubles
+    in size relative to a detections-only sample.
+
+  \item \textbf{Gross-outlier removal.} Records reporting a concentration greater
+    than 100 times the contaminant's maximum contaminant level (MCL) are dropped
+    as likely data-entry errors.
+
+  \item \textbf{Detection-rate screen.} For each contaminant we compute the
+    national share of records above the LOD and retain only contaminants
+    detected in more than 10\% of records. Among the inorganic chemicals this
+    keeps arsenic, nitrate, barium, chromium, and selenium, and excludes cadmium
+    (1.8\% detected), mercury (1.6\%), and thallium, whose concentrations are too
+    rarely above detection to support a credible mean-concentration regression.
+    The threshold is a tunable parameter; setting it to zero retains all
+    contaminants.
+
+  \item \textbf{Raw-versus-finished reconciliation.} Where a system reports both
+    raw (untreated) and finished (treated) samples in the same year and the
+    finished-water mean is below the raw-water mean, the annual average is
+    computed from finished samples only. This information is available in SYR3
+    but not SYR2.
+
+\end{enumerate}
+
+After cleaning, sample-level records are collapsed to the
+system\,$\times$\,contaminant\,$\times$\,year level. The annual concentration is
+the mean of that year's (cleaned) samples; the share above the MCL is the share
+of samples exceeding the applicable standard.
+
+\subsection{Data-driven method detection limits}
+\label{subsec:mdl}
+
+Ravalli et al.\ impute the fallback LOD using EPA's published,
+\emph{method-specific} maximum detection limits---a fixed externally specified
+value per analytical method. We depart from this in one respect: rather than
+hard-coding the EPA method MDLs, we derive each contaminant's fallback MDL
+\emph{from the data}. Specifically, for every contaminant we take the median of
+the reliable record-specific LODs actually reported in the Six-Year Review
+(those in mg/L or $\mu$g/L and at most 5~$\mu$g/L); for contaminants whose
+reported LODs all exceed that reliable threshold (e.g.\ nitrate), we instead use
+the median of all reported mass-concentration LODs. This data-driven fallback is
+used only for non-detect records that lack a usable record-specific LOD---most
+importantly the SYR2 records, which do not carry a detection-limit field at all.
+
+The data-driven approach has two advantages in our setting: it is reproducible
+directly from the monitoring records without reconciling the multiple EPA
+analytical methods in force across the 1998--2011 window, and it reflects the
+detection limits laboratories actually achieved rather than the regulatory
+ceiling. Its limitation is that the fallback MDL is estimated rather than
+authoritative; the implementation therefore exposes an override table so that
+official EPA method MDLs can be substituted directly if an exact replication of
+Ravalli et al.\ is desired. In practice the imputed non-detect values
+($\mathrm{MDL}/\sqrt 2$) are small relative to the MCL and to typical detected
+concentrations, so the choice between data-driven and published MDLs has a
+negligible effect on the estimated means.% (uses \mathrm below to avoid an amsmath dependency)
+
+\subsection{Effect on the estimation sample}
+
+Table~\ref{tab:6yr_cleaning_compare} summarizes the effect of the cleaning on the
+downstream-CWS inorganic-chemical sample. Retaining imputed non-detects roughly
+doubles the number of system\,$\times$\,year observations for each metal, while
+the inclusion of these low (below-detection) values lowers the sample means.
+Cadmium and mercury drop out under the detection-rate screen.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Inorganic-chemical concentrations before and after Ravalli-style
+    cleaning (downstream-CWS regression sample, 1998--2011)}
+  \label{tab:6yr_cleaning_compare}
+  \begin{tabular}{lcccc}
+    \toprule
+    & \multicolumn{2}{c}{Before cleaning} & \multicolumn{2}{c}{After cleaning} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}
+    Contaminant (mg/L) & Mean & $N$ & Mean & $N$ \\
+    \midrule
+    Arsenic   & 0.0041 & 451   & 0.0016 & 1{,}079 \\
+    Nitrate   & 1.093  & 1{,}170 & 0.8367 & 1{,}486 \\
+    Barium    & 0.0775 & 638   & 0.0305 & 799   \\
+    Chromium  & 0.0078 & 410   & 0.0017 & 806   \\
+    Selenium  & 0.0064 & 396   & 0.0030 & 796   \\
+    Cadmium   & 0.0016 & 378   & \multicolumn{2}{c}{dropped ($<10\%$ detected)} \\
+    Mercury   & 0.0003 & 375   & \multicolumn{2}{c}{dropped ($<10\%$ detected)} \\
+    \bottomrule
+  \end{tabular}
+\end{table}

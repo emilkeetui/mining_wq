@@ -44,7 +44,10 @@ vio_dict <- c(
   total_coliform_MCL_share_days            = "Total coliform (MCL)",
   voc_MCL_share_days                       = "VOCs (MCL)",
   total_coliform_MR_share_days             = "Total coliform (MR)",
-  voc_MR_share_days                        = "VOCs (MR)"
+  voc_MR_share_days                        = "VOCs (MR)",
+  num_coal_mines_upstream_sum              = "Upstream coal mines (sum)",
+  sulfur_unified_sum                       = "Upstream sulfur \\%",
+  PWSID                                    = "CWS"
 )
 
 move_notes_below_adjustbox <- function(x) {
@@ -83,7 +86,8 @@ postprocess_table <- function(x) rename_col_numbers_to_labels(move_notes_below_a
 
 tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, label,
                                   instr_str, dict = NULL, notes = NULL,
-                                  storage_list_name = NULL, subheader = NULL) {
+                                  storage_list_name = NULL, subheader = NULL,
+                                  fitstat = ~ .) {
   controls            <- c("num_facilities")
   drop_controls_exact <- paste0("^(", paste(controls, collapse = "|"), ")$")
   fe_str              <- "PWSID + year"
@@ -149,7 +153,8 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
     recursive = FALSE
   )
   # Build extralines: clustered F-stat in IV columns only, blank in OLS/RF columns
-  f_label <- paste0("F-test (1st stage, clustered), ", paste(coalvar, collapse = "+"))
+  coalvar_labels <- sapply(coalvar, function(cv) if (!is.null(dict) && cv %in% names(dict)) dict[[cv]] else cv)
+  f_label <- paste0("F-test (1st stage, clustered), ", paste(coalvar_labels, collapse = "+"))
   f_vec   <- unlist(lapply(names(result), function(y) {
     fc <- result[[y]]$f_clustered
     c("", "", if (is.na(fc)) "" else format(round(fc, 2), nsmall = 2))
@@ -159,7 +164,7 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
   etable_args <- c(
     model_list,
     list(
-      fitstat         = ~ .,
+      fitstat         = fitstat,
       style.tex       = style.tex("aer", adjustbox = TRUE),
       tex             = TRUE,
       drop            = drop_controls_exact,
@@ -216,14 +221,31 @@ std_note <- paste0(
   "Columns show OLS, reduced form, and 2SLS estimates. ",
   "Dependent variable is days out of the year in violation. ",
   "Instrument is post95 interacted with mean coal sulfur content of the intake watershed ",
-  "(post95 x sulfur unified). ",
-  "All regressions include PWSID and year fixed effects. ",
-  "Standard errors clustered at PWSID level. ",
+  "(post95 x sulfur_unified_mean). ",
+  "All regressions include CWS and year fixed effects. ",
+  "Standard errors clustered at CWS level. ",
+  "Sample period 1985--2005."
+)
+
+std_note_ivsum <- paste0(
+  "Columns show OLS, reduced form, and 2SLS estimates. ",
+  "Dependent variable is days out of the year in violation. ",
+  "Instrument is post95 interacted with sum of coal sulfur content across upstream HUC12s ",
+  "(post95 x sulfur_unified_sum). ",
+  "All regressions include CWS and year fixed effects. ",
+  "Standard errors clustered at CWS level. ",
   "Sample period 1985--2005."
 )
 
 nonmine_note <- paste0(
   std_note,
+  " The number of observations differs across columns because non-mining violation rules ",
+  "(total coliform, VOCs) were implemented during the sample period; ",
+  "years prior to each rule's implementation are coded as missing and excluded from the regression."
+)
+
+nonmine_note_ivsum <- paste0(
+  std_note_ivsum,
   " The number of observations differs across columns because non-mining violation rules ",
   "(total coliform, VOCs) were implemented during the sample period; ",
   "years prior to each rule's implementation are coded as missing and excluded from the regression."
@@ -237,7 +259,7 @@ sample_specs <- list(
   list(sample="dwnstrm2step",   suffix="_ivsum", dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream_sum",  instr="post95:sulfur_unified_sum",  titlesamp="CWSs at most two HUC12's downstream of coal mines")
 )
 vio_specs <- list(
-  list(name="minevio",    allcat=c("nitrates_share_days","arsenic_share_days","inorganic_chemicals_share_days","radionuclides_share_days"),             mcl=c("nitrates_MCL_share_days","arsenic_MCL_share_days","inorganic_chemicals_MCL_share_days","radionuclides_MCL_share_days"),             mr=c("nitrates_MR_share_days","arsenic_MR_share_days","inorganic_chemicals_MR_share_days","radionuclides_MR_share_days"),             titlevio="mining violations"),
+  list(name="minevio",    allcat=c("nitrates_share_days","arsenic_share_days","inorganic_chemicals_share_days","radionuclides_share_days"),             mcl=c("nitrates_MCL_share_days","arsenic_MCL_share_days","inorganic_chemicals_MCL_share_days","radionuclides_MCL_share_days"),             mr=c("nitrates_MR_share_days","arsenic_MR_share_days","inorganic_chemicals_MR_share_days","radionuclides_MR_share_days"),             titlevio="IOC violations"),
   list(name="nonminevio", allcat=c("total_coliform_share_days","voc_share_days"),                mcl=c("total_coliform_MCL_share_days","voc_MCL_share_days"),                mr=c("total_coliform_MR_share_days","voc_MR_share_days"),                titlevio="non-mining violations")
 )
 cat_specs <- list(
@@ -254,12 +276,18 @@ for (sp in sample_specs) {
       tab_title <- paste0("Effect of coal mines on ", vp$titlevio, " (", cp$titlecat, ", ", sp$titlesamp, ")")
       varlist   <- vp[[cp$varkey]]
       cat("\nRunning:", fname, "\n")
-      tab_note <- if (vp$name == "nonminevio") nonmine_note else std_note
+      tab_note    <- if (vp$name == "nonminevio") {
+        if (sp$suffix == "_ivsum") nonmine_note_ivsum else nonmine_note
+      } else {
+        if (sp$suffix == "_ivsum") std_note_ivsum else std_note
+      }
+      tab_fitstat <- if (sp$suffix == "_ivsum") ~ n else ~ .
       tsls_reg_output_main(dset=sp$dset, varlist=varlist, coalvar=sp$coalvar,
                            regoutname=fname, title=tab_title, label=fname,
                            instr_str=sp$instr, dict=vio_dict, notes=tab_note,
                            storage_list_name = fs_store_name,
-                           subheader         = cp$titlecat)
+                           subheader         = cp$titlecat,
+                           fitstat           = tab_fitstat)
     }
     fs_outfile <- paste0("fs_", sp$sample, "_", vp$name, sp$suffix)
     fs_title   <- paste0("First Stage: ", vp$titlevio, " (", sp$titlesamp, ")")

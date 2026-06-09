@@ -10,31 +10,32 @@
       
       %start:tab
       
-      \begin{tabular}{lcc}
+      \begin{tabular}{lccc}
          \toprule
          
-          & \multicolumn{2}{c}{Mean conc.}\\
+          & \multicolumn{3}{c}{Mean conc.}\\
          
-                                             & Alpha part.   & Beta part. \\   
+                                             & Alpha part.   & Beta part.              & Radium \\   
          
-                                             & (1)           & (2)\\  
+                                             & (1)           & (2)                     & (3)\\  
          
          \midrule 
-         Cumul. upstream coal prod. (10M ST) & -5.289        & 3.755$^{***}$\\   
-                                             & (5.520)       & ($4.32\times 10^{-5}$)\\    
-         Num. intake facilities              &               & -2.845$^{**}$\\   
-                                             &               & (1.256)\\   
+         Cumul. upstream coal prod. (10M ST) & -5.289        & 3.755$^{***}$           & 0.0605\\   
+                                             & (5.520)       & ($4.32\times 10^{-5}$)  & (NaN)\\   
+         Num. intake facilities              &               & -2.845$^{**}$           & -0.8625\\   
+                                             &               & (1.256)                 & (NaN)\\   
          
           \\
          
-         Within R$^2$                        & 0.02281       & 0.04969\\  
-         Observations                        & 140           & 55\\  
-         R$^2$                               & 0.81981       & 0.77373\\  
+         Standard-Errors & \multicolumn{2}{c}{CWS} & not-available \\ 
+         Within R$^2$                        & 0.02281       & 0.04969                 & 0.99813\\  
+         Observations                        & 140           & 55                      & 5\\  
+         R$^2$                               & 0.81981       & 0.77373                 & 0.99820\\  
          
           \\
          
-         PWSID fixed effects                 & $\checkmark$  & $\checkmark$\\   
-         huc02-year fixed effects            & $\checkmark$  & $\checkmark$\\   
+         CWS fixed effects                   & $\checkmark$  & $\checkmark$            & $\checkmark$\\   
+         huc02-year fixed effects            & $\checkmark$  & $\checkmark$            & $\checkmark$\\   
          
          \bottomrule
          

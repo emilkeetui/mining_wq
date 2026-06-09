@@ -1,0 +1,100 @@
+
+Attaching package: 'arrow'
+
+The following object is masked from 'package:utils':
+
+    timestamp
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:data.table':
+
+    between, first, last
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Linking to GEOS 3.13.1, GDAL 3.11.0, PROJ 9.6.0; sf_use_s2() is TRUE
+To enable caching of data, set `options(tigris_use_cache = TRUE)`
+in your R script or .Rprofile.
+Warning message:
+package 'tigris' was built under R version 4.5.3 
+Loading D1-D2 panel (prod_vio_sulfur_4step.parquet)...
+D1-D2 panel: 701 PWSIDs x 14721 PWSID-years
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1488982 79.6    2653855 141.8  2258231 120.7
+Vcells 4303554 32.9   12152009  92.8  8408141  64.2
+Reading SDWA_SITE_VISITS.csv (355 MB, selected cols)...
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1531357 81.8    2653855 141.8  2258231 120.7
+Vcells 4620996 35.3   20024883 152.8 20014444 152.7
+Panel: 14721 obs; any_snsv = 1 in 1712 (11.6%)
+Dropping sparse states (< 30 obs):  08, CA, KS, LA, NN, NY 
+After sparse filter: 14595 obs, 19 states
+
+Estimating full-sample 2SLS for any_snsv (D1-D2)...
+NOTE: 1,050 observations removed because of NA values (Fixed-effects: 1,050).
+Beta: 0.1391 (SE: 0.0524)  95% CI: [0.0363, 0.2419]
+First-stage F: 468.17  N: 13545
+
+Running jackknife (leave-one-state-out)...
+NOTE: 1,029 observations removed because of NA values (Fixed-effects: 1,029).
+NOTE: 1,050 observations removed because of NA values (Fixed-effects: 1,050).
+NOTE: 1,008 observations removed because of NA values (Fixed-effects: 1,008).
+NOTE: 1,029 observations removed because of NA values (Fixed-effects: 1,029).
+NOTE: 1,050 observations removed because of NA values (Fixed-effects: 1,050).
+NOTE: 1,050 observations removed because of NA values (Fixed-effects: 1,050).
+NOTE: 1,050 observations removed because of NA values (Fixed-effects: 1,050).
+NOTE: 1,008 observations removed because of NA values (Fixed-effects: 1,008).
+NOTE: 1,050 observations removed because of NA values (Fixed-effects: 1,050).
+NOTE: 1,050 observations removed because of NA values (Fixed-effects: 1,050).
+NOTE: 987 observations removed because of NA values (Fixed-effects: 987).
+NOTE: 357 observations removed because of NA values (Fixed-effects: 357).
+NOTE: 1,008 observations removed because of NA values (Fixed-effects: 1,008).
+NOTE: 1,050 observations removed because of NA values (Fixed-effects: 1,050).
+NOTE: 1,050 observations removed because of NA values (Fixed-effects: 1,050).
+NOTE: 1,050 observations removed because of NA values (Fixed-effects: 1,050).
+NOTE: 945 observations removed because of NA values (Fixed-effects: 945).
+NOTE: 1,050 observations removed because of NA values (Fixed-effects: 1,050).
+NOTE: 1,029 observations removed because of NA values (Fixed-effects: 1,029).
+Jackknife results:
+   state_excluded     beta      se delta_beta fstat_first
+1              AL  0.17503 0.05233 -0.0359390       444.6
+2              CO  0.12911 0.05223  0.0099734       434.4
+3              FL  0.13705 0.05264  0.0020406       459.5
+4              GA  0.09355 0.05818  0.0455334       326.0
+5              IL  0.13933 0.05076 -0.0002405       500.5
+6              IN  0.14281 0.05201 -0.0037248       485.5
+7              KY  0.08442 0.03525  0.0546724       818.6
+8              MD  0.14852 0.05335 -0.0094345       467.2
+9              MS  0.14951 0.05356 -0.0104249       464.0
+10             NC  0.13738 0.05229  0.0017093       467.8
+11             OH  0.10933 0.04312  0.0297562       633.7
+12             PA -0.56828 0.39571  0.7073657        45.2
+13             SC  0.13252 0.05094  0.0065714       468.9
+14             TN  0.15182 0.05402 -0.0127334       462.9
+15             TX  0.13794 0.05243  0.0011441       464.3
+16             UT  0.14201 0.05296 -0.0029180       465.1
+17             VA  0.06664 0.04365  0.0724457       444.1
+18             WA  0.13555 0.05121  0.0035335       484.3
+19             WV  0.16967 0.05615 -0.0305859       465.9
+
+Generating caterpillar plot...
+Saved: output/fig/jackknife_state_snsv.png
+Generating choropleth map...
+Saved: output/fig/jackknife_state_map_snsv.png
+
+=== JACKKNIFE SUMMARY: any_snsv (D1-D2) ===
+Full-sample β̂: 0.1391  SE: 0.0524  95% CI: [0.0363, 0.2419]
+First-stage F: 468.17  N obs: 13545
+States in jackknife: 19
+Range of leave-one-out β̂: [-0.5683, 0.1750]
+Max |Δβ|: 0.7074 (state: PA)
+
+Figures saved to output/fig/

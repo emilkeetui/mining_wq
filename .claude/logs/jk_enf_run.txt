@@ -1,0 +1,98 @@
+
+Attaching package: 'arrow'
+
+The following object is masked from 'package:utils':
+
+    timestamp
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:data.table':
+
+    between, first, last
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Linking to GEOS 3.13.1, GDAL 3.11.0, PROJ 9.6.0; sf_use_s2() is TRUE
+To enable caching of data, set `options(tigris_use_cache = TRUE)`
+in your R script or .Rprofile.
+Warning message:
+package 'tigris' was built under R version 4.5.3 
+Loading D1 main panel (prod_vio_sulfur.parquet)...
+D1 main panel: 340 PWSIDs x 6232 PWSID-years
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1489686 79.6    2653855 141.8  2258231 120.7
+Vcells 3749523 28.7   12239112  93.4  8647884  66.0
+Reading SDWA_VIOLATIONS_ENFORCEMENT.csv (3.7 GB, selected cols)...
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1532316 81.9    3361838 179.6  2258231 120.7
+Vcells 4075766 31.1   73920922 564.0 83862758 639.9
+Panel: 6232 obs; any_formal = 1 in 218 (3.5%)
+Dropping sparse states (< 30 obs):  08, KS, LA 
+After sparse filter: 6177 obs, 16 states
+
+Estimating full-sample 2SLS (any_formal, D1)...
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+Beta: -0.0564 (SE: 0.0205)  95% CI: [-0.0965, -0.0162]
+First-stage F: 323.46  N: 6170
+
+Running jackknife (leave-one-state-out)...
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+NOTE: 6/0/0 fixed-effect singletons were removed (6 observations).
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+ERROR in run_iv_enforcement: Not compatible with requested type: [type=NULL; target=double]. 
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+NOTE: 3/0/0 fixed-effect singletons were removed (3 observations).
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+NOTE: 5/0/0 fixed-effect singletons were removed (5 observations).
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+NOTE: 7/0/0 fixed-effect singletons were removed (7 observations).
+Jackknife results:
+   state_excluded     beta      se delta_beta fstat_first
+1              AL -0.05566 0.02088 -0.0007333     308.593
+2              CO -0.05750 0.02040  0.0011097     313.939
+3              FL -0.05516 0.02047 -0.0012263     320.751
+4              GA -0.03415 0.02433 -0.0222414     207.587
+5              IL -0.05900 0.02089  0.0026068     321.526
+6              KY -0.05245 0.01677 -0.0039395     578.526
+7              MD       NA      NA         NA          NA
+8              NC -0.05516 0.02047 -0.0012268     321.344
+9              OH -0.06835 0.02112  0.0119623     323.746
+10             PA  0.03822 0.12783 -0.0946075       6.202
+11             SC -0.05496 0.02041 -0.0014307     321.862
+12             TN -0.05595 0.02071 -0.0004357     315.583
+13             UT -0.05618 0.02067 -0.0002107     316.287
+14             VA -0.05055 0.02114 -0.0058418     283.191
+15             WA -0.05271 0.01999 -0.0036813     327.419
+16             WV -0.06762 0.02079  0.0112259     337.007
+
+Generating caterpillar plot...
+Warning message:
+Removed 1 row containing missing values or values outside the scale range
+(`geom_pointrange()`). 
+Saved: output/fig/jackknife_state_enforcement_formal.png
+Generating choropleth map...
+Saved: output/fig/jackknife_state_map_enforcement_formal.png
+
+=== JACKKNIFE SUMMARY: any_formal (D1) ===
+Full-sample β̂: -0.0564  SE: 0.0205  95% CI: [-0.0965, -0.0162]
+First-stage F: 323.46  N obs: 6170
+States in jackknife: 16
+Range of leave-one-out β̂: [-0.0684, 0.0382]
+Max |Δβ|: 0.0946 (state: PA)
+
+Figures saved to output/fig/

@@ -1,36 +1,52 @@
 
 \begin{table}[htbp]
-   \caption{\label{2sls_dwnstrm_minevio_allcat} Effect of coal mines on mining violations (any violation category, downstream PWS's)}
+   
+   \caption{\label{2sls_dwnstrm_minevio_allcat} Effect of coal mines on IOC violations (any violation category, CWSs at most one HUC12 down-stream)}
    \bigskip
+   
    \centering
+   
    \begin{adjustbox}{width = \textwidth, center}
+      
       %start:tab
+      
       \begin{tabular}{lcccccccccccc}
          \toprule
+         
           & \multicolumn{3}{c}{Nitrates} & \multicolumn{3}{c}{Arsenic} & \multicolumn{3}{c}{Inorganic chemicals} & \multicolumn{3}{c}{Radionuclides}\\
-                                                                            & (1)           & (2)           & (3)           & (4)           & (5)            & (6)           & (7)           & (8)            & (9)           & (10)          & (11)                  & (12)\\  
+         
+                                                                             & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF                    & 2SLS\\  
+         
          \midrule 
-         Coal mines (upstream sum)                                          & 3.319$^{*}$   &               & 19.26$^{**}$  & 3.501$^{**}$  &                & 14.56$^{*}$   & 3.476$^{**}$  &                & 11.95         & 2.873         &                       & -1.129\\   
-                                                                            & (1.813)       &               & (9.023)       & (1.704)       &                & (7.645)       & (1.754)       &                & (8.349)       & (2.299)       &                       & (10.81)\\   
-         Number of facilities                                               & 2.122         & -3.840        & 13.67$^{**}$  & -5.621$^{**}$ & -10.85$^{***}$ & 2.388         & -4.639        & -9.363$^{***}$ & 1.499         & 2.922         & 1.049                 & 0.0231\\   
-                                                                            & (2.577)       & (3.421)       & (6.226)       & (2.464)       & (3.304)        & (5.226)       & (2.885)       & (3.565)        & (6.050)       & (3.664)       & (4.661)               & (7.336)\\   
-         post95 $\times$ sulfur\_unified\_mean                              &               & -4.937$^{**}$ &               &               & -3.730$^{*}$   &               &               & -3.062         &               &               & 0.2893                &   \\   
-                                                                            &               & (2.234)       &               &               & (1.985)        &               &               & (2.171)        &               &               & (2.756)               &   \\   
-         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_sum     &               &               & 27.84         &               &                & 27.84         &               &                & 27.84         &               &                       & 27.84\\  
+         num\_coal\_mines\_upstream\_mean                                    & 6.088         &               & 60.07$^{**}$  & 6.652         &               & 45.39$^{*}$   & 6.758         &               & 37.25         & 8.358$^{*}$   &                       & -3.520\\   
+                                                                             & (4.017)       &               & (30.38)       & (4.129)       &               & (24.82)       & (4.154)       &               & (26.61)       & (4.845)       &                       & (33.68)\\   
+         post95 $\times$ sulfur\_unified\_mean                               &               & -4.937$^{**}$ &               &               & -3.730$^{*}$  &               &               & -3.062        &               &               & 0.2893                &   \\   
+                                                                             &               & (2.230)       &               &               & (1.981)       &               &               & (2.167)       &               &               & (2.751)               &   \\   
+         
+         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_mean     &               &               & 13.68         &               &               & 13.68         &               &               & 13.68         &               &                       & 13.68\\  
+         
           \\
-         Observations                                                       & 6,225         & 6,225         & 6,225         & 6,225         & 6,225          & 6,225         & 6,225         & 6,225          & 6,225         & 6,225         & 6,225                 & 6,225\\  
-         R$^2$                                                              & 0.15791       & 0.15860       & 0.15860       & 0.17227       & 0.17204        & 0.17204       & 0.18769       & 0.18714        & 0.18714       & 0.24832       & 0.24759               & 0.24759\\  
-         Within R$^2$                                                       & 0.00122       & 0.00205       & 0.00205       & 0.00203       & 0.00176        & 0.00176       & 0.00167       & 0.00099        & 0.00099       & 0.00098       & $7.72\times 10^{-6}$  & $7.72\times 10^{-6}$\\   
+         
+         Observations                                                        & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225                 & 6,225\\  
+         R$^2$                                                               & 0.15763       & 0.15860       & 0.15860       & 0.17190       & 0.17204       & 0.17204       & 0.18745       & 0.18714       & 0.18714       & 0.24894       & 0.24759               & 0.24759\\  
+         Within R$^2$                                                        & 0.00089       & 0.00205       & 0.00205       & 0.00160       & 0.00176       & 0.00176       & 0.00137       & 0.00099       & 0.00099       & 0.00180       & $7.72\times 10^{-6}$  & $7.72\times 10^{-6}$\\   
+         
           \\
-         PWSID fixed effects                                                & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
-         STATE\_CODE fixed effects                                          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
-         year fixed effects                                                 & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         
+         CWS fixed effects                                                   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         year fixed effects                                                  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         
          \bottomrule
+         
       \end{tabular}
+      
       %end:tab
+      
+      
    \end{adjustbox}
-   \par \raggedright 
-   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is days out of the year in violation. Instrument is post95 interacted with mean coal sulfur content of the intake watershed (post95 x sulfur unified). All regressions include PWSID, year, and state fixed effects. Standard errors clustered at PWSID level. Sample period 1985--2005.
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is days out of the year in violation. Instrument is post95 interacted with mean coal sulfur content of the intake watershed (post95 x sulfur\_unified\_mean). All regressions include CWS and year fixed effects. Standard errors clustered at CWS level. Sample period 1985--2005.}
+   
 \end{table}
 
 

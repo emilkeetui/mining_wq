@@ -318,4 +318,88 @@ writeLines(
   out_path
 )
 cat("\nOutput written to:", out_path, "\n")
+
+# ── 11. Summary table: Days in a Year with IOC Violation (D1 downstream) ─────
+
+ioc_vars <- c("inorganic_chemicals_MR_share_days", "inorganic_chemicals_MCL_share_days",
+              "nitrates_MR_share_days",            "nitrates_MCL_share_days",
+              "arsenic_MR_share_days",             "arsenic_MCL_share_days")
+
+d1_panel <- as.data.frame(
+  arrow::read_parquet(
+    "Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
+    col_select = c("PWSID", "year", "minehuc_downstream_of_mine", "minehuc_mine",
+                   ioc_vars)))
+
+d1_panel <- d1_panel[
+  d1_panel$minehuc_downstream_of_mine == 1 &
+  d1_panel$minehuc_mine == 0 &
+  d1_panel$year >= 1985 & d1_panel$year <= 2005, ]
+
+cat("D1 downstream obs (1985-2005):", nrow(d1_panel), "\n")
+N_d1     <- nrow(d1_panel)
+N_pws_d1 <- length(unique(d1_panel$PWSID))
+
+stats_d1 <- data.frame(
+  contaminant = c("Inorganic chemicals", "Nitrates", "Arsenic"),
+  mr_mean  = c(mean(d1_panel$inorganic_chemicals_MR_share_days, na.rm = TRUE),
+               mean(d1_panel$nitrates_MR_share_days,            na.rm = TRUE),
+               mean(d1_panel$arsenic_MR_share_days,             na.rm = TRUE)),
+  mr_sd    = c(sd(d1_panel$inorganic_chemicals_MR_share_days,   na.rm = TRUE),
+               sd(d1_panel$nitrates_MR_share_days,              na.rm = TRUE),
+               sd(d1_panel$arsenic_MR_share_days,               na.rm = TRUE)),
+  mcl_mean = c(mean(d1_panel$inorganic_chemicals_MCL_share_days, na.rm = TRUE),
+               mean(d1_panel$nitrates_MCL_share_days,            na.rm = TRUE),
+               mean(d1_panel$arsenic_MCL_share_days,             na.rm = TRUE)),
+  mcl_sd   = c(sd(d1_panel$inorganic_chemicals_MCL_share_days,  na.rm = TRUE),
+               sd(d1_panel$nitrates_MCL_share_days,             na.rm = TRUE),
+               sd(d1_panel$arsenic_MCL_share_days,              na.rm = TRUE))
+)
+print(stats_d1)
+
+fp2 <- function(x) sprintf("%.2f", x)
+
+make_row <- function(i) {
+  paste0(stats_d1$contaminant[i],
+         " & ", fp2(stats_d1$mr_mean[i]),  " & ", fp2(stats_d1$mr_sd[i]),
+         " & ", fp2(stats_d1$mcl_mean[i]), " & ", fp2(stats_d1$mcl_sd[i]),
+         " \\\\")
+}
+
+t4_lines <- c(
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\caption{Days in a Year with IOC Violation}",
+  "\\label{tab:ioc_days_dwnstrm}",
+  "\\small",
+  "\\begin{tabular}{lrrrr}",
+  "\\hline\\hline",
+  " & \\multicolumn{2}{c}{\\textbf{MR Violations}} & \\multicolumn{2}{c}{\\textbf{MCL Violations}} \\\\",
+  "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}",
+  "\\textbf{Contaminant} & \\textbf{Mean} & \\textbf{SD} & \\textbf{Mean} & \\textbf{SD} \\\\",
+  "\\hline",
+  make_row(1),
+  make_row(2),
+  make_row(3),
+  "\\hline\\hline",
+  "\\end{tabular}",
+  "\\begin{minipage}{\\linewidth}",
+  "\\vspace{4pt}",
+  "\\footnotesize",
+  paste0("\\textit{Notes:} Sample restricted to strictly downstream community water systems ",
+         "(minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0), years 1985--2005. ",
+         "MR = monitoring and reporting violation; MCL = maximum contaminant level violation. ",
+         "Inorganic chemicals encompasses nitrates and arsenic as sub-contaminants. ",
+         "Outcomes measured as days out of the year in violation. ",
+         "N\\,=\\,", format(N_d1, big.mark = ","),
+         " CWS$\\times$year observations across ",
+         format(N_pws_d1, big.mark = ","), " unique community water systems."),
+  "\\end{minipage}",
+  "\\end{table}"
+)
+
+out_path_t4 <- "Z:/ek559/mining_wq/output/sum/ioc_days_dwnstrm.tex"
+writeLines(t4_lines, out_path_t4)
+cat("\nIOC days summary table written to:", out_path_t4, "\n")
+
 cat("=== DONE ===\n")
