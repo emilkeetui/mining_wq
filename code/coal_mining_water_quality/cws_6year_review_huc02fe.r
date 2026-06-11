@@ -5,10 +5,14 @@
 #          (EPA 6-Year Review), grouped by SDWA chemical category.
 #          PWSID + HUC02 x year fixed effects.
 #          Main sample: 1998-2011. Robustness: 1998-2005.
+#          Tables produced for both the standard dataset and the
+#          Ravalli et al. (2022) MDL/sqrt(2)-imputed dataset.
 # Inputs:  clean_data/cws_6year_review.parquet
+#          clean_data/cws_6year_review_ravalli.parquet
 #          clean_data/cws_data/pwsid_huc02.parquet
-# Outputs: output/reg/6yr_huc02fe_<group>.tex        (main, 1998-2011)
-#          output/reg/6yr_huc02fe_<group>_2005.tex   (robustness, 1998-2005)
+# Outputs: output/reg/6yr_huc02fe_<group>[_ravalli][_2005].tex
+#          output/reg/6yr_huc02fe_inorg_val[_ravalli].tex
+#          output/sum/6yr_huc02fe_inorg_val[_ravalli]_sumstats.tex
 # Author: EK  Date: 2026-05-27
 # ============================================================
 
@@ -17,13 +21,14 @@ library(fixest)
 library(arrow)
 library(dplyr)
 
-PROJECT_ROOT <- "Z:/ek559/mining_wq"
-SIX_YR_PATH  <- file.path(PROJECT_ROOT, "clean_data", "cws_6year_review.parquet")
-HUC02_PATH   <- file.path(PROJECT_ROOT, "clean_data", "cws_data", "pwsid_huc02.parquet")
-OUTPUT_DIR   <- file.path(PROJECT_ROOT, "output", "reg")
+PROJECT_ROOT         <- "Z:/ek559/mining_wq"
+SIX_YR_PATH          <- file.path(PROJECT_ROOT, "clean_data", "cws_6year_review.parquet")
+SIX_YR_PATH_RAVALLI  <- file.path(PROJECT_ROOT, "clean_data", "cws_6year_review_ravalli.parquet")
+HUC02_PATH           <- file.path(PROJECT_ROOT, "clean_data", "cws_data", "pwsid_huc02.parquet")
+OUTPUT_DIR           <- file.path(PROJECT_ROOT, "output", "reg")
 
 # ---------------------------------------------------------------------------
-# LaTeX helpers
+# LaTeX helper
 # ---------------------------------------------------------------------------
 move_notes_below_adjustbox <- function(x) {
   x <- paste(x, collapse = "\n")
@@ -40,64 +45,77 @@ move_notes_below_adjustbox <- function(x) {
 }
 
 # ---------------------------------------------------------------------------
-# Load data
+# Load datasets
 # ---------------------------------------------------------------------------
 cat("Reading:", SIX_YR_PATH, "\n")
-df6 <- read_parquet(SIX_YR_PATH)
-cat("Loaded:", nrow(df6), "rows x", ncol(df6), "columns\n")
+df6_raw  <- read_parquet(SIX_YR_PATH)
+cat("Loaded:", nrow(df6_raw), "rows x", ncol(df6_raw), "columns\n")
+
+cat("Reading:", SIX_YR_PATH_RAVALLI, "\n")
+df6r_raw <- read_parquet(SIX_YR_PATH_RAVALLI)
+cat("Loaded (Ravalli):", nrow(df6r_raw), "rows x", ncol(df6r_raw), "columns\n")
 
 cat("Reading:", HUC02_PATH, "\n")
 huc02 <- read_parquet(HUC02_PATH)
 cat("HUC02 lookup:", nrow(huc02), "rows\n")
 
-stopifnot(is.character(df6$PWSID))
+stopifnot(is.character(df6_raw$PWSID))
+stopifnot(is.character(df6r_raw$PWSID))
 stopifnot(is.character(huc02$PWSID))
 stopifnot(is.character(huc02$huc02))
 cat("HUC02 length check (all 2 chars):", all(nchar(huc02$huc02) == 2), "\n")
 
 # ---------------------------------------------------------------------------
-# Data prep
+# Data prep function — applied identically to both datasets
 # ---------------------------------------------------------------------------
-df6 <- df6 |> left_join(huc02 |> select(PWSID, huc02), by = "PWSID")
-cat("Rows with missing HUC02 after merge:", sum(is.na(df6$huc02)), "\n")
+prep_data <- function(df_raw, label = "") {
+  df <- df_raw |> left_join(huc02 |> select(PWSID, huc02), by = "PWSID")
+  cat(label, "Rows with missing HUC02 after merge:", sum(is.na(df$huc02)), "\n")
 
-# Keep 1985+ for cumulative production construction; no upper year cut here
-df6 <- df6[df6$year >= 1985, ]
-df6 <- df6[df6$PWSID != "WV3303401", ]
-df6 <- df6[df6$minehuc_downstream_of_mine == 1 & df6$minehuc_mine == 0, ]
-cat("Downstream rows (1985+):", nrow(df6), "\n")
-cat("Unique downstream PWSIDs:", length(unique(df6$PWSID)), "\n")
+  # Keep 1985+ for cumulative production construction; no upper year cut here
+  df <- df[df$year >= 1985, ]
+  df <- df[df$PWSID != "WV3303401", ]
+  df <- df[df$minehuc_downstream_of_mine == 1 & df$minehuc_mine == 0, ]
+  cat(label, "Downstream rows (1985+):", nrow(df), "\n")
+  cat(label, "Unique downstream PWSIDs:", length(unique(df$PWSID)), "\n")
 
-# Cumulative upstream production since 1985 (computed over full time series)
-cum_panel <- df6 |>
-  distinct(PWSID, year, production_short_tons_coal_upstream_sum) |>
-  arrange(PWSID, year) |>
-  group_by(PWSID) |>
-  mutate(coal_prod_upstream_cumsum =
-           cumsum(replace(production_short_tons_coal_upstream_sum,
-                          is.na(production_short_tons_coal_upstream_sum), 0))) |>
-  ungroup() |>
-  select(PWSID, year, coal_prod_upstream_cumsum)
+  cum_panel <- df |>
+    distinct(PWSID, year, production_short_tons_coal_upstream_sum) |>
+    arrange(PWSID, year) |>
+    group_by(PWSID) |>
+    mutate(coal_prod_upstream_cumsum =
+             cumsum(replace(production_short_tons_coal_upstream_sum,
+                            is.na(production_short_tons_coal_upstream_sum), 0))) |>
+    ungroup() |>
+    select(PWSID, year, coal_prod_upstream_cumsum)
 
-df6 <- df6 |> left_join(cum_panel, by = c("PWSID", "year"))
+  df <- df |> left_join(cum_panel, by = c("PWSID", "year"))
 
-chk <- df6 |>
-  distinct(PWSID, year, coal_prod_upstream_cumsum) |>
-  arrange(PWSID, year) |>
-  group_by(PWSID) |>
-  mutate(diff = coal_prod_upstream_cumsum - lag(coal_prod_upstream_cumsum))
-stopifnot(all(chk$diff >= 0 | is.na(chk$diff)))
-cat("Cumsum monotonicity check: PASSED\n")
+  chk <- df |>
+    distinct(PWSID, year, coal_prod_upstream_cumsum) |>
+    arrange(PWSID, year) |>
+    group_by(PWSID) |>
+    mutate(diff = coal_prod_upstream_cumsum - lag(coal_prod_upstream_cumsum))
+  stopifnot(all(chk$diff >= 0 | is.na(chk$diff)))
+  cat(label, "Cumsum monotonicity check: PASSED\n")
 
-df6$coal_prod_upstream_cumsum_10mst <- df6$coal_prod_upstream_cumsum / 1e7
+  df$coal_prod_upstream_cumsum_10mst <- df$coal_prod_upstream_cumsum / 1e7
 
-# Keep rows with a 6-Year Review observation (yields 1998-2011)
-df6 <- df6[!is.na(df6$VALUE), ]
-cat("Rows with non-missing VALUE:", nrow(df6),
-    "| year range:", min(df6$year), "-", max(df6$year), "\n\n")
+  # Keep rows with a 6-Year Review observation (yields 1998-2011)
+  df <- df[!is.na(df$VALUE), ]
+  cat(label, "Rows with non-missing VALUE:", nrow(df),
+      "| year range:", min(df$year), "-", max(df$year), "\n\n")
+  df
+}
+
+cat("=== Preparing standard dataset ===\n")
+df6  <- prep_data(df6_raw,  label = "[std] ")
+
+cat("=== Preparing Ravalli dataset ===\n")
+df6r <- prep_data(df6r_raw, label = "[rav] ")
 
 # ---------------------------------------------------------------------------
-# Regression formulas
+# Regression formulas (shared across both datasets)
 # ---------------------------------------------------------------------------
 fml_val <- VALUE            ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
 fml_shr <- share_above_mcl  ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
@@ -106,10 +124,14 @@ fml_max <- VALUE_max         ~ coal_prod_upstream_cumsum_10mst + num_facilities 
 
 # ---------------------------------------------------------------------------
 # Table notes
+# Standard: SYR2 non-detects = MRL, SYR3 non-detects = missing (no imputation).
+# Ravalli:  all non-detects replaced by MDL/sqrt(2) following Ravalli et al. 2022.
 # ---------------------------------------------------------------------------
-note_base <- paste0(
+note_base_std <- paste0(
   "Within each chemical, columns show (1) mean measured concentration and ",
   "(2) share of annual samples exceeding the MCL, both from the EPA 6-Year Review. ",
+  "Non-detect values are not imputed (SYR2 non-detects recorded as MRL; ",
+  "SYR3 non-detects missing). ",
   "Explanatory variable is cumulative coal production since 1985 ",
   "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
   "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
@@ -119,18 +141,36 @@ note_base <- paste0(
   "Standard errors clustered at PWSID level."
 )
 
-note_main  <- paste0("Sample period 1998--2011. ", note_base)
-note_2005  <- paste0("Sample period 1998--2005 (robustness). ", note_base)
-# Total coliform (TCR) data are available in the 6-Year Review only for 2006--2008 (SYR3).
-note_tc_main <- paste0(
+note_base_rav <- paste0(
+  "Within each chemical, columns show (1) mean measured concentration and ",
+  "(2) share of annual samples exceeding the MCL, both from the EPA 6-Year Review. ",
+  "Non-detect values replaced by MDL$/\\sqrt{2}$ following Ravalli et al.~(2022). ",
+  "Explanatory variable is cumulative coal production since 1985 ",
+  "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
+  "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
+  "interacted with year). ",
+  "Sample: CWSs at most one HUC12 downstream of a coal mine ",
+  "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0). ",
+  "Standard errors clustered at PWSID level."
+)
+
+note_main_std  <- paste0("Sample period 1998--2011. ", note_base_std)
+note_2005_std  <- paste0("Sample period 1998--2005 (robustness). ", note_base_std)
+note_main_rav  <- paste0("Sample period 1998--2011. ", note_base_rav)
+note_2005_rav  <- paste0("Sample period 1998--2005 (robustness). ", note_base_rav)
+
+note_tc_main_std <- paste0(
   "Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). ",
-  note_base,
+  note_base_std,
   " Outcome is the fraction of annual samples testing positive for total coliform ",
   "under the Total Coliform Rule (40 CFR 141.63; 54 FR 27544, Jun 29 1989)."
 )
-note_tc_2005 <- paste0(
-  "Total coliform data available only for 2006--2008 (SYR3); ",
-  "no observations in the 1998--2005 robustness window. Table omitted."
+note_tc_main_rav <- paste0(
+  "Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). ",
+  note_base_rav,
+  " Outcome is the fraction of annual samples testing positive for total coliform ",
+  "under the Total Coliform Rule (40 CFR 141.63; 54 FR 27544, Jun 29 1989). ",
+  "Total coliform presence/absence encoding is binary; MDL imputation is not applied."
 )
 
 dict_global <- c(
@@ -143,15 +183,12 @@ dict_global <- c(
 
 # ---------------------------------------------------------------------------
 # Chemical groups (SDWA categories)
-# Each group may optionally specify:
-#   outcomes — "both" (default), "value_only", or "shr_only"
-#   dict     — named character vector passed to etable() dict=; defaults to dict_global
 # ---------------------------------------------------------------------------
 chem_groups <- list(
   list(
     group_label = "Inorganic Chemicals",
     file_label  = "inorg",
-    # Cadmium (1.8%) and mercury (1.6%) dropped by Ravalli et al. detection-rate filter
+    # Cadmium (1.8%) and mercury (1.6%) dropped by detection-rate filter
     # (DETECT_RATE_MIN = 0.10 in cws_6year_review.py). Silver excluded: secondary MCL only.
     chems       = c("arsenic", "nitrate", "thallium",
                     "barium", "chromium", "selenium")
@@ -179,9 +216,8 @@ chem_groups <- list(
     group_label = "Total Coliforms",
     file_label  = "tc",
     chems       = c("total coliform"),
-    outcomes    = "value_only",   # VALUE = fraction of samples positive; share_above_mcl
-                                   # is identical after collapsing presence/absence data
-    note        = note_tc_main,   # TC-specific note (data 2006-2008 only)
+    outcomes    = "value_only",   # VALUE = fraction positive; share_above_mcl identical
+    is_tc       = TRUE,           # flag used by run_group_tables to select TC note
     dict        = c(
       VALUE                           = "Frac. positive",
       coal_prod_upstream_cumsum_10mst = "Cumul. upstream coal prod. (10M ST)",
@@ -193,7 +229,6 @@ chem_groups <- list(
 # Pretty column-header labels for each chemical
 nice_chem <- function(x) {
   switch(x,
-    # IOCs
     "arsenic"                = "Arsenic",
     "nitrate"                = "Nitrate",
     "thallium"               = "Thallium",
@@ -202,14 +237,12 @@ nice_chem <- function(x) {
     "chromium"               = "Chromium",
     "mercury"                = "Mercury",
     "selenium"               = "Selenium",
-    # SOCs
     "2,4-D"                  = "2,4-D",
     "2,4,5-TP (Silvex)"      = "Silvex",
     "endrin"                 = "Endrin",
     "lindane"                = "Lindane",
     "methoxychlor"           = "Methoxychlor",
     "toxaphene"              = "Toxaphene",
-    # VOCs
     "benzene"                = "Benzene",
     "carbon tetrachloride"   = "Carbon tet.",
     "1,2-dichloroethane"     = "1,2-DCE",
@@ -218,31 +251,24 @@ nice_chem <- function(x) {
     "1,1,1-trichloroethane"  = "1,1,1-TCA",
     "trichloroethylene"      = "TCE",
     "vinyl chloride"         = "Vinyl Cl.",
-    # Radionuclides
     "alpha particles"        = "Alpha part.",
     "beta particles"         = "Beta part.",
     "radium"                 = "Radium",
     "uranium"                = "Uranium",
-    # Total Coliforms
     "total coliform"         = "Total coliform",
     tools::toTitleCase(x)
   )
 }
 
 # ---------------------------------------------------------------------------
-# run_group_tables(): estimate and write one table per chemical group
+# run_group_tables(): estimate and write one table per chemical group.
 #   df        — analysis dataset (already filtered to desired sample period)
-#   note      — table footnote string
-#   file_sfx  — suffix appended to output file name (e.g. "" or "_2005")
-#   title_sfx — appended to table title (e.g. "" or ", robustness 1998--2005")
-#
-# Per-group options (set in chem_groups list):
-#   outcomes  — "both" (default): VALUE + share_above_mcl per chemical
-#               "value_only":    VALUE model only
-#               "shr_only":      share_above_mcl model only
-#   dict      — named character vector for etable(); defaults to dict_global
+#   note      — default table footnote string (used for non-TC groups)
+#   note_tc   — footnote for the total coliforms group
+#   file_sfx  — suffix appended to output file name (e.g. "", "_2005", "_ravalli")
+#   title_sfx — appended to table title
 # ---------------------------------------------------------------------------
-run_group_tables <- function(df, note, file_sfx, title_sfx) {
+run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_main_std) {
   for (grp in chem_groups) {
     cat("\n--- Group:", grp$group_label, file_sfx, "---\n")
 
@@ -253,7 +279,8 @@ run_group_tables <- function(df, note, file_sfx, title_sfx) {
 
     outcomes_mode <- if (!is.null(grp$outcomes)) grp$outcomes else "both"
     grp_dict      <- if (!is.null(grp$dict))     grp$dict     else dict_global
-    grp_note      <- if (!is.null(grp$note))     grp$note     else note
+    # TC group uses note_tc; all others use note
+    grp_note      <- if (isTRUE(grp$is_tc)) note_tc else note
 
     models_list <- list()
     hdr_vec     <- character(0)
@@ -283,7 +310,6 @@ run_group_tables <- function(df, note, file_sfx, title_sfx) {
       }
 
       if (outcomes_mode %in% c("both", "shr_only")) {
-        # share_above_mcl requires variation; skip if constant (e.g. all zeros)
         shr_var <- var(d$share_above_mcl, na.rm = TRUE)
         if (is.na(shr_var) || shr_var == 0) {
           cat("  share_above_mcl is constant — skipping share model.\n")
@@ -294,7 +320,7 @@ run_group_tables <- function(df, note, file_sfx, title_sfx) {
           )
           if (!is.null(m_shr)) {
             models_list <- c(models_list, list(m_shr))
-            hdr_vec     <- c(hdr_vec, nm)  # repeated name → multicolumn with m_val
+            hdr_vec     <- c(hdr_vec, nm)
             cat("  n_shr =", m_shr$nobs,
                 "| coef_shr =", round(coef(m_shr)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
           }
@@ -333,9 +359,10 @@ run_group_tables <- function(df, note, file_sfx, title_sfx) {
 # ---------------------------------------------------------------------------
 # Notes and dict for count (num_measurements) tables
 # ---------------------------------------------------------------------------
-note_cnt_base <- paste0(
+note_cnt_base_std <- paste0(
   "Outcome is the number of annual measurements of the analyte recorded ",
   "for each CWS in the EPA 6-Year Review. ",
+  "Non-detect values are not imputed. ",
   "Explanatory variable is cumulative coal production since 1985 ",
   "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
   "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
@@ -345,13 +372,36 @@ note_cnt_base <- paste0(
   "Standard errors clustered at PWSID level."
 )
 
-note_cnt_main <- paste0("Sample period 1998--2011. ", note_cnt_base)
-note_cnt_2005 <- paste0("Sample period 1998--2005 (robustness). ", note_cnt_base)
-note_tc_cnt_main <- paste0(
+note_cnt_base_rav <- paste0(
+  "Outcome is the number of annual measurements of the analyte recorded ",
+  "for each CWS in the EPA 6-Year Review. ",
+  "Non-detect values replaced by MDL$/\\sqrt{2}$ following Ravalli et al.~(2022). ",
+  "Explanatory variable is cumulative coal production since 1985 ",
+  "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
+  "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
+  "interacted with year). ",
+  "Sample: CWSs at most one HUC12 downstream of a coal mine ",
+  "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0). ",
+  "Standard errors clustered at PWSID level."
+)
+
+note_cnt_main_std <- paste0("Sample period 1998--2011. ", note_cnt_base_std)
+note_cnt_2005_std <- paste0("Sample period 1998--2005 (robustness). ", note_cnt_base_std)
+note_cnt_main_rav <- paste0("Sample period 1998--2011. ", note_cnt_base_rav)
+note_cnt_2005_rav <- paste0("Sample period 1998--2005 (robustness). ", note_cnt_base_rav)
+
+note_tc_cnt_main_std <- paste0(
   "Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). ",
-  note_cnt_base,
+  note_cnt_base_std,
   " Number of presence/absence coliform tests conducted under the Total Coliform Rule ",
   "(40 CFR 141.63; 54 FR 27544, Jun 29 1989)."
+)
+note_tc_cnt_main_rav <- paste0(
+  "Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). ",
+  note_cnt_base_rav,
+  " Number of presence/absence coliform tests conducted under the Total Coliform Rule ",
+  "(40 CFR 141.63; 54 FR 27544, Jun 29 1989). ",
+  "MDL imputation not applied to total coliform (binary encoding)."
 )
 
 dict_cnt <- c(
@@ -364,11 +414,9 @@ dict_cnt <- c(
 )
 
 # ---------------------------------------------------------------------------
-# run_count_tables(): same chemical groups as run_group_tables() but with
-#   num_measurements, mean VALUE, and max VALUE as outcomes (three columns
-#   per chemical, grouped under a multicolumn header).
+# run_count_tables(): num_measurements, mean VALUE, and max VALUE as outcomes.
 # ---------------------------------------------------------------------------
-run_count_tables <- function(df, note, file_sfx, title_sfx) {
+run_count_tables <- function(df, note, file_sfx, title_sfx, note_tc_cnt = note_tc_cnt_main_std) {
   for (grp in chem_groups) {
     cat("\n--- Count | Group:", grp$group_label, file_sfx, "---\n")
 
@@ -377,12 +425,7 @@ run_count_tables <- function(df, note, file_sfx, title_sfx) {
       next
     }
 
-    grp_note <- if (!is.null(grp$note)) {
-      # Replace TC-specific note with count equivalent
-      note_tc_cnt_main
-    } else {
-      note
-    }
+    grp_note <- if (isTRUE(grp$is_tc)) note_tc_cnt else note
 
     models_list <- list()
     hdr_vec     <- character(0)
@@ -448,7 +491,7 @@ run_count_tables <- function(df, note, file_sfx, title_sfx) {
       tex             = TRUE,
       drop            = "^num_facilities$",
       title           = paste0("Effect of cumulative upstream coal production on ",
-                               "measurements and concentration — ", grp$group_label,
+                               "measurements and concentration --- ", grp$group_label,
                                " (6-Year Review, downstream CWSs", title_sfx, ")"),
       label           = paste0("tab:6yr_huc02fe_cnt_", grp$file_label, file_sfx),
       dict            = dict_cnt,
@@ -461,64 +504,27 @@ run_count_tables <- function(df, note, file_sfx, title_sfx) {
 }
 
 # ---------------------------------------------------------------------------
-# Main run: 1998-2011 (all rows with non-missing VALUE)
+# run_inorg_val_table(): mean concentration for inorganic chemicals (no R^2).
+#   df6_arg   — prepared dataset
+#   file_sfx  — appended to output file name (e.g. "" or "_ravalli")
+#   title_sfx — appended to table title
+#   note_val  — footnote for the regression table
 # ---------------------------------------------------------------------------
-cat("=== MAIN SAMPLE: 1998-2011 ===\n")
-run_group_tables(df6, note_main, file_sfx = "", title_sfx = "")
+run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val) {
+  cat("\n=== INORGANIC CHEMICALS --- MEAN CONCENTRATION", file_sfx, "===\n")
 
-# ---------------------------------------------------------------------------
-# Robustness run: 1998-2005
-# ---------------------------------------------------------------------------
-cat("\n=== ROBUSTNESS: 1998-2005 ===\n")
-df6_2005 <- df6[df6$year <= 2005, ]
-cat("Rows (1998-2005):", nrow(df6_2005),
-    "| year range:", min(df6_2005$year), "-", max(df6_2005$year), "\n")
-run_group_tables(df6_2005, note_2005, file_sfx = "_2005", title_sfx = ", robustness 1998--2005")
-# Total coliform has no obs in 1998-2005 (SYR3 only covers 2006-2008); no table produced.
-
-# ---------------------------------------------------------------------------
-# Count tables: num_measurements as outcome
-# ---------------------------------------------------------------------------
-cat("\n=== COUNT TABLES (num_measurements): MAIN SAMPLE 1998-2011 ===\n")
-run_count_tables(df6, note_cnt_main, file_sfx = "", title_sfx = "")
-
-cat("\n=== COUNT TABLES (num_measurements): ROBUSTNESS 1998-2005 ===\n")
-run_count_tables(df6_2005, note_cnt_2005, file_sfx = "_2005", title_sfx = ", robustness 1998--2005")
-# Total coliform has no obs in 1998-2005; no cnt_tc_2005 table produced.
-
-# ---------------------------------------------------------------------------
-# Share-above-MCL inorganic table: share of samples exceeding applicable MCL,
-# no R^2 rows, no num_facilities row in display (variable kept in regression).
-# Output: 6yr_huc02fe_inorg_val.tex
-# ---------------------------------------------------------------------------
-cat("\n=== INORGANIC CHEMICALS — SHARE ABOVE MCL ===\n")
-{
   grp_inorg <- chem_groups[[1]]  # inorganic chemicals
   # Thallium excluded: 86% of values cluster at two detection-limit values,
-  # making share_above_mcl unreliable (near-zero variance in binary exceedance).
+  # making mean concentration unreliable.
   inorg_val_chems <- setdiff(grp_inorg$chems, "thallium")
-
-  note_val <- paste0(
-    "Sample period 1998--2011. ",
-    "Outcome is the mean measured concentration of the analyte in a given CWS-year ",
-    "from the EPA 6-Year Review (Ravalli et al.~2022 cleaning). ",
-    "For arsenic, the MCL is 0.050 mg/L through 2005 and 0.010 mg/L from 2006 onward. ",
-    "Explanatory variable is cumulative coal production since 1985 ",
-    "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
-    "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
-    "interacted with year). ",
-    "Sample: CWSs at most one HUC12 downstream of a coal mine ",
-    "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0). ",
-    "Standard errors clustered at PWSID level."
-  )
 
   models_val <- list()
   hdr_val    <- character(0)
 
   for (chem in inorg_val_chems) {
-    d <- df6[df6$CHEMID_name == chem, ]
+    d <- df6_arg[df6_arg$CHEMID_name == chem, ]
     cat("  Chemical:", chem, "| n rows:", nrow(d), "\n")
-    if (nrow(d) < 30) { cat("  Skipping — too few obs.\n"); next }
+    if (nrow(d) < 30) { cat("  Skipping --- too few obs.\n"); next }
 
     m <- tryCatch(
       feols(fml_val, data = d, cluster = ~PWSID),
@@ -532,18 +538,18 @@ cat("\n=== INORGANIC CHEMICALS — SHARE ABOVE MCL ===\n")
     }
   }
 
-  out_val <- file.path(OUTPUT_DIR, "6yr_huc02fe_inorg_val.tex")
+  out_val <- file.path(OUTPUT_DIR, paste0("6yr_huc02fe_inorg_val", file_sfx, ".tex"))
   etable(
     models_val,
     headers         = hdr_val,
-    fitstat         = ~ n,            # observations only; no R^2 or Within R^2
+    fitstat         = ~ n,
     style.tex       = style.tex("aer", adjustbox = TRUE),
     tex             = TRUE,
-    drop            = "Num\\.",       # matches "Num. intake facilities" label (dict active)
+    drop            = "Num\\.",
     title           = paste0("Effect of cumulative upstream coal production on ",
                              "mean measured concentration ",
-                             "(6-Year Review, downstream CWSs)"),
-    label           = "tab:6yr_huc02fe_inorg_val",
+                             "(6-Year Review, downstream CWSs", title_sfx, ")"),
+    label           = paste0("tab:6yr_huc02fe_inorg_val", file_sfx),
     dict            = dict_global,
     notes           = note_val,
     postprocess.tex = move_notes_below_adjustbox,
@@ -551,17 +557,12 @@ cat("\n=== INORGANIC CHEMICALS — SHARE ABOVE MCL ===\n")
   )
   cat("  Written:", out_val, "\n")
 
-  # -------------------------------------------------------------------------
-  # Summary statistics for 6yr_huc02fe_inorg_val.tex
-  # Rows: one per inorganic chemical (share_above_mcl) + one for cumulative coal prod
-  # Sample: complete cases used in each chemical's feols regression
-  # -------------------------------------------------------------------------
-  cat("\n--- Summary statistics for inorg_val ---\n")
+  # ---- Summary statistics ----
+  cat("\n--- Summary statistics for inorg_val", file_sfx, "---\n")
 
   sum_rows  <- list()
   coal_list <- list()
 
-  # MCL labels sourced from _MCL_RECORDS in cws_6year_review.py
   mcl_labels <- c(
     "arsenic"  = "Pre-2006: 0.050 mg/L, 2006+: 0.010 mg/L",
     "nitrate"  = "10.0 mg/L",
@@ -573,7 +574,7 @@ cat("\n=== INORGANIC CHEMICALS — SHARE ABOVE MCL ===\n")
   )
 
   for (chem in inorg_val_chems) {
-    d_s <- df6[df6$CHEMID_name == chem, ]
+    d_s <- df6_arg[df6_arg$CHEMID_name == chem, ]
     if (nrow(d_s) < 30) next
 
     m_s <- tryCatch(
@@ -599,7 +600,6 @@ cat("\n=== INORGANIC CHEMICALS — SHARE ABOVE MCL ===\n")
     coal_list[[chem]] <- d_reg_s[, c("PWSID", "year", "coal_prod_upstream_cumsum_10mst")]
   }
 
-  # Coal production: unique PWSID x year pairs across all regression samples
   coal_df <- unique(do.call(rbind, coal_list))
   coal_df <- coal_df[!duplicated(coal_df[, c("PWSID", "year")]), ]
   sum_rows[["coal"]] <- data.frame(
@@ -628,17 +628,19 @@ cat("\n=== INORGANIC CHEMICALS — SHARE ABOVE MCL ===\n")
   note_ss <- paste0(
     "Sample period 1998--2011. ",
     "Statistics computed on the sample used in each chemical's regression in ",
-    "Table~\\ref{tab:6yr_huc02fe_inorg_val}. ",
+    "Table~\\ref{tab:6yr_huc02fe_inorg_val", file_sfx, "}. ",
     "For cumulative upstream coal production, statistics are computed over unique ",
     "PWSID$\\times$year pairs that appear in at least one regression sample. ",
     "Sample: CWSs at most one HUC12 downstream of a coal mine ",
     "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0)."
   )
 
+  tab_label <- paste0("tab:6yr_huc02fe_inorg_val_sumstats", file_sfx)
+
   tex_ss <- c(
     "",
     "\\begin{table}[htbp]",
-    paste0("   \\caption{\\label{tab:6yr_huc02fe_inorg_val_sumstats} ",
+    paste0("   \\caption{\\label{", tab_label, "} ",
            "Summary statistics: mean concentration for inorganic chemicals and cumulative upstream coal production}"),
     "   \\bigskip",
     "   \\centering",
@@ -670,14 +672,112 @@ cat("\n=== INORGANIC CHEMICALS — SHARE ABOVE MCL ===\n")
     ""
   )
 
-  out_ss <- file.path(PROJECT_ROOT, "output", "sum", "6yr_huc02fe_inorg_val_sumstats.tex")
+  out_ss <- file.path(PROJECT_ROOT, "output", "sum",
+                      paste0("6yr_huc02fe_inorg_val_sumstats", file_sfx, ".tex"))
   writeLines(tex_ss, out_ss)
   cat("  Written:", out_ss, "\n")
 }
 
 # ---------------------------------------------------------------------------
+# Note text for inorg_val tables
+# ---------------------------------------------------------------------------
+note_inorg_val_std <- paste0(
+  "Sample period 1998--2011. ",
+  "Outcome is the mean measured concentration of the analyte in a given CWS-year ",
+  "from the EPA 6-Year Review. ",
+  "Non-detect values are not imputed (SYR2 non-detects recorded as MRL; ",
+  "SYR3 non-detects missing). ",
+  "For arsenic, the MCL is 0.050 mg/L through 2005 and 0.010 mg/L from 2006 onward. ",
+  "Explanatory variable is cumulative coal production since 1985 ",
+  "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
+  "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
+  "interacted with year). ",
+  "Sample: CWSs at most one HUC12 downstream of a coal mine ",
+  "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0). ",
+  "Standard errors clustered at PWSID level."
+)
+
+note_inorg_val_rav <- paste0(
+  "Sample period 1998--2011. ",
+  "Outcome is the mean measured concentration of the analyte in a given CWS-year ",
+  "from the EPA 6-Year Review (Ravalli et al.~2022 cleaning: non-detects replaced ",
+  "by MDL$/\\sqrt{2}$). ",
+  "For arsenic, the MCL is 0.050 mg/L through 2005 and 0.010 mg/L from 2006 onward. ",
+  "Explanatory variable is cumulative coal production since 1985 ",
+  "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
+  "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
+  "interacted with year). ",
+  "Sample: CWSs at most one HUC12 downstream of a coal mine ",
+  "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0). ",
+  "Standard errors clustered at PWSID level."
+)
+
+# ===========================================================================
+# STANDARD PIPELINE TABLES
+# ===========================================================================
+
+cat("\n\n### STANDARD PIPELINE ###\n")
+
+cat("\n=== MAIN SAMPLE: 1998-2011 ===\n")
+run_group_tables(df6, note_main_std, file_sfx = "", title_sfx = "",
+                 note_tc = note_tc_main_std)
+
+cat("\n=== ROBUSTNESS: 1998-2005 ===\n")
+df6_2005 <- df6[df6$year <= 2005, ]
+cat("Rows (1998-2005):", nrow(df6_2005),
+    "| year range:", min(df6_2005$year), "-", max(df6_2005$year), "\n")
+run_group_tables(df6_2005, note_2005_std, file_sfx = "_2005",
+                 title_sfx = ", robustness 1998--2005",
+                 note_tc = note_tc_main_std)
+
+cat("\n=== COUNT TABLES: MAIN SAMPLE 1998-2011 ===\n")
+run_count_tables(df6, note_cnt_main_std, file_sfx = "", title_sfx = "",
+                 note_tc_cnt = note_tc_cnt_main_std)
+
+cat("\n=== COUNT TABLES: ROBUSTNESS 1998-2005 ===\n")
+run_count_tables(df6_2005, note_cnt_2005_std, file_sfx = "_2005",
+                 title_sfx = ", robustness 1998--2005",
+                 note_tc_cnt = note_tc_cnt_main_std)
+
+run_inorg_val_table(df6, file_sfx = "", title_sfx = "",
+                    note_val = note_inorg_val_std)
+
+# ===========================================================================
+# RAVALLI ET AL. (2022) PIPELINE TABLES
+# ===========================================================================
+
+cat("\n\n### RAVALLI ET AL. (2022) PIPELINE (MDL/sqrt(2) imputation) ###\n")
+
+cat("\n=== MAIN SAMPLE: 1998-2011 ===\n")
+run_group_tables(df6r, note_main_rav, file_sfx = "_ravalli",
+                 title_sfx = ", Ravalli et al.~(2022) cleaning",
+                 note_tc = note_tc_main_rav)
+
+cat("\n=== ROBUSTNESS: 1998-2005 ===\n")
+df6r_2005 <- df6r[df6r$year <= 2005, ]
+cat("Rows (1998-2005):", nrow(df6r_2005),
+    "| year range:", min(df6r_2005$year), "-", max(df6r_2005$year), "\n")
+run_group_tables(df6r_2005, note_2005_rav, file_sfx = "_ravalli_2005",
+                 title_sfx = ", Ravalli et al.~(2022) cleaning, robustness 1998--2005",
+                 note_tc = note_tc_main_rav)
+
+cat("\n=== COUNT TABLES: MAIN SAMPLE 1998-2011 ===\n")
+run_count_tables(df6r, note_cnt_main_rav, file_sfx = "_ravalli",
+                 title_sfx = ", Ravalli et al.~(2022) cleaning",
+                 note_tc_cnt = note_tc_cnt_main_rav)
+
+cat("\n=== COUNT TABLES: ROBUSTNESS 1998-2005 ===\n")
+run_count_tables(df6r_2005, note_cnt_2005_rav, file_sfx = "_ravalli_2005",
+                 title_sfx = ", Ravalli et al.~(2022) cleaning, robustness 1998--2005",
+                 note_tc_cnt = note_tc_cnt_main_rav)
+
+run_inorg_val_table(df6r, file_sfx = "_ravalli",
+                    title_sfx = ", Ravalli et al.~(2022) cleaning",
+                    note_val = note_inorg_val_rav)
+
+# ---------------------------------------------------------------------------
 # Scatter plot: beta particle mean concentration vs cumulative upstream coal
-# production. Each point = one PWSID-year observation.
+# production. Uses the standard dataset. One dot per PWSID-year observation.
 # ---------------------------------------------------------------------------
 cat("\n=== SCATTER: beta particles vs cumulative upstream coal production ===\n")
 suppressPackageStartupMessages(library(ggplot2))
@@ -685,13 +785,6 @@ suppressPackageStartupMessages(library(ggplot2))
 beta_df <- df6[df6$CHEMID_name == "beta particles", ]
 cat("Beta particles observations:", nrow(beta_df), "\n")
 cat("Unique PWSIDs:", length(unique(beta_df$PWSID)), "\n")
-
-# Aggregate to PWSID mean for annotation counts
-beta_pwsid <- aggregate(
-  cbind(VALUE, coal_prod_upstream_cumsum_10mst) ~ PWSID,
-  data  = beta_df,
-  FUN   = mean
-)
 
 p_beta <- ggplot(beta_df,
                  aes(x = coal_prod_upstream_cumsum_10mst, y = VALUE)) +

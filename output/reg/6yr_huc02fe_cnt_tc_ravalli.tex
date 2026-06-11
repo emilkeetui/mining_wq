@@ -1,7 +1,7 @@
 
 \begin{table}[htbp]
    
-   \caption{\label{tab:6yr_huc02fe_cnt_tc} Effect of cumulative upstream coal production on measurements and concentration --- Total Coliforms (6-Year Review, downstream CWSs)}
+   \caption{\label{tab:6yr_huc02fe_cnt_tc_ravalli} Effect of cumulative upstream coal production on measurements and concentration --- Total Coliforms (6-Year Review, downstream CWSs, Ravalli et al.~(2022) cleaning)}
    \bigskip
    
    \centering
@@ -43,7 +43,7 @@
       
    \end{adjustbox}
       {\tiny\linespread{1}\selectfont \par \raggedright 
-   Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). Outcome is the number of annual measurements of the analyte recorded for each CWS in the EPA 6-Year Review. Non-detect values are not imputed. Explanatory variable is cumulative coal production since 1985 (in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12 interacted with year). Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level. Number of presence/absence coliform tests conducted under the Total Coliform Rule (40 CFR 141.63; 54 FR 27544, Jun 29 1989).}
+   Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). Outcome is the number of annual measurements of the analyte recorded for each CWS in the EPA 6-Year Review. Non-detect values replaced by MDL$/\sqrt{2}$ following Ravalli et al.~(2022). Explanatory variable is cumulative coal production since 1985 (in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12 interacted with year). Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level. Number of presence/absence coliform tests conducted under the Total Coliform Rule (40 CFR 141.63; 54 FR 27544, Jun 29 1989). MDL imputation not applied to total coliform (binary encoding).}
    
 \end{table}
 

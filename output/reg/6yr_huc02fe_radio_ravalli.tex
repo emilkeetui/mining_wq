@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:6yr_huc02fe_radio_ravalli} Effect of cumulative upstream coal production on Radionuclides (6-Year Review, downstream CWSs, Ravalli et al.~(2022) cleaning)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcc}
+         \toprule
+         
+          & \multicolumn{2}{c}{Mean conc.}\\
+         
+                                             & Alpha part.   & Beta part. \\   
+         
+                                             & (1)           & (2)\\  
+         
+         \midrule 
+         Cumul. upstream coal prod. (10M ST) & -4.101        & 3.755$^{***}$\\   
+                                             & (2.939)       & ($7.41\times 10^{-5}$)\\    
+         Num. intake facilities              &               & -2.377$^{**}$\\   
+                                             &               & (0.9666)\\   
+         
+          \\
+         
+         Within R$^2$                        & 0.02136       & 0.03816\\  
+         Observations                        & 162           & 57\\  
+         R$^2$                               & 0.79940       & 0.73437\\  
+         
+          \\
+         
+         CWS fixed effects                   & $\checkmark$  & $\checkmark$\\   
+         huc02-year fixed effects            & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample period 1998--2011. Within each chemical, columns show (1) mean measured concentration and (2) share of annual samples exceeding the MCL, both from the EPA 6-Year Review. Non-detect values replaced by MDL$/\sqrt{2}$ following Ravalli et al.~(2022). Explanatory variable is cumulative coal production since 1985 (in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12 interacted with year). Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level.}
+   
+\end{table}
+
+

@@ -10,11 +10,14 @@
 # Inputs:  - raw_data/6_year_review_epa/six-year-review 2/**/*.mdb
 #          - raw_data/6_year_review_epa/six-year-review 3/**/*.txt
 #          - clean_data/cws_data/prod_vio_sulfur.parquet
-# Outputs: - clean_data/cws_6year_review_chemicals.parquet  (pre-merge)
-#          - clean_data/cws_6year_review.parquet             (merged to 2SLS)
+# Outputs: - clean_data/cws_6year_review_chemicals.parquet         (standard, pre-merge)
+#          - clean_data/cws_6year_review.parquet                   (standard, merged to 2SLS)
+#          - clean_data/cws_6year_review_chemicals_ravalli.parquet (Ravalli, pre-merge)
+#          - clean_data/cws_6year_review_ravalli.parquet           (Ravalli, merged to 2SLS)
 # Author: EK  Date: 2026-05-27
 # ============================================================
 
+import math
 import pathlib
 import re
 import pyodbc
@@ -24,10 +27,15 @@ PROJECT_ROOT  = pathlib.Path(r"Z:\ek559\mining_wq")
 SYR2_ROOT     = PROJECT_ROOT / "raw_data" / "6_year_review_epa" / "six-year-review 2"
 SYR3_ROOT     = PROJECT_ROOT / "raw_data" / "6_year_review_epa" / "six-year-review 3"
 MAIN_DATASET  = PROJECT_ROOT / "clean_data" / "cws_data" / "prod_vio_sulfur.parquet"
-CHEM_OUTPUT   = PROJECT_ROOT / "clean_data" / "cws_6year_review_chemicals.parquet"
-MERGED_OUTPUT = PROJECT_ROOT / "clean_data" / "cws_6year_review.parquet"
+CHEM_OUTPUT          = PROJECT_ROOT / "clean_data" / "cws_6year_review_chemicals.parquet"
+MERGED_OUTPUT        = PROJECT_ROOT / "clean_data" / "cws_6year_review.parquet"
+CHEM_OUTPUT_RAVALLI  = PROJECT_ROOT / "clean_data" / "cws_6year_review_chemicals_ravalli.parquet"
+MERGED_OUTPUT_RAVALLI= PROJECT_ROOT / "clean_data" / "cws_6year_review_ravalli.parquet"
 
-KEEP_COLS = ["PWSID", "CHEMID_name", "DETECT", "VALUE", "UNITS", "YEAR"]
+# MDL / MDL_UNITS carry the record-specific detection limit for the Ravalli pipeline.
+# SYR2: MDL = VALUE when DETECT==0 (per SYR2 data dictionary, VALUE stores the MRL for non-detects).
+# SYR3: MDL = "Detection Limit Value"; MDL_UNITS = "Detection Limit Unit".
+KEEP_COLS = ["PWSID", "CHEMID_name", "DETECT", "VALUE", "UNITS", "YEAR", "MDL", "MDL_UNITS"]
 
 # Detection-rate filter threshold: chemicals whose national share of records
 # above the LOD (DETECT == 1) is below this value are dropped. Presence/absence
@@ -252,6 +260,10 @@ def read_syr2_mdb(path: pathlib.Path, chem_name: str) -> pd.DataFrame:
     df["UNITS"]      = df["UNITS"].astype(str).str.strip().where(lambda s: s != "nan")
     df["DETECT"]     = pd.to_numeric(df["DETECT"], errors="coerce")
     df["VALUE"]      = pd.to_numeric(df["VALUE"],  errors="coerce")
+    # SYR2 data dictionary: VALUE stores the MRL when DETECT==0.
+    # MDL = that MRL; MDL_UNITS = same UNITS as the measured VALUE.
+    df["MDL"]       = df["VALUE"].where(df["DETECT"] == 0)
+    df["MDL_UNITS"] = df["UNITS"]
     return df[KEEP_COLS].copy()
 
 
@@ -278,6 +290,8 @@ def read_syr3_txt(path: pathlib.Path, chem_name: str) -> pd.DataFrame:
         "Detect": "DETECT",
         "Value":  "VALUE",
         "Unit":   "UNITS",
+        "Detection Limit Value": "MDL",
+        "Detection Limit Unit":  "MDL_UNITS",
     })
     df["YEAR"]       = pd.to_datetime(df["_DATE"]).dt.year
     df["CHEMID_name"] = chem_name
@@ -286,11 +300,24 @@ def read_syr3_txt(path: pathlib.Path, chem_name: str) -> pd.DataFrame:
     df["DETECT"]     = pd.to_numeric(df["DETECT"], errors="coerce")
     df["VALUE"]      = pd.to_numeric(df["VALUE"],  errors="coerce")
 
+    # SYR3 detection-limit columns (may not be present in all file versions)
+    if "MDL" in df.columns:
+        df["MDL"] = pd.to_numeric(df["MDL"], errors="coerce")
+    else:
+        df["MDL"] = float("nan")
+    if "MDL_UNITS" in df.columns:
+        df["MDL_UNITS"] = df["MDL_UNITS"].astype(str).str.strip().where(lambda s: s != "nan")
+    else:
+        df["MDL_UNITS"] = None
+
     if chem_name in PRESENCE_ABSENCE_CHEMS and "Presence Indicator Code" in df.columns:
         pic = df["Presence Indicator Code"].astype(str).str.strip()
         df["VALUE"]  = pic.map({"P": 1.0, "A": 0.0})
         df["DETECT"] = df["VALUE"]
         df["UNITS"]  = "binary"
+        # Presence/absence encoding has no detection limit; clear MDL columns
+        df["MDL"]       = float("nan")
+        df["MDL_UNITS"] = None
         n_p = int((df["VALUE"] == 1.0).sum())
         n_a = int((df["VALUE"] == 0.0).sum())
         print(f"    [presence-absence] P={n_p:,}  A={n_a:,}  "
@@ -502,6 +529,43 @@ def drop_gross_outliers(df: pd.DataFrame, factor: float = 100.0) -> pd.DataFrame
     return df.loc[~gross].copy()
 
 
+def impute_nondetects_ravalli(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Ravalli et al. (2022) cleaning: replace non-detect records with MDL / sqrt(2).
+
+    This method is used by the US CDC and other federal agencies when reporting
+    geometric or arithmetic means of environmental biomarkers (Ravalli et al.
+    Lancet Planet Health 2022; 6: e320-30, appendix 2 p 3).
+
+    SYR2: VALUE already stores the MRL for DETECT==0 records (per SYR2 data
+          dictionary).  MDL = VALUE_original; imputed VALUE = MDL / sqrt(2).
+    SYR3: VALUE is NaN for non-detects; MDL comes from 'Detection Limit Value'.
+          UNITS is also NaN for non-detects and is set from 'Detection Limit Unit'
+          so that the subsequent normalize_units() call can convert correctly.
+
+    Presence/absence chemicals (total coliform) are skipped — their VALUE
+    is a binary 0/1 indicator rather than a concentration.
+    """
+    df = df.copy()
+    mask = (
+        (df["DETECT"] == 0)
+        & df["MDL"].notna()
+        & ~df["CHEMID_name"].isin(PRESENCE_ABSENCE_CHEMS)
+    )
+    n_imputed = int(mask.sum())
+    df.loc[mask, "VALUE"] = df.loc[mask, "MDL"] / math.sqrt(2)
+
+    # For SYR3 non-detects UNITS is NaN; fill from MDL_UNITS so normalize_units works
+    units_filled = mask & df["UNITS"].isna() & df["MDL_UNITS"].notna()
+    df.loc[units_filled, "UNITS"] = df.loc[units_filled, "MDL_UNITS"]
+
+    print(
+        f"\nRavalli MDL/sqrt(2) imputation: {n_imputed:,} non-detect records imputed "
+        f"({int(units_filled.sum()):,} SYR3 records had UNITS filled from MDL_UNITS)"
+    )
+    return df
+
+
 def collapse_to_pwsid_year(df: pd.DataFrame) -> pd.DataFrame:
     """
     Collapse sample-level data to PWSID × CHEMID_name × YEAR.
@@ -649,43 +713,64 @@ CHEMICALS = [
 ]
 
 if __name__ == "__main__":
-    # Step 1: read all SYR2 + SYR3 files for requested chemicals
+    # Step 1: read all SYR2 + SYR3 files (shared across both pipelines)
     master = build_chemical_panel(CHEMICALS)
 
-    # Step 2: unit normalization (mass -> mg/L, radionuclides -> pCi/L)
-    master = normalize_units(master)
+    # ── Standard pipeline (no MDL imputation) ─────────────────────────────
+    print("\n" + "=" * 60)
+    print("STANDARD PIPELINE (no MDL imputation)")
+    print("=" * 60)
 
-    # Step 3: detection-rate filter — drop chemicals < DETECT_RATE_MIN above LOD
-    master = report_detection_rates(master, DETECT_RATE_MIN)
+    master_std = normalize_units(master)
+    master_std = report_detection_rates(master_std, DETECT_RATE_MIN)
+    master_std = assign_mcl_and_above(master_std)
+    master_std = drop_gross_outliers(master_std)
+    collapsed_std = collapse_to_pwsid_year(master_std)
 
-    # Step 4: attach above_mcl flag at sample level
-    master = assign_mcl_and_above(master)
-
-    # Step 5: gross-outlier exclusion — drop records > 100 × MCL
-    master = drop_gross_outliers(master)
-
-    # Step 6: collapse to PWSID × CHEMID_name × YEAR
-    collapsed = collapse_to_pwsid_year(master)
-
-    # Step 7: write pre-merge chemical dataset
     if CHEM_OUTPUT.exists():
         print(f"\nWARNING: {CHEM_OUTPUT} already exists — overwriting")
-    print(collapsed.dtypes)
-    collapsed.to_parquet(CHEM_OUTPUT, index=False, engine="pyarrow")
+    print(collapsed_std.dtypes)
+    collapsed_std.to_parquet(CHEM_OUTPUT, index=False, engine="pyarrow")
     v = pd.read_parquet(CHEM_OUTPUT, engine="pyarrow")
     print(f"Written {len(v):,} rows × {v.shape[1]} columns to {CHEM_OUTPUT}")
 
-    # Step 8: merge to 2SLS dataset
-    merged = merge_to_2sls(collapsed)
-
-    # Step 9: write merged output
+    merged_std = merge_to_2sls(collapsed_std)
     if MERGED_OUTPUT.exists():
         print(f"\nWARNING: {MERGED_OUTPUT} already exists — overwriting")
-    merged["PWSID"] = merged["PWSID"].astype(str)
-    merged["year"]  = merged["year"].astype("int64")
-    print(merged.dtypes)
-    merged.to_parquet(MERGED_OUTPUT, index=False, engine="pyarrow")
+    merged_std["PWSID"] = merged_std["PWSID"].astype(str)
+    merged_std["year"]  = merged_std["year"].astype("int64")
+    print(merged_std.dtypes)
+    merged_std.to_parquet(MERGED_OUTPUT, index=False, engine="pyarrow")
     v2 = pd.read_parquet(MERGED_OUTPUT, engine="pyarrow")
     print(f"Written {len(v2):,} rows × {v2.shape[1]} columns to {MERGED_OUTPUT}")
+
+    # ── Ravalli et al. (2022) pipeline (MDL/sqrt(2) imputation) ───────────
+    print("\n" + "=" * 60)
+    print("RAVALLI ET AL. (2022) PIPELINE: MDL/sqrt(2) imputation for non-detects")
+    print("=" * 60)
+
+    master_rav = impute_nondetects_ravalli(master)
+    master_rav = normalize_units(master_rav)
+    master_rav = report_detection_rates(master_rav, DETECT_RATE_MIN)
+    master_rav = assign_mcl_and_above(master_rav)
+    master_rav = drop_gross_outliers(master_rav)
+    collapsed_rav = collapse_to_pwsid_year(master_rav)
+
+    if CHEM_OUTPUT_RAVALLI.exists():
+        print(f"\nWARNING: {CHEM_OUTPUT_RAVALLI} already exists — overwriting")
+    print(collapsed_rav.dtypes)
+    collapsed_rav.to_parquet(CHEM_OUTPUT_RAVALLI, index=False, engine="pyarrow")
+    v3 = pd.read_parquet(CHEM_OUTPUT_RAVALLI, engine="pyarrow")
+    print(f"Written {len(v3):,} rows × {v3.shape[1]} columns to {CHEM_OUTPUT_RAVALLI}")
+
+    merged_rav = merge_to_2sls(collapsed_rav)
+    if MERGED_OUTPUT_RAVALLI.exists():
+        print(f"\nWARNING: {MERGED_OUTPUT_RAVALLI} already exists — overwriting")
+    merged_rav["PWSID"] = merged_rav["PWSID"].astype(str)
+    merged_rav["year"]  = merged_rav["year"].astype("int64")
+    print(merged_rav.dtypes)
+    merged_rav.to_parquet(MERGED_OUTPUT_RAVALLI, index=False, engine="pyarrow")
+    v4 = pd.read_parquet(MERGED_OUTPUT_RAVALLI, engine="pyarrow")
+    print(f"Written {len(v4):,} rows × {v4.shape[1]} columns to {MERGED_OUTPUT_RAVALLI}")
 
     print("\nDone.")

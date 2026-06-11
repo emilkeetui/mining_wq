@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:6yr_huc02fe_cnt_radio_ravalli} Effect of cumulative upstream coal production on measurements and concentration --- Radionuclides (6-Year Review, downstream CWSs, Ravalli et al.~(2022) cleaning)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccc}
+         \toprule
+         
+                                             & Num. measurements & Mean concentration & Max concentration & Num. measurements      & Mean concentration      & Max concentration\\  
+         
+          & \multicolumn{3}{c}{Alpha part.} & \multicolumn{3}{c}{Beta part.} \\ 
+         
+                                             & (1)               & (2)                & (3)               & (4)                    & (5)                     & (6)\\  
+         
+         \midrule 
+         Cumul. upstream coal prod. (10M ST) & -0.8082           & -4.101             & -3.383            & $1.52\times 10^{-9}$   & 3.755$^{***}$           & 4.173$^{***}$\\   
+                                             & (1.105)           & (2.939)            & (3.032)           & ($1.4\times 10^{-5}$)  & ($7.41\times 10^{-5}$)  & ($7.48\times 10^{-5}$)\\    
+         Num. intake facilities              &                   &                    &                   & 2.800$^{***}$          & -2.377$^{**}$           & -1.619$^{*}$\\   
+                                             &                   &                    &                   & (0.2748)               & (0.9666)                & (0.9177)\\   
+         
+          \\
+         
+         Within R$^2$                        & 0.00045           & 0.02136            & 0.00695           & 0.71210                & 0.03816                 & 0.02194\\  
+         Observations                        & 162               & 162                & 162               & 57                     & 57                      & 57\\  
+         R$^2$                               & 0.61584           & 0.79940            & 0.68861           & 0.93159                & 0.73437                 & 0.73046\\  
+         
+          \\
+         
+         CWS fixed effects                   & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$           & $\checkmark$            & $\checkmark$\\   
+         huc02-year fixed effects            & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$           & $\checkmark$            & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample period 1998--2011. Outcome is the number of annual measurements of the analyte recorded for each CWS in the EPA 6-Year Review. Non-detect values replaced by MDL$/\sqrt{2}$ following Ravalli et al.~(2022). Explanatory variable is cumulative coal production since 1985 (in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12 interacted with year). Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level.}
+   
+\end{table}
+
+

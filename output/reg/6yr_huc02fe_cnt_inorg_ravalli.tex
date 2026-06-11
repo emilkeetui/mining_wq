@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:6yr_huc02fe_cnt_inorg_ravalli} Effect of cumulative upstream coal production on measurements and concentration --- Inorganic Chemicals (6-Year Review, downstream CWSs, Ravalli et al.~(2022) cleaning)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccccccccccccccc}
+         \toprule
+         
+                                             & Num. measurements & Mean concentration & Max concentration & Num. measurements & Mean concentration & Max concentration & Num. measurements & Mean concentration & Max concentration & Num. measurements & Mean concentration    & Max concentration     & Num. measurements & Mean concentration & Max concentration\\  
+         
+          & \multicolumn{3}{c}{Arsenic} & \multicolumn{3}{c}{Nitrate} & \multicolumn{3}{c}{Barium} & \multicolumn{3}{c}{Chromium} & \multicolumn{3}{c}{Selenium} \\ 
+         
+                                             & (1)               & (2)                & (3)               & (4)               & (5)                & (6)               & (7)               & (8)                & (9)               & (10)              & (11)                  & (12)                  & (13)              & (14)               & (15)\\  
+         
+         \midrule 
+         Cumul. upstream coal prod. (10M ST) & -0.0465           & -0.0004            & -0.0005           & -0.4233           & 0.0349             & 0.0419            & -0.0555           & -0.0294            & -0.0313           & -0.0422           & -0.0002               & -0.0002               & -0.0655           & -0.0005            & -0.0007\\   
+                                             & (0.0877)          & (0.0006)           & (0.0006)          & (0.3988)          & (0.0728)           & (0.0778)          & (0.0969)          & (0.0220)           & (0.0220)          & (0.0876)          & (0.0011)              & (0.0011)              & (0.0970)          & (0.0009)           & (0.0009)\\   
+         Num. intake facilities              & 0.6472$^{*}$      & -0.0014$^{*}$      & -0.0014$^{**}$    & -0.1671           & -0.1492            & -0.5409           & 0.9440$^{***}$    & -0.0185            & -0.0196           & 0.9478$^{***}$    & -0.0007               & -0.0007               & 0.9733$^{***}$    & -0.0019$^{***}$    & -0.0019$^{***}$\\   
+                                             & (0.3446)          & (0.0007)           & (0.0007)          & (0.1539)          & (0.2040)           & (0.5761)          & (0.0521)          & (0.0169)           & (0.0170)          & (0.0482)          & (0.0006)              & (0.0006)              & (0.0378)          & (0.0006)           & (0.0006)\\   
+         
+          \\
+         
+         Within R$^2$                        & 0.00928           & 0.00512            & 0.00452           & 0.00514           & 0.00046            & 0.00347           & 0.02040           & 0.00200            & 0.00224           & 0.02032           & $8.16\times 10^{-5}$  & $6.83\times 10^{-5}$  & 0.02489           & 0.00131            & 0.00147\\  
+         Observations                        & 729               & 729                & 729               & 1,185             & 1,185              & 1,185             & 702               & 702                & 702               & 697               & 697                   & 697                   & 682               & 682                & 682\\  
+         R$^2$                               & 0.70719           & 0.74435            & 0.76788           & 0.85971           & 0.90580            & 0.90517           & 0.48447           & 0.35262            & 0.35428           & 0.49332           & 0.39161               & 0.38986               & 0.50998           & 0.44960            & 0.41466\\  
+         
+          \\
+         
+         CWS fixed effects                   & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$      & $\checkmark$          & $\checkmark$          & $\checkmark$      & $\checkmark$       & $\checkmark$\\   
+         huc02-year fixed effects            & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$      & $\checkmark$          & $\checkmark$          & $\checkmark$      & $\checkmark$       & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample period 1998--2011. Outcome is the number of annual measurements of the analyte recorded for each CWS in the EPA 6-Year Review. Non-detect values replaced by MDL$/\sqrt{2}$ following Ravalli et al.~(2022). Explanatory variable is cumulative coal production since 1985 (in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12 interacted with year). Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level.}
+   
+\end{table}
+
+

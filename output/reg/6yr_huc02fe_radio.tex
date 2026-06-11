@@ -10,32 +10,31 @@
       
       %start:tab
       
-      \begin{tabular}{lccc}
+      \begin{tabular}{lcc}
          \toprule
          
-          & \multicolumn{3}{c}{Mean conc.}\\
+          & \multicolumn{2}{c}{Mean conc.}\\
          
-                                             & Alpha part.   & Beta part.              & Radium \\   
+                                             & Alpha part.   & Beta part. \\   
          
-                                             & (1)           & (2)                     & (3)\\  
+                                             & (1)           & (2)\\  
          
          \midrule 
-         Cumul. upstream coal prod. (10M ST) & -5.289        & 3.755$^{***}$           & 0.0605\\   
-                                             & (5.520)       & ($4.32\times 10^{-5}$)  & (NaN)\\   
-         Num. intake facilities              &               & -2.845$^{**}$           & -0.8625\\   
-                                             &               & (1.256)                 & (NaN)\\   
+         Cumul. upstream coal prod. (10M ST) & -5.289        & 3.755$^{***}$\\   
+                                             & (5.520)       & ($4.32\times 10^{-5}$)\\    
+         Num. intake facilities              &               & -2.845$^{**}$\\   
+                                             &               & (1.256)\\   
          
           \\
          
-         Standard-Errors & \multicolumn{2}{c}{CWS} & not-available \\ 
-         Within R$^2$                        & 0.02281       & 0.04969                 & 0.99813\\  
-         Observations                        & 140           & 55                      & 5\\  
-         R$^2$                               & 0.81981       & 0.77373                 & 0.99820\\  
+         Within R$^2$                        & 0.02281       & 0.04969\\  
+         Observations                        & 140           & 55\\  
+         R$^2$                               & 0.81981       & 0.77373\\  
          
           \\
          
-         CWS fixed effects                   & $\checkmark$  & $\checkmark$            & $\checkmark$\\   
-         huc02-year fixed effects            & $\checkmark$  & $\checkmark$            & $\checkmark$\\   
+         CWS fixed effects                   & $\checkmark$  & $\checkmark$\\   
+         huc02-year fixed effects            & $\checkmark$  & $\checkmark$\\   
          
          \bottomrule
          
@@ -46,7 +45,7 @@
       
    \end{adjustbox}
       {\tiny\linespread{1}\selectfont \par \raggedright 
-   Sample period 1998--2011. Within each chemical, columns show (1) mean measured concentration and (2) share of annual samples exceeding the MCL, both from the EPA 6-Year Review. Explanatory variable is cumulative coal production since 1985 (in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12 interacted with year). Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level.}
+   Sample period 1998--2011. Within each chemical, columns show (1) mean measured concentration and (2) share of annual samples exceeding the MCL, both from the EPA 6-Year Review. Non-detect values are not imputed (SYR2 non-detects recorded as MRL; SYR3 non-detects missing). Explanatory variable is cumulative coal production since 1985 (in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12 interacted with year). Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level.}
    
 \end{table}
 
