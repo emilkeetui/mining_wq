@@ -1,12 +1,15 @@
 # ============================================================
 # Script: mr_violation_breakdown.r
-# Purpose: Describe what triggers MR violations in SDWA — by violation code,
-#          regulatory rule code, and their cross-tab. Restricted to strictly
-#          downstream CWSs (minehuc_downstream_of_mine == 1 & minehuc_mine == 0).
+# Purpose: Describe MR and MCL violations in SDWA for IOC rules —
+#          by violation code and regulatory rule code.
+#          Restricted to strictly downstream CWSs
+#          (minehuc_downstream_of_mine == 1 & minehuc_mine == 0)
+#          and IOC rules: nitrate (331), arsenic (332), inorganic chemicals (333).
 # Inputs:  clean_data/cws_data/prod_vio_sulfur.parquet (downstream PWSID filter)
 #          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.parquet
 #          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_REF_CODE_VALUES.csv
 # Outputs: output/sum/mr_violation_breakdown.tex
+#          output/sum/ioc_days_dwnstrm.tex
 # Author: EK  Date: 2026-04-15
 # ============================================================
 
@@ -15,7 +18,6 @@ library(arrow)
 library(data.table)
 
 # ── 0. Strictly downstream PWSID list ────────────────────────────────────────
-# Mirrors the "dwnstrm" sample cut in run_main_tables.r
 pws_sample <- as.data.frame(
   arrow::read_parquet("Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
                       col_select = c("PWSID", "minehuc_downstream_of_mine", "minehuc_mine")))
@@ -23,7 +25,7 @@ pws_ids <- unique(pws_sample$PWSID[
   pws_sample$minehuc_downstream_of_mine == 1 & pws_sample$minehuc_mine == 0])
 cat("Strictly downstream PWSIDs:", length(pws_ids), "\n")
 
-# ── 1. Load MR violations from parquet ───────────────────────────────────────
+# ── 1. Load violations from parquet ──────────────────────────────────────────
 cat("Loading violations parquet...\n")
 ve <- as.data.table(arrow::read_parquet(
   "Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.parquet",
@@ -32,15 +34,25 @@ ve <- as.data.table(arrow::read_parquet(
 ))
 cat("Total rows in parquet:", nrow(ve), "\n")
 
-ve[, yr := as.integer(substr(NON_COMPL_PER_BEGIN_DATE, 7, 10))]
-mr <- ve[PWSID %in% pws_ids &
-         VIOLATION_CATEGORY_CODE == "MR" &
-         yr >= 1985 & yr <= 2005]
-cat("MR violations in downstream sample (1985-2005):", nrow(mr), "\n")
+ve[, yr       := as.integer(substr(NON_COMPL_PER_BEGIN_DATE, 7, 10))]
+ve[, rule_tmp := suppressWarnings(as.integer(RULE_CODE))]
 
-# Drop duplicate violation IDs (enforcement rows create duplicates)
-mr <- unique(mr, by = "VIOLATION_ID")
-cat("Unique MR violations:", nrow(mr), "\n")
+# ── 1a. MR violations, IOC rules ──────────────────────────────────────────────
+mr_raw <- ve[PWSID %in% pws_ids & VIOLATION_CATEGORY_CODE == "MR" &
+             yr >= 1985 & yr <= 2005]
+mr <- unique(mr_raw, by = "VIOLATION_ID")
+mr <- mr[rule_tmp %in% c(331L, 332L, 333L)]
+cat("IOC MR violations (rules 331/332/333):", nrow(mr), "\n")
+
+# ── 1b. MCL violations, IOC rules ─────────────────────────────────────────────
+mcl_raw <- ve[PWSID %in% pws_ids & VIOLATION_CATEGORY_CODE == "MCL" &
+              yr >= 1985 & yr <= 2005]
+mcl <- unique(mcl_raw, by = "VIOLATION_ID")
+mcl <- mcl[rule_tmp %in% c(331L, 332L, 333L)]
+cat("IOC MCL violations (rules 331/332/333):", nrow(mcl), "\n")
+
+N_mr  <- nrow(mr)
+N_mcl <- nrow(mcl)
 
 # ── 2. Load violation-code and rule-code descriptions ────────────────────────
 ref <- fread(
@@ -49,59 +61,70 @@ ref <- fread(
   col.names = c("VALUE_TYPE", "VALUE_CODE", "VALUE_DESCRIPTION")
 )
 viol_code_ref <- ref[VALUE_TYPE == "VIOLATION_CODE", .(VALUE_CODE, VALUE_DESCRIPTION)]
-rule_code_ref  <- ref[VALUE_TYPE == "RULE_CODE",      .(VALUE_CODE, VALUE_DESCRIPTION)]
+rule_code_ref <- ref[VALUE_TYPE == "RULE_CODE",      .(VALUE_CODE, VALUE_DESCRIPTION)]
 
-# ── 3. Table 1: by violation code ────────────────────────────────────────────
-tab1 <- mr[, .N, by = VIOLATION_CODE]
-tab1[, share := 100 * N / nrow(mr)]
-tab1 <- merge(tab1, viol_code_ref, by.x = "VIOLATION_CODE", by.y = "VALUE_CODE", all.x = TRUE)
-tab1[is.na(VALUE_DESCRIPTION), VALUE_DESCRIPTION := VIOLATION_CODE]
-setorder(tab1, -N)
-cat("\nTable 1 — by violation code:\n"); print(tab1)
+# ── 3. Violation-code frequency tables ───────────────────────────────────────
+tab_vc_mr <- mr[, .N, by = VIOLATION_CODE]
+tab_vc_mr[, share := 100 * N / N_mr]
+tab_vc_mr <- merge(tab_vc_mr, viol_code_ref,
+                   by.x = "VIOLATION_CODE", by.y = "VALUE_CODE", all.x = TRUE)
+tab_vc_mr[is.na(VALUE_DESCRIPTION), VALUE_DESCRIPTION := VIOLATION_CODE]
+setorder(tab_vc_mr, -N)
+cat("\nMR — by violation code:\n"); print(tab_vc_mr)
 
-# ── 4. Table 2: by rule code ─────────────────────────────────────────────────
-# RULE_CODE is numeric in the parquet; cast to character for joining/display
-mr[, rule_num  := suppressWarnings(as.integer(RULE_CODE))]
-mr[, RULE_CODE := as.character(rule_num)]   # e.g., "332"
-tab2 <- mr[!is.na(rule_num), .N, by = RULE_CODE]
-tab2[, share := 100 * N / nrow(mr)]
-tab2 <- merge(tab2, rule_code_ref, by.x = "RULE_CODE", by.y = "VALUE_CODE", all.x = TRUE)
-tab2[is.na(VALUE_DESCRIPTION), VALUE_DESCRIPTION := RULE_CODE]
-setorder(tab2, -N)
-cat("\nTable 2 — by rule code:\n"); print(tab2)
+tab_vc_mcl <- mcl[, .N, by = VIOLATION_CODE]
+tab_vc_mcl[, share := 100 * N / N_mcl]
+tab_vc_mcl <- merge(tab_vc_mcl, viol_code_ref,
+                    by.x = "VIOLATION_CODE", by.y = "VALUE_CODE", all.x = TRUE)
+tab_vc_mcl[is.na(VALUE_DESCRIPTION), VALUE_DESCRIPTION := VIOLATION_CODE]
+setorder(tab_vc_mcl, -N)
+cat("\nMCL — by violation code:\n"); print(tab_vc_mcl)
 
-# ── 5. Table 3: cross-tab violation code × rule code ─────────────────────────
-tab3 <- mr[!is.na(rule_num), .N, by = .(VIOLATION_CODE, RULE_CODE)]
-tab3[, share := 100 * N / nrow(mr)]
-# Join descriptions
-tab3 <- merge(tab3, viol_code_ref, by.x = "VIOLATION_CODE", by.y = "VALUE_CODE", all.x = TRUE)
-setnames(tab3, "VALUE_DESCRIPTION", "viol_desc")
-tab3 <- merge(tab3, rule_code_ref,  by.x = "RULE_CODE",     by.y = "VALUE_CODE", all.x = TRUE)
-setnames(tab3, "VALUE_DESCRIPTION", "rule_desc")
-tab3[is.na(viol_desc), viol_desc := VIOLATION_CODE]
-tab3[is.na(rule_desc), rule_desc  := RULE_CODE]
-setorder(tab3, -N)
-cat("\nTable 3 — cross-tab (top 30):\n"); print(tab3[1:30])
+# ── 4. Rule-code frequency tables (MR and MCL) ───────────────────────────────
+make_rule_tab <- function(dt) {
+  dt[, rc := as.character(suppressWarnings(as.integer(RULE_CODE)))]
+  t <- dt[!is.na(rc), .N, by = rc]
+  t[, share := 100 * N / nrow(dt)]
+  t <- merge(t, rule_code_ref, by.x = "rc", by.y = "VALUE_CODE", all.x = TRUE)
+  t[is.na(VALUE_DESCRIPTION), VALUE_DESCRIPTION := rc]
+  setorder(t, -N)
+  t
+}
+tab_rule_mr  <- make_rule_tab(copy(mr))
+tab_rule_mcl <- make_rule_tab(copy(mcl))
+cat("\nMR — by rule code:\n"); print(tab_rule_mr)
+cat("\nMCL — by rule code:\n"); print(tab_rule_mcl)
 
-N_total <- nrow(mr)
-fn <- function(x) format(as.integer(x), big.mark = ",")
-fp <- function(x) sprintf("%.1f", x)
+# Combined rule-code table (MR and MCL side-by-side)
+tab_rule <- merge(
+  tab_rule_mr [, .(rc, VALUE_DESCRIPTION, N_mr  = N, share_mr  = share)],
+  tab_rule_mcl[, .(rc, N_mcl = N, share_mcl = share)],
+  by = "rc", all = TRUE
+)
+tab_rule[is.na(N_mr),      c("N_mr",  "share_mr")  := list(0L, 0)]
+tab_rule[is.na(N_mcl),     c("N_mcl", "share_mcl") := list(0L, 0)]
+setorder(tab_rule, -N_mr)
+cat("\nCombined rule table:\n"); print(tab_rule)
 
-# ── 6. LaTeX helpers ──────────────────────────────────────────────────────────
+# ── 5. LaTeX helpers ──────────────────────────────────────────────────────────
+fn  <- function(x) format(as.integer(x), big.mark = ",")
+fp  <- function(x) sprintf("%.1f", x)
 esc <- function(x) gsub("_", "\\\\_", x)
-
-# Truncate description to fit in table column
 trunc_desc <- function(x, w = 48) {
   ifelse(nchar(x) > w, paste0(substr(x, 1, w - 2), ".."), x)
 }
 
-# ── 7. Build Table 1 LaTeX ────────────────────────────────────────────────────
+sample_note <- paste0(
+  "Sample restricted to strictly downstream CWSs ",
+  "(minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0), 1985--2005. ",
+  "Source: SDWA\\_VIOLATIONS\\_ENFORCEMENT.parquet, SDWA\\_REF\\_CODE\\_VALUES.csv."
+)
 
-# Group definitions for Table 1
+# ── 6. Panel A — MR violations by violation code ─────────────────────────────
 routine_codes <- c("03","23","24","25","26","04")
-other_codes   <- setdiff(tab1$VIOLATION_CODE, routine_codes)
+other_codes   <- setdiff(tab_vc_mr$VIOLATION_CODE, routine_codes)
 
-make_t1_rows <- function(codes, dt) {
+make_vc_rows <- function(codes, dt) {
   rows <- character(0)
   for (cd in codes) {
     r <- dt[VIOLATION_CODE == cd]
@@ -113,12 +136,8 @@ make_t1_rows <- function(codes, dt) {
   rows
 }
 
-t1_lines <- c(
-  "\\begin{table}[htbp]",
-  "\\centering",
-  paste0("\\caption{MR Violations by Violation Code, 1985--2005 (Downstream CWSs)}"),
-  "\\label{tab:mr_viol_code}",
-  "\\small",
+panel_a_lines <- c(
+  "\\noindent\\textbf{Panel A: MR violations by violation code} \\\\[4pt]",
   "\\begin{tabular}{clrr}",
   "\\hline\\hline",
   "\\textbf{Code} & \\textbf{Description} & \\textbf{Count} & \\textbf{Share (\\%)} \\\\",
@@ -126,200 +145,130 @@ t1_lines <- c(
   "\\addlinespace[2pt]",
   "\\multicolumn{4}{l}{\\textit{Routine and repeat monitoring failures}} \\\\",
   "\\addlinespace[2pt]",
-  make_t1_rows(routine_codes, tab1),
-  "\\addlinespace[4pt]",
-  "\\multicolumn{4}{l}{\\textit{Contaminant- or rule-specific monitoring failures}} \\\\",
-  "\\addlinespace[2pt]",
-  make_t1_rows(other_codes, tab1),
-  "\\addlinespace[2pt]",
-  "\\hline",
-  paste0(" & \\textit{Total} & ", fn(N_total), " & 100.0 \\\\"),
-  "\\hline\\hline",
-  "\\end{tabular}",
-  "\\begin{minipage}{\\linewidth}",
-  "\\vspace{4pt}",
-  "\\footnotesize",
-  paste0("\\textit{Notes:} TCR = Total Coliform Rule. DBP = Disinfection Byproducts Rule. ",
-         "LCR = Lead and Copper Rule. SWTR = Surface Water Treatment Rule. FBRR = Filter ",
-         "Backwash Recycling Rule. ``Major'' TCR violations (codes 23, 25) indicate failure to collect ",
-         "$\\geq$90\\% of required samples in a compliance period; ``minor'' violations (codes 24, 26) ",
-         "indicate partial non-compliance. Sample restricted to strictly downstream CWSs ",
-         "(minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0). ",
-         "Source: SDWA\\_VIOLATIONS\\_ENFORCEMENT.parquet, SDWA\\_REF\\_CODE\\_VALUES.csv."),
-  "\\end{minipage}",
-  "\\end{table}"
-)
-
-# ── 8. Build Table 2 LaTeX ────────────────────────────────────────────────────
-# Group by rule group
-chem_rules   <- c("310","320","331","332","333","340","350")
-micro_rules  <- c("110","111","121","122","123","130","140")
-dbp_rules    <- c("210","220","230")
-
-make_t2_rows <- function(rule_codes, dt) {
-  rows <- character(0)
-  for (rc in rule_codes) {
-    r <- dt[RULE_CODE == rc]
-    if (nrow(r) == 0) next
-    rows <- c(rows,
-      paste0(r$RULE_CODE, " & ", esc(trunc_desc(r$VALUE_DESCRIPTION)), " & ",
-             fn(r$N), " & ", fp(r$share), " \\\\"))
-  }
-  rows
-}
-
-other_rules <- setdiff(tab2$RULE_CODE, c(chem_rules, micro_rules, dbp_rules))
-
-t2_lines <- c(
-  "\\begin{table}[htbp]",
-  "\\centering",
-  paste0("\\caption{MR Violations by Regulatory Rule, 1985--2005 (Downstream CWSs)}"),
-  "\\label{tab:mr_rule_code}",
-  "\\small",
-  "\\begin{tabular}{clrr}",
-  "\\hline\\hline",
-  "\\textbf{Rule code} & \\textbf{Rule} & \\textbf{Count} & \\textbf{Share (\\%)} \\\\",
-  "\\hline",
-  "\\addlinespace[2pt]",
-  "\\multicolumn{4}{l}{\\textit{Chemical contaminants (Rule Group 300)}} \\\\",
-  "\\addlinespace[2pt]",
-  make_t2_rows(chem_rules, tab2),
-  "\\addlinespace[4pt]",
-  "\\multicolumn{4}{l}{\\textit{Microbial contaminants (Rule Group 100)}} \\\\",
-  "\\addlinespace[2pt]",
-  make_t2_rows(micro_rules, tab2),
-  "\\addlinespace[4pt]",
-  "\\multicolumn{4}{l}{\\textit{Disinfectants and disinfection byproducts (Rule Group 200)}} \\\\",
-  "\\addlinespace[2pt]",
-  make_t2_rows(dbp_rules, tab2),
-  if (length(other_rules) > 0) c(
+  make_vc_rows(routine_codes, tab_vc_mr),
+  if (length(other_codes) > 0) c(
     "\\addlinespace[4pt]",
-    "\\multicolumn{4}{l}{\\textit{Other rules}} \\\\",
+    "\\multicolumn{4}{l}{\\textit{Contaminant- or rule-specific monitoring failures}} \\\\",
     "\\addlinespace[2pt]",
-    make_t2_rows(other_rules, tab2)
+    make_vc_rows(other_codes, tab_vc_mr)
   ),
   "\\addlinespace[2pt]",
   "\\hline",
-  paste0(" & \\textit{Total} & ", fn(N_total), " & 100.0 \\\\"),
+  paste0(" & \\textit{Total} & ", fn(N_mr), " & 100.0 \\\\"),
   "\\hline\\hline",
-  "\\end{tabular}",
-  "\\begin{minipage}{\\linewidth}",
-  "\\vspace{4pt}",
-  "\\footnotesize",
-  paste0("\\textit{Notes:} Rule codes follow EPA SDWIS classification. Mining-related outcome rules ",
-         "(nitrate 331, arsenic 332, inorganic chemicals 333, radionuclides 340) together account ",
-         "for the share shown. Sample restricted to strictly downstream CWSs. ",
-         "Source: SDWA\\_VIOLATIONS\\_ENFORCEMENT.parquet, SDWA\\_REF\\_CODE\\_VALUES.csv."),
-  "\\end{minipage}",
-  "\\end{table}"
+  "\\end{tabular}"
 )
 
-# ── 9. Build Table 3 LaTeX (cross-tab, top combinations) ─────────────────────
-# Curated groupings for the cross-tab
-mining_rules    <- c("331","332","333","340")
-nonmining_rules <- c("110","111","121","122","123","140","310","320")
+# ── 7. Panel B — MCL violations by violation code ────────────────────────────
+panel_b_lines <- c(
+  "\\vspace{8pt}",
+  "",
+  "\\noindent\\textbf{Panel B: MCL violations by violation code} \\\\[4pt]",
+  "\\begin{tabular}{clrr}",
+  "\\hline\\hline",
+  "\\textbf{Code} & \\textbf{Description} & \\textbf{Count} & \\textbf{Share (\\%)} \\\\",
+  "\\hline",
+  "\\addlinespace[2pt]",
+  {
+    rows <- character(0)
+    for (i in seq_len(nrow(tab_vc_mcl))) {
+      r <- tab_vc_mcl[i]
+      rows <- c(rows,
+        paste0(r$VIOLATION_CODE, " & ", esc(trunc_desc(r$VALUE_DESCRIPTION)), " & ",
+               fn(r$N), " & ", fp(r$share), " \\\\"))
+    }
+    rows
+  },
+  "\\addlinespace[2pt]",
+  "\\hline",
+  paste0(" & \\textit{Total} & ", fn(N_mcl), " & 100.0 \\\\"),
+  "\\hline\\hline",
+  "\\end{tabular}"
+)
 
-tab3_mining    <- tab3[RULE_CODE %in% mining_rules][order(-N)]
-tab3_nonmining <- tab3[RULE_CODE %in% nonmining_rules][order(-N)]
-tab3_other     <- tab3[!RULE_CODE %in% c(mining_rules, nonmining_rules)][order(-N)]
-
-make_t3_rows <- function(dt, max_rows = 20) {
+# ── 8. Panel C — MR and MCL by rule code, side-by-side ───────────────────────
+make_rule_rows <- function(dt) {
   rows <- character(0)
-  for (i in seq_len(min(nrow(dt), max_rows))) {
+  for (i in seq_len(nrow(dt))) {
     r <- dt[i]
-    desc <- paste0(esc(trunc_desc(r$viol_desc, 40)), " (", r$RULE_CODE, ")")
     rows <- c(rows,
-      paste0(r$VIOLATION_CODE, " & ", r$RULE_CODE, " & ",
-             esc(trunc_desc(desc, 60)), " & ",
-             fn(r$N), " & ", fp(r$share), " \\\\"))
+      paste0(r$rc, " & ", esc(trunc_desc(r$VALUE_DESCRIPTION)), " & ",
+             fn(r$N_mr), " & ", fp(r$share_mr), " & ",
+             fn(r$N_mcl), " & ", fp(r$share_mcl), " \\\\"))
   }
   rows
 }
 
-t3_lines <- c(
+panel_c_lines <- c(
+  "\\vspace{8pt}",
+  "",
+  "\\noindent\\textbf{Panel C: MR vs.~MCL violations by regulatory rule} \\\\[4pt]",
+  "\\begin{tabular}{clrrrr}",
+  "\\hline\\hline",
+  paste0("\\textbf{Rule} & \\textbf{Rule name} & ",
+         "\\multicolumn{2}{c}{\\textbf{MR}} & ",
+         "\\multicolumn{2}{c}{\\textbf{MCL}} \\\\"),
+  "\\cmidrule(lr){3-4}\\cmidrule(lr){5-6}",
+  paste0("\\textbf{code} & & \\textbf{Count} & \\textbf{Share (\\%)} & ",
+         "\\textbf{Count} & \\textbf{Share (\\%)} \\\\"),
+  "\\hline",
+  "\\addlinespace[2pt]",
+  make_rule_rows(tab_rule),
+  "\\addlinespace[2pt]",
+  "\\hline",
+  paste0("  & \\textit{Total} & ", fn(N_mr), " & 100.0 & ", fn(N_mcl), " & 100.0 \\\\"),
+  "\\hline\\hline",
+  "\\end{tabular}"
+)
+
+# ── 9. Write combined three-panel table ──────────────────────────────────────
+header <- c(
+  "% ============================================================",
+  "% Table: IOC MR and MCL Violation Breakdown, 1985--2005 (Downstream CWSs)",
+  "% Purpose: Three-panel table describing violation codes and rule codes for",
+  "%          MR and MCL violations under IOC rules (nitrate 331, arsenic 332,",
+  "%          inorganic chemicals 333).",
+  "% Sample:  Strictly downstream CWSs (minehuc_downstream_of_mine=1, minehuc_mine=0)",
+  "% Source:  SDWA_VIOLATIONS_ENFORCEMENT.parquet + SDWA_REF_CODE_VALUES.csv",
+  paste0("% N MR:    ", fn(N_mr),  " unique IOC MR violations, 1985--2005"),
+  paste0("% N MCL:   ", fn(N_mcl), " unique IOC MCL violations, 1985--2005"),
+  "% ============================================================"
+)
+
+combined_note <- paste0(
+  "\\textit{Notes:} ",
+  "Panel A: violation codes classify the type of monitoring-and-reporting failure; ",
+  "code 03 = Monitoring, Regular; 04 = Monitoring, Check/Repeat/Confirmation. ",
+  "Panel B: violation codes classify the type of MCL exceedance. ",
+  "Panel C: rule 331 = Nitrate; 332 = Arsenic; 333 = Inorganic Chemicals; ",
+  "MR = monitoring and reporting violation; MCL = maximum contaminant level violation; ",
+  "inorganic chemicals (333) encompasses nitrates and arsenic as sub-contaminants. ",
+  "All panels restricted to IOC rules (nitrate 331, arsenic 332, inorganic chemicals 333). ",
+  sample_note
+)
+
+combined_table_lines <- c(
   "\\begin{table}[htbp]",
   "\\centering",
-  paste0("\\caption{MR Violations by Violation Code and Regulatory Rule",
-         " (Top Combinations), 1985--2005 (Downstream CWSs)}"),
-  "\\label{tab:mr_viol_rule_crosstab}",
+  "\\caption{IOC Violations by Violation Code and Regulatory Rule, 1985--2005 (Downstream CWSs)}",
+  "\\label{tab:mr_mcl_violation_breakdown}",
   "\\small",
-  "\\begin{tabular}{llp{6.5cm}rr}",
-  "\\hline\\hline",
-  paste0("\\textbf{Viol.} & \\textbf{Rule} & \\textbf{Description} & ",
-         "\\textbf{Count} & \\textbf{Share (\\%)} \\\\"),
-  "\\textbf{code}  & \\textbf{code} & & & \\\\",
-  "\\hline",
-  "\\addlinespace[2pt]",
-  paste0("\\multicolumn{5}{l}{\\textit{Mining-related outcomes ",
-         "(nitrate, arsenic, inorganic chemicals, radionuclides)}} \\\\"),
-  "\\addlinespace[2pt]",
-  make_t3_rows(tab3_mining),
-  "\\addlinespace[4pt]",
-  "\\multicolumn{5}{l}{\\textit{Microbial and treatment monitoring}} \\\\",
-  "\\addlinespace[2pt]",
-  make_t3_rows(tab3_nonmining[RULE_CODE %in% c("110","111","121","122","123","140")]),
-  "\\addlinespace[4pt]",
-  "\\multicolumn{5}{l}{\\textit{Chemical phase rules (VOC, SOC) and other}} \\\\",
-  "\\addlinespace[2pt]",
-  make_t3_rows(tab3_nonmining[RULE_CODE %in% c("310","320")]),
-  make_t3_rows(tab3_other),
-  "\\addlinespace[2pt]",
-  "\\hline",
-  paste0(" &  & \\textit{Total} & ", fn(N_total), " & 100.0 \\\\"),
-  "\\hline\\hline",
-  "\\end{tabular}",
+  panel_a_lines,
+  panel_b_lines,
+  panel_c_lines,
   "\\begin{minipage}{\\linewidth}",
   "\\vspace{4pt}",
   "\\footnotesize",
-  paste0("\\textit{Notes:} Violation code 03 = Monitoring, Regular; 04 = ",
-         "Monitoring, Check/Repeat/Confirmation; 23/24 = Monitoring, Routine Major/Minor (TCR); ",
-         "25/26 = Monitoring, Repeat Major/Minor (TCR); 27 = M/R (DBP); 31 = Monitoring of ",
-         "Treatment (SWTR-Unfiltered/GWR); 36 = Monitoring of Treatment (SWTR-Filter); ",
-         "38 = Monitoring, Turbidity (Enhanced SWTR); 51 = Initial Tap Sampling, Pb/Cu; ",
-         "52 = Follow-up or Routine LCR Tap M/R; 53 = Water Quality Parameter M/R; ",
-         "56 = Source Water M/R. All violation codes reflect failure to collect required samples ",
-         "or submit results on schedule; no contamination exceedance is required to trigger an ",
-         "MR violation. Sample restricted to strictly downstream CWSs. ",
-         "Source: SDWA\\_VIOLATIONS\\_ENFORCEMENT.parquet, SDWA\\_REF\\_CODE\\_VALUES.csv."),
+  combined_note,
   "\\end{minipage}",
   "\\end{table}"
 )
 
-# ── 10. Write output ──────────────────────────────────────────────────────────
-header <- c(
-  "% ============================================================",
-  "% Tables: MR Violation Breakdown, 1985--2005 (Downstream CWSs)",
-  "% Purpose: Describes what triggers Monitoring and Reporting",
-  "%          violations in SDWA data — by violation code,",
-  "%          regulatory rule, and their combination.",
-  "% Sample:  Strictly downstream CWSs (minehuc_downstream_of_mine=1, minehuc_mine=0)",
-  "% Source:  SDWA_VIOLATIONS_ENFORCEMENT.parquet +",
-  "%          SDWA_REF_CODE_VALUES.csv,",
-  "%          Z:/ek559/sdwa_violations/SDWA_latest_downloads/",
-  paste0("% N:       ", fn(N_total), " unique MR violations, 1985--2005"),
-  "% ============================================================"
-)
-
 out_path <- "Z:/ek559/mining_wq/output/sum/mr_violation_breakdown.tex"
-writeLines(
-  c(header, "",
-    "%------------------------------------------------------------------",
-    "% Table 1: Violation codes",
-    "%------------------------------------------------------------------",
-    t1_lines, "", "\\clearpage", "",
-    "%------------------------------------------------------------------",
-    "% Table 2: Regulatory rule",
-    "%------------------------------------------------------------------",
-    t2_lines, "", "\\clearpage", "",
-    "%------------------------------------------------------------------",
-    "% Table 3: Top violation code x rule code combinations",
-    "%------------------------------------------------------------------",
-    t3_lines),
-  out_path
-)
+writeLines(c(header, "", combined_table_lines), out_path)
 cat("\nOutput written to:", out_path, "\n")
 
-# ── 11. Summary table: Days in a Year with IOC Violation (D1 downstream) ─────
+# ── 10. Summary table: Days in a Year with IOC Violation (D1 downstream) ─────
 
 ioc_vars <- c("inorganic_chemicals_MR_share_days", "inorganic_chemicals_MCL_share_days",
               "nitrates_MR_share_days",            "nitrates_MCL_share_days",
@@ -366,7 +315,7 @@ make_row <- function(i) {
          " \\\\")
 }
 
-t4_lines <- c(
+t_days_lines <- c(
   "\\begin{table}[htbp]",
   "\\centering",
   "\\caption{Days in a Year with IOC Violation}",
@@ -398,8 +347,8 @@ t4_lines <- c(
   "\\end{table}"
 )
 
-out_path_t4 <- "Z:/ek559/mining_wq/output/sum/ioc_days_dwnstrm.tex"
-writeLines(t4_lines, out_path_t4)
-cat("\nIOC days summary table written to:", out_path_t4, "\n")
+out_path_days <- "Z:/ek559/mining_wq/output/sum/ioc_days_dwnstrm.tex"
+writeLines(t_days_lines, out_path_days)
+cat("\nIOC days summary table written to:", out_path_days, "\n")
 
 cat("=== DONE ===\n")

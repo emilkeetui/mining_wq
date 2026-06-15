@@ -1,23 +1,20 @@
 % ============================================================
-% Tables: MR Violation Breakdown, 1985--2005 (Downstream CWSs)
-% Purpose: Describes what triggers Monitoring and Reporting
-%          violations in SDWA data — by violation code,
-%          regulatory rule, and their combination.
+% Table: IOC MR and MCL Violation Breakdown, 1985--2005 (Downstream CWSs)
+% Purpose: Three-panel table describing violation codes and rule codes for
+%          MR and MCL violations under IOC rules (nitrate 331, arsenic 332,
+%          inorganic chemicals 333).
 % Sample:  Strictly downstream CWSs (minehuc_downstream_of_mine=1, minehuc_mine=0)
-% Source:  SDWA_VIOLATIONS_ENFORCEMENT.parquet +
-%          SDWA_REF_CODE_VALUES.csv,
-%          Z:/ek559/sdwa_violations/SDWA_latest_downloads/
-% N:       6,374 unique MR violations, 1985--2005
+% Source:  SDWA_VIOLATIONS_ENFORCEMENT.parquet + SDWA_REF_CODE_VALUES.csv
+% N MR:    1,233 unique IOC MR violations, 1985--2005
+% N MCL:   15 unique IOC MCL violations, 1985--2005
 % ============================================================
 
-%------------------------------------------------------------------
-% Table 1: Violation codes
-%------------------------------------------------------------------
 \begin{table}[htbp]
 \centering
-\caption{MR Violations by Violation Code, 1985--2005 (Downstream CWSs)}
-\label{tab:mr_viol_code}
+\caption{IOC Violations by Violation Code and Regulatory Rule, 1985--2005 (Downstream CWSs)}
+\label{tab:mr_mcl_violation_breakdown}
 \small
+\noindent\textbf{Panel A: MR violations by violation code} \\[4pt]
 \begin{tabular}{clrr}
 \hline\hline
 \textbf{Code} & \textbf{Description} & \textbf{Count} & \textbf{Share (\%)} \\
@@ -25,131 +22,49 @@
 \addlinespace[2pt]
 \multicolumn{4}{l}{\textit{Routine and repeat monitoring failures}} \\
 \addlinespace[2pt]
-03 & Monitoring, Regular & 4,988 & 78.3 \\
-23 & Monitoring, Routine Major (TCR) & 483 & 7.6 \\
-24 & Monitoring, Routine Minor (TCR) & 104 & 1.6 \\
-25 & Monitoring, Repeat Major (TCR) & 28 & 0.4 \\
-26 & Monitoring, Repeat Minor (TCR) & 31 & 0.5 \\
-04 & Monitoring, Check/Repeat/Confirmation & 7 & 0.1 \\
-\addlinespace[4pt]
-\multicolumn{4}{l}{\textit{Contaminant- or rule-specific monitoring failures}} \\
-\addlinespace[2pt]
-27 & Monitoring and Reporting (DBP) & 358 & 5.6 \\
-36 & Monitoring of Treatment (SWTR-Filter) & 207 & 3.2 \\
-52 & Follow-up Or Routine LCR Tap M/R & 71 & 1.1 \\
-51 & Initial Tap Sampling for Pb and Cu & 60 & 0.9 \\
-38 & Monitoring, Turbidity (Enhanced SWTR) & 31 & 0.5 \\
-53 & Water Quality Parameter M/R & 6 & 0.1 \\
+03 & Monitoring, Regular & 1,226 & 99.4 \\
+04 & Monitoring, Check/Repeat/Confirmation & 7 & 0.6 \\
 \addlinespace[2pt]
 \hline
- & \textit{Total} & 6,374 & 100.0 \\
+ & \textit{Total} & 1,233 & 100.0 \\
 \hline\hline
 \end{tabular}
-\begin{minipage}{\linewidth}
-\vspace{4pt}
-\footnotesize
-\textit{Notes:} TCR = Total Coliform Rule. DBP = Disinfection Byproducts Rule. LCR = Lead and Copper Rule. SWTR = Surface Water Treatment Rule. FBRR = Filter Backwash Recycling Rule. ``Major'' TCR violations (codes 23, 25) indicate failure to collect $\geq$90\% of required samples in a compliance period; ``minor'' violations (codes 24, 26) indicate partial non-compliance. Sample restricted to strictly downstream CWSs (minehuc\_downstream\_of\_mine\,=\,1 and minehuc\_mine\,=\,0). Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
-\end{minipage}
-\end{table}
+\vspace{8pt}
 
-\clearpage
-
-%------------------------------------------------------------------
-% Table 2: Regulatory rule
-%------------------------------------------------------------------
-\begin{table}[htbp]
-\centering
-\caption{MR Violations by Regulatory Rule, 1985--2005 (Downstream CWSs)}
-\label{tab:mr_rule_code}
-\small
+\noindent\textbf{Panel B: MCL violations by violation code} \\[4pt]
 \begin{tabular}{clrr}
 \hline\hline
-\textbf{Rule code} & \textbf{Rule} & \textbf{Count} & \textbf{Share (\%)} \\
+\textbf{Code} & \textbf{Description} & \textbf{Count} & \textbf{Share (\%)} \\
 \hline
 \addlinespace[2pt]
-\multicolumn{4}{l}{\textit{Chemical contaminants (Rule Group 300)}} \\
-\addlinespace[2pt]
-310 & Volatile Organic Chemicals & 2,960 & 46.4 \\
-320 & Synthetic Organic Chemicals & 716 & 11.2 \\
-331 & Nitrate Rule & 291 & 4.6 \\
-332 & Arsenic Rule & 98 & 1.5 \\
-333 & Inorganic Chemicals & 844 & 13.2 \\
-340 & Radionuclides and Revised Rad Rule & 86 & 1.3 \\
-350 & Lead and Copper Rule & 137 & 2.1 \\
-\addlinespace[4pt]
-\multicolumn{4}{l}{\textit{Microbial contaminants (Rule Group 100)}} \\
-\addlinespace[2pt]
-110 & Total Coliform Rule & 646 & 10.1 \\
-121 & Surface Water Treatment Rule & 207 & 3.2 \\
-122 & Interim and Long Term 1 Enhanced Surface Water.. & 31 & 0.5 \\
-\addlinespace[4pt]
-\multicolumn{4}{l}{\textit{Disinfectants and disinfection byproducts (Rule Group 200)}} \\
-\addlinespace[2pt]
-210 & Stage 1 Disinfectants and Disinfection Byprodu.. & 356 & 5.6 \\
-230 & Former Total Trihalomethane Rule & 2 & 0.0 \\
+01 & Maximum Contaminant Level Violation, Single Sa.. & 10 & 66.7 \\
+02 & Maximum Contaminant Level Violation, Average & 5 & 33.3 \\
 \addlinespace[2pt]
 \hline
- & \textit{Total} & 6,374 & 100.0 \\
+ & \textit{Total} & 15 & 100.0 \\
+\hline\hline
+\end{tabular}
+\vspace{8pt}
+
+\noindent\textbf{Panel C: MR vs.~MCL violations by regulatory rule} \\[4pt]
+\begin{tabular}{clrrrr}
+\hline\hline
+\textbf{Rule} & \textbf{Rule name} & \multicolumn{2}{c}{\textbf{MR}} & \multicolumn{2}{c}{\textbf{MCL}} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+\textbf{code} & & \textbf{Count} & \textbf{Share (\%)} & \textbf{Count} & \textbf{Share (\%)} \\
+\hline
+\addlinespace[2pt]
+333 & Inorganic Chemicals & 844 & 68.5 & 11 & 73.3 \\
+331 & Nitrate Rule & 291 & 23.6 & 2 & 13.3 \\
+332 & Arsenic Rule & 98 & 7.9 & 2 & 13.3 \\
+\addlinespace[2pt]
+\hline
+  & \textit{Total} & 1,233 & 100.0 & 15 & 100.0 \\
 \hline\hline
 \end{tabular}
 \begin{minipage}{\linewidth}
 \vspace{4pt}
 \footnotesize
-\textit{Notes:} Rule codes follow EPA SDWIS classification. Mining-related outcome rules (nitrate 331, arsenic 332, inorganic chemicals 333, radionuclides 340) together account for the share shown. Sample restricted to strictly downstream CWSs. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
-\end{minipage}
-\end{table}
-
-\clearpage
-
-%------------------------------------------------------------------
-% Table 3: Top violation code x rule code combinations
-%------------------------------------------------------------------
-\begin{table}[htbp]
-\centering
-\caption{MR Violations by Violation Code and Regulatory Rule (Top Combinations), 1985--2005 (Downstream CWSs)}
-\label{tab:mr_viol_rule_crosstab}
-\small
-\begin{tabular}{llp{6.5cm}rr}
-\hline\hline
-\textbf{Viol.} & \textbf{Rule} & \textbf{Description} & \textbf{Count} & \textbf{Share (\%)} \\
-\textbf{code}  & \textbf{code} & & & \\
-\hline
-\addlinespace[2pt]
-\multicolumn{5}{l}{\textit{Mining-related outcomes (nitrate, arsenic, inorganic chemicals, radionuclides)}} \\
-\addlinespace[2pt]
-03 & 333 & Monitoring, Regular (333) & 838 & 13.1 \\
-03 & 331 & Monitoring, Regular (331) & 290 & 4.5 \\
-03 & 332 & Monitoring, Regular (332) & 98 & 1.5 \\
-03 & 340 & Monitoring, Regular (340) & 86 & 1.3 \\
-04 & 333 & Monitoring, Check/Repeat/Confirmation (333) & 6 & 0.1 \\
-04 & 331 & Monitoring, Check/Repeat/Confirmation (331) & 1 & 0.0 \\
-\addlinespace[4pt]
-\multicolumn{5}{l}{\textit{Microbial and treatment monitoring}} \\
-\addlinespace[2pt]
-23 & 110 & Monitoring, Routine Major (TCR) (110) & 483 & 7.6 \\
-36 & 121 & Monitoring of Treatment (SWTR-Filter) (121) & 207 & 3.2 \\
-24 & 110 & Monitoring, Routine Minor (TCR) (110) & 104 & 1.6 \\
-26 & 110 & Monitoring, Repeat Minor (TCR) (110) & 31 & 0.5 \\
-38 & 122 & Monitoring, Turbidity (Enhanced SWTR) (122) & 31 & 0.5 \\
-25 & 110 & Monitoring, Repeat Major (TCR) (110) & 28 & 0.4 \\
-\addlinespace[4pt]
-\multicolumn{5}{l}{\textit{Chemical phase rules (VOC, SOC) and other}} \\
-\addlinespace[2pt]
-03 & 310 & Monitoring, Regular (310) & 2,960 & 46.4 \\
-03 & 320 & Monitoring, Regular (320) & 716 & 11.2 \\
-27 & 210 & Monitoring and Reporting (DBP) (210) & 356 & 5.6 \\
-52 & 350 & Follow-up Or Routine LCR Tap M/R (350) & 71 & 1.1 \\
-51 & 350 & Initial Tap Sampling for Pb and Cu (350) & 60 & 0.9 \\
-53 & 350 & Water Quality Parameter M/R (350) & 6 & 0.1 \\
-27 & 230 & Monitoring and Reporting (DBP) (230) & 2 & 0.0 \\
-\addlinespace[2pt]
-\hline
- &  & \textit{Total} & 6,374 & 100.0 \\
-\hline\hline
-\end{tabular}
-\begin{minipage}{\linewidth}
-\vspace{4pt}
-\footnotesize
-\textit{Notes:} Violation code 03 = Monitoring, Regular; 04 = Monitoring, Check/Repeat/Confirmation; 23/24 = Monitoring, Routine Major/Minor (TCR); 25/26 = Monitoring, Repeat Major/Minor (TCR); 27 = M/R (DBP); 31 = Monitoring of Treatment (SWTR-Unfiltered/GWR); 36 = Monitoring of Treatment (SWTR-Filter); 38 = Monitoring, Turbidity (Enhanced SWTR); 51 = Initial Tap Sampling, Pb/Cu; 52 = Follow-up or Routine LCR Tap M/R; 53 = Water Quality Parameter M/R; 56 = Source Water M/R. All violation codes reflect failure to collect required samples or submit results on schedule; no contamination exceedance is required to trigger an MR violation. Sample restricted to strictly downstream CWSs. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
+\textit{Notes:} Panel A: violation codes classify the type of monitoring-and-reporting failure; code 03 = Monitoring, Regular; 04 = Monitoring, Check/Repeat/Confirmation. Panel B: violation codes classify the type of MCL exceedance. Panel C: rule 331 = Nitrate; 332 = Arsenic; 333 = Inorganic Chemicals; MR = monitoring and reporting violation; MCL = maximum contaminant level violation; inorganic chemicals (333) encompasses nitrates and arsenic as sub-contaminants. All panels restricted to IOC rules (nitrate 331, arsenic 332, inorganic chemicals 333). Sample restricted to strictly downstream CWSs (minehuc\_downstream\_of\_mine\,=\,1 and minehuc\_mine\,=\,0), 1985--2005. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
 \end{minipage}
 \end{table}
