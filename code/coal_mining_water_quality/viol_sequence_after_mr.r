@@ -4,7 +4,7 @@
 #          For each MR violation, find the next distinct violation date
 #          for the same PWSID and characterise the following violation type.
 # Inputs:  clean_data/cws_data/prod_vio_sulfur.parquet (sample PWSID list)
-#          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.csv
+#          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.parquet
 # Outputs: output/sum/viol_sequence_after_mr.tex
 # Author: EK  Date: 2026-04-15
 # ============================================================
@@ -13,31 +13,33 @@
 library(arrow)
 library(data.table)
 
-# ── 0. Sample PWSIDs ─────────────────────────────────────────────────────────
-pws_ids <- unique(as.data.frame(
+# ── 0. Sample PWSIDs — downstream-only ───────────────────────────────────────
+panel <- as.data.frame(
   arrow::read_parquet("Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
-                      col_select = "PWSID"))$PWSID)
-cat("Sample:", length(pws_ids), "PWSIDs\n")
+                      col_select = c("PWSID","minehuc_downstream_of_mine","minehuc_mine")))
+pws_ids <- unique(panel$PWSID[
+  panel$minehuc_downstream_of_mine == 1 &
+  panel$minehuc_mine == 0])
+cat("Sample (downstream only):", length(pws_ids), "PWSIDs\n")
 
 # ── 1. Load violations ────────────────────────────────────────────────────────
 cat("Loading violations...\n")
-ve <- fread(
-  "Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.csv",
-  select     = c("PWSID","VIOLATION_ID","NON_COMPL_PER_BEGIN_DATE",
-                 "VIOLATION_CATEGORY_CODE","RULE_CODE"),
-  na.strings = c("","NA"), showProgress = FALSE
-)
+ve <- as.data.table(arrow::read_parquet(
+  "Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.parquet",
+  col_select = c("PWSID","VIOLATION_ID","NON_COMPL_PER_BEGIN_DATE",
+                 "VIOLATION_CATEGORY_CODE","RULE_CODE")
+))
 ve[, yr         := as.integer(substr(NON_COMPL_PER_BEGIN_DATE, 7, 10))]
 ve[, begin_date := as.Date(NON_COMPL_PER_BEGIN_DATE, format = "%m/%d/%Y")]
 ve <- ve[PWSID %in% pws_ids & yr >= 1985 & yr <= 2005]
 
-# Deduplicate to unique violations
-viol <- unique(ve[, .(PWSID, VIOLATION_ID, begin_date,
-                      VIOLATION_CATEGORY_CODE, RULE_CODE)])
+# Deduplicate to unique violations (by PWSID + VIOLATION_ID — VIOLATION_ID is not globally unique)
+viol <- unique(ve, by = c("PWSID", "VIOLATION_ID"))
+viol <- viol[, .(PWSID, VIOLATION_ID, begin_date, VIOLATION_CATEGORY_CODE, RULE_CODE)]
 cat("Unique violations:", nrow(viol), "\n")
 
 # ── 2. Classify contaminant group and severity ────────────────────────────────
-mining_rules    <- c(331L, 332L, 333L, 340L)
+mining_rules    <- c(331L, 332L, 333L)  # nitrate, arsenic, inorganic chemicals only
 nonmining_rules <- c(110L, 111L, 121L, 122L, 123L, 140L, 310L, 320L)
 
 viol[, rule_num := suppressWarnings(as.integer(RULE_CODE))]
@@ -102,6 +104,8 @@ mr_viol <- merge(mr_viol,
 
 cat("\nMR violations for analysis:\n")
 print(mr_viol[, table(cgrp)])
+cat("\nRule codes in mining MR violations:\n")
+print(mr_viol[cgrp == "mining", table(rule_num)])
 
 # ── 5. Classify the following violation ──────────────────────────────────────
 # "next_type": label for the next violation, including same-rule-code distinctions
@@ -189,56 +193,56 @@ lines <- c(
   "% Table: Violation Sequencing — What Follows a Mining vs Non-mining MR Violation?",
   "% Unit: MR violation (unique VIOLATION_ID). Next violation = highest-severity",
   "% violation at the next distinct begin_date for the same PWSID.",
-  paste0("% N: mining MR = ", n_mine, ";  non-mining MR = ", n_non),
+  paste0("% N: mining MR = ", n_mine),
   "% ============================================================",
   "",
   "\\begin{table}[htbp]",
   "\\centering",
-  "\\caption{Violation Following a Mining vs.\\@ Non-mining MR Violation, 1985--2005}",
+  "\\caption{Violation Following an Arsenic, Nitrate, or Inorganic Chemical MR Violation, Downstream CWSs, 1985--2005}",
   "\\label{tab:viol_sequence}",
   "\\small",
-  "\\begin{tabular}{lrr}",
+  "\\begin{tabular}{lr}",
   "\\hline\\hline",
-  paste0("\\textbf{Next violation} & \\textbf{Mining MR} & \\textbf{Non-mining MR} \\\\"),
-  paste0(" & \\textit{(N=", n_mine, ")} & \\textit{(N=", n_non, ")} \\\\"),
+  paste0("\\textbf{Next violation} & \\textbf{Mining MR} \\\\"),
+  paste0(" & \\textit{(N=", n_mine, ")} \\\\"),
   "\\hline",
   "\\addlinespace[4pt]",
-  "\\multicolumn{3}{l}{\\textit{No subsequent violation}} \\\\",
+  "\\multicolumn{2}{l}{\\textit{No subsequent violation}} \\\\",
   "\\addlinespace[2pt]",
   paste0("No further violation in 1985--2005 (\\%) & ",
-         fp(s_mine$pct_none), " & ", fp(s_non$pct_none), " \\\\"),
+         fp(s_mine$pct_none), " \\\\"),
   "\\addlinespace[4pt]",
-  "\\multicolumn{3}{l}{\\textit{Monitoring/reporting violation follows}} \\\\",
+  "\\multicolumn{2}{l}{\\textit{Monitoring/reporting violation follows}} \\\\",
   "\\addlinespace[2pt]",
   paste0("MR, same contaminant$^a$ (\\%) & ",
-         fp(s_mine$pct_mr_same_rule), " & ", fp(s_non$pct_mr_same_rule), " \\\\"),
+         fp(s_mine$pct_mr_same_rule), " \\\\"),
   paste0("MR, same contaminant group$^b$ (\\%) & ",
-         fp(s_mine$pct_mr_same_group), " & ", fp(s_non$pct_mr_same_group), " \\\\"),
+         fp(s_mine$pct_mr_same_group), " \\\\"),
   paste0("MR, other contaminant (\\%) & ",
-         fp(s_mine$pct_mr_other), " & ", fp(s_non$pct_mr_other), " \\\\"),
+         fp(s_mine$pct_mr_other), " \\\\"),
   "\\addlinespace[4pt]",
-  "\\multicolumn{3}{l}{\\textit{Limit exceedance violation follows}} \\\\",
+  "\\multicolumn{2}{l}{\\textit{Limit exceedance violation follows}} \\\\",
   "\\addlinespace[2pt]",
   paste0("MCL, same contaminant$^a$ (\\%) & ",
-         fp(s_mine$pct_mcl_same_rule), " & ", fp(s_non$pct_mcl_same_rule), " \\\\"),
+         fp(s_mine$pct_mcl_same_rule), " \\\\"),
   paste0("MCL, same contaminant group$^b$ (\\%) & ",
-         fp(s_mine$pct_mcl_same_group), " & ", fp(s_non$pct_mcl_same_group), " \\\\"),
+         fp(s_mine$pct_mcl_same_group), " \\\\"),
   paste0("MCL, other contaminant (\\%) & ",
-         fp(s_mine$pct_mcl_other), " & ", fp(s_non$pct_mcl_other), " \\\\"),
+         fp(s_mine$pct_mcl_other), " \\\\"),
   "\\addlinespace[4pt]",
-  "\\multicolumn{3}{l}{\\textit{Other violation type follows}} \\\\",
+  "\\multicolumn{2}{l}{\\textit{Other violation type follows}} \\\\",
   "\\addlinespace[2pt]",
   paste0("Treatment technique (TT) (\\%) & ",
-         fp(s_mine$pct_tt), " & ", fp(s_non$pct_tt), " \\\\"),
+         fp(s_mine$pct_tt), " \\\\"),
   paste0("Other category (\\%) & ",
-         fp(s_mine$pct_other_cat), " & ", fp(s_non$pct_other_cat), " \\\\"),
+         fp(s_mine$pct_other_cat), " \\\\"),
   "\\addlinespace[4pt]",
-  "\\multicolumn{3}{l}{\\textit{Time to next violation}} \\\\",
+  "\\multicolumn{2}{l}{\\textit{Time to next violation}} \\\\",
   "\\addlinespace[2pt]",
   paste0("Median days to next violation & ",
-         fp(s_mine$med_days), " & ", fp(s_non$med_days), " \\\\"),
+         fp(s_mine$med_days), " \\\\"),
   paste0("Mean days to next violation & ",
-         fp(s_mine$mean_days), " & ", fp(s_non$mean_days), " \\\\"),
+         fp(s_mine$mean_days), " \\\\"),
   "\\hline\\hline",
   "\\end{tabular}",
   "\\begin{minipage}{\\linewidth}",
@@ -246,8 +250,8 @@ lines <- c(
   "\\footnotesize",
   paste0(
     "\\textit{Notes:} Unit of observation is the MR violation (unique VIOLATION\\_ID). ",
-    "Sample: CWS in the coal mining analysis panel, 1985--2005. ",
-    "Mining-related rules: nitrate (331), arsenic (332), inorganic chemicals (333), radionuclides (340). ",
+    "Sample: CWS in the coal mining analysis panel whose intake HUC is one step downstream of a mine HUC (downstream-only sample), 1985--2005. ",
+    "Mining-related rules: nitrate (331), arsenic (332), inorganic chemicals (333). ",
     "Non-mining rules: total coliform (110, 111), surface/groundwater rule (121--123, 140), VOCs (310), SOCs (320). ",
     "``Next violation'' is defined as the highest-severity violation beginning on the next ",
     "distinct begin date for the same PWSID; severity order is MCL mining $>$ MCL non-mining $>$ ",

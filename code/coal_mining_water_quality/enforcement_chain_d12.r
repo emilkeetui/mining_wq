@@ -472,6 +472,43 @@ wrap_for_beamer <- function(path, beamer_height = "0.78\\textheight") {
   }
 }
 
+# Post-processing helpers for style.tex("aer") tables
+move_notes_below_adjustbox <- function(x) {
+  x           <- paste(x, collapse = "\n")
+  end_adj     <- "\\end{adjustbox}"
+  par_rag     <- "\\par \\raggedright"
+  par_pos     <- regexpr(par_rag, x, fixed = TRUE)
+  end_adj_pos <- regexpr(end_adj, x, fixed = TRUE)
+  if (par_pos[1] == -1 || end_adj_pos[1] == -1) return(x)
+  note_block <- substr(x, par_pos[1], end_adj_pos[1] - 1)
+  x <- sub(note_block, "", x, fixed = TRUE)
+  x <- sub(end_adj,
+            paste0(end_adj, "\n   {\\tiny\\linespread{1}\\selectfont ",
+                   trimws(note_block), "}"),
+            x, fixed = TRUE)
+  x
+}
+
+rename_col_numbers_to_labels <- function(x) {
+  x     <- paste(x, collapse = "\n")
+  lines <- strsplit(x, "\n")[[1]]
+  for (i in seq_along(lines)) {
+    nums <- regmatches(lines[i], gregexpr("\\(\\d+\\)", lines[i]))[[1]]
+    if (length(nums) >= 2) {
+      num_vals <- as.integer(gsub("[()]", "", nums))
+      if (identical(num_vals, seq_along(num_vals))) {
+        labels <- rep(c("OLS", "RF", "2SLS"), length.out = length(nums))
+        line   <- lines[i]
+        for (j in seq_along(nums)) line <- sub(nums[j], labels[j], line, fixed = TRUE)
+        lines[i] <- line
+      }
+    }
+  }
+  paste(lines, collapse = "\n")
+}
+
+postprocess_table <- function(x) rename_col_numbers_to_labels(move_notes_below_adjustbox(x))
+
 dir.create(file.path(ROOT, "output/reg"), showWarnings = FALSE, recursive = TRUE)
 out_tex <- file.path(ROOT, "output/reg/h2_visits_d12.tex")
 
@@ -509,21 +546,22 @@ dict_b <- c(
 )
 
 etable(ols_b, rf_b, iv_b,
-       title      = "Effect of Coal Mining on Sanitary Survey Probability (D1 Downstream Sample, LPM)",
-       headers    = c("OLS", "Reduced form", "2SLS"),
-       dict       = dict_b,
-       drop       = "num_facilities",
-       extralines = el_b,
-       fitstat    = ~n,
-       notes      = paste0("D1 downstream sample (minehuc_downstream_of_mine = 1, minehuc_mine = 0). ",
-                           "Outcome: any sanitary survey (SNSV) in CWS-year. ",
-                           "N = ", nrow(panel_d1), " CWS-years. ",
-                           "Treatment: num_coal_mines_upstream_sum. ",
-                           "Instrument: post95 x sulfur_unified_mean. SEs clustered at CWS level."),
-       file       = out_tex_b,
-       replace    = TRUE)
-
-wrap_for_beamer(out_tex_b)
+       title          = "Effect of Coal Mining on Sanitary Survey Probability (D1 Downstream Sample, LPM)",
+       label          = "tab:h2_snsv_d12",
+       dict           = dict_b,
+       drop           = "num_facilities",
+       extralines     = el_b,
+       fitstat        = ~n,
+       notes          = paste0("D1 downstream sample (minehuc_downstream_of_mine = 1, minehuc_mine = 0). ",
+                               "Outcome: any sanitary survey (SNSV) in CWS-year. ",
+                               "N = ", nrow(panel_d1), " CWS-years. ",
+                               "Treatment: num_coal_mines_upstream_sum. ",
+                               "Instrument: post95 x sulfur_unified_mean. SEs clustered at CWS level."),
+       style.tex      = style.tex("aer", adjustbox = TRUE),
+       tex            = TRUE,
+       postprocess.tex = postprocess_table,
+       file           = out_tex_b,
+       replace        = TRUE)
 cat(sprintf("\nTable saved to: %s\n", out_tex_b))
 if (file.exists(out_tex_b) && file.info(out_tex_b)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")
@@ -575,24 +613,24 @@ dict_enf <- c(
 )
 
 etable(ols_id1, rf_id1, iv_id1, ols_fd1, rf_fd1, iv_fd1,
-       title      = "Effect of Coal Mining on Enforcement Actions by Type (D1 Downstream Sample)",
-       headers    = c("Informal (OLS)", "Informal (RF)", "Informal (2SLS)",
-                      "Formal (OLS)",   "Formal (RF)",   "Formal (2SLS)"),
-       dict       = dict_enf,
-       drop       = "num_facilities",
-       extralines = el_d1,
-       fitstat    = ~n,
-       notes      = paste0("D1 downstream sample (minehuc_downstream_of_mine = 1, minehuc_mine = 0). ",
-                           "Cols 1-3: informal enforcement action (",
-                           sprintf("%.1f", inf_d1_pct), "% of panel). ",
-                           "Cols 4-6: formal enforcement action (",
-                           sprintf("%.1f", frm_d1_pct), "% of panel). ",
-                           "Treatment: num_coal_mines_upstream_sum. ",
-                           "Instrument: post95 x sulfur_unified_mean. SEs clustered at CWS level."),
-       file       = out_tex_h3_inf,
-       replace    = TRUE)
-
-wrap_for_beamer(out_tex_h3_inf)
+       title          = "Effect of Coal Mining on Enforcement Actions by Type (D1 Downstream Sample)",
+       label          = "tab:h3_inf_formal_d12",
+       dict           = dict_enf,
+       drop           = "num_facilities",
+       extralines     = el_d1,
+       fitstat        = ~n,
+       notes          = paste0("D1 downstream sample (minehuc_downstream_of_mine = 1, minehuc_mine = 0). ",
+                               "Cols 1-3: informal enforcement action (",
+                               sprintf("%.1f", inf_d1_pct), "% of panel). ",
+                               "Cols 4-6: formal enforcement action (",
+                               sprintf("%.1f", frm_d1_pct), "% of panel). ",
+                               "Treatment: num_coal_mines_upstream_sum. ",
+                               "Instrument: post95 x sulfur_unified_mean. SEs clustered at CWS level."),
+       style.tex      = style.tex("aer", adjustbox = TRUE),
+       tex            = TRUE,
+       postprocess.tex = postprocess_table,
+       file           = out_tex_h3_inf,
+       replace        = TRUE)
 cat(sprintf("\nTable saved to: %s\n", out_tex_h3_inf))
 if (file.exists(out_tex_h3_inf) && file.info(out_tex_h3_inf)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")

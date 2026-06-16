@@ -11,8 +11,8 @@
 #          clean_data/cws_6year_review_ravalli.parquet
 #          clean_data/cws_data/pwsid_huc02.parquet
 # Outputs: output/reg/6yr_huc02fe_<group>[_ravalli][_2005].tex
-#          output/reg/6yr_huc02fe_inorg_val[_ravalli].tex
-#          output/sum/6yr_huc02fe_inorg_val[_ravalli]_sumstats.tex
+#          output/reg/6yr_huc02fe_inorg_val[_ravalli][_ravalli_2005].tex
+#          output/sum/6yr_huc02fe_inorg_val[_ravalli][_ravalli_2005]_sumstats.tex
 # Author: EK  Date: 2026-05-27
 # ============================================================
 
@@ -510,7 +510,8 @@ run_count_tables <- function(df, note, file_sfx, title_sfx, note_tc_cnt = note_t
 #   title_sfx — appended to table title
 #   note_val  — footnote for the regression table
 # ---------------------------------------------------------------------------
-run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val) {
+run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
+                               note_ss_period = "Sample period 1998--2011. ") {
   cat("\n=== INORGANIC CHEMICALS --- MEAN CONCENTRATION", file_sfx, "===\n")
 
   grp_inorg <- chem_groups[[1]]  # inorganic chemicals
@@ -626,7 +627,7 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val) {
   fmt_n <- function(x) formatC(x, format = "d", big.mark = ",")
 
   note_ss <- paste0(
-    "Sample period 1998--2011. ",
+    note_ss_period,
     "Statistics computed on the sample used in each chemical's regression in ",
     "Table~\\ref{tab:6yr_huc02fe_inorg_val", file_sfx, "}. ",
     "For cumulative upstream coal production, statistics are computed over unique ",
@@ -712,6 +713,21 @@ note_inorg_val_rav <- paste0(
   "Standard errors clustered at PWSID level."
 )
 
+note_inorg_val_rav_2005 <- paste0(
+  "Sample period 1998--2005 (robustness). ",
+  "Outcome is the mean measured concentration of the analyte in a given CWS-year ",
+  "from the EPA 6-Year Review (Ravalli et al.~2022 cleaning: non-detects replaced ",
+  "by MDL$/\\sqrt{2}$). ",
+  "For arsenic, the MCL is 0.050 mg/L through 2005. ",
+  "Explanatory variable is cumulative coal production since 1985 ",
+  "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
+  "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
+  "interacted with year). ",
+  "Sample: CWSs at most one HUC12 downstream of a coal mine ",
+  "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0). ",
+  "Standard errors clustered at PWSID level."
+)
+
 # ===========================================================================
 # STANDARD PIPELINE TABLES
 # ===========================================================================
@@ -774,6 +790,11 @@ run_count_tables(df6r_2005, note_cnt_2005_rav, file_sfx = "_ravalli_2005",
 run_inorg_val_table(df6r, file_sfx = "_ravalli",
                     title_sfx = ", Ravalli et al.~(2022) cleaning",
                     note_val = note_inorg_val_rav)
+
+run_inorg_val_table(df6r_2005, file_sfx = "_ravalli_2005",
+                    title_sfx = ", Ravalli et al.~(2022) cleaning, robustness 1998--2005",
+                    note_val = note_inorg_val_rav_2005,
+                    note_ss_period = "Sample period 1998--2005 (robustness). ")
 
 # ---------------------------------------------------------------------------
 # Scatter plot: beta particle mean concentration vs cumulative upstream coal

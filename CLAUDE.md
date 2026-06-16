@@ -25,6 +25,8 @@ mining_wq/
 │   ├── coal_mine_prod_charac.parquet   # mine × year: production + sulfur/BTU
 │   ├── coal_huc_prod.csv               # HUC12 × year: aggregate production
 │   ├── huc_coal_charac_geom_match.parquet  # HUC12 × year: production + sulfur + minehuc type
+│   ├── cws_6year_review.parquet            # CWS × year × chemical: EPA 6-Year Review data (SYR2 only)
+│   ├── cws_6year_review_ravalli.parquet   # same with MDL/sqrt(2) non-detect imputation (SYR2 only)
 │   └── cws_data/
 │       ├── prod_vio_sulfur.parquet     # PWSID × year: main analysis dataset (input to didhet.r)
 │       └── violation.csv              # raw violation records for distributional plots

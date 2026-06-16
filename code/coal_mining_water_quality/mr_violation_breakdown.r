@@ -40,14 +40,14 @@ ve[, rule_tmp := suppressWarnings(as.integer(RULE_CODE))]
 # ── 1a. MR violations, IOC rules ──────────────────────────────────────────────
 mr_raw <- ve[PWSID %in% pws_ids & VIOLATION_CATEGORY_CODE == "MR" &
              yr >= 1985 & yr <= 2005]
-mr <- unique(mr_raw, by = "VIOLATION_ID")
+mr <- unique(mr_raw, by = c("PWSID", "VIOLATION_ID"))
 mr <- mr[rule_tmp %in% c(331L, 332L, 333L)]
 cat("IOC MR violations (rules 331/332/333):", nrow(mr), "\n")
 
 # ── 1b. MCL violations, IOC rules ─────────────────────────────────────────────
 mcl_raw <- ve[PWSID %in% pws_ids & VIOLATION_CATEGORY_CODE == "MCL" &
               yr >= 1985 & yr <= 2005]
-mcl <- unique(mcl_raw, by = "VIOLATION_ID")
+mcl <- unique(mcl_raw, by = c("PWSID", "VIOLATION_ID"))
 mcl <- mcl[rule_tmp %in% c(331L, 332L, 333L)]
 cat("IOC MCL violations (rules 331/332/333):", nrow(mcl), "\n")
 

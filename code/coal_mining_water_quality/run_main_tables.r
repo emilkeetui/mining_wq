@@ -302,3 +302,89 @@ for (sp in sample_specs) {
   }
 }
 cat("\nDone.\n")
+
+# ── Binary violation tables (dwnstrm + _ivsum spec only) ─────────────────────
+# Create 0/1 indicators: 1 if the CWS had any days in violation during the year.
+# NA preserved where _share_days is NA (pre-rule years for non-mining outcomes).
+bin_src_vars <- c(
+  "nitrates_share_days", "arsenic_share_days",
+  "inorganic_chemicals_share_days", "radionuclides_share_days",
+  "nitrates_MCL_share_days", "arsenic_MCL_share_days",
+  "inorganic_chemicals_MCL_share_days", "radionuclides_MCL_share_days",
+  "nitrates_MR_share_days", "arsenic_MR_share_days",
+  "inorganic_chemicals_MR_share_days", "radionuclides_MR_share_days"
+)
+for (v in bin_src_vars) {
+  bv <- sub("_share_days$", "_bin", v)
+  full[[bv]]          <- ifelse(is.na(full[[v]]),          NA_integer_, as.integer(full[[v]] > 0))
+  full_expanded[[bv]] <- ifelse(is.na(full_expanded[[v]]), NA_integer_, as.integer(full_expanded[[v]] > 0))
+}
+
+vio_dict_bin <- c(
+  vio_dict,
+  nitrates_bin                      = "Nitrates",
+  arsenic_bin                       = "Arsenic",
+  inorganic_chemicals_bin           = "Inorganic chemicals",
+  radionuclides_bin                 = "Radionuclides",
+  nitrates_MCL_bin                  = "Nitrates (MCL)",
+  arsenic_MCL_bin                   = "Arsenic (MCL)",
+  inorganic_chemicals_MCL_bin       = "Inorganic chemicals (MCL)",
+  radionuclides_MCL_bin             = "Radionuclides (MCL)",
+  nitrates_MR_bin                   = "Nitrates (MR)",
+  arsenic_MR_bin                    = "Arsenic (MR)",
+  inorganic_chemicals_MR_bin        = "Inorganic chemicals (MR)",
+  radionuclides_MR_bin              = "Radionuclides (MR)"
+)
+
+std_note_ivsum_bin <- paste0(
+  "Columns show OLS, reduced form, and 2SLS estimates. ",
+  "Dependent variable is an indicator equal to 1 if the CWS had any violation of that type during the year, 0 otherwise. ",
+  "Instrument is post95 interacted with sum of coal sulfur content across upstream HUC12s ",
+  "(post95 x sulfur_unified_sum). ",
+  "All regressions include CWS and year fixed effects. ",
+  "Standard errors clustered at CWS level. ",
+  "Sample period 1985--2005."
+)
+
+vio_specs_bin <- list(
+  list(name="minevio",
+       allcat = c("nitrates_bin", "arsenic_bin", "inorganic_chemicals_bin"),
+       mcl    = c("nitrates_MCL_bin", "arsenic_MCL_bin", "inorganic_chemicals_MCL_bin"),
+       mr     = c("nitrates_MR_bin", "arsenic_MR_bin", "inorganic_chemicals_MR_bin"),
+       titlevio = "IOC violations")
+)
+
+bin_sample_specs <- list(
+  list(sample="dwnstrm", suffix="_ivsum", coalvar="num_coal_mines_upstream_sum",
+       instr="post95:sulfur_unified_sum", titlesamp="CWSs at most one HUC12 down-stream",
+       dset=full[(full$minehuc_downstream_of_mine==1) & (full$minehuc_mine==0), ])
+)
+
+for (sp in bin_sample_specs) {
+  for (vp in vio_specs_bin) {
+    fs_store_name <- paste0("fs_store_", sp$sample, sp$suffix, "_", vp$name, "_bin")
+    for (cp in cat_specs) {
+      fname     <- paste0("2sls_", sp$sample, "_", vp$name, "_", cp$name, sp$suffix, "_binvio")
+      tab_title <- paste0("Effect of coal mines on ", vp$titlevio, " (", cp$titlecat, ", ", sp$titlesamp, ")")
+      varlist   <- vp[[cp$varkey]]
+      cat("\nRunning:", fname, "\n")
+      tsls_reg_output_main(dset=sp$dset, varlist=varlist, coalvar=sp$coalvar,
+                           regoutname=fname, title=tab_title, label=fname,
+                           instr_str=sp$instr, dict=vio_dict_bin, notes=std_note_ivsum_bin,
+                           storage_list_name=fs_store_name,
+                           subheader=cp$titlecat,
+                           fitstat=~ n)
+    }
+    fs_outfile <- paste0("fs_", sp$sample, "_", vp$name, sp$suffix, "_binvio")
+    fs_title   <- paste0("First Stage: ", vp$titlevio, " (", sp$titlesamp, ")")
+    cat("\nProducing first-stage table:", fs_outfile, "\n")
+    first_stage_table(
+      storage_list_name=fs_store_name,
+      outfile=fs_outfile,
+      title=fs_title,
+      label=paste0("tab:", fs_outfile),
+      drop="num_facilities"
+    )
+  }
+}
+cat("\nDone (binary violation tables).\n")
