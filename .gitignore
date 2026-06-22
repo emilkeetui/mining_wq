@@ -7,11 +7,20 @@ lit/
 .Rhistory
 .RData
 .Rproj.user/
+Rplots.pdf
+
+# LaTeX build artifacts
+writeup/*.aux
+writeup/*.log
+writeup/*.pdf
 
 # Python artifacts
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+
+# Secrets — never commit
+.claude/.ipums_api_key
 
 # Auto-generated R output library files (kableExtra/tinytable)
 output/sum/lib*/
