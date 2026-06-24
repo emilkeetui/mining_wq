@@ -1,0 +1,41 @@
+\makeatletter
+\@ifclassloaded{beamer}{%
+  \begin{adjustbox}{max width=\linewidth, max totalheight=0.78\textheight, center}%
+}{%
+  \begin{adjustbox}{max width=\linewidth, center}%
+}%
+\makeatother
+
+\begingroup
+\centering
+\begin{tabular}{lccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables: & \multicolumn{2}{c}{mr\_same\_fwd} & mr\_anyioc\_fwd\\
+                      & Arsenic  & Nitrate       & Pooled inorganic \\   
+   Model:             & (1)      & (2)           & (3)\\  
+   \midrule
+   \emph{Variables}\\
+   ratio              & 0.1088   & 0.1205        & -0.0597\\   
+                      & (0.1353) & (0.1135)      & (0.0811)\\   
+   near\_mcl          &          & 0.5893$^{**}$ & 0.0040\\   
+                      &          & (0.2454)      & (0.0242)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   PWSID              & Yes      & Yes           & Yes\\  
+   YEAR               & Yes      & Yes           & Yes\\  
+   contaminant\_code  &          &               & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   R$^2$              & 0.21960  & 0.30793       & 0.38970\\  
+   Observations       & 419      & 851           & 3,705\\  
+   \midrule \midrule
+   \multicolumn{4}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+   \multicolumn{4}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+ 
+\par\endgroup
+\end{adjustbox}
+
+\par \raggedright
+Downstream-only mining sample (minehuc\_downstream\_of\_mine==1 \& minehuc\_mine==0), SYR2 only (1998-2005). Forward window: outcome is an MR violation occurring 1-365 days after the sample date (same-contaminant MR violation for Arsenic/Nitrate; RULE\_CODE==333.0 MR violation for Pooled). Pooled any-IOC: MR violation under RULE\_CODE==333.0 (Inorganic Chemicals / Other IOC -- the same rule code used to build `inorganic\_chemicals` in 2sls\_dwnstrm\_minevio\_allcat\_ivsum.tex; excludes arsenic and nitrate, which have their own rule codes). ratio = concentration/MCL; near\_mcl = reading at 50-100\% of MCL. SEs clustered at the CWS (PWSID) level.
+\par
