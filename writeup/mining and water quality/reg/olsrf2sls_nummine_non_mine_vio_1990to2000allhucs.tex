@@ -1,0 +1,35 @@
+
+\begin{table}[htbp]
+   \caption{\label{olsrf2sls_nummine_non_mine_vio_1990to2000allhucs} Effect of number of mines on PWS violations 1990-2000 (all PWS's)}
+   \bigskip
+   \centering
+   \begin{adjustbox}{width = \textwidth, center}
+      \begin{tabular}{lcccccccccccc}
+         \toprule
+          & \multicolumn{3}{c}{total\_coliform\_share} & \multicolumn{3}{c}{surface\_ground\_water\_rule\_share} & \multicolumn{3}{c}{voc\_share} & \multicolumn{3}{c}{soc\_share}\\
+                                                            & (1)                   & (2)                   & (3)           & (4)           & (5)             & (6)           & (7)                  & (8)           & (9)           & (10)                  & (11)          & (12)\\  
+         \midrule 
+         num\_coal\_mines\_colocated                        & 0.0006                &                       & -0.0184       & 0.0019        &                 & 0.1822$^{**}$ & 0.0014               &               & -0.0327       & -0.0004               &               & 0.1102\\   
+                                                            & (0.0004)              &                       & (0.0177)      & (0.0022)      &                 & (0.0873)      & (0.0024)             &               & (0.0672)      & (0.0017)              &               & (0.0701)\\   
+         num\_coal\_mines\_upstream                         & $8.76\times 10^{-5}$  &                       & 0.0121        & 0.0017        &                 & -0.2101       & 0.0007               &               & 0.0866        & -0.0018               &               & -0.0151\\   
+                                                            & (0.0004)              &                       & (0.0196)      & (0.0011)      &                 & (0.1295)      & (0.0022)             &               & (0.0942)      & (0.0020)              &               & (0.0960)\\   
+         post95 $\times$ sulfur\_colocated                  &                       & 0.0005                &               &               & -0.0078$^{***}$ &               &                      & 0.0027        &               &                       & -0.0017       &   \\   
+                                                            &                       & (0.0006)              &               &               & (0.0028)        &               &                      & (0.0030)      &               &                       & (0.0027)      &   \\   
+         post95 $\times$ sulfur\_upstream                   &                       & $4.47\times 10^{-5}$  &               &               & 0.0044          &               &                      & -0.0034       &               &                       & -0.0033       &   \\   
+                                                            &                       & (0.0005)              &               &               & (0.0030)        &               &                      & (0.0033)      &               &                       & (0.0034)      &   \\   
+          \\
+         Observations                                       & 14,148                & 14,148                & 14,148        & 14,148        & 14,148          & 14,148        & 14,148               & 14,148        & 14,148        & 14,148                & 14,148        & 14,148\\  
+         R$^2$                                              & 0.24172               & 0.24168               & 0.24168       & 0.51092       & 0.51159         & 0.51159       & 0.22422              & 0.22427       & 0.22427       & 0.26078               & 0.26120       & 0.26120\\  
+         Within R$^2$                                       & 0.00025               & 0.00019               & 0.00019       & 0.00042       & 0.00180         & 0.00180       & $7.6\times 10^{-5}$  & 0.00014       & 0.00014       & $8.01\times 10^{-5}$  & 0.00065       & 0.00065\\  
+         F-test (1st stage), num\_coal\_mines\_colocated    &                       &                       & 12.654        &               &                 & 12.654        &                      &               & 12.654        &                       &               & 12.654\\  
+         F-test (1st stage), num\_coal\_mines\_upstream     &                       &                       & 16.554        &               &                 & 16.554        &                      &               & 16.554        &                       &               & 16.554\\  
+          \\
+         PWSID fixed effects                                & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$    & $\checkmark$  & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$    & $\checkmark$  & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                 & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$    & $\checkmark$  & $\checkmark$         & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         \bottomrule
+      \end{tabular}
+   \end{adjustbox}
+\end{table}
+
+

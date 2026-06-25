@@ -1,0 +1,138 @@
+% ============================================================
+% Tables: SDWA datasets for regulator behavior analysis (Downstream CWSs)
+% Generated: 2026-04-15
+% Sample: 349 strictly downstream CWSs (minehuc_downstream_of_mine=1, minehuc_mine=0)
+% Sections:
+%   Tables 1--3: inventory, site visits, enforcement
+% ============================================================
+
+% ------------------------------------------------------------------
+% Table 1: Dataset inventory
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{SDWA Datasets Available for Regulator Behavior Analysis (Downstream CWSs)}
+\label{tab:sdwa_inventory}
+\small
+\begin{tabular}{llrrll}
+\hline\hline
+Dataset & Key Variables & \multicolumn{2}{c}{Rows (1985--2005)} & Usability \\
+\cmidrule(lr){3-4}
+ & & Total file & Matched sample & \\
+\hline
+\texttt{SDWA\_SITE\_VISITS} & Visit frequency, reason code, & 2,394,287 & 2,159 & \textbf{Strong} \\
+ & agency type, eval codes & & (271 PWSIDs) & \\[4pt]
+\texttt{SDWA\_VIOLATIONS\_} & Enforcement category, & 14,665,006 & 19,854 & \textbf{Strong} \\
+\texttt{ENFORCEMENT} & originator, days to RTC, & & (269 PWSIDs) & \\
+ & violation status & & & \\[4pt]
+\texttt{SDWA\_EVENTS\_} & Milestone codes (DEEM, DONE, & 262,540 & 409 & Narrow \\
+\texttt{MILESTONES} & SDFF, FICF), reason codes & & (208 PWSIDs) & (LCR only) \\[4pt]
+\texttt{SDWA\_PN\_VIOLATION\_} & Public notice tier, & 355,197 & 24 & Too sparse \\
+\texttt{ASSOC} & related violation & & (10 PWSIDs) & \\[4pt]
+\texttt{SDWA\_PUB\_WATER\_} & Reduced monitoring status, & --- & 349 PWSIDs & Too sparse \\
+\texttt{SYSTEMS} & outstanding performer & & (cross-sectional) & \\
+\hline\hline
+\multicolumn{5}{l}{\footnotesize Note: ``Matched sample'' = PWSIDs in the strictly downstream coal mining CWS sample.} \\
+\multicolumn{5}{l}{\footnotesize LCR = Lead and Copper Rule. RTC = return to compliance.} \\
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------------
+% Table 2: Site visits profile
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{Site Visits in Analysis Sample, 1985--2005 (Downstream CWSs)}
+\label{tab:site_visits_profile}
+\small
+\begin{tabular}{lrr}
+\hline\hline
+ & \multicolumn{1}{c}{Count} & \multicolumn{1}{c}{Share (\%)} \\
+\hline
+\multicolumn{3}{l}{\textit{Panel A: Visit reason}} \\
+Sanitary survey (SNSV) & 1,053 & 48.8 \\
+Technical assistance (TECH) & 284 & 13.2 \\
+Site visit (SITE) & 194 & 9.0 \\
+Research (RSCH) & 120 & 5.6 \\
+Sampling (SMPL) & 139 & 6.4 \\
+Investigation (INVG) & 98 & 4.5 \\
+Other (OTHR) & 107 & 5.0 \\
+Infrastructure inspection (INFI) & 59 & 2.7 \\
+Other (ENGR, PRMT, OM, EMRG, etc.) & 105 & 4.9 \\
+\hline
+\textit{Total} & 2,159 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel B: Agency conducting visit}} \\
+State (ST) & 1,232 & 57.1 \\
+State administrative district (SA) & 72 & 3.3 \\
+State administrative region (SR) & 33 & 1.5 \\
+District (DS) & 5 & 0.2 \\
+Other & 4 & 0.2 \\
+\hline
+\textit{Total} & 2,159 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel C: Compliance evaluation outcome}} \\
+Not evaluated / not applicable (X, Z) & 2,096 & 97.1 \\
+No deficiencies (N) & 59 & 2.7 \\
+Recommendations made (R) & 4 & 0.2 \\
+\hline
+\textit{Total} & 2,159 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel D: Visits per PWSID-year}} \\
+Minimum & 1 & \\
+25th percentile & 1 & \\
+Median & 1 & \\
+Mean & 1.8 & \\
+75th percentile & 2 & \\
+Maximum & 25 & \\
+\hline\hline
+\multicolumn{3}{l}{\footnotesize Note: Sample is 271 unique strictly downstream PWSIDs matched to coal mining analysis sample.} \\
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------------
+% Table 3: Enforcement actions profile
+% ------------------------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{Enforcement Actions in Analysis Sample, 1985--2005 (Downstream CWSs)}
+\label{tab:enforcement_profile}
+\small
+\begin{tabular}{lrr}
+\hline\hline
+ & \multicolumn{1}{c}{Count} & \multicolumn{1}{c}{Share (\%)} \\
+\hline
+\multicolumn{3}{l}{\textit{Panel A: Violation category}} \\
+Monitoring \& Reporting (MR) & 17,231 & 86.8 \\
+Maximum Contaminant Level (MCL) & 949 & 4.8 \\
+Treatment Technique (TT) & 875 & 4.4 \\
+Other & 799 & 4.0 \\
+\hline
+\textit{Total violations} & 19,854 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel B: Enforcement action category}} \\
+Informal & 12,706 & 64.6 \\
+Resolving & 6,178 & 31.4 \\
+Formal & 773 & 3.9 \\
+\hline
+\textit{Total enforcement actions} & 19,657 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel C: Enforcement originator}} \\
+State & 18,929 & 96.3 \\
+Federal & 728 & 3.7 \\
+\hline
+\textit{Total enforcement actions} & 19,657 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel D: Violation status}} \\
+Resolved & 17,200 & 86.6 \\
+Archived & 2,648 & 13.3 \\
+Addressed (formal enforcement, not resolved) & 2 & 0.0 \\
+Unaddressed & 4 & 0.0 \\
+\hline
+\textit{Total violations} & 19,854 & 100.0 \\[6pt]
+\multicolumn{3}{l}{\textit{Panel E: Days to return to compliance (N\,=\,19,848)}} \\
+Minimum & $-3,103$ & \\
+25th percentile & 89 & \\
+Median & 183 & \\
+Mean & 330 & \\
+75th percentile & 364 & \\
+Maximum & 4,691 & \\
+\hline\hline
+\multicolumn{3}{l}{\footnotesize Note: Sample is 269 unique strictly downstream PWSIDs with enforcement actions.} \\
+\multicolumn{3}{l}{\footnotesize Negative values of days to return to compliance reflect data entry inconsistencies in SDWIS.} \\
+\end{tabular}
+\end{table}

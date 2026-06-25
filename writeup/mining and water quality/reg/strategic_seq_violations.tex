@@ -1,0 +1,25 @@
+
+\begin{table}[htbp]
+   \caption{\label{tab:strategic_seq_violations} Violation Sequencing: Prior MR and Current MCL}
+   \centering
+   \footnotesize
+   \begin{tabular}{lc}
+      \toprule
+                                 & Pr(Mining MCL) \\
+                                 & (1) \\
+      \midrule
+      Standard MR at $t-1$      & $6.86\times 10^{-6}$ \\
+                                 & (0.0053) \\[4pt]
+      Confirmation MR at $t-1$  & 0.449$^{*}$ \\
+                                 & (0.238) \\
+      \midrule
+      Observations               & 11,706 \\
+      FEs: PWSID, State, Year   & $\checkmark$ \\
+      \bottomrule
+   \end{tabular}
+   \par\vspace{4pt}
+   {\scriptsize\raggedright
+   LPM. Outcome = 1 if CWS had a mining-related MCL violation in year $t$. Both indicators require $t-2$ violation-free. \textit{Standard MR}: regular monitoring violation (code `03'). \textit{Confirmation MR}: prior-positive-triggered test (code `04'; $n=4$ PWSID-years). SEs clustered at PWSID. Sample: $\leq$2-step downstream CWSs, 1985--2005. $^{*}p<0.1$.}
+\end{table}
+
+

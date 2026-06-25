@@ -1,0 +1,40 @@
+\makeatletter
+\@ifclassloaded{beamer}{%
+  \begin{adjustbox}{max width=\linewidth, max totalheight=0.78\textheight, center}%
+}{%
+  \begin{adjustbox}{max width=\linewidth, center}%
+}%
+\makeatother
+
+\begin{table}[htbp]
+   \caption{\label{tab:mr_to_visit} MR Violations and Subsequent Sanitary Visits}
+   \centering
+   \begin{tabular}{lcccc}
+      \tabularnewline \midrule \midrule
+      Dependent Variables:                 & visit\_san\_next6     & visit\_san\_next12    & visit\_any\_next6     & visit\_any\_next12\\    
+      Outcome: site visit in next h months & Sanitary visit (6mo)  & Sanitary visit (12mo) & Any visit (6mo)       & Any visit (12mo) \\   
+      Model:                               & (1)                   & (2)                   & (3)                   & (4)\\  
+      \midrule
+      \emph{Variables}\\
+      MR violation begins (t)              & 0.0096                & 0.0352$^{**}$         & 0.0118                & 0.0367$^{**}$\\   
+                                           & (0.0092)              & (0.0151)              & (0.0092)              & (0.0150)\\   
+      \midrule
+      \emph{Fixed-effects}\\
+      PWSID                                & Yes                   & Yes                   & Yes                   & Yes\\  
+      month\_idx                           & Yes                   & Yes                   & Yes                   & Yes\\  
+      \midrule
+      \emph{Fit statistics}\\
+      Observations                         & 85,854                & 83,760                & 85,854                & 83,760\\  
+      R$^2$                                & 0.15159               & 0.27581               & 0.25785               & 0.39072\\  
+      Within R$^2$                         & $3.16\times 10^{-5}$  & 0.00028               & $3.85\times 10^{-5}$  & 0.00028\\  
+      \midrule \midrule
+      \multicolumn{5}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+      \multicolumn{5}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+   \end{tabular}
+   
+   \par \raggedright 
+   Sample: strictly downstream CWSs (349), PWSID-months 1985-01 to 2005-12. Regressor is any MR violation (VIOLATION\_CATEGORY\_CODE=MR, any rule code) beginning in month t. Base rates (\%) of the next-h-month outcome: Sanitary visit (6mo) = 6.65; Sanitary visit (12mo) = 12.08; Any visit (6mo) = 9.75; Any visit (12mo) = 16.27. LPM with PWSID and calendar-month fixed effects; SEs clustered by PWSID.
+\end{table}
+
+
+\end{adjustbox}

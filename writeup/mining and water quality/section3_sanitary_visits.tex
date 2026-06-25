@@ -1,0 +1,131 @@
+% ============================================================
+% Drop-in replacement for Section 3 (Theoretical Framework) of main.tex.
+% Adds sanitary visits / regulator information to the Kang--Silveira CWS model:
+%   - continuous health-risk type r, unobserved by the regulator (CWS knows its own r)
+%   - costly sanitary visits Q(a) reveal r; visits are triggered by violations
+%   - regulator is risk neutral when it does not know the health type
+%     (no-visit penalty is built on the average risk)
+% Usage: \input this file in place of the current Section 3, or copy its body in.
+% Requires only amsmath + amssymb, already loaded in main.tex (\mathbb needs amssymb).
+% Nothing in main.tex is modified by creating this file.
+% ============================================================
+
+\section{Theoretical Framework}
+
+We model the effect of coal mining pollution on a CWS's decision to comply with the Safe Drinking Water Act under regulatory enforcement by adapting a static model of environmental compliance from \cite{kang2021understanding}, which is itself an adaptation of \cite{mookherjee1994marginal}. We extend that framework in one direction that is central to our setting: the regulator does not observe the health harm of a violation and uses costly sanitary visits to assess it. Because a monitoring and reporting violation is the \emph{absence} of a reported test, the regulator cannot read the contamination behind it; the sanitary visit is the instrument it uses to learn how harmful a given violation is. Embedding this single feature lets the model speak jointly to the three margins we document empirically: violations, sanitary visits, and the type of enforcement that follows.
+
+\subsection{The CWS compliance problem}
+
+CWSs choose a negligence level $a \in [0,\bar{a}]$, which measures how much they avoid the requirements of drinking water quality regulation, from maximum negligence $\bar{a}$ to full compliance $0$. Failing to conduct or submit tests, or not installing pollution abatement technology, are examples of negligence. Regulators do not observe $a$. CWSs face a compliance cost $\theta$, a random variable drawn from $\Theta$ with strictly increasing, continuously differentiable distribution $F(\cdot)$ on support $(0,\bar{\theta})$. CWSs know their draw of $\theta$; regulators know only the distribution. A compliance cost reflects both a CWS's ability to manage a water system and the cost of water treatment.
+
+A CWS receives benefit $\theta b(a)$ from compliance cost $\theta$ and negligence $a$, so the opportunity cost of choosing $a$ relative to maximum negligence is $\theta[b(\bar{a})-b(a)]$. The number of violations is a random variable $K$ that is Poisson with mean $a$,
+\[
+\Pr(K=k\mid a) = e^{-a}\,\frac{a^k}{k!}.
+\]
+
+\subsection{Regulator information and sanitary visits}
+
+We add a second, continuous type. Each CWS has a \emph{health-risk type} $r$, the social and health harm of a violation at that system, drawn from a distribution $G(\cdot)$ with density $g(\cdot)$ on support $(0,\bar{r})$ and mean $\mu_r \equiv \mathbb{E}[r]$. A high-$r$ system is one where a failure to monitor is more dangerous, for example because its source water is more contaminated, its treatment margin thinner, or its served population larger. Following the costly-state-verification logic, the CWS knows its own $r$; the regulator does not, unless it conducts a sanitary visit.
+
+A sanitary visit reveals $r$. Visits are costly and are triggered by violations: the ex ante probability that a CWS with negligence $a$ is visited is $Q(a)$, with $Q'(a)>0$. This captures that the regulator, facing resource constraints, prioritizes inspections at systems that have accumulated monitoring and reporting violations.
+
+The expected penalty depends on the regulator's information state. If the CWS is \emph{not} visited, the regulator cannot condition on $r$ and, being risk neutral, sets the penalty at the average risk $\mu_r$. Write this no-visit expected penalty as
+\[
+e_N(a) = e^{-a}\sum_{k=0}^{\infty} \frac{\epsilon_N(k)}{k!}\,a^k ,
+\]
+where $\epsilon_N(\cdot)$ is the schedule the regulator applies when it knows only the distribution of $r$. If the CWS \emph{is} visited and risk $r$ is revealed, the regulator conditions on it, yielding $e_V(a,r)$ with $\partial e_V/\partial r \ge 0$: a higher revealed risk warrants a stricter penalty. We normalize $e_V(a,\mu_r) = e_N(a)$, so that learning ``average'' risk leaves the penalty unchanged.
+
+Define the \emph{risk gap}
+\[
+D(a,r) \equiv e_V(a,r) - e_N(a), \qquad \operatorname{sign} D(a,r) = \operatorname{sign}(r-\mu_r), \qquad D_r \equiv \tfrac{\partial D}{\partial r} > 0 .
+\]
+A CWS revealed to be high risk ($r>\mu_r$) is penalized more than the average ($D>0$); one revealed to be low risk ($r<\mu_r$) is penalized less ($D<0$). The CWS, knowing its own $r$, faces expected penalty
+\begin{equation}\label{eq:expected_penalty_visit}
+P(a,r) = [1-Q(a)]\,e_N(a) + Q(a)\,e_V(a,r) = e_N(a) + Q(a)\,D(a,r).
+\end{equation}
+
+The expected payoff to a CWS of type $(\theta,r)$ from negligence $a$ is
+\begin{equation}\label{eq:cws_payoff_visit}
+-\theta[b(\bar{a})-b(a)] - P(a,r).
+\end{equation}
+A negligence schedule $a(\cdot)$ is implemented by the penalty environment if $a(\theta,r)$ maximizes \eqref{eq:cws_payoff_visit}. Combining the first order condition with the implemented schedule gives
+\begin{equation}\label{eq:foc_visit}
+\theta\, b'(a) = M(a,r), \qquad M(a,r) \equiv e_N'(a) + Q'(a)\,D(a,r) + Q(a)\,D_a(a,r),
+\end{equation}
+whenever $a(\theta,r)>0$, where $M(a,r)$ is the \emph{marginal expected penalty}. The new term $Q'(a)\,D(a,r)$ is the deterrence created by the visit process: raising negligence raises the chance of triggering a visit, and a visit moves the penalty by $D$. For a high-risk CWS this term \emph{adds} to the marginal penalty (a visit would raise the penalty); for a low-risk CWS it \emph{subtracts} (a visit would lower it). We assume $b$ is strictly increasing with $b''<0$, that $M$ is increasing in $a$, and that the first order condition characterizes the maximum, so the second order condition
+\[
+\theta\, b''(a) - M_a(a,r) < 0, \qquad\text{equivalently}\qquad \Phi \equiv M_a(a,r) - \theta\, b''(a) > 0,
+\]
+holds. We use $\Phi>0$ throughout. When $Q\equiv 0$ the model collapses to \cite{kang2021understanding} with $M=e'$.
+
+\subsection{Revised comparative statics}
+
+\noindent\textbf{Proposition 1.} \emph{CWSs choose higher negligence as compliance costs rise, $\partial a/\partial\theta > 0$, and the strength of the response depends on the CWS's health-risk type.}
+
+Differentiating \eqref{eq:foc_visit} in $\theta$,
+\[
+\frac{\partial a}{\partial\theta} = -\frac{b'(a)}{\theta\, b''(a) - M_a(a,r)} = \frac{b'(a)}{\Phi} > 0 .
+\]
+The sign is the same as in the model without visits, but $\Phi$ now contains the visit terms and depends on $r$ through $M_a$. The negligence response to compliance cost is steeper for low-risk systems, where visits do not deter, and flatter for high-risk systems. The original result is the special case $Q\equiv 0$.
+
+\medskip
+\noindent\textbf{Proposition 2.} \emph{Suppose mining raises contamination so that compliance cost is nondecreasing in upstream mining, $\theta(m)$ with $\theta'(m)\ge 0$, and also raises the health stakes of a violation, $r(m)$ with $r'(m)\ge 0$. Then}
+\[
+\frac{\partial a}{\partial m} = \frac{\partial a}{\partial\theta}\,\theta'(m) + \frac{\partial a}{\partial r}\,r'(m) = \frac{1}{\Phi}\Big[\underbrace{b'(a)\,\theta'(m)}_{\text{cost channel }(+)} - \underbrace{M_r\,r'(m)}_{\text{deterrence channel }(-)}\Big],
+\]
+\emph{which is positive if and only if the cost channel dominates.}
+
+The own-risk response is obtained by differentiating \eqref{eq:foc_visit} in $r$,
+\[
+\frac{\partial a}{\partial r} = \frac{M_r}{\theta\, b''(a) - M_a(a,r)} = -\frac{M_r}{\Phi} < 0, \qquad M_r = Q'(a)\,D_r + Q(a)\,D_{ar} > 0 ,
+\]
+so a higher own health risk \emph{lowers} negligence: a high-risk CWS, knowing a visit would expose it to a stricter penalty and that visits are triggered by its own violations, complies more. Mining therefore acts through two opposing forces. Through compliance cost, $\theta'(m)$ raises the marginal benefit of negligence and pushes $a$ up; through health stakes, $r'(m)$ makes visits more consequential and pulls $a$ down. The original Proposition~2 is the special case in which $r$ is fixed. Our empirical finding $\partial a/\partial m > 0$ then carries content it did not before: it reveals that the cost channel dominates the regulator's visit-based deterrence---the inspection response is too weak to offset the rising benefit of non-compliance.
+
+\medskip
+\noindent\textbf{Proposition 3.} \emph{Stiffer penalties reduce negligence; the effect of more sanitary visits depends on the CWS's health-risk type.}
+
+Scaling all penalties by $\lambda>1$, so $P \to \lambda P$ and the first order condition is $\theta b'(a) = \lambda M(a,r)$,
+\[
+\frac{\partial a}{\partial\lambda} = \frac{M(a,r)}{\theta\, b''(a) - \lambda M_a(a,r)} = -\frac{M(a,r)}{\lambda M_a - \theta b''} < 0
+\]
+for systems with $r \ge \mu_r$ (where $M>0$), reproducing the original result. A separate lever is the \emph{intensity} of inspections. Scaling the visit probability $Q \to \mu Q$,
+\[
+\frac{\partial a}{\partial\mu} = -\frac{M_Q}{\Phi}, \qquad M_Q \equiv Q'(a)\,D(a,r) + Q(a)\,D_a(a,r), \qquad \operatorname{sign}\frac{\partial a}{\partial\mu} = -\operatorname{sign}(r-\mu_r) .
+\]
+More sanitary visits raise compliance among high-risk systems ($r>\mu_r$), which a visit would expose, but \emph{lower} it among low-risk systems, which a visit would exonerate. Blanket increases in inspection therefore improve compliance only where health risk is genuinely high.
+
+\subsection{Regulator information and sanitary visits: testable predictions}
+
+The visit process generates a set of comparative statics on objects we observe directly---violations, visits, and enforcement type---that the model without visits is silent on.
+
+\medskip
+\noindent\textbf{Proposition A (visits rise in violations).} The inspection technology satisfies $Q'(a) > 0$: a CWS that accumulates more violations is more likely to be visited.
+
+\medskip
+\noindent\textbf{Proposition B (mining raises visits).} Composing Proposition~A with Proposition~2,
+\[
+\frac{\partial Q}{\partial m} = Q'(a)\,\frac{\partial a}{\partial m} > 0 ,
+\]
+so upstream mining raises the probability of a sanitary visit through its effect on violations.
+
+\medskip
+\noindent\textbf{Proposition C (mining lowers formal enforcement).} Formal enforcement is the strict, high-$r$ branch of $e_V$. Because the risk a visit \emph{assesses} does not rise with mining in our sample---measured concentrations remain below the maximum contaminant level---and because mining shifts the violation mix toward monitoring and reporting violations, which are handled informally, the probability of formal enforcement falls with mining,
+\[
+\frac{\partial\,\Pr(\text{formal}\mid\text{visit})}{\partial m} < 0 .
+\]
+
+\medskip
+\noindent\textbf{Proposition D (visits route to informal enforcement).} A visit moves the graduated, informal branch of $e_V$ rather than the rare formal branch,
+\[
+\frac{\partial\,\Pr(\text{informal}\mid\text{visit})}{\partial(\text{visit})} > 0, \qquad \frac{\partial\,\Pr(\text{formal}\mid\text{visit})}{\partial(\text{visit})} \approx 0 .
+\]
+
+\medskip
+\noindent\textbf{Proposition E (heterogeneous compliance in own risk).} From Proposition~2, $\partial a/\partial r < 0$: systems with higher health stakes comply more, conditional on compliance cost. This is the one prediction not yet tested directly; it can be examined by interacting the violation response with proxies for health stakes such as population served, surface versus groundwater source, or baseline contamination.
+
+\medskip
+Taken together, Propositions~B and~C expose the wedge that organizes our results. Let $r(m)$ be the \emph{true} health harm of a violation, rising with mining, and let $\hat{r}(m)$ be the risk a sanitary visit actually \emph{recovers}. Visits rise with mining (Proposition~B) while formal enforcement falls (Proposition~C), so $\hat{r}(m)$ is flat or falling even as $r(m)$ rises. The reason is that a visit samples currently available, tested water, which lies below the maximum contaminant level, precisely when the worst contamination is concentrated in the unmonitored periods a monitoring and reporting violation conceals. The sanitary visit, the regulator's information technology for $r$, systematically under-recovers harm in exactly the strategic states. This is also the model's point of departure from \cite{kang2021understanding}: there the harm $h(a)$ is a primitive the regulator observes for free, whereas here it must be acquired through costly visits, and the acquisition is biased in the non-monitoring states.
+
+\subsection{Mapping propositions to the empirical results}
+
+Each proposition is tested by a specific table. Proposition~1 (negligence rises with compliance cost) is supported jointly by the concentration regressions in Table~\ref{tab:6yr_huc02fe_inorg_ravalli_2005}, which show that mining raises compliance cost by raising contaminant concentrations, and by the violation regressions in Table~\ref{2sls_dwnstrm_minevio_mr}, which show the resulting rise in monitoring and reporting violations. Proposition~2 (mining raises negligence, cost channel dominating the visit-based deterrence) is tested in Table~\ref{2sls_dwnstrm_minevio_mr}, where an additional upstream mine raises monitoring and reporting violations by roughly 14 to 20 days per year, alongside the null effect on maximum contaminant level violations in Table~\ref{2sls_dwnstrm_minevio_mcl}. Proposition~3 (lower penalties raise negligence) is supported by the fall in formal enforcement with mining in Table~\ref{tab:h3_inf_formal_d12}. Proposition~A ($Q'(a)>0$) is tested by the regression of sanitary visits on monitoring and reporting violations in Table~\ref{tab:mr_to_visit}. Proposition~B (mining raises visits) is the 14 percentage point effect in Table~\ref{tab:h2_snsv_d12}. Proposition~C (mining lowers formal enforcement) is the 5.6 percentage point fall in Table~\ref{tab:h3_inf_formal_d12}. Proposition~D (visits route to informal enforcement) is tested by the regression of enforcement type on sanitary visits in Table~\ref{tab:visit_to_enf}, which shows visits raising informal but not formal enforcement. Proposition~E ($\partial a/\partial r < 0$) is not yet tested and is the natural next specification, interacting the violation response with proxies for health stakes.

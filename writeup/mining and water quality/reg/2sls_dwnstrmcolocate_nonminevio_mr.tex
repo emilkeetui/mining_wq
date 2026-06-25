@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{2sls_dwnstrmcolocate_nonminevio_mr} Effect of coal mines on non-mining violations (MR violations only, downstream and colocated PWS's)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Total coliform (MR)} & \multicolumn{3}{c}{VOCs (MR)}\\
+         
+                                                                            & OLS                   & RF             & 2SLS          & OLS           & RF            & 2SLS\\  
+         
+         \midrule 
+         num\_coal\_mines\_unified\_mean                                    & 0.0801                &                & -15.43$^{*}$  & -2.030$^{*}$  &               & 36.13\\   
+                                                                            & (0.1083)              &                & (8.701)       & (1.200)       &               & (27.99)\\   
+         post95 $\times$ sulfur\_unified\_mean                              &                       & 0.6547$^{***}$ &               &               & -1.367$^{*}$  &   \\   
+                                                                            &                       & (0.2423)       &               &               & (0.7324)      &   \\   
+         
+         F-test (1st stage, clustered), num\_coal\_mines\_unified\_mean     &                       &                & 6.11          &               &               & 4.09\\  
+         
+          \\
+         
+         Observations                                                       & 13,190                & 13,190         & 13,190        & 14,212        & 14,212        & 14,212\\  
+         R$^2$                                                              & 0.20174               & 0.20265        & 0.20265       & 0.17981       & 0.17913       & 0.17913\\  
+         Within R$^2$                                                       & $6.54\times 10^{-5}$  & 0.00121        & 0.00121       & 0.00102       & 0.00020       & 0.00020\\  
+         
+          \\
+         
+         PWSID fixed effects                                                & $\checkmark$          & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                                 & $\checkmark$          & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is days out of the year in violation. Instrument is post95 interacted with mean coal sulfur content of the intake watershed (post95 x sulfur unified). All regressions include PWSID and year fixed effects. Standard errors clustered at PWSID level. Sample period 1985--2005. The number of observations differs across columns because non-mining violation rules (total coliform, VOCs) were implemented during the sample period; years prior to each rule's implementation are coded as missing and excluded from the regression.}
+   
+\end{table}
+
+

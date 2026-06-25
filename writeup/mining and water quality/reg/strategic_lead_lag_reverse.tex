@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:strategic_lead_lag_reverse} Temporal Sequencing: Mining MCL Predicting Future MR (Reverse Direction)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccc}
+         \toprule
+         
+                                               & MR (K=1)        & MR (K=2)      & MR (K=3)      & MR (K=1)      & MR (K=2)      & MR (K=3)\\  
+         
+          & \multicolumn{3}{c}{OLS} & \multicolumn{3}{c}{2SLS} \\ 
+         
+                                               & (1)             & (2)           & (3)           & (4)           & (5)           & (6)\\  
+         
+         \midrule 
+         Mining MCL (days)                     & -0.1959$^{***}$ & -0.1581$^{*}$ & -0.1756       & -13.40        & -10.59        & -10.67\\   
+                                               & (0.0664)        & (0.0888)      & (0.1184)      & (15.21)       & (13.29)       & (11.85)\\   
+         
+          \\
+         
+         Observations                          & 11,108          & 10,515        & 9,924         & 11,108        & 10,515        & 9,924\\  
+         R$^2$                                 & 0.20797         & 0.21416       & 0.22972       & 0.20804       & 0.21419       & 0.22974\\  
+         Within R$^2$                          & 0.00075         & 0.00068       & 0.00065       & 0.00084       & 0.00072       & 0.00067\\  
+         F-test (1st stage), Mining MCL (days) &                 &               &               & 2.8710        & 2.6593        & 2.8031\\  
+         
+          \\
+         
+         PWSID fixed effects                   & $\checkmark$    & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects             & $\checkmark$    & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                    & $\checkmark$    & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Reverse temporal sequencing: does an MCL violation trigger future MR violations? If MCL violations prompt regulators to impose heightened monitoring schedules, CWSs may accumulate MR violations from failing those additional requirements. Each column regresses the sum of MR violation days at horizon K on current-year MCL violation days. In 2SLS columns, MCL is instrumented by \textit{post}95$\,\times\,$\textit{sulfur\textunderscore unified}. All regressions include PWSID, state, and year fixed effects; standard errors clustered at PWSID level. Sample: at most two-step downstream CWSs, 1985--2005. Placebo (non-mining reverse) not shown separately; pattern mirrors mining results.}
+   
+\end{table}
+
+

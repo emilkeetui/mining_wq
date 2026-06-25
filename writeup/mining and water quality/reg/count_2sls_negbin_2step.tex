@@ -1,0 +1,32 @@
+
+\begingroup
+\centering
+\begin{tabular}{lccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables:           & mining\_MR\_days   & mining\_MCL\_days   & nitrates\_MR\_share\_days    & arsenic\_MR\_share\_days    & inorganic\_chemicals\_MR\_share\_days\\      
+                                  & MR composite       & MCL composite       & Nitrates MR                  & Arsenic MR                  & Inorganic MR \\   
+   Model:                         & (1)                & (2)                 & (3)                          & (4)                         & (5)\\  
+   \midrule
+   \emph{Variables}\\
+   Coal mines (upstream)          & -3.916             & 37.52               & 8.808                        & 10.33                       & 4.859\\   
+                                  & (12.03)            & (26.16)             & (9.508)                      & (11.70)                     & (8.737)\\   
+   CF residual (endogeneity test) & 3.667              & -36.33              & -9.752                       & -10.72                      & -5.703\\   
+                                  & (12.23)            & (26.56)             & (9.528)                      & (11.70)                     & (8.690)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   PWSID                          & Yes                & Yes                 & Yes                          & Yes                         & Yes\\  
+   year                           & Yes                & Yes                 & Yes                          & Yes                         & Yes\\  
+   STATE\_CODE                    & Yes                & Yes                 & Yes                          & Yes                         & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                   & 2,793              & 154                 & 2,415                        & 1,480                       & 1,659\\  
+   \midrule \midrule
+   \multicolumn{6}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+   \multicolumn{6}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+ 
+\par \raggedright 
+Control-function 2SLS following Wooldridge (2002). Instrument: post-1995 $\times$ sulfur\%. Outcomes: days in violation per PWSID-year (count). Coefficients are log incidence rate ratios. ``CF residual'' tests endogeneity; significance rejects exogeneity. FE: PWSID, year, state. SEs clustered at PWSID. Sample: at most 2-HUC steps downstream of any coal mine, 1985--2005.
+\par\endgroup
+
+

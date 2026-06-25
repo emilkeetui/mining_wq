@@ -1,0 +1,26 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of ARP on drinking water violation family categories},
+note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
+note{ }={All estimations include PWS and year fixed effects. Standard errors clustered at PWS level.},
+note{  }={MiningHUC12 = 1 if intake HUC12 has mean sulfur greater than 2 percent.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]},
+column{2-4}={}{halign=c,},
+column{1}={}{halign=l,},
+}                     %% tabularray inner close
+\toprule
+& Chemicals & Disinfectants & Microbials \\ \midrule %% TinyTableHeader
+post95:MiningHUC121 & 0.090*** & 0.002* & -0.018 \\
+& [0.036, 0.143] & [-0.000, 0.003] & [-0.060, 0.023] \\
+post95:High Sulfur & -0.050 & -0.003 & -0.045* \\
+& [-0.121, 0.021] & [-0.006, 0.001] & [-0.093, 0.004] \\
+post95:MiningHUC121:High Sulfur & -0.022 & 0.003 & 0.004 \\
+& [-0.109, 0.065] & [-0.003, 0.010] & [-0.059, 0.067] \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}

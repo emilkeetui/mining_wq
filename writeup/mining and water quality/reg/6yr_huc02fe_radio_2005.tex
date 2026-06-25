@@ -1,0 +1,50 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:6yr_huc02fe_radio_2005} Effect of cumulative upstream coal production on Radionuclides (6-Year Review, downstream CWSs, robustness 1998--2005)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lc}
+         \toprule
+         
+                                             & Mean conc.\\  
+         
+                                             & Alpha part. \\   
+         
+                                             & (1)\\  
+         
+         \midrule 
+         Cumul. upstream coal prod. (10M ST) & -16.88\\   
+                                             & (16.20)\\   
+         
+          \\
+         
+         Within R$^2$                        & 0.00879\\  
+         Observations                        & 121\\  
+         R$^2$                               & 0.85741\\  
+         
+          \\
+         
+         PWSID fixed effects                 & $\checkmark$\\   
+         huc02-year fixed effects            & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample period 1998--2005 (robustness). Within each chemical, columns show (1) mean measured concentration and (2) share of annual samples exceeding the MCL, both from the EPA 6-Year Review. Explanatory variable is cumulative coal production since 1985 (in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12 interacted with year). Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level.}
+   
+\end{table}
+
+

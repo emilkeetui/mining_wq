@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{2sls_4step_d1_d2_nonminevio_mcl} Effect of coal mines on non-mining violations (MCL, D1--D2 (1--2 steps downstream))}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccccccccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Total coliform (MCL)} & \multicolumn{3}{c}{VOCs (MCL)} & \multicolumn{3}{c}{SOCs (MCL)}\\
+         
+                                                           & (1)           & (2)           & (3)           & (4)           & (5)                   & (6)                   & (7)           & (8)                   & (9)\\  
+         
+         \midrule 
+         num\_coal\_mines\_upstream                        & -0.0884       &               & 0.6169        & -0.1196       &                       & 0.2583                & 0.0331        &                       & 0.0697\\   
+                                                           & (0.0864)      &               & (0.9178)      & (0.1286)      &                       & (1.011)               & (0.0267)      &                       & (0.0515)\\   
+         post95 $\times$ sulfur\_unified                   &               & -0.0676       &               &               & -0.0336               &                       &               & -0.0107               &   \\   
+                                                           &               & (0.1007)      &               &               & (0.1316)              &                       &               & (0.0076)              &   \\   
+         
+          \\
+         
+         Observations                                      & 9,765         & 9,765         & 9,765         & 10,416        & 10,416                & 10,416                & 12,369        & 12,369                & 12,369\\  
+         R$^2$                                             & 0.11909       & 0.11908       & 0.11908       & 0.09643       & 0.09634               & 0.09634               & 0.05552       & 0.05525               & 0.05525\\  
+         Within R$^2$                                      & 0.00056       & 0.00055       & 0.00055       & 0.00011       & $2.15\times 10^{-5}$  & $2.15\times 10^{-5}$  & 0.00033       & $4.47\times 10^{-5}$  & $4.47\times 10^{-5}$\\   
+         F-test (1st stage), num\_coal\_mines\_upstream    &               &               & 159.18        &               &                       & 240.76                &               &                       & 386.71\\  
+         
+          \\
+         
+         PWSID fixed effects                               & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         STATE\_CODE fixed effects                         & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         year fixed effects                                & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is days out of the year in violation (MCL only). Instrument is post95 interacted with mean coal sulfur content of the intake watershed (post95 x sulfur unified). All regressions include PWSID, year, and state fixed effects. Standard errors clustered at PWSID level. Sample period 1985--2005. The number of observations differs across columns because some non-mining violation rules (total coliform, surface/groundwater rule, VOCs, SOCs) were implemented during the sample period; years prior to each rule's implementation are coded as missing and excluded from the regression.}
+   
+\end{table}
+
+

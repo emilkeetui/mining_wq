@@ -1,0 +1,34 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of ARP on drinking water violation associated with mining},
+note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
+note{ }={All estimations include PWS and year fixed effects.},
+note{  }={Data is from 1990 to 2005.},
+note{   }={Standard errors clustered at PWS level.},
+note{    }={MiningHUC12 = 1 if PWS intake HUC12 has coal mining over sample period.},
+note{     }={HighSulfur = 1 if PWS intake HUC12 has mean sulfur greater than 2.},
+note{      }={Coefficients names are displayed in column headers and dependent variable names in the first column.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]},
+column{2-4}={}{halign=c,},
+column{1}={}{halign=l,},
+}                     %% tabularray inner close
+\toprule
+& post95 x CoalMineHUC12 & post95 x HighSulfur & post95 x CoalMineHUC12 x HighSulfur \\ \midrule %% TinyTableHeader
+Nitrates & 0.017 & -0.010 & -0.004 \\
+& [-0.008, 0.041] & [-0.048, 0.027] & [-0.050, 0.042] \\
+Arsenic & 0.001 & -0.043*** & 0.034* \\
+& [-0.017, 0.019] & [-0.075, -0.012] & [-0.004, 0.072] \\
+Inorganic chemicals & -0.008 & -0.055*** & 0.055** \\
+& [-0.031, 0.014] & [-0.088, -0.021] & [0.012, 0.097] \\
+Radionuclides & 0.030* & 0.005 & 0.032 \\
+& [-0.002, 0.062] & [-0.043, 0.053] & [-0.026, 0.091] \\
+Lead and copper rule & 0.022 & -0.013 & -0.023 \\
+& [-0.011, 0.055] & [-0.050, 0.024] & [-0.070, 0.024] \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}

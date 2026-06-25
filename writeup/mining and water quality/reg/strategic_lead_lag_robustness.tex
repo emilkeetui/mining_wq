@@ -1,0 +1,49 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:strategic_lead_lag_robustness} Temporal Sequencing Robustness: All CWSs in Downstream-Sample States (OLS)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccc}
+         \toprule
+         
+                                    & MCL (K=0)      & MCL (K=1)             & MCL (K=2)             & MCL (K=3)\\  
+         
+                                    & (1)            & (2)                   & (3)                   & (4)\\  
+         
+         \midrule 
+         Mining MR (days)           & 0.0041$^{***}$ & 0.0009$^{**}$         & 0.0010$^{**}$         & 0.0008$^{*}$\\   
+                                    & (0.0006)       & (0.0004)              & (0.0004)              & (0.0004)\\   
+         
+          \\
+         
+         Observations               & 1,193,661      & 1,136,820             & 1,079,979             & 1,023,138\\  
+         R$^2$                      & 0.17833        & 0.18065               & 0.18676               & 0.19981\\  
+         Within R$^2$               & 0.00016        & $9.02\times 10^{-6}$  & $1.19\times 10^{-5}$  & $6.99\times 10^{-6}$\\   
+         
+          \\
+         
+         PWSID fixed effects        & $\checkmark$   & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
+         STATE\_CODE fixed effects  & $\checkmark$   & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
+         year fixed effects         & $\checkmark$   & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Robustness: OLS temporal sequencing on all CWSs in states represented in the downstream 2SLS sample (not restricted to CWSs matched to mining HUC12s). Mining violation shares are computed using begin-year allocation (violation assigned to year of start date, duration capped at 365 days); this differs slightly from the main sample which uses full year-split shares. No facility count control (not available for all-states CWSs). Includes PWSID, state, and year fixed effects; standard errors clustered at PWSID level. Sample: 1985--2005.}
+   
+\end{table}
+
+

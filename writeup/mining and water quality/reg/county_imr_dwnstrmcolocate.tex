@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:county_imr_dwnstrmcolocate} Effect of coal mines on infant mortality (downstream and mining counties)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Infant mortality rate}\\
+         
+                                                  & (1)                     & (2)                   & (3)\\  
+         
+         \midrule 
+         Coal mines (unified)                     & $-8.97\times 10^{-5}$   &                       & -0.0002\\   
+                                                  & ($6.96\times 10^{-5}$)  &                       & (0.0002)\\   
+         Post 1995 $\times$ Sulfur (unified)      &                         & $-2.7\times 10^{-5}$  &   \\   
+                                                  &                         & (0.0003)              &   \\   
+         
+          \\
+         
+         Observations                             & 151                     & 221                   & 151\\  
+         R$^2$                                    & 0.76692                 & 0.77130               & 0.76307\\  
+         Within R$^2$                             & 0.02014                 & $8.1\times 10^{-5}$   & 0.00396\\  
+         F-test (1st stage), Coal mines (unified) &                         &                       & 6.6781\\  
+         
+          \\
+         
+         fips5 fixed effects                      & $\checkmark$            & $\checkmark$          & $\checkmark$\\   
+         state fixed effects                      & $\checkmark$            & $\checkmark$          & $\checkmark$\\   
+         year fixed effects                       & $\checkmark$            & $\checkmark$          & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is infant mortality rate (deaths per live birth). Instrument is post95 interacted with mean coal sulfur content of the county (post95 $\times$ sulfur unified). All regressions include county, year, and state fixed effects. Standard errors clustered at county level. Sample period 1985--2005.}
+   
+\end{table}
+
+
