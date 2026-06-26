@@ -451,27 +451,50 @@ reg12_types <- skel_types[month_idx <= max_origin_12]
 visit_summary <- data.table(code = present_types)
 visit_summary[, label := visit_type_labels[code]]
 visit_summary[, unconditional_pct := sapply(code, function(cd)
-  100 * uniqueN(sv[VISIT_REASON_CODE == cd, PWSID]) / length(sample_pwsids))]
+  100 * mean(skel_types[[cd]] > 0, na.rm = TRUE))]
 visit_summary[, cond6_pct := sapply(code, function(cd)
   100 * mean(reg6_types[mr_any == 1][[paste0(cd, "_next6")]], na.rm = TRUE))]
 visit_summary[, cond12_pct := sapply(code, function(cd)
   100 * mean(reg12_types[mr_any == 1][[paste0(cd, "_next12")]], na.rm = TRUE))]
-setorder(visit_summary, -unconditional_pct)
 
-cat("\nVisit-type summary: ", nrow(visit_summary), " types observed in sample\n", sep = "")
+# Group visit types into the five categories used as dependent variables in
+# h2_snsv_d12.tex and sanitary_visit_enforcement_iterative.tex. Codes not
+# listed here (OTHR, TRNG, LABC, PRMT, VAEX, CPEV, RCDR, ...) are dropped from
+# this table since they don't fall cleanly into any of the five groups.
+visit_group_map <- c(
+  SNSV = "Sanitary visits", SSVF = "Sanitary visits",
+  TECH = "Technical assistance", ENGR = "Technical assistance", OM = "Technical assistance",
+  FENF = "Enforcement visits", INVG = "Enforcement visits", EMRG = "Enforcement visits",
+  SMPL = "Sample collection",
+  SITE = "Inspection", RSCH = "Inspection", INFI = "Inspection"
+)
+group_order <- c("Sanitary visits", "Technical assistance", "Enforcement visits",
+                  "Sample collection", "Inspection")
 
-rows_summary <- sprintf("%s & %.2f & %.2f & %.2f \\\\",
-                         visit_summary$label, visit_summary$unconditional_pct,
+visit_summary[, group := visit_group_map[code]]
+visit_summary <- visit_summary[!is.na(group)]
+visit_summary[, group := factor(group, levels = group_order)]
+setorder(visit_summary, group, -unconditional_pct)
+
+cat("\nVisit-type summary: ", nrow(visit_summary), " types observed in sample (",
+    length(present_types) - nrow(visit_summary), " dropped, not in any group)\n", sep = "")
+
+rows_summary <- sprintf("%s & %s & %.2f & %.2f & %.2f \\\\",
+                         as.character(visit_summary$group), visit_summary$label,
+                         visit_summary$unconditional_pct,
                          visit_summary$cond6_pct, visit_summary$cond12_pct)
 
 n_mr_pwsids <- uniqueN(mr$PWSID)
 notes_summary <- paste0(
   "Sample: strictly downstream CWSs (", length(sample_pwsids), "), CWS-months 1985-01 to ",
-  "2005-12. Column 1: share of sample CWSs with at least one visit of that type, ",
-  "1985--2005. Columns 2-3: among CWS-months in which an MR violation begins (",
-  n_mr_pwsids, " CWSs ever have an MR-violation onset), the share followed by a visit ",
-  "of that type within the next 6 (12) months, right-censored at 2005-06 (2004-12) as ",
-  "in the regressions above."
+  "2005-12. Visit types are grouped into sanitary visits (SNSV, SSVF), technical ",
+  "assistance (TECH, ENGR, OM), enforcement visits (FENF, INVG, EMRG), sample ",
+  "collection (SMPL), and inspection (SITE, RSCH, INFI); types not falling into one ",
+  "of these five groups are omitted. Column 1: share of all sample CWS-months with a ",
+  "visit of that type, 1985--2005. Columns 2-3: among CWS-months in which an MR ",
+  "violation begins (", n_mr_pwsids, " CWSs ever have an MR-violation onset), the ",
+  "share followed by a visit of that type within the next 6 (12) months, ",
+  "right-censored at 2005-06 (2004-12) as in the regressions above."
 )
 
 out_summary <- file.path(ROOT, "output/sum/visit_type_summary.tex")
@@ -481,9 +504,9 @@ lines_summary <- c(
   "\\bigskip",
   "\\centering",
   "\\begin{adjustbox}{width = \\textwidth, center}",
-  "\\begin{tabular}{lccc}",
+  "\\begin{tabular}{llccc}",
   "\\toprule",
-  "Visit type & Unconditional probability (\\%) & Visit within 6 months of MR & Visit within year of MR \\\\",
+  "Group & Visit type & Unconditional probability (\\%) & Visit within 6 months of MR & Visit within year of MR \\\\",
   "\\midrule",
   rows_summary,
   "\\bottomrule",
