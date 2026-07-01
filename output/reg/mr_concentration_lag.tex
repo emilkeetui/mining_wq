@@ -1,52 +1,27 @@
 
 \begin{table}[htbp]
-   
-   \caption{\label{tab:mr_concentration_lag} MR Violations and Prior-Month Contaminant Concentration (CWS-Month Panel)}
-   \bigskip
-   
-   \centering
-   
-   \begin{adjustbox}{width = \textwidth, center}
-      
-      %start:tab
-      
-      \begin{tabular}{lccc}
-         \toprule
-         
-          & \multicolumn{2}{c}{mr\_same\_month} & mr\_ioc\_month\\
-         
-                                          & Arsenic       & Nitrate       & Pooled inorganic \\   
-         
-                                          & (1)           & (2)           & (3)\\  
-         
-         \midrule 
-         ratio\_lag1                      & 0.0463        & 0.0358        & 0.0058\\   
-                                          & (0.0691)      & (0.0368)      & (0.0046)\\   
-         near\_mcl\_lag1                  &               & -0.0074       & -0.0025\\   
-                                          &               & (0.0100)      & (0.0035)\\   
-         
-          \\
-         
-         R$^2$                            & 0.35060       & 0.24099       & 0.18482\\  
-         Observations                     & 352           & 748           & 3,217\\  
-         
-          \\
-         
-         PWSID fixed effects              & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         YEAR fixed effects               & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         contaminant\_code fixed effects  &               &               & $\checkmark$\\   
-         
-         \bottomrule
-         
-      \end{tabular}
-      
-      %end:tab
-      
-      
-   \end{adjustbox}
-      {\tiny\linespread{1}\selectfont \par \raggedright 
-   Downstream-only mining sample (minehuc\_downstream\_of\_mine==1 \& minehuc\_mine==0), SYR2 only (1998-2005). Unit of observation: CWS (PWSID) × calendar month. Outcome: binary = 1 if any MR violation occurred in that month (same-contaminant MR violation for Arsenic/Nitrate; RULE\_CODE==333.0 MR violation for Pooled). Independent variables: mean ratio and near\_mcl from the prior calendar month (1-month lag). Observations where no contaminant reading was taken in the prior month are excluded (lag = missing; not coded as zero). Pooled any-IOC: MR violation under RULE\_CODE==333.0 (Inorganic Chemicals / Other IOC; excludes arsenic and nitrate, which have their own rule codes). ratio = concentration/MCL; near\_mcl = reading at 50-100\% of MCL. SEs clustered at the CWS (PWSID) level.}
-   
+\caption{Monitoring and Reporting (MR) violations following contaminant concentration readings}\label{tab:mr_concentration_lag}
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+   \begin{tabular}{lcccccc}
+      \toprule    
+                                       & Arsenic MR (1-yr) & Arsenic MR (6-mon)  & Nitrate MR (1-yr) & Nitrate MR (6-mon)  & Pooled IOC (1-yr) & Pooled IOC (6-mon) \\   
+                                       & (1)               & (2)                 & (3)               & (4)                 & (5)               & (6)\\  
+      \midrule 
+      Mean concen. (z-score)                    & 0.0026            & 0.0027              & 0.0128            & 0.0005              &                   &   \\   
+                                       & (0.0032)          & (0.0025)            & (0.0143)          & (0.0087)            &                   &   \\   
+      Concen. $>$ 50\% MCL                        &                   &                     & 0.5897$^{**}$     & 0.2611$^{**}$       & 0.0040            & -0.0220\\   
+                                       &                   &                     & (0.2460)          & (0.1053)            & (0.0242)          & (0.0142)\\   
+      Concen./MCL                            &                   &                     &                   &                     & -0.0597           & -0.0571\\   
+                                       &                   &                     &                   &                     & (0.0811)          & (0.0403)\\   
+       \\
+      Observations                     & 419               & 419                 & 851               & 851                 & 3,705             & 3,705\\  
+       \\
+      CWS fixed effects              & $\checkmark$      & $\checkmark$        & $\checkmark$      & $\checkmark$        & $\checkmark$      & $\checkmark$\\   
+      YEAR fixed effects               & $\checkmark$      & $\checkmark$        & $\checkmark$      & $\checkmark$        & $\checkmark$      & $\checkmark$\\   
+      Contaminant fixed effects  &                   &                     &                   &                     & $\checkmark$      & $\checkmark$\\   
+      \bottomrule
+   \end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright SYR2 only (1998--2005). Outcome: same-contaminant MR violation within the year following the contaminant reading or the 6 months following the contaminant reading. Pooled IOC MR violations exclude arsenic and nitrate, which have their own rule codes. Mean concentration z-scored within chemical. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level.}
 \end{table}
-
-

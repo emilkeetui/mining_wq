@@ -1,0 +1,43 @@
+\makeatletter
+\@ifclassloaded{beamer}{%
+  \begin{adjustbox}{max width=\linewidth, max totalheight=0.78\textheight, center}%
+}{%
+  \begin{adjustbox}{max width=\linewidth, center}%
+}%
+\makeatother
+
+\begingroup
+\centering
+\begin{tabular}{lccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables: & mr\_same\_past          & mr\_same\_past6mon      & mr\_same\_past   & mr\_same\_past6mon   & mr\_anyioc\_past\\    
+                        & Arsenic (1-yr)          & Arsenic (6-mon)         & Nitrate (1-yr)   & Nitrate (6-mon)      & Pooled inorganic \\   
+   Model:               & (1)                     & (2)                     & (3)              & (4)                  & (5)\\  
+   \midrule
+   \emph{Variables}\\
+   ratio                & $-2.78\times 10^{-10}$  & $7.58\times 10^{-11}$   & -0.0847          & -0.2655              & -0.0241\\   
+                        & ($1.45\times 10^{-5}$)  & ($7.51\times 10^{-6}$)  & (0.0844)         & (0.2183)             & (0.0308)\\   
+   mean\_concentration  & -0.0989                 & 1.571                   & -0.0050          & 0.0409               &   \\   
+                        & (2.424)                 & (1.582)                 & (0.0229)         & (0.0298)             &   \\   
+   near\_mcl            &                         &                         & -0.2147$^{*}$    & -0.0802$^{**}$       & -0.0740$^{*}$\\   
+                        &                         &                         & (0.1088)         & (0.0385)             & (0.0375)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   PWSID                & Yes                     & Yes                     & Yes              & Yes                  & Yes\\  
+   YEAR                 & Yes                     & Yes                     & Yes              & Yes                  & Yes\\  
+   contaminant\_code    &                         &                         &                  &                      & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   R$^2$                & 0.16037                 & 0.15716                 & 0.22445          & 0.13757              & 0.43194\\  
+   Observations         & 419                     & 419                     & 851              & 851                  & 3,705\\  
+   \midrule \midrule
+   \multicolumn{6}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+   \multicolumn{6}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+ 
+\par\endgroup
+\end{adjustbox}
+
+\par \raggedright
+TEST VERSION (past-window placebo): same ratio specification as mr\_concentration\_lag\_ratio.tex but outcome is an MR violation BEFORE the sample date. SEs clustered at the CWS (PWSID) level.
+\par

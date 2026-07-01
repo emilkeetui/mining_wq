@@ -114,6 +114,12 @@ R is accessed at C:\Program Files\R\R-4.5.2\bin\Rscript.exe
 
 Beamer-compatible tables — after every etable() write, call wrap_for_beamer(path) (defined in enforcement_chain_d12.r; copy the function into any new script that generates .tex tables). This prepends a \@ifclassloaded{beamer} conditional so \input{reg/table} works unchanged in both beamer frames and regular LaTeX documents, and moves the notes = text outside the adjustbox so it renders below the table. Both documents must load \usepackage{adjustbox}.
 
+**Rules for tables that always compile (adjustbox + float nesting):**
+- `wrap_for_beamer()` is ONLY for bare-tabular `etable()` output (no `style.tex("aer")`, no manual `\begin{table}`). Never call it on a file that already contains `\begin{table}` — wrapping a float in `adjustbox` causes `! LaTeX Error: Not in outer par mode.`
+- For any table needing a caption/label/cross-reference, use `etable(..., style.tex = style.tex("aer", adjustbox = TRUE), title = ..., label = ...)` and do NOT call `wrap_for_beamer()` afterward — `style.tex("aer", adjustbox=TRUE)` already produces the correct nesting.
+- Correct nesting is always float-outside, box-inside: `\begin{table} → \caption → \centering → \begin{adjustbox} → tabular → \end{adjustbox} → notes → \end{table}` — never the reverse.
+- For hand-assembled multi-panel tables (stacked tabulars), put `adjustbox` inside the table float around each panel's tabular individually, not around the whole `\begin{table}...\end{table}` block.
+
 ### Python environment
 When using python use this path to the project virtualenv:
 ```bash

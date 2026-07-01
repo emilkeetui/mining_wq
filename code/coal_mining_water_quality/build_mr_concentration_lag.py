@@ -2,16 +2,17 @@
 # Script: build_mr_concentration_lag.py
 # Purpose: Match each SYR2 concentration measurement (downstream-only
 #          mining sample) to MR (monitoring/reporting) violations in
-#          a forward 1-365 day window (same-contaminant and RULE_CODE
-#          ==333.0 any-IOC), plus a past 1-365 day placebo window, to
-#          test whether high contaminant readings predict subsequent
-#          MR violations (regulator-pivot / strategic avoidance
-#          mechanism).
+#          a forward 1-365 day window and a forward 1-182 day (6-month)
+#          window (same-contaminant and RULE_CODE==333.0 any-IOC), plus
+#          past-window placebo counterparts. Also adds PWSID-YEAR mean
+#          ratio and near_mcl for selenium (1045), barium (1010), and
+#          chromium (1020) to support separate-contaminant regressors in
+#          the pooled IOC specification.
 # Inputs:  - clean_data/cws_6year_review_measurement_level_syr2.parquet
 #          - Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.parquet
 #          - clean_data/cws_data/prod_vio_sulfur.parquet (downstream-only PWSID set)
 # Outputs: - clean_data/mr_concentration_lag_measurement.parquet
-# Author: EK  Date: 2026-06-23
+# Author: EK  Date: 2026-06-23  Updated: 2026-07-01
 # ============================================================
 
 import pathlib
@@ -33,7 +34,14 @@ OUTPUT       = PROJECT_ROOT / "clean_data" / "mr_concentration_lag_measurement.p
 INORGANIC_CHEMICALS_RULE_CODE = 333.0
 
 FWD_LOW_D,  FWD_HIGH_D  = 1, 365   # forward window: [s+1d, s+365d]
+FWD6_LOW_D, FWD6_HIGH_D = 1, 182   # 6-month forward window: [s+1d, s+182d]
 PAST_LOW_D, PAST_HIGH_D = 365, 1   # past window:    [s-365d, s-1d]
+PAST6_LOW_D, PAST6_HIGH_D = 182, 1 # 6-month past window:    [s-182d, s-1d]
+
+# Contaminant codes for Se/Ba/Cr pooled-IOC regressors
+SELENIUM_CODE  = "1045"
+BARIUM_CODE    = "1010"
+CHROMIUM_CODE  = "1020"
 
 EMPTY = np.array([], dtype="datetime64[ns]")
 
@@ -88,31 +96,45 @@ def build_date_indexes(viol: pd.DataFrame) -> tuple[dict, dict]:
 
 def attach_mr_flags(meas: pd.DataFrame, pwsid_contam_dates: dict, pwsid_rule333_dates: dict) -> pd.DataFrame:
     n = len(meas)
-    mr_same_fwd  = np.zeros(n, dtype=int)
-    mr_anyioc_fwd  = np.zeros(n, dtype=int)
-    mr_same_past = np.zeros(n, dtype=int)
-    mr_anyioc_past = np.zeros(n, dtype=int)
+    mr_same_fwd       = np.zeros(n, dtype=int)
+    mr_same_fwd6mon   = np.zeros(n, dtype=int)
+    mr_anyioc_fwd     = np.zeros(n, dtype=int)
+    mr_anyioc_fwd6mon = np.zeros(n, dtype=int)
+    mr_same_past      = np.zeros(n, dtype=int)
+    mr_same_past6mon  = np.zeros(n, dtype=int)
+    mr_anyioc_past    = np.zeros(n, dtype=int)
+    mr_anyioc_past6mon = np.zeros(n, dtype=int)
 
     day = pd.Timedelta(days=1)
     for i, (pwsid, code, s) in enumerate(zip(meas["PWSID"], meas["contaminant_code"], meas["sample_date"])):
         dates_same    = pwsid_contam_dates.get((pwsid, code), EMPTY)
         dates_rule333 = pwsid_rule333_dates.get(pwsid, EMPTY)
 
-        fwd_lower  = s + FWD_LOW_D * day
-        fwd_upper  = s + FWD_HIGH_D * day
-        past_lower = s - PAST_LOW_D * day
-        past_upper = s - PAST_HIGH_D * day
+        fwd_lower   = s + FWD_LOW_D  * day
+        fwd_upper   = s + FWD_HIGH_D * day
+        fwd6_upper  = s + FWD6_HIGH_D * day
+        past_lower  = s - PAST_LOW_D  * day
+        past_upper  = s - PAST_HIGH_D * day
+        past6_lower = s - PAST6_LOW_D * day
 
-        mr_same_fwd[i]    = 1 if window_count(dates_same,    fwd_lower, fwd_upper, True, True) > 0 else 0
-        mr_anyioc_fwd[i]  = 1 if window_count(dates_rule333, fwd_lower, fwd_upper, True, True) > 0 else 0
-        mr_same_past[i]   = 1 if window_count(dates_same,    past_lower, past_upper, True, True) > 0 else 0
-        mr_anyioc_past[i] = 1 if window_count(dates_rule333, past_lower, past_upper, True, True) > 0 else 0
+        mr_same_fwd[i]       = 1 if window_count(dates_same,    fwd_lower,   fwd_upper,   True, True) > 0 else 0
+        mr_same_fwd6mon[i]   = 1 if window_count(dates_same,    fwd_lower,   fwd6_upper,  True, True) > 0 else 0
+        mr_anyioc_fwd[i]     = 1 if window_count(dates_rule333, fwd_lower,   fwd_upper,   True, True) > 0 else 0
+        mr_anyioc_fwd6mon[i] = 1 if window_count(dates_rule333, fwd_lower,   fwd6_upper,  True, True) > 0 else 0
+        mr_same_past[i]      = 1 if window_count(dates_same,    past_lower,  past_upper,  True, True) > 0 else 0
+        mr_same_past6mon[i]  = 1 if window_count(dates_same,    past6_lower, past_upper,  True, True) > 0 else 0
+        mr_anyioc_past[i]    = 1 if window_count(dates_rule333, past_lower,  past_upper,  True, True) > 0 else 0
+        mr_anyioc_past6mon[i]= 1 if window_count(dates_rule333, past6_lower, past_upper,  True, True) > 0 else 0
 
     meas = meas.copy()
-    meas["mr_same_fwd"]    = mr_same_fwd
-    meas["mr_anyioc_fwd"]  = mr_anyioc_fwd
-    meas["mr_same_past"]   = mr_same_past
-    meas["mr_anyioc_past"] = mr_anyioc_past
+    meas["mr_same_fwd"]       = mr_same_fwd
+    meas["mr_same_fwd6mon"]   = mr_same_fwd6mon
+    meas["mr_anyioc_fwd"]     = mr_anyioc_fwd
+    meas["mr_anyioc_fwd6mon"] = mr_anyioc_fwd6mon
+    meas["mr_same_past"]      = mr_same_past
+    meas["mr_same_past6mon"]  = mr_same_past6mon
+    meas["mr_anyioc_past"]    = mr_anyioc_past
+    meas["mr_anyioc_past6mon"]= mr_anyioc_past6mon
     return meas
 
 
@@ -137,20 +159,50 @@ if __name__ == "__main__":
 
     meas = attach_mr_flags(meas, pwsid_contam_dates, pwsid_rule333_dates)
 
+    # ── Se/Ba/Cr PWSID-YEAR means for pooled-IOC regressors ───────────────────
+    # Each measurement row in the pooled spec gets the mean ratio and near_mcl
+    # for selenium, barium, and chromium at that PWSID × YEAR, so that these
+    # contaminant-specific readings can enter the pooled regression as separate
+    # regressors. Rows for PWSIDs with no Se/Ba/Cr readings in that year are NaN.
+    for code, suffix in [(SELENIUM_CODE, "selenium"), (BARIUM_CODE, "barium"), (CHROMIUM_CODE, "chromium")]:
+        subset = meas.loc[meas["contaminant_code"] == code, ["PWSID", "YEAR", "ratio", "near_mcl"]]
+        yr_mean = (
+            subset.groupby(["PWSID", "YEAR"])
+            .agg(ratio_mean=("ratio", "mean"), near_mcl_mean=("near_mcl", "mean"))
+            .reset_index()
+            .rename(columns={"ratio_mean": f"ratio_{suffix}", "near_mcl_mean": f"near_mcl_{suffix}"})
+        )
+        meas = meas.merge(yr_mean, on=["PWSID", "YEAR"], how="left")
+        n_nan = int(meas[f"ratio_{suffix}"].isna().sum())
+        print(f"{suffix}: {len(yr_mean):,} PWSID-YEAR means; {n_nan:,} rows have no {suffix} reading that year")
+
     out_cols = ["PWSID", "contaminant_code", "CHEMID_name", "sample_date", "YEAR",
                 "VALUE", "ratio", "near_mcl", "above_mcl", "DETECT",
-                "mr_same_fwd", "mr_anyioc_fwd", "mr_same_past", "mr_anyioc_past"]
+                "ratio_selenium", "near_mcl_selenium",
+                "ratio_barium",   "near_mcl_barium",
+                "ratio_chromium", "near_mcl_chromium",
+                "mr_same_fwd", "mr_same_fwd6mon",
+                "mr_anyioc_fwd", "mr_anyioc_fwd6mon",
+                "mr_same_past", "mr_same_past6mon",
+                "mr_anyioc_past", "mr_anyioc_past6mon"]
     meas = meas[out_cols].copy()
     meas["PWSID"]       = meas["PWSID"].astype(str)
     meas["YEAR"]        = meas["YEAR"].astype("int64")
     meas["sample_date"] = pd.to_datetime(meas["sample_date"])
 
     print("\nOutcome means by chemical:")
-    print(meas.groupby("CHEMID_name")[["mr_same_fwd", "mr_anyioc_fwd", "mr_same_past", "mr_anyioc_past"]].mean())
-    print(f"\nOverall mr_same_fwd mean:    {meas['mr_same_fwd'].mean():.4f}")
-    print(f"Overall mr_anyioc_fwd mean:  {meas['mr_anyioc_fwd'].mean():.4f}")
-    print(f"Overall mr_same_past mean:   {meas['mr_same_past'].mean():.4f}")
-    print(f"Overall mr_anyioc_past mean: {meas['mr_anyioc_past'].mean():.4f}")
+    print(meas.groupby("CHEMID_name")[["mr_same_fwd", "mr_same_fwd6mon",
+                                       "mr_anyioc_fwd", "mr_anyioc_fwd6mon",
+                                       "mr_same_past", "mr_same_past6mon",
+                                       "mr_anyioc_past", "mr_anyioc_past6mon"]].mean())
+    print(f"\nOverall mr_same_fwd mean:        {meas['mr_same_fwd'].mean():.4f}")
+    print(f"Overall mr_same_fwd6mon mean:    {meas['mr_same_fwd6mon'].mean():.4f}")
+    print(f"Overall mr_anyioc_fwd mean:      {meas['mr_anyioc_fwd'].mean():.4f}")
+    print(f"Overall mr_anyioc_fwd6mon mean:  {meas['mr_anyioc_fwd6mon'].mean():.4f}")
+    print(f"Overall mr_same_past mean:       {meas['mr_same_past'].mean():.4f}")
+    print(f"Overall mr_same_past6mon mean:   {meas['mr_same_past6mon'].mean():.4f}")
+    print(f"Overall mr_anyioc_past mean:     {meas['mr_anyioc_past'].mean():.4f}")
+    print(f"Overall mr_anyioc_past6mon mean: {meas['mr_anyioc_past6mon'].mean():.4f}")
 
     print(f"\nFinal dtypes:\n{meas.dtypes}")
     print(f"\nFinal row count: {len(meas):,}")

@@ -36,6 +36,7 @@ month_idx_of <- function(d) {
   mo <- as.integer(format(d, "%m"))
   (yr - 1985L) * 12L + (mo - 1L) + 1L
 }
+n_months <- month_idx_of(as.Date("2005-12-01"))
 
 # ── 1. Site visits ─────────────────────────────────────────────────────────────
 sv <- fread(file.path(SDWA_DIR, "SDWA_SITE_VISITS.csv"),
@@ -64,26 +65,41 @@ cat("Site-visit PWSID-months:", nrow(visit_pm),
 ve <- as.data.table(arrow::read_parquet(
   file.path(SDWA_DIR, "SDWA_VIOLATIONS_ENFORCEMENT.parquet"),
   col_select = c("PWSID", "VIOLATION_ID", "ENFORCEMENT_ID",
-                 "NON_COMPL_PER_BEGIN_DATE", "VIOLATION_CATEGORY_CODE", "RULE_CODE",
-                 "ENFORCEMENT_DATE", "ENF_ACTION_CATEGORY")))
+                 "NON_COMPL_PER_BEGIN_DATE", "NON_COMPL_PER_END_DATE",
+                 "VIOLATION_CATEGORY_CODE", "RULE_CODE",
+                 "ENFORCEMENT_DATE", "ENF_ACTION_CATEGORY", "CALCULATED_RTC_DATE")))
 ve <- ve[PWSID %in% sample_pwsids]
 
-# Enforcement events (Q1 outcome) — dedupe on ENFORCEMENT_ID, date = ENFORCEMENT_DATE
+# Enforcement events (ongoing) — each action spans ENFORCEMENT_DATE through
+# CALCULATED_RTC_DATE (fallback NON_COMPL_PER_END_DATE, then single month)
 enf <- ve[!is.na(ENFORCEMENT_ID) & !is.na(ENFORCEMENT_DATE)]
-enf[, enf_dt := as.Date(ENFORCEMENT_DATE, "%m/%d/%Y")]
+enf[, enf_dt  := as.Date(ENFORCEMENT_DATE,       "%m/%d/%Y")]
+enf[, rtc_dt  := as.Date(CALCULATED_RTC_DATE,    "%m/%d/%Y")]
+enf[, ncpe_dt := as.Date(NON_COMPL_PER_END_DATE, "%m/%d/%Y")]
 enf <- enf[!is.na(enf_dt)]
 enf[, enf_yr := as.integer(format(enf_dt, "%Y"))]
 enf <- enf[enf_yr >= 1985 & enf_yr <= 2005]
-enf <- unique(enf[, .(PWSID, ENFORCEMENT_ID, enf_dt, ENF_ACTION_CATEGORY)])
-enf[, month_idx := month_idx_of(enf_dt)]
+enf[, end_dt      := fifelse(!is.na(rtc_dt), rtc_dt, fifelse(!is.na(ncpe_dt), ncpe_dt, enf_dt))]
+enf[, start_month := month_idx_of(enf_dt)]
+enf[, end_month   := pmax(month_idx_of(end_dt), start_month)]
+enf <- unique(enf[, .(PWSID, ENFORCEMENT_ID, start_month, end_month, ENF_ACTION_CATEGORY)])
 
-enf_pm <- enf[, .(
-  enf_informal = as.integer(any(ENF_ACTION_CATEGORY == "Informal",  na.rm = TRUE)),
-  enf_resolving= as.integer(any(ENF_ACTION_CATEGORY == "Resolving", na.rm = TRUE)),
-  enf_formal   = as.integer(any(ENF_ACTION_CATEGORY == "Formal",    na.rm = TRUE))
+month_lists <- Map(seq, enf$start_month, enf$end_month)
+n_per_row   <- lengths(month_lists)
+enf_long <- data.table(
+  PWSID               = rep(enf$PWSID, n_per_row),
+  ENF_ACTION_CATEGORY = rep(enf$ENF_ACTION_CATEGORY, n_per_row),
+  month_idx           = unlist(month_lists)
+)
+enf_long <- enf_long[month_idx >= 1 & month_idx <= n_months]
+
+enf_pm <- enf_long[, .(
+  enf_informal  = as.integer(any(ENF_ACTION_CATEGORY == "Informal",  na.rm = TRUE)),
+  enf_resolving = as.integer(any(ENF_ACTION_CATEGORY == "Resolving", na.rm = TRUE)),
+  enf_formal    = as.integer(any(ENF_ACTION_CATEGORY == "Formal",    na.rm = TRUE))
 ), by = .(PWSID, month_idx)]
 enf_pm[, enf_any := as.integer(enf_informal == 1 | enf_resolving == 1 | enf_formal == 1)]
-cat("Enforcement PWSID-months:", nrow(enf_pm),
+cat("Enforcement PWSID-months (ongoing):", nrow(enf_pm),
     "| informal:", sum(enf_pm$enf_informal),
     "| resolving:", sum(enf_pm$enf_resolving),
     "| formal:", sum(enf_pm$enf_formal),
@@ -148,7 +164,7 @@ cat("Q1/Q2 regression N (h=12):", nrow(reg12), "\n", sep = "")
 
 base_rate <- function(dt, col) round(100 * mean(dt[[col]], na.rm = TRUE), 2)
 
-# ── 6. Backward window for visit_san (used in Q1 summary table, col 2) ───────
+# ── 6. Backward window for visit_san (used in section 8b timing regressions) ─
 build_backward <- function(dt, col, h) {
   out_name <- paste0(col, "_prev", h)
   dt[, (out_name) := {
@@ -159,6 +175,7 @@ build_backward <- function(dt, col, h) {
   invisible(dt)
 }
 build_backward(reg12, "visit_san", 12)
+build_backward(skel,  "mr_any",    12)
 
 # ── 7. Q2 regressions: mr_any_t -> visit_{t+1..t+h} ───────────────────────────
 q2_models <- list()
@@ -184,78 +201,133 @@ for (vdef in c("visit_san", "visit_any")) {
   }
 }
 
-# ── 8. Output: Q1 summary table — does the visit precede or follow the MR
-#      violation in the chain that ends in (reduced) enforcement? ────────────
-# Col 1: P(enforcement in the 12 months following an MR violation).
-# Col 2: among MR violations preceded by a sanitary visit in the prior 12
-#        months, P(enforcement in the 12 months following the MR violation).
-# Col 3: among MR violations followed by a sanitary visit within the next 12
-#        months, P(enforcement in the 12 months following THAT VISIT) —
-#        i.e. the visit, not the MR violation, anchors the outcome window.
+# ── 8. Summary table: visit frequency around enforcement events, by visit group
+#      Two panels: Panel A = formal enforcement, Panel B = informal enforcement
+#      Unconditional probability = share of all CWS-months with that enforcement
+#      type (the baseline for interpreting regression coefficients).
+#      Pre/post columns = P(visit group occurs in ±H months | enforcement event)
+
 dict <- c(visit_san = "Sanitary visit (t)", visit_any = "Any non-enforcement visit (t)",
           mr_any = "MR violation begins (t)")
 
 enf_cols_q1 <- c(enf_formal = "Formal", enf_informal = "Informal", enf_any = "Any")
 
-# Column 2: MR violation in month t, sanitary visit in [t-12, t-1]
-col2_dt <- reg12[mr_any == 1 & visit_san_prev12 == 1]
+H <- 6L
 
-# Column 3: MR violation in month t, first sanitary visit in (t, t+12]; outcome
-# is enf_X_next12 evaluated at that visit's month (already on skel for every
-# CWS-month from section 4's forward-window construction).
-mr_events <- unique(mr[, .(PWSID, mr_month = month_idx)])
-san_visit_months <- unique(sv[is_san == TRUE, .(PWSID, visit_month = month_idx)])
-link <- san_visit_months[mr_events, on = "PWSID", allow.cartesian = TRUE]
-link <- link[visit_month > mr_month & visit_month <= mr_month + 12]
-link <- link[, .(visit_month = min(visit_month)), by = .(PWSID, mr_month)]
-link <- merge(link, skel[, c("PWSID", "month_idx",
-                              paste0(names(enf_cols_q1), "_next12")), with = FALSE],
-              by.x = c("PWSID", "visit_month"), by.y = c("PWSID", "month_idx"), all.x = TRUE)
-
-mr_dt <- reg12[mr_any == 1]
-
-q1_summary <- data.table(
-  enf_type = unname(enf_cols_q1),
-  after_mr_pct = sapply(names(enf_cols_q1), function(cl)
-    round(100 * mean(mr_dt[[paste0(cl, "_next12")]], na.rm = TRUE), 2)),
-  visit_before_mr_pct = sapply(names(enf_cols_q1), function(cl)
-    round(100 * mean(col2_dt[[paste0(cl, "_next12")]], na.rm = TRUE), 2)),
-  visit_after_mr_pct = sapply(names(enf_cols_q1), function(cl)
-    round(100 * mean(link[[paste0(cl, "_next12")]], na.rm = TRUE), 2))
+group_order_q1 <- c("Sanitary visits", "Technical assistance", "Enforcement visits",
+                     "Sample collection", "Inspection")
+group_codes_q1 <- list(
+  "Sanitary visits"      = c("SNSV", "SSVF"),
+  "Technical assistance" = c("TECH", "ENGR", "OM"),
+  "Enforcement visits"   = c("FENF", "INVG", "EMRG"),
+  "Sample collection"    = c("SMPL"),
+  "Inspection"           = c("SITE", "RSCH", "INFI")
 )
 
-rows_q1 <- sprintf("%s & %.2f & %.2f & %.2f \\\\",
-                    q1_summary$enf_type, q1_summary$after_mr_pct,
-                    q1_summary$visit_before_mr_pct, q1_summary$visit_after_mr_pct)
+fmt_n   <- function(x) gsub(",", "{,}", formatC(x, format = "d", big.mark = ","))
+fmt_pct <- function(x) ifelse(is.nan(x) | is.na(x), "--", sprintf("%.2f", x))
 
-notes_q1 <- paste0("Sample: strictly downstream CWSs (", length(sample_pwsids),
-                    "), CWS-months 1985-01 to 2004-12 (right-censored to allow a full ",
-                    "12-month forward window). Column 1: among all MR-violation onsets (",
-                    uniqueN(mr$PWSID), " CWSs, N=", nrow(mr_dt), "), the probability that ",
-                    "enforcement of that type occurs in the 12 months following the MR ",
-                    "violation. Column 2: among MR-violation onsets preceded by a sanitary ",
-                    "visit (visit\\_san: SNSV/SNSP/SSVF) in the prior 12 months (N=", nrow(col2_dt),
-                    "), the probability of enforcement in the 12 months following the MR ",
-                    "violation. Column 3: among MR-violation onsets followed by a sanitary ",
-                    "visit within the next 12 months (N=", nrow(link), "), the probability of ",
-                    "enforcement in the 12 months following that visit (the first qualifying ",
-                    "visit after the violation). Comparing columns 2 and 3 distinguishes whether ",
-                    "visits forestall enforcement by preceding the MR violation (visit $\\to$ ",
-                    "lower MR risk $\\to$ lower enforcement, column 2) or by following it (MR ",
-                    "violation $\\to$ visit $\\to$ lower enforcement after the visit, column 3).")
+# Compute visit-anchored enforcement probability for one enforcement type (enf_col).
+# Unconditional prob = share of ALL CWS-months (skel) with that enforcement.
+# Col 3 = P(enf | CWS-month falls in the 6-month window AFTER a visit of this type):
+#   for each visit at month t, expand to months [t, t+6]; among all such cells,
+#   compute the share with that enforcement type.
+# Col 4 = P(enf | CWS-month falls in the 6-month window BEFORE a visit of this type):
+#   for each visit at month t, expand to months [t-6, t]; share with enforcement.
+enf_visit_rows <- function(enf_col) {
+  unc_enf_pct <- round(100 * mean(skel[[enf_col]]), 2)
+  enf_skel    <- skel[, .(PWSID, month_idx, enf = get(enf_col))]
+
+  rbindlist(lapply(group_order_q1, function(grp) {
+    codes  <- group_codes_q1[[grp]]
+    grp_pm <- unique(sv[VISIT_REASON_CODE %in% codes, .(PWSID, month_idx)])
+
+    if (nrow(grp_pm) == 0) {
+      return(data.table(group = grp, unconditional_pct = unc_enf_pct,
+                        after_pct = NaN, before_pct = NaN))
+    }
+
+    # All CWS-months in the 6-month window AFTER each visit
+    after_cells <- grp_pm[, .(month_idx = seq(month_idx, month_idx + 6L)),
+                            by = .(PWSID, v = month_idx)]
+    after_cells <- unique(after_cells[month_idx >= 1 & month_idx <= n_months,
+                                       .(PWSID, month_idx)])
+
+    # All CWS-months in the 6-month window BEFORE each visit
+    before_cells <- grp_pm[, .(month_idx = seq(month_idx - 6L, month_idx)),
+                             by = .(PWSID, v = month_idx)]
+    before_cells <- unique(before_cells[month_idx >= 1 & month_idx <= n_months,
+                                         .(PWSID, month_idx)])
+
+    enf_after  <- merge(after_cells,  enf_skel, by = c("PWSID", "month_idx"), all.x = TRUE)
+    enf_before <- merge(before_cells, enf_skel, by = c("PWSID", "month_idx"), all.x = TRUE)
+
+    data.table(
+      group             = grp,
+      unconditional_pct = unc_enf_pct,
+      after_pct         = round(100 * mean(enf_after$enf,  na.rm = TRUE), 2),
+      before_pct        = round(100 * mean(enf_before$enf, na.rm = TRUE), 2)
+    )
+  }))
+}
+
+formal_rows   <- enf_visit_rows("enf_formal")
+informal_rows <- enf_visit_rows("enf_informal")
+
+n_formal   <- nrow(reg6[enf_formal   == 1])
+n_informal <- nrow(reg6[enf_informal == 1])
+
+emit_panel_rows <- function(rows) {
+  sprintf("%s & %.2f & %s & %s \\\\",
+          rows$group,
+          rows$unconditional_pct,
+          fmt_pct(rows$after_pct),
+          fmt_pct(rows$before_pct))
+}
+
+notes_q1 <- paste0(
+  "Sample: strictly downstream CWSs (", length(sample_pwsids), "), CWS-months ",
+  "1985-01 to 2005-12. Total CWS-months: ", nrow(skel), " (", length(sample_pwsids), " CWSs). ",
+  "Column 2 (Unconditional probability): share of all CWS-months in which that panel's ",
+  "enforcement type occurs; this is the mean of the dependent variable for interpreting ",
+  "regression coefficients from sanitary\\_visit\\_enforcement\\_iterative.tex in percentage-point ",
+  "vs.\\ relative terms. ",
+  "Column 3: among all CWS-months falling within the 6-month window following any visit of ",
+  "that type (months $[t, t+6]$ for each visit at month $t$), the share with that enforcement ",
+  "type beginning in that month, i.e.\\ P(enf.\\ $|$ within 6 mo.\\ after visit). ",
+  "Column 4: among all CWS-months falling within the 6-month window preceding any visit of ",
+  "that type (months $[t-6, t]$ for each visit at month $t$), the share with that enforcement ",
+  "type beginning in that month, i.e.\\ P(enf.\\ $|$ within 6 mo.\\ before visit). ",
+  "CWS-months may appear in multiple windows if visits are closely spaced. ",
+  "Enforcement event counts for context: Panel A formal N\\,=\\,",
+  fmt_n(n_formal), "; Panel B informal N\\,=\\,", fmt_n(n_informal), ". ",
+  "Visit groups: sanitary visits (SNSV, SSVF); technical assistance (TECH, ENGR, OM); ",
+  "enforcement visits (FENF, INVG, EMRG); sample collection (SMPL); inspection (SITE, RSCH, INFI)."
+)
 
 out_q1 <- file.path(ROOT, "output/sum/sanitary_visit_to_enforcement.tex")
 lines_q1 <- c(
   "\\begin{table}[htbp]",
-  "\\caption{\\label{tab:visit_to_enf} Sanitary Visits Before vs. After MR Violations: Probability of Subsequent Enforcement (Downstream CWSs, 1985--2005)}",
+  paste0("\\caption{\\label{tab:visit_to_enf} Visit Frequency Around Enforcement Actions, ",
+         "by Visit Group (Downstream CWSs, 1985--2005)}"),
   "\\bigskip",
   "\\centering",
   "\\begin{adjustbox}{width = \\textwidth, center}",
   "\\begin{tabular}{lccc}",
   "\\toprule",
-  "Enforcement type & Within 12mo of MR (\\%) & Visit occured in year preceding MR (\\%) & Visit occured in year following MR (\\%) \\\\",
+  paste0("Visit group & Unconditional probability (\\%) & ",
+         "P(enf.\\ 6 mo.\\ after visit) (\\%) & ",
+         "P(enf.\\ 6 mo.\\ before visit) (\\%) \\\\"),
   "\\midrule",
-  rows_q1,
+  paste0("\\multicolumn{4}{l}{\\textbf{Panel A: Formal enforcement} ",
+         "(N\\,=\\,", fmt_n(n_formal), " enforcement events)} \\\\"),
+  "\\midrule",
+  emit_panel_rows(formal_rows),
+  "\\midrule",
+  paste0("\\multicolumn{4}{l}{\\textbf{Panel B: Informal enforcement} ",
+         "(N\\,=\\,", fmt_n(n_informal), " enforcement events)} \\\\"),
+  "\\midrule",
+  emit_panel_rows(informal_rows),
   "\\bottomrule",
   "\\end{tabular}",
   "\\end{adjustbox}",
@@ -436,26 +508,43 @@ type_pm <- unique(sv[, .(PWSID, month_idx, VISIT_REASON_CODE)])
 type_wide <- dcast(type_pm, PWSID + month_idx ~ VISIT_REASON_CODE,
                     fun.aggregate = length, value.var = "VISIT_REASON_CODE", fill = 0L)
 
-skel_types <- merge(skel[, .(PWSID, month_idx, mr_any)], type_wide,
-                     by = c("PWSID", "month_idx"), all.x = TRUE)
+skel_types <- merge(skel[, .(PWSID, month_idx, mr_any, mr_any_next12, mr_any_prev12)],
+                     type_wide, by = c("PWSID", "month_idx"), all.x = TRUE)
 for (cl in present_types) skel_types[is.na(get(cl)), (cl) := 0L]
 setorder(skel_types, PWSID, month_idx)
-for (cl in present_types) {
-  build_forward(skel_types, cl, 6)
-  build_forward(skel_types, cl, 12)
-}
+skel_types[, year := 1985L + (month_idx - 1L) %/% 12L]
 
-reg6_types  <- skel_types[month_idx <= max_origin_6]
+# Right-censored version (consistent with section 5): a month only carries a
+# valid mr_any_next12 window if it isn't within 12 months of the sample end.
+# mr_any_prev12 is NA only for the first 11 months of the sample (no backward
+# window), handled by build_backward's fill = NA.
 reg12_types <- skel_types[month_idx <= max_origin_12]
 
+# CWS-year level summary. Col 1/2: does a visit of this type occur at all in
+# the CWS-year (sum / share over all CWS-years). Col 4: among CWS-years in
+# which the visit occurs, the share where that visit (in a non-censored
+# month) precedes an MR violation within the next 12 months. Col 5: among
+# CWS-years in which the visit occurs, the share where that visit follows an
+# MR violation that began within the prior 12 months.
 visit_summary <- data.table(code = present_types)
 visit_summary[, label := visit_type_labels[code]]
-visit_summary[, unconditional_pct := sapply(code, function(cd)
-  100 * mean(skel_types[[cd]] > 0, na.rm = TRUE))]
-visit_summary[, cond6_pct := sapply(code, function(cd)
-  100 * mean(reg6_types[mr_any == 1][[paste0(cd, "_next6")]], na.rm = TRUE))]
-visit_summary[, cond12_pct := sapply(code, function(cd)
-  100 * mean(reg12_types[mr_any == 1][[paste0(cd, "_next12")]], na.rm = TRUE))]
+
+year_stats <- rbindlist(lapply(present_types, function(cd) {
+  visited_dt <- skel_types[, .(visited = as.integer(any(get(cd) > 0))), by = .(PWSID, year)]
+  pre12_dt   <- reg12_types[, .(pre12  = as.integer(any(get(cd) > 0 & mr_any_next12 == 1, na.rm = TRUE))),
+                            by = .(PWSID, year)]
+  post12_dt  <- skel_types[,  .(post12 = as.integer(any(get(cd) > 0 & mr_any_prev12 == 1, na.rm = TRUE))),
+                            by = .(PWSID, year)]
+  m <- merge(visited_dt, pre12_dt,  by = c("PWSID", "year"), all.x = TRUE)
+  m <- merge(m,          post12_dt, by = c("PWSID", "year"), all.x = TRUE)
+  data.table(
+    n_obs             = sum(m$visited),
+    unconditional_pct = 100 * mean(m$visited),
+    precede_pct       = 100 * mean(m$pre12[m$visited == 1],  na.rm = TRUE),
+    follow_pct        = 100 * mean(m$post12[m$visited == 1], na.rm = TRUE)
+  )
+}))
+visit_summary <- cbind(visit_summary, year_stats)
 
 # Group visit types into the five categories used as dependent variables in
 # h2_snsv_d12.tex and sanitary_visit_enforcement_iterative.tex. Codes not
@@ -479,22 +568,31 @@ setorder(visit_summary, group, -unconditional_pct)
 cat("\nVisit-type summary: ", nrow(visit_summary), " types observed in sample (",
     length(present_types) - nrow(visit_summary), " dropped, not in any group)\n", sep = "")
 
-rows_summary <- sprintf("%s & %s & %.2f & %.2f & %.2f \\\\",
+# NaN occurs when every CWS-year with that visit type is fully right-censored
+# at the given horizon (e.g. a type observed only in 2005 for the 12-month
+# window); display as "--" rather than "NaN".
+fmt_pct <- function(x) ifelse(is.nan(x), "--", sprintf("%.2f", x))
+
+rows_summary <- sprintf("%d & %s & %s & %.2f & %s & %s \\\\",
+                         visit_summary$n_obs,
                          as.character(visit_summary$group), visit_summary$label,
                          visit_summary$unconditional_pct,
-                         visit_summary$cond6_pct, visit_summary$cond12_pct)
+                         fmt_pct(visit_summary$precede_pct), fmt_pct(visit_summary$follow_pct))
 
 n_mr_pwsids <- uniqueN(mr$PWSID)
 notes_summary <- paste0(
-  "Sample: strictly downstream CWSs (", length(sample_pwsids), "), CWS-months 1985-01 to ",
-  "2005-12. Visit types are grouped into sanitary visits (SNSV, SSVF), technical ",
-  "assistance (TECH, ENGR, OM), enforcement visits (FENF, INVG, EMRG), sample ",
-  "collection (SMPL), and inspection (SITE, RSCH, INFI); types not falling into one ",
-  "of these five groups are omitted. Column 1: share of all sample CWS-months with a ",
-  "visit of that type, 1985--2005. Columns 2-3: among CWS-months in which an MR ",
-  "violation begins (", n_mr_pwsids, " CWSs ever have an MR-violation onset), the ",
-  "share followed by a visit of that type within the next 6 (12) months, ",
-  "right-censored at 2005-06 (2004-12) as in the regressions above."
+  "Sample: strictly downstream CWSs (", length(sample_pwsids), "), CWS-years 1985 to ",
+  "2005 (", length(sample_pwsids), " CWSs x 21 years). Visit types are grouped into ",
+  "sanitary visits (SNSV, SSVF), technical assistance (TECH, ENGR, OM), enforcement ",
+  "visits (FENF, INVG, EMRG), sample collection (SMPL), and inspection (SITE, RSCH, ",
+  "INFI); types not falling into one of these five groups are omitted. Column 1: ",
+  "number of CWS-years with at least one visit of that type, 1985--2005. Column 3: ",
+  "share of all CWS-years with at least one visit of that type. Column 4: among ",
+  "CWS-years with at least one visit of that type, the share in which that visit (in ",
+  "a month with a fully observed forward window) precedes an MR violation onset ",
+  "within the next 12 months, right-censored at 2004-12 as in the regressions above. ",
+  "Column 5: among CWS-years with at least one visit of that type, the share in which ",
+  "that visit follows an MR violation onset that began within the prior 12 months."
 )
 
 out_summary <- file.path(ROOT, "output/sum/visit_type_summary.tex")
@@ -504,9 +602,9 @@ lines_summary <- c(
   "\\bigskip",
   "\\centering",
   "\\begin{adjustbox}{width = \\textwidth, center}",
-  "\\begin{tabular}{llccc}",
+  "\\begin{tabular}{lllccc}",
   "\\toprule",
-  "Group & Visit type & Unconditional probability (\\%) & Visit within 6 months of MR & Visit within year of MR \\\\",
+  "N & Group & Visit type & Unconditional probability (\\%) & Visit precedes MR within year (\\%) & Visit follows MR within year (\\%) \\\\",
   "\\midrule",
   rows_summary,
   "\\bottomrule",

@@ -1,52 +1,27 @@
 
 \begin{table}[htbp]
-   
-   \caption{\label{tab:mr_concentration_lag_placebo} Placebo: MR Violations and Next-Month Contaminant Concentration (Lead Test)}
-   \bigskip
-   
-   \centering
-   
-   \begin{adjustbox}{width = \textwidth, center}
-      
-      %start:tab
-      
-      \begin{tabular}{lcc}
-         \toprule
-         
-                                          & mr\_same\_month   & mr\_ioc\_month\\    
-         
-                                          & Nitrate           & Pooled inorganic \\   
-         
-                                          & (1)               & (2)\\  
-         
-         \midrule 
-         ratio\_lead1                     & -0.0868           & -0.0031\\   
-                                          & (0.0870)          & (0.0168)\\   
-         near\_mcl\_lead1                 & 0.0089            & -0.0726$^{**}$\\   
-                                          & (0.0089)          & (0.0320)\\   
-         
-          \\
-         
-         R$^2$                            & 0.05635           & 0.05406\\  
-         Observations                     & 754               & 3,242\\  
-         
-          \\
-         
-         PWSID fixed effects              & $\checkmark$      & $\checkmark$\\   
-         YEAR fixed effects               & $\checkmark$      & $\checkmark$\\   
-         contaminant\_code fixed effects  &                   & $\checkmark$\\   
-         
-         \bottomrule
-         
-      \end{tabular}
-      
-      %end:tab
-      
-      
-   \end{adjustbox}
-      {\tiny\linespread{1}\selectfont \par \raggedright 
-   Lead placebo: independent variables are the 1-month LEAD of ratio and near\_mcl (i.e., next month's reading). If the causal direction runs from high concentration to subsequent avoidance, future readings should not predict current MR violations. Same outcome, sample, and fixed effects as the main table. Arsenic lead-placebo omitted: dependent variable is constant (no arsenic MR violations in months with a lead reading). SEs clustered at the CWS (PWSID) level.}
-   
+\caption{Placebo: MR Violations Preceding High Contaminant Concentration (Past Window)}\label{tab:mr_concentration_lag_placebo}
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+   \begin{tabular}{lcccccc}
+      \toprule    
+                                       & Arsenic MR (1-yr)      & Arsenic MR (6-mon)   & Nitrate MR (1-yr) & Nitrate MR (6-mon)   & Pooled IOC (1-yr)  & Pooled IOC (6-mon) \\   
+                                       & (1)                    & (2)                  & (3)               & (4)                  & (5)                & (6)\\  
+      \midrule 
+      Mean concen. (z-score)                    & $-9.11\times 10^{-5}$  & 0.0014               & -0.0111           & 0.0120               &                    &   \\   
+                                       & (0.0022)               & (0.0015)             & (0.0166)          & (0.0107)             &                    &   \\   
+      Concen. $>$ 50\% MCL                        &                        &                      & -0.2169$^{*}$     & -0.0870$^{*}$        & -0.0740$^{*}$      & -0.0846$^{**}$\\   
+                                       &                        &                      & (0.1108)          & (0.0441)             & (0.0375)           & (0.0390)\\   
+      Concen./MCL                            &                        &                      &                   &                      & -0.0241            & -0.0171\\   
+                                       &                        &                      &                   &                      & (0.0308)           & (0.0377)\\   
+       \\
+      Observations                     & 419                    & 419                  & 851               & 851                  & 3,705              & 3,705\\  
+       \\
+      CWS fixed effects              & $\checkmark$           & $\checkmark$         & $\checkmark$      & $\checkmark$         & $\checkmark$       & $\checkmark$\\   
+      YEAR fixed effects               & $\checkmark$           & $\checkmark$         & $\checkmark$      & $\checkmark$         & $\checkmark$       & $\checkmark$\\   
+      Contaminant fixed effects  &                        &                      &                   &                      & $\checkmark$       & $\checkmark$\\   
+      \bottomrule
+   \end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright Past-window placebo: same specifications as the forward-window table but outcome is an MR violation occurring BEFORE the sample date (1--365 days before for 1-yr columns; 1--182 days before for 6-mon columns). *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level.}
 \end{table}
-
-

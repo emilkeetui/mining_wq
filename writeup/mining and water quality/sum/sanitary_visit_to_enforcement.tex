@@ -1,19 +1,29 @@
 \begin{table}[htbp]
-\caption{\label{tab:visit_to_enf} Sanitary Visits Before vs. After MR Violations: Probability of Subsequent Enforcement (Downstream CWSs, 1985--2005)}
+\caption{\label{tab:visit_to_enf} Enforcement Probability Following MR Violations, by Visit Group and Timing (Downstream CWSs, 1985--2005)}
 \bigskip
 \centering
 \begin{adjustbox}{width = \textwidth, center}
-\begin{tabular}{lccc}
+\begin{tabular}{llccc}
 \toprule
-Enforcement type & Within 12mo of MR (\%) & Visit occured in year preceding MR (\%) & Visit occured in year following MR (\%) \\
+N & Visit group & Unconditional probability (\%) & Pre-onset, $-6$ (\%) & Post-onset, $+6$ (\%) \\
 \midrule
-Formal & 13.53 & 15.22 & 14.75 \\
-Informal & 77.49 & 88.26 & 74.65 \\
-Any & 82.79 & 90.00 & 81.11 \\
+\multicolumn{5}{l}{\textit{Panel A: Formal enforcement}} \\[3pt]
+1{,}711 & Sanitary visits & 1.14 & 13.38 & 15.62 \\
+1{,}711 & Technical assistance & 0.28 & 0.00 & 0.00 \\
+1{,}711 & Enforcement visits & 0.11 & 0.00 & 0.00 \\
+1{,}711 & Sample collection & 0.12 & 0.00 & 0.00 \\
+1{,}711 & Inspection & 0.39 & 0.00 & 0.00 \\
+\midrule
+\multicolumn{5}{l}{\textit{Panel B: Informal enforcement}} \\[3pt]
+1{,}711 & Sanitary visits & 1.14 & 83.10 & 68.75 \\
+1{,}711 & Technical assistance & 0.28 & 65.52 & 23.53 \\
+1{,}711 & Enforcement visits & 0.11 & 28.57 & 28.57 \\
+1{,}711 & Sample collection & 0.12 & 100.00 & 16.67 \\
+1{,}711 & Inspection & 0.39 & 48.94 & 29.09 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
 {\tiny\linespread{1}\selectfont \par \raggedright 
-Sample: strictly downstream CWSs (349), CWS-months 1985-01 to 2004-12 (right-censored to allow a full 12-month forward window). Column 1: among all MR-violation onsets (250 CWSs, N=1604), the probability that enforcement of that type occurs in the 12 months following the MR violation. Column 2: among MR-violation onsets preceded by a sanitary visit (visit\_san: SNSV/SNSP/SSVF) in the prior 12 months (N=230), the probability of enforcement in the 12 months following the MR violation. Column 3: among MR-violation onsets followed by a sanitary visit within the next 12 months (N=305), the probability of enforcement in the 12 months following that visit (the first qualifying visit after the violation). Comparing columns 2 and 3 distinguishes whether visits forestall enforcement by preceding the MR violation (visit $\to$ lower MR risk $\to$ lower enforcement, column 2) or by following it (MR violation $\to$ visit $\to$ lower enforcement after the visit, column 3).
+Sample: strictly downstream CWSs (349), CWS-months 1985-01 to 2005-06 (right-censored to allow a full 6-month forward window). N = total MR-violation onsets across 250 CWSs (N=1711). Column 3: share of all CWS-months (87948 CWS-months, 349 CWSs) in which a visit of that group occurs (unconditional visit frequency). Column 4: among MR-violation onsets, the probability that formal/informal enforcement occurs in the following 6 months, restricted to onsets preceded by a visit of that group in the prior 6 months. Column 5: same enforcement probability, restricted to onsets followed by a first visit of that group within the next 6 months, with the enforcement window anchored at the visit rather than the violation. Visit groups: sanitary visits (SNSV, SSVF); technical assistance (TECH, ENGR, OM); enforcement visits (FENF, INVG, EMRG); sample collection (SMPL); inspection (SITE, RSCH, INFI). Pre-onset N (column 4) by group: Sanitary visits=142; Technical assistance=29; Enforcement visits=7; Sample collection=4; Inspection=47. Post-onset N (column 5) by group: Sanitary visits=149; Technical assistance=34; Enforcement visits=14; Sample collection=6; Inspection=56.
 }
 \end{table}
