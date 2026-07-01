@@ -1,41 +1,52 @@
-\makeatletter
-\@ifclassloaded{beamer}{%
-  \begin{adjustbox}{max width=\linewidth, max totalheight=0.78\textheight, center}%
-}{%
-  \begin{adjustbox}{max width=\linewidth, center}%
-}%
-\makeatother
 
-\begingroup
-\centering
-\begin{tabular}{lccc}
-   \tabularnewline \midrule \midrule
-   Dependent Variables: & \multicolumn{2}{c}{mr\_same\_past} & mr\_anyioc\_past\\
-                      & Arsenic  & Nitrate        & Pooled inorganic \\   
-   Model:             & (1)      & (2)            & (3)\\  
-   \midrule
-   \emph{Variables}\\
-   ratio              & -0.0038  & -0.1116        & -0.0241\\   
-                      & (0.0925) & (0.1091)       & (0.0308)\\   
-   near\_mcl          &          & -0.2158$^{**}$ & -0.0740$^{*}$\\   
-                      &          & (0.1067)       & (0.0375)\\   
-   \midrule
-   \emph{Fixed-effects}\\
-   PWSID              & Yes      & Yes            & Yes\\  
-   YEAR               & Yes      & Yes            & Yes\\  
-   contaminant\_code  &          &                & Yes\\  
-   \midrule
-   \emph{Fit statistics}\\
-   R$^2$              & 0.16037  & 0.22441        & 0.43194\\  
-   Observations       & 419      & 851            & 3,705\\  
-   \midrule \midrule
-   \multicolumn{4}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
-   \multicolumn{4}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
-\end{tabular}
- 
-\par\endgroup
-\end{adjustbox}
+\begin{table}[htbp]
+   
+   \caption{\label{tab:mr_concentration_lag_placebo} Placebo: MR Violations and Next-Month Contaminant Concentration (Lead Test)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcc}
+         \toprule
+         
+                                          & mr\_same\_month   & mr\_ioc\_month\\    
+         
+                                          & Nitrate           & Pooled inorganic \\   
+         
+                                          & (1)               & (2)\\  
+         
+         \midrule 
+         ratio\_lead1                     & -0.0868           & -0.0031\\   
+                                          & (0.0870)          & (0.0168)\\   
+         near\_mcl\_lead1                 & 0.0089            & -0.0726$^{**}$\\   
+                                          & (0.0089)          & (0.0320)\\   
+         
+          \\
+         
+         R$^2$                            & 0.05635           & 0.05406\\  
+         Observations                     & 754               & 3,242\\  
+         
+          \\
+         
+         PWSID fixed effects              & $\checkmark$      & $\checkmark$\\   
+         YEAR fixed effects               & $\checkmark$      & $\checkmark$\\   
+         contaminant\_code fixed effects  &                   & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Lead placebo: independent variables are the 1-month LEAD of ratio and near\_mcl (i.e., next month's reading). If the causal direction runs from high concentration to subsequent avoidance, future readings should not predict current MR violations. Same outcome, sample, and fixed effects as the main table. Arsenic lead-placebo omitted: dependent variable is constant (no arsenic MR violations in months with a lead reading). SEs clustered at the CWS (PWSID) level.}
+   
+\end{table}
 
-\par \raggedright
-Past-window placebo: outcome is an MR violation occurring 1-365 days BEFORE the sample date (same-contaminant MR violation for Arsenic/Nitrate; RULE\_CODE==333.0 MR violation for Pooled). Pooled any-IOC: MR violation under RULE\_CODE==333.0 (Inorganic Chemicals / Other IOC -- the same rule code used to build `inorganic\_chemicals` in 2sls\_dwnstrm\_minevio\_allcat\_ivsum.tex; excludes arsenic and nitrate, which have their own rule codes). ratio = concentration/MCL; near\_mcl = reading at 50-100\% of MCL. Same sample and FE as the forward-window table. SEs clustered at the CWS (PWSID) level.
-\par
+
