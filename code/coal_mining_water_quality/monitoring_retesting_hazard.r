@@ -26,18 +26,24 @@ cat("PWSID x chemical combos:", n_distinct(paste(meas$PWSID, meas$CHEMID_name)),
 cat("Chemicals:", paste(sort(unique(meas$CHEMID_name)), collapse = ", "), "\n")
 cat("Year range:", range(meas$year), "\n\n")
 
-# ── 2. Z-score VALUE within chemical (units differ across chemicals) ──────────
-chem_stats <- meas |>
-  group_by(CHEMID_name) |>
+# ── 2. Z-score VALUE within CWS x chemical (removes CWS baseline-level differences) ──
+pwsid_chem_stats <- meas |>
+  group_by(PWSID, CHEMID_name) |>
   summarise(v_mean = mean(VALUE), v_sd = sd(VALUE), .groups = "drop")
 
 meas <- meas |>
-  left_join(chem_stats, by = "CHEMID_name") |>
+  left_join(pwsid_chem_stats, by = c("PWSID", "CHEMID_name")) |>
   mutate(value_z = (VALUE - v_mean) / v_sd)
+
+cat("PWSID x chemical combos with singleton SD (value_z = NA):",
+    sum(is.na(meas$v_sd)), "of", n_distinct(paste(meas$PWSID, meas$CHEMID_name)), "combos\n")
+cat("Measurement rows dropped to NA value_z:", sum(is.na(meas$value_z)), "\n\n")
 
 # ── 3. Build features shared by both models ───────────────────────────────────
 # Per PWSID x chemical, sorted by year:
-#   running_mean_z      = cummean(value_z) through this test (inclusive)
+#   running_mean_z      = cummean(value_z) through this test (inclusive) -- both
+#                         last_level_z and running_mean_z are benchmarked against
+#                         the z-score of all observations of that contaminant at that CWS
 #   year_next           = year of the next test (NA if this is the last)
 #   year_prev           = year of the prior test (NA if this is the first)
 #   years_since_last_test = gap to prior test; NA for first test in series
@@ -49,9 +55,9 @@ meas_feats <- meas |>
   group_by(PWSID, CHEMID_name) |>
   arrange(year, .by_group = TRUE) |>
   mutate(
-    running_mean_z        = cummean(value_z),
-    year_next             = lead(year),
-    years_since_last_test = year - lag(year)
+    running_mean_z         = cummean(value_z),
+    year_next              = lead(year),
+    years_since_last_test  = year - lag(year)
   ) |>
   ungroup() |>
   mutate(
@@ -118,20 +124,20 @@ m3 <- feglm(tested_next_yr ~ last_level_z + mean_level_z + years_since_last_test
             cluster = ~PWSID,
             family  = binomial)
 
-# Col 4: Discrete-time hazard LPM, no fixed effects
-m4 <- feols(tested ~ last_level_z + mean_level_prior_z + years_since_test,
+# Col 4: Discrete-time hazard LPM, CWS fixed effects
+m4 <- feols(tested ~ last_level_z + mean_level_prior_z + years_since_test | PWSID,
             data    = hazard_data,
             cluster = ~PWSID)
 
-# Col 5: Discrete-time hazard LPM, year + chemical fixed effects
+# Col 5: Discrete-time hazard LPM, CWS + year + chemical fixed effects
 m5 <- feols(tested ~ last_level_z + mean_level_prior_z + years_since_test |
-              year_at_risk + CHEMID_name,
+              year_at_risk + CHEMID_name + PWSID,
             data    = hazard_data,
             cluster = ~PWSID)
 
-# Col 6: Discrete-time hazard logit, year + chemical fixed effects
+# Col 6: Discrete-time hazard logit, CWS + year + chemical fixed effects
 m6 <- feglm(tested ~ last_level_z + mean_level_prior_z + years_since_test |
-              year_at_risk + CHEMID_name,
+              year_at_risk + CHEMID_name + PWSID,
             data    = hazard_data,
             cluster = ~PWSID,
             family  = binomial)
@@ -187,7 +193,7 @@ etable(
     years_since_test      = "Years since last test",
     PWSID                 = "CWS",
     year_at_risk          = "Year",
-    CHEMID_name           = "Chemical"
+    CHEMID_name            = "Chemical"
   ),
   notes = paste0(
     "Cols 1--3: unit = CWS $\\times$ chemical $\\times$ test year (LPM data); ",
@@ -196,9 +202,11 @@ etable(
     "Cols 4--6: discrete-time hazard panel; ",
     "unit = CWS $\\times$ chemical $\\times$ at-risk year; ",
     "outcome = 1 if CWS tested that year. ",
-    "Col 4 is LPM without fixed effects; col 5 is LPM with year and chemical fixed effects; ",
-    "col 6 is logit with year and chemical fixed effects. ",
-    "All contaminant levels z-scored within chemical. ",
+    "Col 4 includes CWS fixed effects; col 5 adds year and chemical fixed effects; ",
+    "col 6 is logit with CWS, year, and chemical fixed effects. ",
+    "Both last level and mean level z-scored against the distribution of all ",
+    "observations of that contaminant at that CWS; mean level is the cumulative ",
+    "mean of the z-scored readings through this test. ",
     "Years since last test controls for persistence in the testing schedule (cols 1--3) ",
     "and baseline hazard shape (cols 4--6). ",
     "SEs clustered at CWS level. ",
