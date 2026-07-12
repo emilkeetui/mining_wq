@@ -1,16 +1,19 @@
 # ============================================================
 # Script: sanitary_visit_mr_violation_iterative.r
 # Purpose: CWS-month panel (strictly-downstream 2SLS sample, 1985-2005)
-#          testing whether visit timing across five visit groups predicts
-#          an MR violation onset. Binary before6/after6 window
-#          indicators built for each visit group. Three cumulative LPM specs
-#          on a single binary MR-violation outcome.
-#          Spec 1: visit indicators only + FE (1985-2005)
-#          Spec 2: + n_prior_violations + FE (1985-2005)
-#          Spec 3: + n_prior_violations + pct_mcl_last_max + FE (SYR2-restricted sample)
-#          Visit groups: sanitary (SNSV/SNSP/SSVF), technical assistance
-#          (TECH/ENGR/OM), enforcement visits (FENF/INVG/EMRG), sample
-#          collection (SMPL), inspection (SITE/RSCH/INFI).
+#          testing whether sanitary visit and enforcement visit timing
+#          predicts an MR violation onset. Binary before6/after6 window
+#          indicators built for each visit group, one group per column
+#          block (mirrors sanitary_visit_syr2_test_iterative.r).
+#          Col 1: sanitary visit windows only, no FE (full panel)
+#          Col 2: sanitary visit windows, CWS + calendar-month FE (full panel)
+#          Col 3: sanitary visit windows + n_prior_violations +
+#                 pct_mcl_last_max, CWS + calendar-month FE (SYR2-restricted)
+#          Col 4: enforcement visit windows only, no FE (full panel)
+#          Col 5: enforcement visit windows, CWS + calendar-month FE (full panel)
+#          Col 6: enforcement visit windows + n_prior_violations +
+#                 pct_mcl_last_max, CWS + calendar-month FE (SYR2-restricted)
+#          Visit groups: sanitary (SNSV/SNSP/SSVF), enforcement (FENF/INVG/EMRG).
 # Inputs:  clean_data/cws_data/prod_vio_sulfur.parquet
 #          clean_data/cws_6year_review_measurement_level_syr2.parquet
 #          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_SITE_VISITS.csv
@@ -72,13 +75,10 @@ onset_counts[, n_prior_violations := cum_after - n_onsets_this_month]
 rm(ve); gc()
 
 # ── 2. Visit groups ───────────────────────────────────────────────────────────
-# Five groups, each producing a before6/after6 window indicator.
+# Two groups, each producing a before6/after6 window indicator.
 visit_groups <- list(
   san  = c("SNSV", "SNSP", "SSVF"),
-  tech = c("TECH", "ENGR", "OM"),
-  enfv = c("FENF", "INVG", "EMRG"),
-  smpl = c("SMPL"),
-  insp = c("SITE", "RSCH", "INFI")
+  enfv = c("FENF", "INVG", "EMRG")
 )
 
 sv <- fread(file.path(SDWA_DIR, "SDWA_SITE_VISITS.csv"),
@@ -162,10 +162,7 @@ setorder(skel, PWSID, month_idx)
 skel[, n_prior_violations := nafill(n_prior_violations, type = "locf"), by = PWSID]
 
 visit_win_cols <- c("san_before6", "san_after6",
-                     "tech_before6", "tech_after6",
-                     "enfv_before6", "enfv_after6",
-                     "smpl_before6", "smpl_after6",
-                     "insp_before6", "insp_after6")
+                     "enfv_before6", "enfv_after6")
 fill0_cols <- c("any_violation", "mr_violation", "n_prior_violations", visit_win_cols)
 for (cl in fill0_cols) skel[is.na(get(cl)), (cl) := 0L]
 skel[, has_syr2 := PWSID %in% has_syr2_pwsids]
@@ -183,16 +180,8 @@ cat("\nSpec-3 (SYR2-restricted) sample:", nrow(spec3_dt), "CWS-months,",
     length(unique(spec3_dt$PWSID)), "CWSs\n")
 
 # ── 6. Regressions ─────────────────────────────────────────────────────────────
-rhs_visits   <- paste(visit_win_cols, collapse = " + ")
-rhs_controls <- "n_prior_violations"
+rhs_controls <- "n_prior_violations + pct_mcl_last_max"
 fe           <- "PWSID + month_idx"
-
-# Spec 1: visit indicators only, no FE (1985-2005)
-rhs1 <- rhs_visits
-# Spec 2: + controls + FE (1985-2005)
-rhs2 <- paste(rhs_visits, rhs_controls, sep = " + ")
-# Spec 3: + controls + pct_mcl_last_max + FE (SYR2 window)
-rhs3 <- paste(rhs_visits, rhs_controls, "pct_mcl_last_max", sep = " + ")
 
 run_spec_no_fe <- function(yvar, rhs, dt) {
   fml <- as.formula(paste0(yvar, " ~ ", rhs))
@@ -203,13 +192,22 @@ run_spec <- function(yvar, rhs, dt) {
   feols(fml, data = dt, cluster = ~PWSID)
 }
 
-m_mr_1 <- run_spec_no_fe("mr_violation", rhs1, skel)
-m_mr_2 <- run_spec("mr_violation", rhs2, skel)
-m_mr_3 <- run_spec("mr_violation", rhs3, spec3_dt)
+rhs_san  <- "san_before6 + san_after6"
+rhs_enfv <- "enfv_before6 + enfv_after6"
 
-cat("\n--- MR violation, spec 1 ---\n"); print(summary(m_mr_1))
-cat("\n--- MR violation, spec 2 ---\n"); print(summary(m_mr_2))
-cat("\n--- MR violation, spec 3 ---\n"); print(summary(m_mr_3))
+m_san_1  <- run_spec_no_fe("mr_violation", rhs_san,  skel)
+m_san_2  <- run_spec(      "mr_violation", rhs_san,  skel)
+m_san_3  <- run_spec(      "mr_violation", paste(rhs_san,  rhs_controls, sep = " + "), spec3_dt)
+m_enfv_1 <- run_spec_no_fe("mr_violation", rhs_enfv, skel)
+m_enfv_2 <- run_spec(      "mr_violation", rhs_enfv, skel)
+m_enfv_3 <- run_spec(      "mr_violation", paste(rhs_enfv, rhs_controls, sep = " + "), spec3_dt)
+
+cat("\n--- MR violation, sanitary, no FE ---\n");                     print(summary(m_san_1))
+cat("\n--- MR violation, sanitary, CWS+month FE ---\n");              print(summary(m_san_2))
+cat("\n--- MR violation, sanitary, +controls, SYR2-restricted ---\n"); print(summary(m_san_3))
+cat("\n--- MR violation, enforcement, no FE ---\n");                     print(summary(m_enfv_1))
+cat("\n--- MR violation, enforcement, CWS+month FE ---\n");              print(summary(m_enfv_2))
+cat("\n--- MR violation, enforcement, +controls, SYR2-restricted ---\n"); print(summary(m_enfv_3))
 
 # ── 7. LaTeX table ─────────────────────────────────────────────────────────────
 move_notes_below_adjustbox <- function(x) {
@@ -228,54 +226,97 @@ move_notes_below_adjustbox <- function(x) {
   x
 }
 
+# etable()'s `order` arg cannot reorder coefficient rows across models that
+# never co-occur (san_* and enfv_* never appear in the same model here, so
+# etable's row-union algorithm inserts the shared controls right after the
+# first block they appear in, ignoring `order`). Fix by splicing the
+# coefficient-row pairs (label + SE line) into the desired sequence directly.
+reorder_coef_rows <- function(x, row_labels_in_order) {
+  x     <- paste(x, collapse = "\n")
+  lines <- strsplit(x, "\n")[[1]]
+
+  midrule_pos <- grep("\\\\midrule", lines)[1]
+  blank_pos   <- which(trimws(lines) == "\\\\" | grepl("^\\s*\\\\\\\\\\s*$", lines))
+  end_pos     <- blank_pos[blank_pos > midrule_pos][1]
+  if (is.na(midrule_pos) || is.na(end_pos)) return(x)
+
+  coef_lines <- lines[(midrule_pos + 1):(end_pos - 1)]
+
+  find_row_pair <- function(label) {
+    idx <- grep(paste0("^\\s*", label, "\\s*&"), coef_lines)
+    if (length(idx) == 0) return(NULL)
+    coef_lines[idx[1]:(idx[1] + 1)]
+  }
+
+  ordered_blocks <- lapply(row_labels_in_order, find_row_pair)
+  ordered_blocks <- ordered_blocks[!sapply(ordered_blocks, is.null)]
+  new_coef_lines <- unlist(ordered_blocks)
+
+  matched_idx <- unlist(lapply(row_labels_in_order, function(label) {
+    idx <- grep(paste0("^\\s*", label, "\\s*&"), coef_lines)
+    if (length(idx) == 0) return(integer(0))
+    c(idx[1], idx[1] + 1)
+  }))
+  leftover_lines <- coef_lines[-matched_idx]
+
+  lines <- c(lines[1:midrule_pos], new_coef_lines, leftover_lines,
+             lines[end_pos:length(lines)])
+  paste(lines, collapse = "\n")
+}
+
 dir.create(file.path(ROOT, "output/reg"), showWarnings = FALSE, recursive = TRUE)
 
 dict <- c(
+  mr_violation       = "MR violation onset in month t",
   san_before6        = "Sanitary visit lead (1, 6) months",
   san_after6         = "Sanitary visit lag (-6, -1) months",
-  tech_before6       = "Tech. assistance visit lead (1, 6) months",
-  tech_after6        = "Tech. assistance visit lag (-6, -1) months",
   enfv_before6       = "Enforcement visit lead (1, 6) months",
   enfv_after6        = "Enforcement visit lag (-6, -1) months",
-  smpl_before6       = "Sample collection visit lead (1, 6) months",
-  smpl_after6        = "Sample collection visit lag (-6, -1) months",
-  insp_before6       = "Inspection visit lead (1, 6) months",
-  insp_after6        = "Inspection visit lag (-6, -1) months",
   n_prior_violations = "N prior violations",
   pct_mcl_last_max   = "Last max conc. (\\% of MCL)",
-  PWSID              = "CWS"
+  PWSID              = "CWS",
+  month_idx          = "Year-month"
 )
 
 out_tex <- file.path(ROOT, "output/reg/sanitary_visit_mr_violation_iterative.tex")
 note_main <- paste0(
   "Sample: strictly downstream CWSs (", length(sample_pwsids), "), CWS-months 1985-01 ",
-  "to 2005-12. Outcome = 1 if an MR violation onset occurs in that CWS-month. ",
-  "For each visit group, before6 = 1 if the CWS-month falls in the 6 ",
-  "calendar months preceding any visit of that type; after6 = 1 if it falls in the 6 months ",
-  "following one; both are 0 outside any such window. Visit groups: sanitary visits ",
-  "(SNSV/SNSP/SSVF); technical assistance (TECH/ENGR/OM); enforcement visits ",
-  "(FENF/INVG/EMRG); sample collection (SMPL); inspection (SITE/RSCH/INFI). ",
-  "N\\_prior\\_violations = cumulative count of prior violation onsets (any category) at that CWS. ",
-  "Column (1): visit indicators only, no fixed effects, full panel N=", nrow(skel), ". ",
-  "Column (2): + prior violation control, CWS and calendar-month fixed ",
-  "effects, full panel N=", nrow(skel), ". ",
-  "Column (3): + control and running-max contaminant concentration (\\% of MCL), ",
-  "CWS and calendar-month fixed effects, restricted to CWSs with >=1 SYR2 measurement and ",
-  "CWS-months within the SYR2 window (1998-2005), N=", nrow(spec3_dt), ". ",
-  "SEs clustered at the CWS (PWSID) level in all columns."
+  "to 2005-12 in columns (1), (2), (4), (5). Outcome = 1 if an MR violation onset occurs ",
+  "in that CWS-month. before6 = 1 if the CWS-month falls in the 6 calendar months ",
+  "preceding any visit of that type; after6 = 1 if it falls in the 6 months following ",
+  "one; both are 0 outside any such window. Sanitary visits = SNSV/SNSP/SSVF; ",
+  "enforcement visits = FENF/INVG/EMRG. N\\_prior\\_violations = cumulative count of ",
+  "prior violation onsets (any category) at that CWS. Last max conc. (\\% of MCL) = ",
+  "running-max SYR2 contaminant concentration as a share of the MCL. Columns (2), (3), ",
+  "(5), (6) include CWS and year-month fixed effects; columns (1) and (4) have no ",
+  "fixed effects. Columns (3) and (6) add the prior-violation and concentration controls ",
+  "and are restricted to CWSs with >=1 SYR2 measurement and CWS-months within the SYR2 ",
+  "window (1998-2005), N=", nrow(spec3_dt), ". Columns (1), (2), (4), (5) use the full ",
+  "panel, N=", nrow(skel), ". SEs clustered at the CWS (PWSID) level in all columns."
 )
 
+# Desired row order (dict-rendered labels, in display order). etable()'s
+# `order` arg can't achieve this because san_* and enfv_* never co-occur in
+# the same model -- reorder_coef_rows() splices the rendered rows instead.
+row_labels_in_order <- gsub("([.()\\\\%$^*+?{}\\[\\]|])", "\\\\\\1",
+  dict[c("san_before6", "san_after6", "enfv_before6", "enfv_after6",
+         "n_prior_violations", "pct_mcl_last_max")])
+
+postprocess_chain <- function(x) {
+  x <- move_notes_below_adjustbox(x)
+  reorder_coef_rows(x, row_labels_in_order)
+}
+
 do.call(etable, c(
-  list(m_mr_1, m_mr_2, m_mr_3),
-  list(title     = "Visit Group Timing and MR Violation Onset",
+  list(m_san_1, m_san_2, m_san_3, m_enfv_1, m_enfv_2, m_enfv_3),
+  list(title     = "Sanitary and Enforcement Visit Timing and MR Violation Onset",
        label     = "tab:sanitary_visit_mr_violation_iterative",
        dict      = dict,
-       headers   = list("Outcome" = c("MR violation", "MR violation", "MR violation")),
        notes     = note_main,
        fitstat   = ~n,
        style.tex = style.tex("aer", adjustbox = TRUE),
        tex       = TRUE,
-       postprocess.tex = move_notes_below_adjustbox,
+       postprocess.tex = postprocess_chain,
        file      = out_tex,
        replace   = TRUE)))
 
