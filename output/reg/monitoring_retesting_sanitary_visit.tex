@@ -1,0 +1,55 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:monitoring_retesting_sanitary_visit} Effect of Contaminant Level on Likelihood of a Sanitary Visit (SYR2 CWSs)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Sanitary visit within 365 days}\\
+         
+                               & (1)            & (2)                   & (3)\\  
+         
+                               &  OLS           & OLS                   & Logit\\  
+         
+         \midrule 
+         Constant              & 0.4657$^{***}$ &                       &   \\   
+                               & (0.0988)       &                       &   \\   
+         Last level (z-score)  & 0.0038         & 0.0092                & 0.0753\\   
+                               & (0.0193)       & (0.0148)              & (0.1129)\\   
+         Mean level (z-score)  & -0.0219        & -0.0169               & -0.1632\\   
+                               & (0.0630)       & (0.0330)              & (0.2396)\\   
+         Years since last test & -0.1042        & $4.32\times 10^{-5}$  & 0.0099\\   
+                               & (0.0724)       & (0.0288)              & (0.1879)\\   
+         
+          \\
+         
+         R$^2$                 & 0.02366        & 0.45224               & \\  
+         Observations          & 1,319          & 1,314                 & 1,056\\  
+         
+          \\
+         
+         CWS fixed effects     &                & $\checkmark$          & $\checkmark$\\   
+         Year fixed effects    &                & $\checkmark$          & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Unit = CWS $\times$ chemical $\times$ test date (measurement-level SYR2 sample, not collapsed to PWSID $\times$ chemical $\times$ year, so the rolling window can be anchored to the exact test date); outcome = 1 if the CWS received a sanitary survey visit (VISIT\_REASON\_CODE $\in$ \{SNSV, SNSP, SSVF\}) with an exact visit date within 365 days after the exact test date (rolling window, not calendar-year adjacency). Cols 1--2 are LPM; col 3 is logit. Col 1 has no fixed effects; cols 2--3 include CWS and calendar-year (of test) fixed effects. Last level and mean level are z-scored against the distribution of all observations of that contaminant at that CWS; mean level is the cumulative mean of the z-scored readings through this test, in chronological order of the exact test date. Years since last test = exact days since the prior test for that CWS $\times$ chemical, divided by 365.25. Tests whose 365-day forward window would extend past 2005-12-31 are dropped (right-censored). SEs clustered at CWS level. Sample: strictly downstream-only CWSs (minehuc\_downstream\_of\_mine==1 \& minehuc\_mine==0, the main 2SLS sample cut), 5 IOC contaminants (arsenic, barium, chromium, nitrate, selenium), 1998--2005.}
+   
+\end{table}
+
+

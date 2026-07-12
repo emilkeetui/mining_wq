@@ -1,0 +1,52 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:mr_concentration_lag_placebo} Placebo: MR Violations and Next-Month Contaminant Concentration (Lead Test)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcc}
+         \toprule
+         
+                                          & mr\_same\_month   & mr\_ioc\_month\\    
+         
+                                          & Nitrate           & Pooled inorganic \\   
+         
+                                          & (1)               & (2)\\  
+         
+         \midrule 
+         ratio\_lead1                     & -0.0868           & -0.0031\\   
+                                          & (0.0870)          & (0.0168)\\   
+         near\_mcl\_lead1                 & 0.0089            & -0.0726$^{**}$\\   
+                                          & (0.0089)          & (0.0320)\\   
+         
+          \\
+         
+         R$^2$                            & 0.05635           & 0.05406\\  
+         Observations                     & 754               & 3,242\\  
+         
+          \\
+         
+         PWSID fixed effects              & $\checkmark$      & $\checkmark$\\   
+         YEAR fixed effects               & $\checkmark$      & $\checkmark$\\   
+         contaminant\_code fixed effects  &                   & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Lead placebo: independent variables are the 1-month LEAD of ratio and near\_mcl (i.e., next month's reading). If the causal direction runs from high concentration to subsequent avoidance, future readings should not predict current MR violations. Same outcome, sample, and fixed effects as the main table. Arsenic lead-placebo omitted: dependent variable is constant (no arsenic MR violations in months with a lead reading). SEs clustered at the CWS (PWSID) level.}
+   
+\end{table}
+
+

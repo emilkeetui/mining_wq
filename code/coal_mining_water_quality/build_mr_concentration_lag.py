@@ -35,8 +35,10 @@ INORGANIC_CHEMICALS_RULE_CODE = 333.0
 
 FWD_LOW_D,  FWD_HIGH_D  = 1, 365   # forward window: [s+1d, s+365d]
 FWD6_LOW_D, FWD6_HIGH_D = 1, 182   # 6-month forward window: [s+1d, s+182d]
+FWD3_LOW_D, FWD3_HIGH_D = 1, 1095  # 3-year forward window: [s+1d, s+1095d]
 PAST_LOW_D, PAST_HIGH_D = 365, 1   # past window:    [s-365d, s-1d]
 PAST6_LOW_D, PAST6_HIGH_D = 182, 1 # 6-month past window:    [s-182d, s-1d]
+PAST3_LOW_D, PAST3_HIGH_D = 1095, 1 # 3-year past window:    [s-1095d, s-1d]
 
 # Contaminant codes for Se/Ba/Cr pooled-IOC regressors
 SELENIUM_CODE  = "1045"
@@ -98,12 +100,16 @@ def attach_mr_flags(meas: pd.DataFrame, pwsid_contam_dates: dict, pwsid_rule333_
     n = len(meas)
     mr_same_fwd       = np.zeros(n, dtype=int)
     mr_same_fwd6mon   = np.zeros(n, dtype=int)
+    mr_same_fwd3yr    = np.zeros(n, dtype=int)
     mr_anyioc_fwd     = np.zeros(n, dtype=int)
     mr_anyioc_fwd6mon = np.zeros(n, dtype=int)
+    mr_anyioc_fwd3yr  = np.zeros(n, dtype=int)
     mr_same_past      = np.zeros(n, dtype=int)
     mr_same_past6mon  = np.zeros(n, dtype=int)
+    mr_same_past3yr   = np.zeros(n, dtype=int)
     mr_anyioc_past    = np.zeros(n, dtype=int)
     mr_anyioc_past6mon = np.zeros(n, dtype=int)
+    mr_anyioc_past3yr = np.zeros(n, dtype=int)
 
     day = pd.Timedelta(days=1)
     for i, (pwsid, code, s) in enumerate(zip(meas["PWSID"], meas["contaminant_code"], meas["sample_date"])):
@@ -113,28 +119,38 @@ def attach_mr_flags(meas: pd.DataFrame, pwsid_contam_dates: dict, pwsid_rule333_
         fwd_lower   = s + FWD_LOW_D  * day
         fwd_upper   = s + FWD_HIGH_D * day
         fwd6_upper  = s + FWD6_HIGH_D * day
+        fwd3_upper  = s + FWD3_HIGH_D * day
         past_lower  = s - PAST_LOW_D  * day
         past_upper  = s - PAST_HIGH_D * day
         past6_lower = s - PAST6_LOW_D * day
+        past3_lower = s - PAST3_LOW_D * day
 
         mr_same_fwd[i]       = 1 if window_count(dates_same,    fwd_lower,   fwd_upper,   True, True) > 0 else 0
         mr_same_fwd6mon[i]   = 1 if window_count(dates_same,    fwd_lower,   fwd6_upper,  True, True) > 0 else 0
+        mr_same_fwd3yr[i]    = 1 if window_count(dates_same,    fwd_lower,   fwd3_upper,  True, True) > 0 else 0
         mr_anyioc_fwd[i]     = 1 if window_count(dates_rule333, fwd_lower,   fwd_upper,   True, True) > 0 else 0
         mr_anyioc_fwd6mon[i] = 1 if window_count(dates_rule333, fwd_lower,   fwd6_upper,  True, True) > 0 else 0
+        mr_anyioc_fwd3yr[i]  = 1 if window_count(dates_rule333, fwd_lower,   fwd3_upper,  True, True) > 0 else 0
         mr_same_past[i]      = 1 if window_count(dates_same,    past_lower,  past_upper,  True, True) > 0 else 0
         mr_same_past6mon[i]  = 1 if window_count(dates_same,    past6_lower, past_upper,  True, True) > 0 else 0
+        mr_same_past3yr[i]   = 1 if window_count(dates_same,    past3_lower, past_upper,  True, True) > 0 else 0
         mr_anyioc_past[i]    = 1 if window_count(dates_rule333, past_lower,  past_upper,  True, True) > 0 else 0
         mr_anyioc_past6mon[i]= 1 if window_count(dates_rule333, past6_lower, past_upper,  True, True) > 0 else 0
+        mr_anyioc_past3yr[i] = 1 if window_count(dates_rule333, past3_lower, past_upper,  True, True) > 0 else 0
 
     meas = meas.copy()
     meas["mr_same_fwd"]       = mr_same_fwd
     meas["mr_same_fwd6mon"]   = mr_same_fwd6mon
+    meas["mr_same_fwd3yr"]    = mr_same_fwd3yr
     meas["mr_anyioc_fwd"]     = mr_anyioc_fwd
     meas["mr_anyioc_fwd6mon"] = mr_anyioc_fwd6mon
+    meas["mr_anyioc_fwd3yr"]  = mr_anyioc_fwd3yr
     meas["mr_same_past"]      = mr_same_past
     meas["mr_same_past6mon"]  = mr_same_past6mon
+    meas["mr_same_past3yr"]   = mr_same_past3yr
     meas["mr_anyioc_past"]    = mr_anyioc_past
     meas["mr_anyioc_past6mon"]= mr_anyioc_past6mon
+    meas["mr_anyioc_past3yr"] = mr_anyioc_past3yr
     return meas
 
 
@@ -181,10 +197,10 @@ if __name__ == "__main__":
                 "ratio_selenium", "near_mcl_selenium",
                 "ratio_barium",   "near_mcl_barium",
                 "ratio_chromium", "near_mcl_chromium",
-                "mr_same_fwd", "mr_same_fwd6mon",
-                "mr_anyioc_fwd", "mr_anyioc_fwd6mon",
-                "mr_same_past", "mr_same_past6mon",
-                "mr_anyioc_past", "mr_anyioc_past6mon"]
+                "mr_same_fwd", "mr_same_fwd6mon", "mr_same_fwd3yr",
+                "mr_anyioc_fwd", "mr_anyioc_fwd6mon", "mr_anyioc_fwd3yr",
+                "mr_same_past", "mr_same_past6mon", "mr_same_past3yr",
+                "mr_anyioc_past", "mr_anyioc_past6mon", "mr_anyioc_past3yr"]
     meas = meas[out_cols].copy()
     meas["PWSID"]       = meas["PWSID"].astype(str)
     meas["YEAR"]        = meas["YEAR"].astype("int64")

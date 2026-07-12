@@ -1,0 +1,461 @@
+\documentclass{article}
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=bwl-FU
+]{biblatex}
+\addbibresource{citation.bib}
+\usepackage{graphicx}             % Required for inserting images (duplicate removed)
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{tabularray}
+\usepackage{adjustbox}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{codehigh}
+\usepackage{breqn}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}             % ADDED: required for \doublespacing
+\usepackage{authblk}              % ADDED: required for \author[1]{} affiliation syntax
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{siunitx}
+\newcommand{\tinytableTabularrayUnderline}[1]{\underline{#1}}
+\newcommand{\tinytableTabularrayStrikeout}[1]{\sout{#1}}
+\NewTableCommand{\tinytableDefineColor}[3]{\definecolor{#1}{#2}{#3}}
+% Beamer presentation requires \usepackage{colortbl} instead of \usepackage[table,xcdraw]{xcolor}
+\begin{document}
+\title{The Impact of Coal Mining on Drinking Water Quality, Monitoring, and Violations}
+\author[1]{Emil Kee-Tui and Nicolas Ramkumar}
+\date{May 2026}
+\maketitle
+\thispagestyle{empty}
+\doublespacing
+
+\begin{center}\begin{abstract}
+		\noindent The Clean Air Act Amendments of 1990 placed limits on NO2 and SO2 emissions from coal fired power plants, significantly reducing acid rain. Power plants partly met the requirements by consuming low sulfur coal, coal with less than 2\% sulfur by weight. The change in demand reallocated coal mining away from high sulfur coal mines to low sulfur coal mines. We exploit the time varying shift in demand for coal by sulfur content as an instrumental variable to measure the downstream impact of coal mining on drinking water quality provided by community water systems (CWS). An additional coal mine upstream of a CWS causes a large and statistically significant increase in CWS violations of the Safe Drinking Water Act (SDWA). To investigate the incentives to violate the SDWA, we measure the actual contaminants detected at CWSs since costs of SDWA compliance rise with pollution. We find that mean concentrations of inorganic chemical contaminants increase with upstream coal mining. To investigate the disincentives to violate the SDWA we measure the likelihood of CWSs facing formal versus informal enforcement action, formal action is a relatively higher costing enforcement action for being out of SDWA compliance compared to informal action. We find formal action is less likely as coal mining increases upstream. These results suggest that violations occur more frequently downstream of coal production because incentives to violate increase and costs of enforcement action decrease with upstream coal mining.
+
+\end{abstract}\end{center}
+	
+\newpage
+\doublespacing
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+Coal mining remains a central feature of the US energy landscape and a continuing source of environmental concern. Coal provides 16 percent of US electricity generation and one third of global electricity production, and the current administration has reversed years of declining federal support for the industry through executive orders expanding mining access on federal lands (\cite{IEA2025GER}; \cite{Trump2025EO14260}; \cite{Trump2025EO14261};\cite{Trump2025Proc10914}; \cite{Daly2025CoalMining}). As coal mining activity persists and potentially expands, understanding how it affects the communities near mining operations is a first-order public policy question. This paper asks whether upstream coal mining degrades the drinking water provided to downstream communities and whether drinking water regulation protects those communities.
+
+The primary pathway through which coal mining threatens human health via water is through community water systems (CWSs). CWSs provide piped drinking water to 85 percent of US households through approximately 144,000 systems regulated under the Safe Drinking Water Act (SDWA) of 1974. Coal mining generates acid mine drainage in which sulfide-bearing rocks exposed during excavation oxidize on contact with air and water to produce sulfuric acid and dissolve heavy metals, which leach into surface and groundwater (\cite{skousen2019acid}). CWSs located downstream of coal mines must remove these inorganic chemical (IOC) contaminants from their source water before distribution. Whether CWSs do so, and how they respond when pollution removal costs increase, determines the health consequences of coal mining on drinking water.
+
+The SDWA framework creates a distinctive compliance problem. Unlike environmental regulations that impose direct performance standards on the polluting firm, the SDWA places compliance obligations on CWSs, which are the regulated entities responsible for treating the pollution others generate upstream of them. CWSs are required to self-monitor their water quality and self-report test results to state regulators. We focus on two categories of violations under the SDWA: a maximum contaminant level (MCL) violation, issued when a reported test confirms that a contaminant exceeds the legal limit; and a monitoring and reporting (MR) violation, issued when a system fails to conduct required tests or submit results on time. MCL violations trigger costly enforcement responses such as compliance agreements, consent decrees, and treatment infrastructure upgrades. MR violations are penalized far less harshly such as a notice of violation or a public notification requirement. A CWS facing rising compliance costs due to upstream pollution therefore has a strategic option: by failing to test or report, it incurs a less costly MR violation while avoiding the detection that would trigger a more costly MCL enforcement response. Whether CWSs exploit this asymmetry in penalty severity is an open empirical question. Utilizing MR violations over MCLs obscures pollution precisely in the cases where they are most severe.
+
+Identifying the causal effect of upstream mining on CWS behavior is complicated by two sources of endogeneity. First, coal mines locate in areas with particular geological characteristics such as coal seam accessibility and transportation corridors that may also independently predict water quality and CWS characteristics. Second, CWSs with more political influence may successfully resist upstream mine siting, and those same systems may be better at maintaining compliance, generating a positive correlation between upstream mining and CWS violations that understates the true compliance burden mining imposes. OLS estimates of the effect of coal mines on CWS violations therefore likely underestimate the true effect.
+
+We address these identification challenges by exploiting the Acid Rain Program (ARP), enacted as part of the Clean Air Act Amendments of 1990. The ARP required large coal-fired power plants, the dominant consumers of coal, accounting for approximately 90 percent of US coal demand, to reduce their sulfur dioxide emissions, with compliance of Phase I of the ARP mandatory by 1995. The least costly way for most plants to comply was to switch from high-sulfur coal to low-sulfur coal with less than two percent sulfur content by weight. This created a sharp, nationally-determined shift in coal demand: after 1995, demand for high-sulfur coal fell substantially while demand for low-sulfur coal increased. As a result, coal production declined in high-sulfur mining areas and expanded in low-sulfur areas. Our instrument interacts a post-1995 indicator with the average sulfur content of coal deposits in the watershed directly upstream of each CWS's water intake. This interaction predicts changes in upstream mine activity driven by the ARP's differential demand shock across areas with different coal sulfur content and is orthogonal to the unobserved characteristics of CWSs that determine compliance behavior. The ARP was a national air quality regulation drafted independently of any consideration of drinking water quality; its timing and design were determined by negotiations over acid rain reduction targets and were unrelated to local CWS characteristics, SDWA regulatory changes, or the ability of any community to manage water contamination.
+
+We construct a panel from 1985 to 2005 linking CWSs to annual coal production occurring in the watershed upstream of their water intakes. Mine locations come from the Mine Safety and Health Administration (MSHA); annual mine-level production from the Energy Information Administration (EIA); coal sulfur content from USGS COALQUAL borehole samples matched to HUC12 watersheds within a 30-kilometer buffer; hydrological connectivity from the USGS NHDplus watershed dataset; and CWS violation and enforcement records from the EPA's Safe Drinking Water Information System (SDWIS). We supplement these data with measured contaminant concentrations from the EPA's second Six-Year Review (SYR2), which collected compliance monitoring readings at CWSs from 1998 to 2005. This concentration dataset allows us to directly verify that upstream coal production raises inorganic chemical contamination at CWSs independent of violation behavior.
+
+Our results form a picture of how coal mining affects regulated drinking water quality. First, an additional active coal mine one watershed upstream of a CWS's water intake increases the number of days per year a CWS spends in violation of the SDWA by approximately 14 to 20 days, depending on the contaminant (first-stage F-statistic of 27.5). This effect is driven entirely by MR violations, failures to conduct and report required water quality tests. The 2SLS coefficients on MCL violations are statistically and economically insignificant for all contaminants, with point estimates an order of magnitude below those for MR violations. Coal mining significantly raises the incidence of non-monitoring but has no effect on raising detected contaminant exceedances above contaminant limits.
+
+Second, upstream coal mining measurably raises actual inorganic chemical concentrations in CWS water. An additional 10 million short tons of cumulative coal mined upstream increases mean arsenic concentrations by 0.0023 mg/L, approximately 100 percent of the mean arsenic concentration, as well as chromium by 50 percent, selenium by 69 percent, and barium by 24 percent of their respective means. These effects are economically and statistically significant. The arsenic increase represents 23 percent of the 2006 MCL standard of 0.010 mg/L. The concentrations measured in the SYR2 data are drawn from water tests that were conducted and reported but the majority of MR violations in our sample are issued precisely for failing to conduct such tests. The true contamination distribution during MR violation periods is unobserved by regulators and researchers alike, and the rising concentration evidence suggests the worst contamination is concentrated in the periods of non-monitoring.
+
+Third, upstream coal mining changes how regulators respond to CWS violations. An additional upstream mine reduces the probability that a CWS receives formal enforcement action, the most costly regulatory response, by 5.6 percentage points, while increasing the probability of a sanitary visit by 14 percentage points. Regulators substitute toward less punitive responses precisely when upstream pollution is highest. This is consistent with a regulatory system in which the social cost of formal enforcement, including the potential system disruptions and capital expenditures it imposes, leads regulators to exercise discretion toward lenient responses when the compliance burden on CWSs is high, but it reinforces rather than offsets the non-compliance behavior of CWSs facing rising contamination costs.
+
+Together, these results illuminate both channels through which our theoretical model predicts SDWA non-compliance should rise with upstream coal mining. Adapting the regulatory compliance framework of \cite{kang2021understanding}, we show that CWSs choose higher negligence levels, they conduct fewer tests and submit fewer reports to regulators, when compliance costs rise and when penalties fall. Our empirical results confirm both: mining raises contamination and thus raises the cost of maintaining compliance; and it also triggers softer enforcement responses that reduce the expected penalty from non-compliance.
+
+These results contribute to three strands of the literature. The first concerns the environmental consequences of coal mining and natural resource extraction. Existing work documents coal mining's effects on air quality, greenhouse gas emissions, and health (\cite{muller2011environmental}; \cite{parfitt2024there}), and finds evidence of water quality degradation from mining in international settings (\cite{aragon2016polluting}; \cite{chu2023air}). Our paper provides the first causal estimates of coal mining's downstream effect on the drinking water quality of treated water at CWSs in the United States, closing a gap between the geophysical literature on acid mine drainage and the economics literature on environmental health.
+
+The second contribution is to the literature on strategic environmental self-monitoring and reporting. Firms regulated by environmental standards face incentives to under-report emissions when the penalties for revelation exceed the penalties for non-disclosure (\cite{duflo2013truth}; \cite{duflo2018value}; \cite{mu2024s}; \cite{helland1998enforcement}). CWSs are a distinctive setting: unlike the firms in this literature, they are not the source of the pollution they are regulated to remove. Their incentive to undermonitor arises not from hiding their own emissions but from avoiding the detection of upstream contamination that would require costly remediation. This generates a clean identification opportunity: the ARP-driven change in upstream coal mining is plainly exogenous to the CWS's own historical reporting behavior, ruling out the reverse causality concerns that complicate identification in contexts where the firm controls both the pollution and its measurement. We provide direct evidence that MR violations rise alongside measured contamination increases, strengthening the causal inference that non-monitoring is strategic rather than accidental. Prior work on CWS strategic violations has relied on violations data alone and has found only suggestive evidence (\cite{wallsten2008effects}; \cite{foster2019arsenic}). The joint observation of rising contaminant concentrations, rising MR violations, and falling formal enforcement, all causally attributed to the same upstream production shock, provides substantially stronger evidence of strategic compliance behavior than prior studies.
+
+The third contribution is to the literature on US drinking water quality and the SDWA. Water quality in the US has improved substantially since the passage of the Clean Water Act and SDWA (\cite{keiser2019consequences}), yet between 9 and 34 million people per year are served by CWSs in violation of health-based standards (\cite{allaire2018national}). Our findings suggest that the regulatory design of the SDWA, which relies on CWS self-monitoring and assigns substantially lower penalties to non-monitoring than to detected contamination, creates systematic incentives to undertest in precisely the circumstances where testing matters most. Strengthening the monitoring schedule or increasing penalties for non-monitoring in high-pollution areas may be a more effective lever for improving drinking water outcomes than increases in MCL stringency alone.
+
+The paper proceeds as follows. Section 2 provides background on the Acid Rain Program, coal mining water pollutants, the SDWA, and regulator enforcement behavior. Section 3 presents the theoretical framework. Section 4 describes the data. Section 5 documents the shift in CWS exposure to coal production induced by the ARP. Section 6 presents our main results on the effect of coal mining on SDWA violations. Section 7 estimates the effect of upstream coal mining on measured contaminant concentrations. Section 8 examines regulator enforcement responses to coal-affected CWSs. Section 9 concludes.
+
+\section{Background}
+
+\subsection{The Acid Rain Program (ARP)}
+
+The Acid Rain Program (ARP) was signed into law on November 15, 1990, as amendments to the Clean Air Act to reduce sulfur dioxide (SO2) and nitrogen oxides (NOx) emissions, the primary precursors of acid rain, from fossil fuel burning power plants. Total annual US SO2 and NOx emissions goals were set at 10 million and 2 million fewer tons below their 1980 emission levels. The emissions reductions were met by creating emissions cap and-trade markets for polluters, installing scrubbers on power plants, and switching fuel sources for power generators. The ARP achieved 100\% compliance (\cite{lattanzio2022clean}). 
+
+In two phases, the SO2 emissions from facilities built before November 15, 1990, were capped at a fraction of each facility's individual baseline SO2 emissions in 1985. In Phase I, the EPA and states with permitting capacity issued emission permits and allowances to 110 high polluting, mostly coal-fired, electricity generating facilities. Facilities targeted under phase I were required to achieve compliance with SO2 emission reductions by 1995. Facilities built after November 15, 1990, were not issued any SO2 allowances, and any emissions they produced had to be purchased from facilities with allowances through an auction. Facilities were required to install SO2 and NOx monitors and were fined when their emissions exceeded their allotted emission limits or the sum of emission limits they purchased on the SO2 and NOx trading markets from other emitters. Phase II capped the SO2 emissions from facilities with power generation capacity greater than 75 megawatts. The deadline for compliance with phase II was January 1, 2000. We focus on the facilities affected by phase I because they are the largest power plants and coal consumers.
+
+As opposed to SO2 emissions, the ARP did not limit total NOx emissions from sources; instead, it limited the NOx emissions per mmBTU of fossil fuels burned. NOx limits affected coal fired facilities at the same time they came under SO2 emission limits. Phase I NOx rules were promulgated in 1995. Phase II NOx regulation was promulgated in 2000.
+
+Fuel switching to low sulfur coal was a primary method by which electricity generators met the ARP requirements. Since the electric power industry accounted for 90\% of coal demand in 2000 (\cite{freme2000us}), the ARP increased the demand for low sulfur coal and reduced the demand for high sulfur coal (\cite{epaarpcoalemp}; \cite{stratford2015coalprod}). 
+
+\subsection{Coal mining water pollutants}
+
+Coal mining releases heavy metals, radioactive elements, non-organic compound pollutants, and polycyclic aromatic hydrocarbons (PAHs) into the environment (\cite{rouhani2023overview};\cite{boente2020benzo}; \cite{liang2017spatial}). Acid mine drainage is a common process that occurs during coal mining, and it produces inorganic chemical pollutants that are dissolved in water and transported into groundwater or surface water. Acid mine drainage occurs when rocks containing sulfides are exposed to air and water, beginning the process of oxidation and decomposition (\cite{ceto2000abandoned}). The oxidized minerals form sulfuric acid, metal ions, and sulfates, which can be carried into surface or groundwater from water runoff (\cite{akcil2006acid}; \cite{skousen2019acid}). Acid mine drainage is more common when the minerals contain high levels of sulfur, making the incidence of acid mine drainage increase with coal sulfur level (\cite{schweinfurth2009introduction}).
+
+Coal washing involves activities that reduce impurities in coal before use, for example, using water or chemical solutions to remove impurities. Washing with water creates a slurry that contains the removed impurities, such as arsenic, lead, chromium, beryllium, or nickel, which contaminate surface or groundwater (\cite{duhigg2009clean}). Coal mines can process their coal to remove some sulfur in order to meet the demand for low sulfur coal, but this can also be done by coal users along the production chain.
+
+\subsection{Community Water Systems (CWS) and the Safe Drinking Water Act (SDWA)}
+
+Community water systems (CWS) are entities which provide water to at least 25 consumers through at least 15 connections throughout the year. They can be private or publicly owned, source their water from ground water, surface water, or another CWS, and serve small rural communities up to the largest metropolitan areas. Under the Safe Drinking Water Act (SDWA), CWSs are responsible to provide water to consumers that meets quality standards set by the USEPA. State agencies are responsible for enforcing CWS compliance with the SDWA. The USEPA oversees state enforcement of the SDWA and promulgates contaminant lists that CWSs must monitor for and remove from their water up to a safe level unique for each contaminant. The USEPA prescribes a maximum contaminant level (MCL) for each CWS which is the maximum amount of that pollutant that can be detected without being in violation of the SDWA. Between 1985 and 2005, the EPA promulgated 20 rule changes that expanded the list of regulated contaminants, changed how and how often CWSs monitor and report tests, and added treatment techniques CWSs must apply to their water treatment.  
+
+Water is regulated in the SDWA on a contaminant by contaminant basis and can be grouped into inorganic chemicals, volatile organic chemicals, synthetic organic chemicals, radionuclides, and bacterials. The SDWA MCL requirements for arsenic and nitrates remained the same between 1985 and 2005.\footnote{The other inorganic chemicals regulated between 1985 and 2005 began with barium, cadmium, chromium, lead, mercury, selenium, and silver, with the addition of antimony, asbestos, Beryllium, cyanide, nickel, and nitrite by 2005.} Once VOC and SOC MCL's were established their MCL's did not change between 1985 and 2005. A subset of SOCs were regulated contaminants across the time period from 1985 to 2005.\footnote{In 1985 SOC MCL's were established for contaminants 2,4-D, 2,4,5-TP (Silvex), endrin, lindane, methoxychlor, and toxaphene. By 2005 the list included acrylamide, adipate, di(2-ethylhexyl), alachlor, aldicarb, aldicarb sulfone, aldicarb sulfoxide, atrazine, carbofuran, chlordane, dalapon, dibromochloropropane (DBCP), dinoseb, dioxin (2,3,7,8-TCDD), diquat, endothall, epichlorohydrin, glyphosate, heptachlor, heptachlor epoxide, hexachlorobenzene, hexachlorocyclopentadiene, oxamyl (Vydate), PAHs (Benzo(a)pyrene), PCBs (Polychlorinated biphenyls), pentachlorophenol, phthalate, di(2-ethylhexyl), picloram, and pimazine.} VOC MCL's contaminants were added to regulation in 1987.\footnote{In 1985 VOC contaminants were benzene, carbon tetrachloride, 1,2-dichloroethane, p-dichlorobenzene, 1,1-dichloroethylene, 1,1,1-trichloroethane, trichloroethylene, vinyl chloride, by 2005 the list of VOC MCL's added (mono) chlorobenzene, dichloromethane, cis-1,2-Dichloroethylene, trans-1,2-dichloroethylene, 1,2-dichloropropane, ethylbenzene, ethylene dibromide, o-Dichlorobenzene, p-Dichlorobenzene, styrene, tetrachloroethylene, toluene, 1,1,2-trichloroethane, 1,2,4-trichlorobenzene, richloroethylene, vinyl chloride, and xylenes.} Total coliform MCL's were regulated from 1976 but were updated to be stricter in 1989, a total coliform MCL was no more than \% 5 of monthly samples could be positive.
+
+The SDWA relies on CWSs self-monitoring and reporting their tests to regulators. CWSs are issued violations by the regulator when they failure to comply with the SDWA. The regulator issues an MCL violation when a CWS detects and reports a contaminant within its water at a level that exceeds its MCL. The regulator issues a monitoring and reporting (MR) violation when a CWS fail to correctly test, monitor, and submit water test results to regulators. Many contaminants required their own tests had their own methods required by the EPA which may be done on site or required a laboratory. The CWS had 40 days to report the results of a test to the state regulator and 48 hours to report a failure to meet the testing or monitoring standard. A CWS that does not monitor is not presumed in violation of the MCL, only of the monitoring requirement itself.
+
+Monitoring and reporting requirements were found to be difficult to meet. A survey of Indiana CWS managers who responded to a 1980 survey on the impact of the SDWA said that the SDWA's reporting requirements had the greatest impact on their systems, while MCL had the least (\cite{oleckno1982national}). The MR testing schedule was made more complicated when it underwent changes. In 1991, CWSs were required to conduct tests for four consecutive quarters to establish baseline levels for inorganic chemicals (IOCs), VOCs, and SOCs if they could not show there was no risk of contamination and had not tested after 1990. Afterwards, groundwater systems were required to test every three years and surface water systems were required to test annually (56 FR 3526, 1991). The first three-year compliance period ran from 1993-1995, the second ran from 1996–1998, and the third compliance period (1999-2001). The next nine year timeline began in 2002 with the first cycle ending in 2004 and the next cycle starting in 2005.
+
+\subsection{Regulator Enforcement and Compliance}
+
+States are the primary enforcers of the SDWA and received primacy once they developed the administrative capacity and state laws to enforce and monitor CWS compliance with the SDWA. The enforcement sequence for an MCL violation begins a CWS self reporting or state inspection finding a contaminant exceeding an MCL. The regulator then employs informal compliance assistance (letters, notices of violation, compliance plans) and, if violations persist, formal administrative actions. The EPA will issue a federal administrative compliance order or civil action if the state has not acted within 30 days. The SDWA forms the floor of water quality and states are able to pass stricter drinking water quality regulations. Primacy states receive and review water quality contaminant tests from CWSs and are responsible for enforcing CWS monitoring schedules, issuing violations for SDWA non-compliance, bringing violating CWSs into SDWA compliance, and issuing exemptions and variances for some rules to CWSs. 
+
+Except for a subset of violating circumstances and mandatory notifications to consumers that CWSs must provide when in violation, the SDWA gives primacy states wide discretionary power to tailor compliance plans to each CWS and violation. The SDWA gave states the legal authority to conduct sanitary visits and investigations of any CWS, but otherwise, states were empowered to devise their own enforcement techniques and create specific compliance plans as long as those plans were enacted quickly enough and brought the CWS back into compliance. Enforcement usually took the form of compliance plans requiring the CWS to directly address the cause of the violation and rarely included civil or criminal financial penalties. Compliance plans could still be costly to the CWS if they required installing treatment infrastructure or conducting tests. 
+
+Without a prescriptive enforcement legal requirement for noncompliance, in theory, each state could design a tailored compliance plan for a particular violation at a particular CWS. Each pollutant may require a different technology, and there may exist multiple technologies that have different costs or technical requirements that a CWS may or may not be able to maintain or pay for depending on the resources and staff at the CWS. 
+
+Civil action in the courts brought by citizen suits or the USEPA when the state lacked primacy or failed in its duty to enforce the SDWA was another direct tool of SDWA enforcement. Civil actions in courts could force any governement agency or CWS to undertake action to comply with the SDWA or face civil penalty. Between 1974 and 1995, fines were capped at \$5,000 per violation per day; the 1996 Amendments raised this to \$25,000 per day (adjusted for inflation in subsequent years). USEPA referred on average approximately 420 cases per year to DOJ for civil or criminal judicial enforcement between 1998 and 2011; total civil judicial penalties averaged approximately \$93 million per year (Shimshack 2014, p. 344). Ordinary SDWA noncompliance was not subject to criminal liability; criminal provisions are reserved for tampering with a water system (up to 20 years imprisonment, 42 USC §300i-1) and willful underground injection control violations.
+
+The SDWA also enforced compliance by requiring CWSs to notify consumers of any violation, variance, or exemption they had received. variances and exemptions allowed a CWS to not comply with an MCL or MR requirement if the state determined that there was limited health effects of allowing the variance, and the risk of the contaminant was low after an initial monitoring period and the hydrogeology of the area supplying water does not contain sources of that pollutant. After the 1996 SDWA amendments all CWS had to send consumer confidence reports to their customers. These reputational compliance tools have been shown to be effective at inducing compliance at CWSs (\cite{bennear2008impacts}).
+
+\section{Theoretical Framework}
+
+We adapt a static model of a regulator and a CWS from \cite{kang2021understanding}, which is an adaptation of the one developed by \cite{mookherjee1994marginal}, to provide theoretical context and predictions about CWS behavior under SDWA regulation after an increase in coal mining upstream of CWS water intakes. CWSs choose a negligence level $a \in [0,\bar{a}]$ which measures how much they avoid the requirements of drinking water quality regulations, from maximum negligence $\bar{a}$ to full compliance 0. Failing to conduct or submit tests to the regulator is an example of CWS negligence. Regulators do not directly observe CWSs choice of $a$. CWSs face a compliance cost, $\theta$, that is a random variable drawn from $\Theta$ which is a strictly increasing and continuously differentiable function $F(\cdot)$ with support $(0,\bar{\theta})$. CWSs know their draw of $\theta$, but regulators only know the distribution of $\Theta$. A compliance cost is determined by both a CWS's ability to provide drinking and manage a system, for example the skills of managerial and technical staff, and by the costs the CWS spends to treat the water, for example the cost of filtration equipment or sterilization chemicals. assume compliance costs depend explicitly on the amount of upstream coal mining, such that $\theta (m)$ is continuously differentiable and non-decreasing in m.
+
+CWSs receive a benefit $\theta b(a)$ from having compliance costs $\theta$ and choosing a negligence level $a$. A CWS's benefit from not conducting a test for a specific contaminant are the labor and lab fees for sampling they did not have to spend. The opportunity cost to the CWS of choosing a compliance level $a$ relative to maximum negligence $\bar{a}$ is $\theta [b(\bar{a})-b(a)]$.
+
+The number of violations a CWS incurs is a random variable $K$ that follows a Poisson distribution with mean $a$. Given negligence level $a$, observed violations follow a Poisson process:
+
+\[Pr(K = k | a) = e^{-a}  \frac{a^k}{k!}\]
+
+The penalty schedule the CWS faces for incurring $k$ violations is given by $\epsilon(k)$ which is non-decreasing and continuously differentiable. The penalty schedule is a function that includes the likelihood of the regulator enforcing the penalty at each violation and the cost of the violation. The regulator can only base the penalty on $k$ because it cannot observe negligence or cost of compliance. Assuming the CWS is risk neutral the expected penalty for a risk neutral CWS is 
+\begin{equation}
+    e(a)\equiv exp(-a)\sum^\infty_{k=0}\frac{\epsilon(k)}{k!}a^k.
+\end{equation}
+
+The expected payoff to the CWS from negligence level $a$ is
+\begin{equation}\label{eq:cws_benefitcost}
+    -\theta(m)[b(\bar{a})-b(a)]-e(a).
+\end{equation}
+
+A negligence schedule, $a(\cdot)$, is implemented by a penalty schedule, $e(\cdot)$, if $a(\theta)$ maximizes equation \ref{eq:cws_benefitcost} for all $\theta \in \Theta$. Combining the first order condition with the $a(\cdot)$ implemented by $e(\cdot)$ gives
+\begin{equation}\label{cws_foc}
+    \theta b'[a(\theta)]=e'[a(\theta)]
+\end{equation}
+whenever $a(\theta)>0$.
+
+Proposition 1: CWSs choose higher negligence levels as compliance costs increase, $\partial a/ \partial \theta>0$.
+
+Assuming $b(a)$ is a strictly increasing function and the F.O.C. in equation \ref{cws_foc} solves the CWS maximization,
+\[\frac{\partial a}{\partial \theta}=-\frac{b'(a)}{\theta b''(a)-e''(a)}>0\]
+
+CWS's with higher compliance costs, for example, those with more expensive to run filtration machinery, find the marginal benefit of an additional unit of negligence $\theta·b'(a)$ larger relative to the marginal expected penalty $e'(a)$. They optimally reduce testing and compliance and increase the number of monitoring and reporting violations.
+
+Proposition 2: More upstream mining raises negligence, $\partial a/\partial m >0$.
+\[\frac{\partial a}{\partial m}=-\frac{\theta'(m)b'(a)}{\theta(m) b''(a)-e''(a)}>0\]
+
+When mining raises pollution levels which increases the costs of water treatment and the compliance costs, the optimal negligence level increases, reducing testing and reporting and increasing the number of monitoring and reporting violations. 
+
+The increase in negligence and monitoring and reporting violations following an increase in coal mining can be offset by regulator by increasing enforcement of CWS violations.
+
+Proposition 3: Lower penalties for violations reduces compliance and increases the number of monitoring and reporting violations. Assume higher penalties at every $k$ increase the penalty schedule $\epsilon(k)$ by a fixed amount $\lambda>1$, such that $\lambda\epsilon(k)$, then $\partial a/\partial \lambda<0$.
+
+\[\frac{\partial a}{\partial \lambda}=\frac{e'(a)}{\theta b''(a)-\lambda e''(a)}<0\]
+
+\section{Data}
+
+\subsection{River and stream connectivity}
+
+In order to measure which CWSs are downstream of coal mining, we measure the hydrological connectivity of mining and CWS water intakes using the USGS NHDplus watershed connectivity data. The NHDplus data identifies geographical boundaries where rainfall would drain into the same stream segment. Watershed's are assigned a unique 2-12 digit code known as a HUC (hydrological unit code). The number of digits corresponds to the size of the area, with the geographical area decreasing with the number of digits; for example, the lower 48 US states are divided into 18 HUC02's and over 87000 HUC12's (see figure \ref{img:WBD_Base_HUStructure_small}). HUC12 watersheds are the smallest mapped watersheds available for the entire continental US and are small enough that coal mining activities may impact the water in the HUC12 directly downstream. However, HUC12's are also large enough that activity that takes place at the outlet of a HUC12 may not affect activity at an upstream inlet within the same HUC12.
+
+CWS water intake locations are provided at the HUC12 level by the EPA.  It is possible for CWS's to obtain water from multiple HUC12's. We consider a CWS to be downstream of a coal mine if any of its water intakes are located in a HUC12 directly downstream of a coal mine and none of its intakes are located in a HUC12 where mining took place during the sample period. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/WBD_Base_HUStructure_small.png}
+    \caption{}
+    \label{img:WBD_Base_HUStructure_small}
+\end{figure}
+
+\subsection{Coal Quality and Coal Mining Data}
+
+Individual coal mine production data was obtained from the Energy Information Association (EIA). It includes tonnes of coal produced by each registered mine in each year from 1985 to 2005. EIA coal mines are matched to latitude and longitude coordinates from the Mine Safety and Health Administration (MSHA). Figure \ref{map:eia_msha_mine_huc12s} shows the HUC12's where mine production data from EIA was able to be matched to MSHA data of mine coordinates. 
+
+In order to match coal production to the geographic scale of CWS drinking water intakes we aggregate individual coal production to the HUC12 level by taking the sum of active mines in the watershed or the sum of coal mined in the watershed. The coal production data includes all coal mines that are one HUC12 directly upstream of a HUC12 where a community water system's water intake is located. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{plots/data_cleaning/eia_msha_mine_huc12s.png}
+    \caption{}
+    \label{map:eia_msha_mine_huc12s}
+\end{figure} 
+
+The weight of sulfur by weight present in coal is obtained from the USGS COALQUAL dataset. The USGS COALQUAL dataset is a sample of boreholes drilled into coal beds across the US and sampled for its characterisitics including sulfur by weight. Each sample includes the latitude and longitude coordinates which we match to the HUC12 level. We calculate the weight of sulfur as a percent of coal's weight in the HUC12 watershed as the mean coal sulfur percentage of all COALQUAL samples located within 30 km of the HUC12 watershed. This procedure is important for establishing coal quality that can be measured at the same geographical level as the CWS and coal mining data. It also approximates coal quality into watersheds that may not have coal production during the sample time period. It is reasonable to approximate that in a relatively small area, such as neighboring HUC12's, that coal may be present in the ground even if its unexploited. Upstream coal sulfur could be mismeasured if it has extreme variation within a HUC12. Some "high sulfur" HUC12s may actually host low-sulfur seams. HUC12's are geographically small areas that on average have low variation in measured coal sulfur levels for samples that are used to estimate coal HUC12 coal sulfur levels.
+
+Figure \ref{hist:sulfurhuc12} plots a histogram of the sulfur percentage of the coal bed within the HUC12's where a CWS water intake and coal production are co-located. The sulfur content of HUC12 coal beds ranges from zero to 4.5\%, with most of the HUC12 watersheds below 1.5\%. Slightly more than half of HUC12's are low sulfur coal beds.
+
+HUC12's are only included in our dataset if we are able to match COALQUAL samples. Map \ref{map:map_huc12_main_sample} shows the location of HUC12's in the sample that have CWS intakes and COALQUAL samples.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{plots/map_huc12_main_sample.png}
+\label{map:map_huc12_main_sample}
+\end{figure}
+
+\subsection{CWS characteristic, regulator, and violation data}
+
+We form an annual panel of all CWSs that were active from 1985 until 2005 and had an intake in a HUC12 that was directly downstream from an active coal mine during at least one of the years between 1985 and 2005, and had no water intakes in a HUC12 with a coal mine that was active during any time between 1985 and 2005. This sample contains 340 unique CWSs.
+
+We use the EPA's Safe Drinking Water Information System (SDWIS) Enforcement and Compliance History Online (ECHO) data to construct control variables of the number of CWS facilities, outcome variables of SDWA violations, outcome variables of regulator visits, and outcome variables of regulator SDWA enforcement action. 
+
+We control for the date of construction and decommision of CWS water intakes. This is the only time varying CWS characterisitc we use. SDWIS contains only a snapshot of other system characterisitics as they appeared during the most recent SDWIS update and does not vary with time during the period of our study. Therefore we cannot control for time varying CWS characterisitcs such as size of the community served and ownership type. 
+
+The SDWIS violation data uniquely identifies each CWS violation of the SDWA and includes the start and end date of the violation, the type of SDWA rule violated, the contaminant, the severity, the agency responsible for enforcing the violation, and the penalty or compliance action the agency took to bring the CWS back into compliance. We create a violation outcome variable that measures the share of the year a CWS exceeded the maximum contaminant level (MCL) or failed to meet the monitoring and reporting (MR) requirement for an arsenic, nitrate, and inorganic chemical rule. We limit our analysis to SDWA contaminant violations for arsenic, nitrates, and a general separate category of IOC due to their prevalence in the data, clear association with coal mining water contamination, and stable MCL's over the time frame. 
+
+The share of the year spent in violation does not necessarily reflect that the CWS was violating continuously during that period. Figure \ref{img:mineviolengthhist_downstream} plots histograms of the length of arsenic, IOC, radionuclide, and nitrate violations. There is a tendency for length of time of violations to line up multiples of year quarters such a year, half a year, a quarter of a year, or three quarters of a year. This is evidence that violations are often triggered when CWS fail to meet quarterly testing schedules and then last a set period of time when they are issued. Nonetheless we measure violations using length of time out of the year in violation to exploit variation and information that the length of violations contains such as severity with more serious violations lasting longer. 
+
+Table \ref{tab:ioc_days_dwnstrm} presents means and standard deviations of the number of days out of a year a CWS spends with an IOC MR and MCL violation. On average a CWS spends betwen 10 to 15 days out of a year with an MR violation and less than a day with an MCL violation. This reflects  MCL violations are health dangers and are resolved as fast as possible in order and the rarity of MCL violations where in a given year most CWSs do not receive an MCL violation. The large standard deviation of 56 to 67 days reflects the multi-modal distribution that characterisizes the distribution of the number of days a CWS is in violation. Many CWSs do not receive an MR violation in a year and those that do tend to experience it for a multiple of a quarter of a year. 
+
+Table \ref{tab:mr_mcl_violation_breakdown} presents summary data of the MR and MCL violations that occurred at the 340 CWSs in the main sample between 1985 and 2005. There are only 15 MCL violations relating to arsenic, nitrate, and IOC. This makes MCL violations very rare in the data. Little can be extrapolated from 15 observations however most of MCL's were issued after a single contaminant sample exceeded the threshhold and the rest were after the average of a group of samples exceeded the threshhold.
+
+MR violations are more common, there are 1,233 MR violations. Nitrate and general inorganic chemical violations make up 92.1\% of all MR violations with arsenic making up 7.9\%. Although all MR violations are from a failure to conduct regular contaminant monitoring, 99.4\%, or repeat/confirmation monitoring, 0.6\%, this is not evidence of testing and not reporting. The distiniction between not testing and not reporting is subtle compared to testing and not reporting. In order to distinguish testing and not reporting from not testing and not reporting the regulator would have to conduct an investigation of the CWS records, which would have to show the tests were conducted, or the lab where the CWS conducted the test, neither of which may be possible given resource constraints at the regulator.
+
+The violation data does not contain every issued violation to due state regulator underreporting to SDWIS, however the violations that are in the system are very accurate. A survey of 1800 CWSs in 2000 found that 10\% of monitoring and reporting violations were in SDWIS but that 95\% of the monitoring and reporting violations in SDWIS were accurately reported (\cite{epaviolationreliability}).
+
+The SDWIS data contains enforcement actions the regulator took against a CWS in response to an SDWA violation. Table \ref{tab:reg_response_ioc_dwnstrm} summarizes the share of IOC violations that received no enforcement, formal, informal, or resolving enforcement, and statistics on the time it took to return to compliance. IOC MR violations suggestively receive less enforcement than IOC MCL violations. Though this is expected since IOC MCL violations are more severe than MR violations this is not strongly supported by the table due to the small number of IOC MCL violations in the sample. Of the 16 IOC MCL violations, 100\% received some kind of enforcement whereas 2.5\% of IOC MR violations received no enforcement action.
+
+A detailed breakdown of the types of enforcement actions used in response to an MR and MCL IOC violation are listed in table \ref{tab:enf_action_type_ioc_dwnstrm}. Enforcement is either informal or formal. Formal enforcement is more serious, it includes penalties, compliance agreements, and consent decrees. Penalties are rare amoung the sample although they are used in 0.4\% of IOC MR violations. Consent decrees and compliance agreements can be costly even if they do not include penalties. A consent decree may require a system to install new treatment technology. For an example of how expensive a treatment systems is, an EPA best available technology project to replace existing treatment with an arsenic coagulation/filtration system at a CWS with baseline arsenic levels of 0.029 mg/L, serving 250 people in Pennsylvania in 2011 cost \$191,970, including \$136,744 for equipment, \$21,726 for site engineering, and \$33,500 for installation. In addition it cost an average of \$60 a day in chemical, electricity, and labor costs (\cite{epaarsenicbat)}.
+
+Informal enforcement actions are the dominant type of enforcement and include public notifiaction requests, reminders and notifications that a violation has occured, and technical assistance. Informal enforcement includes more direct assistance to the CWS than formal enforcement. The state is the main regulator in the sample. The federal regulator only intervenes to issue informal enforcement in 2.6\% of the IOC MR cases and the intervention is to issue a notice of violation. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.54]{plots/mineviolengthhist_downstream.png}
+    \label{img:mineviolengthhist_downstream}
+\end{figure}[h]
+
+\input{sum/ioc_days_dwnstrm}
+
+\input{sum/mr_violation_breakdown}
+
+\input{sum/regulator_response_by_viol_type_main_states}
+
+\subsection{CWS Contaminant Measurement Data}
+
+In order to measure the effect of upstream mining on actual contaminant concentrations, we construct annual mean contaminant concentrations of several inorganic chemical contaminants in raw and treated CWS water using the second Six-Year Review data (SYR2, sample years 1998-2005). 
+
+Starting in 1991, the USEPA began conducting reviews of all National Primary Drinking Water Regulations every six years to inform whether the rules need revisions. The first SYR1 has not been made publicly available. The SYR2 was the second round of the six year review covering 1998 to 2005. The data was collected by the EPA by requesting states to submit the data they were required to collect in order to monitor CWS SDWA compliance. Unrelated to the SYR2 and in keeping compliance with the SDWA, states were required to collect compliance monitoring data but were not required to submit that data to the USEPA alongside the violation reports. The SYR2 data contained contaminant data for 89\% of the total population served by a drinking water system. Pennsylvania, Mississippi, Kansas, and Louisiana were not included in the SYR2 partly due to a lack of a national database that received and stored the occurrence of contaminants at CWSs at the time.
+
+We clean the SYR2 data following the procedure of \cite{ravalli2022sociodemographic}. We retain records from CWSs and drop transient and non-transient non-community systems. This removes roughly 23\% of raw monitoring records. For each contaminant we compute the national share of records above the maximum laboratory detectable level (MDL) and retain only contaminants detected in more than 10\% of records. We replace the observations below the MDL of any contaminant with the MDL/$\sqrt{2}$. Records reporting a concentration greater than 100 times the contaminant's MCL are dropped as data-entry errors. Among the IOCs, this keeps arsenic, nitrate, barium, chromium, and selenium, and excludes cadmium (1.8\% detected), mercury (1.6\%), and thallium, whose concentrations are too rarely above detection. All mass-concentration readings are converted to mg/L before averaging.
+
+After cleaning, sample-level records are collapsed to the CWS\,$\times$\,contaminant\,$\times$\,year level. The annual concentration of a particular contaminant is the mean of that year's samples at a particular CWS.
+
+Table \ref{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005} includes the summary statistics of the contaminants we include in our analysis. The max value of all contaminant readings are below their MCL. The max arsenic reading of 0.0110 mg/L would exceed the stricter arsenic MCL of 0.01 mg/L that became regulation in 2006 but would not exceed the pre-2006 MCL of 0.05 mg/L. That mean concentrations do not exceed MCL are consistent with the low rates of MCL violations at CWSs. Conditional on testing the water contaminants appear to be within the regulatory limits. However, the majority of MR violations are for not conducting testing on schedule. These summary statistics do not provide information on the contaminant concentrations that would be measured when a test was required by regulation but was not conducted by the CWS.
+
+\input{sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005}
+
+\section{The impact of the Acid Rain Program (ARP) on CWS exposure to coal production}
+
+We use descriptive and summary data to show that the reduction in high sulfur coal production induced by the ARP also reduced the size of the population reliant on a CWS exposed to coal production. These results do not reflect the actual population served by CWSs affected by coal mines during 1985 to 2005 because we rely on the population served by CWSs using the SDWIS snapshot from the third quarter of 2024.
+
+We find that between 1983 and 2005, tons of coal mined from low sulfur HUC12's increased, while production from high sulfur coal decreased. We consider a HUC12 watershed and all the mines within that watershed to have high sulfur coal if sulfur is greater than or equal to 2\% \footnote{Following the USGS literature low sulfur coal is 1 percent or less sulfur by weight, medium sulfur coal is 1 to 3 percent sulfur by weight, and high sulfur coal is greater than 3 percent sulfur by weight \cite{schweinfurth2009introduction}.}. Figure \ref{plot:coal_summary_plot} plots the average trend in HUC12 level coal production by high and low sulfur coal HUC12's from 1983 to 2005. The HUC12 watersheds where coal increased had fewer CWS water intakes downstream than the places where coal production fell. Map \ref{map:proportionatecircleprod_diff_allminehuc12_1985_2005} plots changes in HUC12 coal production for all HUC12's with at least one active coal mine between 1985 and 2005. The red circles represent proportionate increases in total short tons of coal produced and the blue circles represent proportionate decreases. Coal increased and decreased in both the western and eastern coal fields. Coal production mostly decreased in Pennsylvania and mostly increased in West Virginia. Other state's coal production saw both increases and decreases.
+
+The increases in coal production largely did not occur upstream of CWS water intakes. Map \ref{map:proportionatecircle_upstream_mines_huc12_1985_2005} plots coal mining HUC12's upstream of CWS water intakes with circles proportionate to the size of the population that obtains their drinking water from a directly downstream HUC12 CWS. HUC12's where coal production fell are plotted blue and where coal production increased are plotted red. HUC12's with no CWS water intake directly downstream are not plotted. The size of the population downstream of HUC12's where coal production fell was larger than the population downstream of HUC12's where coal production increased.
+
+\begin{figure}
+ \centering
+\includegraphics[scale=0.67]{plots/coal_summary_plot.png}
+\label{plot:coal_summary_plot}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{plots/sulfur_histogram.png}
+\label{hist:sulfurhuc12}
+\end{figure}
+
+\begin{figure}[h]
+    \centering    \includegraphics[scale=0.37]{plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png}
+\label{map:proportionatecircleprod_diff_allminehuc12_1985_2005}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.37]{plots/proportionatecircle_upstream_mines_huc12_1985_2005.png}
+\label{map:proportionatecircle_upstream_mines_huc12_1985_2005}
+\end{figure}
+
+\section{The impact of coal mining on CWS SDWA violations}
+
+\subsection{Empirical Framework}
+
+To investigate whether CWSs stay in SDWA compliance with upstream coal mining we regress SDWA violations on the number of active coal mines upstream of the CWS water intake. We instrument for coal production occurring in the HUC12 directly upstream of a CWS with an instrumental variable constructed by interacting a dummy for the time period after 1995, the compliance date for stage 1 of the ARP, with the percent of sulfur by weight in the coal deposits within the HUC12 directly upstream of the CWS intake. Coal demand for high sulfur coal fell after 1995 as coal fired power plants switched to low sulfur coal to meet the emission standards of the ARP. Production in low sulfur coal areas increased in existing low sulfur coal mines. The instrument identifies the variation in coal production that results from the sudden change in preferences for coal sulfur content that occurred after stage 1 of the ARP. 
+
+The instrument is used to address the endogeneity in the location of coal mines with respect to the water quality and behavior of CWSs. In particular we cannot control for all factors that influence both where a mine sites and how capable a CWS is at managing violations which lead to omitted variable bias in an OLS estimate of the impact of coal mines on CWS drinking water quality violations. The locations of CWS water intakes and coal mines are located non-randomly with respect to each other. For example, coal mines site where they are able to pass environmental reviews, and a CWS downstream of a coal mine will increase the chances of failing an environmental review. A CWS with political power may be able to influence regulators to prevent polluting industries from siting upstream, and those systems are also more capable of avoiding violations, leading to a positive correlation between CWS SDWA violations and upstream coal mining. This bias works in the same direction we expect the true effect of coal mining on CWS SDWA violations to be, making a specification error from a naive OLS difficult to identify.
+
+We estimate the effect of upstream coal mining on CWS drinking water violations using an instrumental variable two stage least squares regression. The first stage is
+
+\begin{equation}\label{1ststage2sls}
+\begin{split}
+\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{NumIntakes}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + Y_t + C_c + \nu_{ct}
+\end{split}
+\end{equation}
+
+Where the Number of Mines that are one HUC12 upstream of CWS c in year t is $NumMines_{ct}$. The exogenous covariates are the number of CWS intake facilities, $NumIntakes_{ct}$, year fixed effects, $Y_t$, and CWS fixed effects, $C_c$. The instrumental variable is the interaction between the average sulfur as a percentage of weight in the HUC12's directly upstream of all CWS c's water intakes, $UpstreamCoalSulfur\%_c$, and a dummy variable equal to 1 for the years after the deadline to implement stage I of the ARP, 1995, and 0 other times, $Post95_t$. During the pre-1995 period all observations of $UpstreamCoalSulfur\%_c \cdot Post95_t$ are 0 and after 1995 the observations are the percent of sulfur in upstream coal. Standard errors are clustered at the CWS level. 
+
+The second stage of the regression is
+
+\begin{equation}\label{2ndstage2sls}
+\begin{split}
+\text{Days in Violation}_{vct} &= \beta_0 + \beta_1\text{NumIntakes}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} \\
+&\quad + Y_t + C_c + \epsilon_{ct}
+\end{split}
+\end{equation}
+
+In the second stage, the dependent variable is the days out of a year CWS c experienced violation v in year t, $\text{Days in Violation}_{vct}$. 
+
+The endogeneity of upstream sulfur is controlled for with CWS fixed effects. Sulfur is endogenous to water quality. Higher sulfur levels are associated with more sulfide minerals in the rock that oxidize and cause AMD. High sulfide rocks in the geology of a watershed naturally oxidize and leach IOCs into the water, raising the baseline contaminant level, and those rocks are more likely to contain coal seams that attract coal mining. The time invariant ability of a CWSs with greater political power and resources will be able to site their water intakes in areas with cleaner baseline ambient water quality is controlled for with CWS fixed effects.
+
+\subsection{Instrument validity}
+
+To obtain consistent estimates of $\beta_1$ it is necessary for $E[UpstreamCoalSulfur\%_c\cdot Post95_t \epsilon_{ct} | Y_t,C_c] = 0$.
+
+$UpstreamCoalSulfur\%\times Post95$ is independent of the omitted variables that determine drinking water quality violations. The ARP and the timing of the first phase were both exogenous to CWS drinking water quality and CWS characteristics. The ARP was a national clean air policy that was not drafted or enacted to address to address issues relating to water quality. The effects of the ARP on coal production were determined by national energy markets and not local CWSs or local CWS water quality. The timing of the ARP did not coincide with major drinking water regulations. Local CWS characteristics regarding water quality or local power over source protection did not affect the scope of the ARP, nor how stringent the ARP law was, nor the degree to which low sulfur coal should be part of the abatement technology, nor the date of phase I of the ARP. Knowing about sulfur as a percent of coal upstream of CWS after 1995 tells us nothing about how much political power a local PWS has about mine siting. Thus, $Cov(\text{political power of CWS}_c, UpstreamCoalSulfur\%_c \cdot Post95_t)=0$. Assuming that the relationship between CWS characteristics important for water quality and the upstream sulfur content did not change after 1995, then $f(UpstreamCoalSulfur\%_c \cdot Post95_t, \text{CWS characteristic})=f(UpstreamCoalSulfur\%_c \cdot Post95_t)f(\text{CWS characteristic})$. The instrument would violate independence if the unobserved CWS characteristics that affect drinking water quality violations changed after 1995 according to the amount of upstream coal sulfur percentage.
+
+The instrument only affects CWSs through its effect on the number of coal mines. A threat to this would be if something about CWS water quality or SDWA regulation changed after 1995 and had a differential impact on CWSs downstream of high sulfur coal before and after 1995 compared to CWSs downstream of low sulfur coal before and after 1995. Changes in SDWA rules that affected all CWSs the same way are controlled for with time fixed effects. IOC MCL's did not change over this time period, although the arsenic rule was updated in 2001 it did not come into force until 2006. The SDWA amendments that were passed in 1996 increased the use of consumer confidence reports as an enforcement tool when a CWS violated a drinking water regulation. CWSs downstream of high sulfur coal will experience less upstream coal mining after 1995 compared to before 1995 and therefore less upstream water contamination, whereas CWSs downstream of low sulfur coal will experience more upsteram coal mining after 1995 compared to before 1995. CWSs downstream of high sulfur coal may experience less SDWA violations from upstream pollution compared to before 1995 meaning the burden of a consumer confidence report is smaller than it would have been before 1995. Whereas CWSs downstream of low sulfur coal will experience more upstream pollution after 1995 compared to before meaning the burden of the consumer confidence report is higher than it would have been before 1995. This difference is likely small since all CWSs in the sample are downstream of coal mining and will have a more similar pollution exposure and therefore burden from consumer confidence reports compared to the national average CWS.
+
+We can check this by look at relationships between ARPxpost95 and cws characteristics not associated with number of upstream mines. We also look at the relationship between violations and ARPxpost95 where number of upstream mines is unrelated to ARPxpost95
+
+The instrument is predictive of coal production. Figure \ref{fig:scatterhuccoalsulfur} is a scatter plot of the number of coal mines and the coal sulfur percent in the HUC12's upstream of CWSs before and after 1995 and plotted linear lines of best fit. The change in production away from high sulfur coal production after the ARP is strong. The number of coal mines in a HUC12 was increasing with the percent of sulfur as weight of coal in the HUC12 before 1995.  After stage 1 of the ARP the number of coal mines in a HUC12 did not strongly increase with the amount of HUC12 coal sulfur content. The time contigenent switch in production preferences for coal based on sulfur content supports the structure of the variable $UpstreamCoalSulfur\%_c \cdot Post95_t$. The coefficient of $UpstreamCoalSulfur\%_c \cdot Post95_t$ is partly identified from the relative differences in the differences in the mean number of coal mines of a given sulfur level before and after 1995. The difference in mean coal mines given a high sulfur levels is large before and after 1995 following the fall in production of coal in high sulfur coal beds.
+
+The strength of the instrument is still evident after the controlling for covariates. Figure \ref{fig:first_stage_scatter_dwnstrm} is a scatter plot of the residualized number of upstream coal mines and the residualized instrumental variable. There is a negative relationship between the residualized number of upstream coal mines and $UpstreamCoalSulfur\%_c \cdot Post95_t$.
+
+\begin{figure}\label{fig:scatterhuccoalsulfur}
+\includegraphics[scale=0.6]{plots/scatterhuccoalsulfur_pooled.png}
+\end{figure}
+
+\begin{figure}\label{fig:first_stage_scatter_dwnstrm}
+\includegraphics[scale=0.6]{plots/first_stage_scatter_dwnstrm.png}
+\end{figure}    
+
+\subsubsection{Assessing monotonicity}
+
+In order to recover the LATE estimate of the instrument we need the instrument to exhibit monotonicity and for there to be no defiers.A defier is a place that experienced more mining after 1995 because it had higher sulfur. Defiance would require that HUC12 production with high-sulfur would have increased production after ARP but would reduce its production post ARP if it had low-sulfur. A never-taker is a high-HUC12 mine that maintains production because its customer is an electricity generator that installs scrubbers. As long as scrubber adoption is not positively correlated with sulfur in a way that causes production to increase post-ARP in high-sulfur areas, this is not a violation of monotonicity, and only reduces first-stage power. To be a defier with scrubbers requires a power plant to charge less for power to customers after installing scrubbers, it is not profitable to do so because scrubbers are expensive to install and increase operating costs the profit maximizing response is to raise electricity costs which result in a fall in demand for power and for coal.
+
+If some high-sulfur regions had comparative advantage in low-cost production that offset the ARP cost increase, for example, very low labor costs or transportation advantages, they might expand production even as ARP made their coal relatively more expensive.
+
+Stating monotonicity more formally and following \cite{angrist1994identification}, let $\Psi$ be the support of the instrument $Z_i$, and for each $z \in \Psi$ define a random variable $D_i(z)$. The monotonicity assumption requires that for all $z, w \in \Psi$, either $D_i(z) \leq D_i(w)$ for all $i$, or $D_i(z) \geq D_i(w)$ for all $i$. This condition applies pairwise to elements of $\Psi$ and imposes no restriction on the ordering of $z$ and $w$.
+
+In this setting, the instrument is $Z_i = \text{post95}_t \times \text{sulfur}_h$, which equals zero before 1995 and $\text{sulfur}_h$ after. For a given sulfur level $w$, monotonicity requires either $\text{num_mines}_i(0) \leq \text{num_mines}_i(w)$ for all $i$, or $\text{num_mines}_i(0) \geq \text{num_mines}_i(w)$ for all $i$. This permits the direction of the response to vary with sulfur content. For example, at $\text{sulfur} = 1$ (low sulfur), mines may expand after 1995, so monotonicity requires $\text{num_mines}_i(0) \leq \text{num_mines}_i(1)$ for all $i$. At $\text{sulfur} = 4$ (high sulfur), mines likely contract after 1995, so monotonicity requires $\text{num_mines}_i(0) \geq \text{num_mines}_i(4)$ for all $i$. These two conditions are compatible: monotonicity is satisfied so long as each pairwise comparison is uniform across units, even when low- and high-sulfur areas respond in opposite directions.
+
+\subsection{Results}
+
+Table \ref{2sls_dwnstrm_minevio_allcat} reports the results of equation \ref{2ndstage2sls} estimating the impact of the number of active upstream coal mines on the number days out of a year a CWS spends in either an MCL or MR violation for nitrates, arsenic, and inorganic chemical using OLS, reduced form, and two stage least square regressions. An additional active coal mine upstream increases SDWA violations by roughly three days out of the year when we estimate OLS regressions of nitrates, arsenic, and inorganic chemicals on the number of coal mines active upstream coal mines during the year as the main explanatory variable.
+
+Coal production fell most acutely in high sulfur areas after 1995, and a positive relationship between coal production and SDWA violations predicts that coal related violations would fall with increasing upstream sulfur after 1995 relative to before 1995. The reduced form effect of the instrument measures how much more (or less) a one-percentage-point increase in upstream sulfur affects violations after ARP Phase I relative to before. An additional percent of coal sulfur upstream leads to statistically significantly fewer days a CWS experiences a nitrate, arsenic, or inorganic chemical violation of any kind after 1995 compared to before 1995. This suggests that in areas where coal mining is more likely to close, the number of days in violation falls.
+
+Instrumenting for the number of upstream mines with the upstream sulfur interacted with a post 1995 dummy finds the effect of an additional active mine upstream on nitrates and arsenic violations leads to an additional 19.9 and 14.6 days out of the year with an SDWA violation respectively. The instrument has a relatively strong first stage with an F statistic of 27.5. The OLS results underestimate the effect of coal mines on violations. In general, the OLS impact of coal mines is five times smaller than the two stage least squares regression coefficient, suggesting that the omitted variable bias is negative. A negative omitted variable bias is consistent CWS's that are able to influence the siting of upstream mines being better able at avoiding violations. 
+
+The entire increase in violations from upstream mining is driven by MR violations rather than MCL. The regressions presented in table \ref{2sls_dwnstrm_minevio_mr} estimates equation \ref{2ndstage2sls} on MR arsenic, nitrate, and IOC violations. An additional mine upstream of a CWS leads to 19.9, 14.5, and 14 more days of monitoring and reporting violations for nitrates, arsenic, and general IOC contaminants respectively, comprising the entire effect observed when the dependent variable combines MR violations with MCL violations. IOC violations are statistically significant at the 10\% level when violations are limited to MR violations and statistically insignificant when the violations refer to the share of the year spent in either MCL or MR violations.
+
+The impact of coal mining on downstream CWS MCL violations for nitrates, arsenic, and a general category of inorganic chemicals is presented in table \ref{2sls_dwnstrm_minevio_mcl}. The two stage least squares regression of the effect of the number of coal mines upstream leads to a statistically and economically insignificant changes in the amount of time a CWS spends in an arsenic and nitrate violation. The effect is less than an additional day out of the year. An additional coal mine upstream is associated with two fewer days of maximum contaminant level violations for inorganic chemicals; however, the effect is not statistically significant at any level.
+
+Despite all the significant effects of coal mining being concentrated in monitoring and reporting violations and not in maximum contaminant level violations, we cannot conclude that coal mining does not impact actual contaminant levels. A maximum contaminant level violation is only issued by the regulator when they receive the results of a test a CWS conducted. Consistently failing to conduct tests or report the results of tests and incurring an MR violation prevents an MCL from being issued even if a pollutant legitimately exceeds the MCL. The SDWA ECHO violation dataset is for that reason unable to measure drinking water contamination when systems do not monitor and report tests.
+
+Upstream coal mining increases MR violations without increasing mining does not increase MCL violations. In the framework of the theoretical model SDWA violations are a form of CWS non-compliance with environmental regulation. The theoretical model predicts that non-compliance can increase when the benefits of non-compliance rise and/or the penalty for non-compliance falls. We test whether benefits rise or penalties fall with upstream coal mining.
+
+\input{reg/2sls_dwnstrm_minevio_allcat_ivsum}
+
+\input{reg/2sls_dwnstrm_minevio_mr_ivsum}
+
+\input{reg/2sls_dwnstrm_minevio_mcl_ivsum}
+
+\section{The impact of coal mining on downstream CWS contamination }
+
+\subsection{Empirical Framework}
+
+We test the theoretical prediction that non-compliance can increase when upstream mining increases costs of compliance by raising the level of pollution and the effort that needs to be expended to stay in compliance. As costs of compliance rise the cost savings and therefore benefits of non-compliance rise too. We estimate the impact of coal mining on the mean concentration of contaminants within downstream CWSs using the equation
+
+\begin{equation}\label{eq:huc02reg}
+    \textit{Contam Concen}_{cht}= \beta\cdot\sum_{\tau=1985}^t\text{upstream coal prod}_{c\tau}  + \rho_c + HUC02_h\cdot\tau_t + \epsilon_{cht}
+\end{equation}
+
+Where $\textit{Contam Concen}_{cht}$ is the mean concentration of a contaminant measured at CWS c in HUC02 h in year t using SYR2 data from 1997 to 2005. $\sum_{\tau=1985}^t\text{upstream coal prod}_{c\tau}$ is the cumulative tons of coal mined in the HUC12 directly upstream of CWS c from 1985 until year t. $\beta$ is the effect of an additional 10,000 tons of coal mined upstream of CWS c. CWS fixed effects are included as $\rho_c$, and to control for annual average pollution levels within the HUC02 watershed, we include HUC02 interacted with time fixed effects $HUC02_h\cdot\tau_t$. Standard errors are clustered at the CWS level.
+
+Equation \ref{eq:huc02reg} is a continuous differences in differences with no pure control observations. The parallel trends assumption requires that the pollution concentrations at CWSs that experience a large decline in coal production would trended the same as pollution concentrations at CWSs with a small decline.
+
+Equation \ref{eq:huc02reg} provides an unbiased estimate of $\beta$ if cumulative upstream coal production is orthogonal to the error term, conditional on the fixed effects:
+
+$E[\sum_{\tau=1985}^t\text{upstream coal prod}_{c\tau}\epsilon_{cht}|\rho_cHUC02_h\cdot\tau_t] = 0$
+
+This would be violated if the timing of contaminant concentration tests were affected by upstream coal production. This would be the case if readings were done during periods of low upstream production to avoid detecting contaminants or were done more often when there was a large amount of production leading to large contamination and requiring taking more readings for confirmation. CWS fixed effects control for CWSs level ability to control contamination or time when to take concentration readings. The EPA established federal schedules for when to conduct 6 year reviews which removes some of the concern of CWSs being able to time readings.
+
+\subsection{Results}
+
+\input{reg/6yr_huc02fe_inorg_ravalli_2005}
+
+Table \ref{tab:6yr_huc02fe_inorg_ravalli_2005} contains the results of regression \ref{eq:huc02reg} on inorganic chemical concentration tests throughout CWS water processing stages. An additional 10 million short tons of cumulative upstream coal production increase mean concentrations of arsenic, nitrate, barium, chromium, and selenium at CWSs. The effect is significant for all IOC contaminants except for nitrates, which we lack the power to identify at a statistically significant level.
+
+Arsenic increases by 0.0023 mg/L after an additional 10 million short tons of coal is mined upstream. This is economically large, equivalent to almost 100\% increase over the mean arsenic concentration of 0.0029 mg/L, and statistically significant. The effect represents 23\% of the EPA arsenic Maximum Contaminant Level (MCL) of 0.010 mg/L after 2005 and 4.6\% of the MCL before 2006 of 0.050 mg/L.
+
+An additional 10 million short tons of coal increases chromium, selenium, and barium by 0.0027 mg/L, 0.0033 mg/L, 0.0171 mg/L respectively. The effects are statistically significant and economically significant, relative to the mean contaminant levels the effects are increases of 50\%, 69\%, and 24\% respectively.
+
+We lack the power to identify the effect of cumulative coal mining on nitrates. An additional 10 million short tons of coal increases nitrate concentrations by 0.05 mg/L but the effect is not economically or statistically significant, the effect is a 5\% increase in concentration levels relative to the mean contaminant concentration 0.75 mg/L.
+
+Despite the economic and statistically significant result that upstream coal mining leads to increases in IOC contaminant concentrations at CWSs there are no observations that exceed the the MCL of any inorganic chemicals, see table \ref{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005}. This does not confirm that water contamination never exceeded the MCL. Most MR violations were issued for failure to test water quality, the SYR2 is necessarily the results from water tests and do not reflect the tests not undertaken and subsequently punished with an MR violation.
+
+Mining increases mean inorganic chemical contamination (by 20-100\%
+of mean concentrations). Mining raises CWS costs to completely remove contaminants. CWSs downstream of mines face costlier SDWA compliance.
+
+\section{Regulator Responses to CWS's impacted by coal mining}
+
+The theoretical model comparative statics predict that CWSs will violate SDWA more often if the penalty for violating falls. We test whether penalties at CWSs fall when upstream coal mining increases.
+
+\subsection{Empirical Strategy}
+
+We measure enforcement severity on a relative scale where formal enforcement is more severe than informal enforcement. We estimate the effect of upstream coal mining on the likelihood of formal and informal enforcement with an instrumental variable two stage least squares regression. In addition we estimate the effect of upstream coal mining on the likelihood of a sanitary visit during the year by the regulator to the CWS. The number of upstream coal mines is instrumented with $\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t$ as in equation \ref{1ststage2sls}. 
+
+The first stage is
+\begin{equation}\label{1ststage2slsreg}
+\begin{split}
+\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{NumIntakes}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + Y_t + C_c + \nu_{ct}
+\end{split}
+\end{equation}
+
+And the second stage is
+\begin{equation}\label{2ndstage2slsreg}
+\begin{split}
+\text{Regulatory Action}_{ct} &= \beta_0 + \beta_1\text{NumIntakes}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} \\
+&\quad + Y_t + C_c + \epsilon_{ct}
+\end{split}
+\end{equation}
+
+The Number of Mines that are one HUC12 upstream of a CWS c water intake in year t, $NumMines_{ct}$, are predicted by a function of the number of CWS intake facilities, $NumIntakes_{ct}$, the average coal sulfur percentage in upstream HUC12's where coal sulfur can be calculated, $UpstreamCoalSulfur\%_c$, interacted with a dummy indicator for the years after 1995, stage I of the ARP, $Post95_t$, year fixed effects, $Y_t$, CWS fixed effects, $C_c$, and an error term, $\nu_{ct}$. Standard errors are clustered at the CWS level.
+
+Any effect the instrument has on enforcement is driven through the causal chain from the effect of coal mining on water pollution to the regulator's response to that pollution. The exclusion restriction fails when the instrument affects regulator behavior through another path outside of its affect on pollution through changing coal mining.
+
+The exclusion restriction would be threatened if the ARP Phase I directly changed state EPA enforcement practices in a way that affected CWSs differently according to the percent of sulfur by weight in upstream coal. However, states were not primarily responsible for enforcing the ARP, it was a federally regulated program which by itself would not have affected state primacy enforcement of the SDWA.
+
+Regulators are more likely responding to pollution rather than upstream coal mining levels since coal mines production is regulated by state and federal revenue authorities and mine safety is regulated the federal MSHA. It is possible that states environmental regulators are aware of coal mining pollution through their primacy to enforce point source pollution in the Clean Water Act. Coal mines are point source polluters.
+
+The CWS fixed effects control for the effect that upstream sulfur is associated with a higher baseline of AMD which could increase pollution and therefore enforcement action outside of the effect of the instrument on coal mines.
+
+Any national regulatory changes to the SDWA that affected all CWSs are controlled for with time fixed effects. The threat to the exogeneity of the instrument would occur if regulatory enforcement at low sulfur regions before and after 1995 changed differently to the change in regulatory enforcement at high sulfur regions before and after 1995.
+
+\subsection{Results}
+
+Upstream coal mining leads to a reduction in the costliest enforcement action. Table \ref{tab:h3_inf_formal_d12} presents the coefficients from estimating equation \ref{2ndstage2slsreg} on the likelihood of formal and informal enforcement. An additional upstream coal mine leads to a 5.6 percentage point fall in the likelihood of a CWS receiving formal enforcement action. We lack the power to identify a statistically significant effect of the number of upstream coal mines on informal enforcement rates, although the effect is economically small at -0.0056 percentage points.
+
+Table \ref{tab:h2_snsv_d12} presents the coefficients from estimating equation \ref{2ndstage2slsreg} on the likelihood of any sanitary visit to a CWS caused by an increase in upstream coal mining. Coal mining leads to a 14 percentage point increase in sanitary visits by the regulator to the CWS. This is statistically significant at the 1\% level. Sanitary visits are a remedial intervention the regulator can use to assess the severity of a violation. Sanitary visits are less punitive than formal enforcement action.
+
+Coal mining reduces the costliest type of enforcement action on CWSs. Upstream coal mining increases the regulators use of less costly enforcement action in the form of sanitary visits. These results are consistent with the theoretical model that predicts that the increase in SDWA non-compliance is also driven by CWSs facing lower penalties for violations.
+
+\input{reg/h3_inf_formal_d12}
+
+\input{reg/h2_snsv_d12}
+
+\section{Conclusion}
+
+Upstream coal mining induces lower CWS SDWA compliance. An increase in mining leads to increases in inorganic chemical water contamination at CWSs. The increase in inorganic chemical water contamination raises the cost off completely removing contaminants but since we do not detect mean contaminant levels increasing above maximum contaminant levels we cannot conclude that upstream coal mining is increasing pollution to the extent that CWSs need to install improved abatement technology to meet SDWA MCL compliance. We do identify that upstream coal mining leads to falls in formal enforcement action, which is the costliest form of enforcement, and an increase in sanitary visits, which is a non-punitive and remedial enforcement action. The increase in CWS SDWA non-compliance with an increase in upstream coal mining is consistent with lower punishment for violations and higher costs of compliance.
+
+\newpage
+
+\printbibliography
+\end{document}

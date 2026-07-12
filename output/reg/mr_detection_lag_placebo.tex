@@ -1,0 +1,23 @@
+
+\begin{table}[htbp]
+\caption{Placebo: MR violations preceding a contaminant DETECTION (past window)}\label{tab:mr_detection_lag_placebo}
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+   \begin{tabular}{lcccccc}
+      \toprule    
+                                       & Arsenic MR (1-yr) & Arsenic MR (3-yr)   & Nitrate MR (1-yr) & Nitrate MR (3-yr)   & Pooled IOC (1-yr)  & Pooled IOC (3-yr) \\   
+                                       & (1)               & (2)                 & (3)               & (4)                 & (5)                & (6)\\  
+      \midrule 
+      Detected (1/0)                           & 0.0002            & 0.0026              & -0.0158           & -0.0433             & 0.0003             & -0.0037\\   
+                                       & (0.0047)          & (0.0712)            & (0.0177)          & (0.0343)            & (0.0040)           & (0.0076)\\   
+       \\
+      Observations                     & 419               & 419                 & 851               & 851                 & 3,705              & 3,705\\  
+       \\
+      CWS fixed effects              & $\checkmark$      & $\checkmark$        & $\checkmark$      & $\checkmark$        & $\checkmark$       & $\checkmark$\\   
+      YEAR fixed effects               & $\checkmark$      & $\checkmark$        & $\checkmark$      & $\checkmark$        & $\checkmark$       & $\checkmark$\\   
+      Contaminant fixed effects  &                   &                     &                   &                     & $\checkmark$       & $\checkmark$\\   
+      \bottomrule
+   \end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright Past-window placebo: same Detected (1/0) specification as the forward-window table but the outcome is an MR violation occurring BEFORE the reading (1--365 days before for 1-yr columns; 1--1095 days before for 3-yr columns). A detection should precede, not follow, the MR violation. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level.}
+\end{table}

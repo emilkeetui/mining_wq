@@ -4,19 +4,19 @@
    \bigskip
    \centering
    \begin{adjustbox}{width = 0.9\textwidth, center}
-      \begin{tabular}{lp{3.8cm}cccc}
+      \begin{tabular}{lp{3.8cm}ccccc}
          \toprule
-         Variable & MCL & Mean & Max & Std.\ Dev. & $N$ \\
+         Variable & MCL & Mean & Max & Std.\ Dev. & $N$ & Near MCL \\
          \midrule
-         Arsenic (mg/L) & Pre-2006: 0.050 mg/L, 2006+: 0.010 mg/L & 0.0024 & 0.0240 & 0.0025 & 784 \\
-         Nitrate (mg/L) & 10.0 mg/L & 1.061 & 7.670 & 1.222 & 1,221 \\
-         Barium (mg/L) & 2.000 mg/L & 0.0736 & 1.414 & 0.1105 & 780 \\
-         Chromium (mg/L) & 0.100 mg/L & 0.0052 & 0.0707 & 0.0060 & 746 \\
-         Selenium (mg/L) & 0.050 mg/L & 0.0037 & 0.0354 & 0.0046 & 729 \\
-         Cumul. upstream coal prod. (10M ST) & --- & 0.5146 & 14.179 & 1.575 & 1,398 \\
+         Arsenic (mg/L) & Pre-2006: 0.050 mg/L, 2006+: 0.010 mg/L & 0.0024 & 0.0240 & 0.0025 & 784 & 7.0\% \\
+         Nitrate (mg/L) & 10.0 mg/L & 1.061 & 7.670 & 1.222 & 1,221 & 2.3\% \\
+         Barium (mg/L) & 2.000 mg/L & 0.0736 & 1.414 & 0.1105 & 780 & 0.4\% \\
+         Chromium (mg/L) & 0.100 mg/L & 0.0052 & 0.0707 & 0.0060 & 746 & 0.4\% \\
+         Selenium (mg/L) & 0.050 mg/L & 0.0037 & 0.0354 & 0.0046 & 729 & 0.7\% \\
+         Cumul. upstream coal prod. (10M ST) & --- & 0.5146 & 14.179 & 1.575 & 1,398 & --- \\
          \bottomrule
       \end{tabular}
    \end{adjustbox}
-   {\tiny\linespread{1}\selectfont \par \raggedright Sample period 1998--2011. Statistics computed on the sample used in each chemical's regression in Table~\ref{tab:6yr_huc02fe_inorg_val_ravalli}. For cumulative upstream coal production, statistics are computed over unique PWSID$\times$year pairs that appear in at least one regression sample. Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0).}
+   {\tiny\linespread{1}\selectfont \par \raggedright Sample period 1998--2011. Statistics computed on the sample used in each chemical's regression in Table~\ref{tab:6yr_huc02fe_inorg_val_ravalli}. For cumulative upstream coal production, statistics are computed over unique PWSID$\times$year pairs that appear in at least one regression sample. ``Near MCL'' is the share of CWS-year mean concentrations exceeding 50\% of the applicable MCL. Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0).}
 \end{table}
 

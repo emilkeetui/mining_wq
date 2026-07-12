@@ -1,0 +1,23 @@
+
+\begin{table}[htbp]
+\caption{MR violations following a contaminant DETECTION (any level)}\label{tab:mr_detection_lag}
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+   \begin{tabular}{lcccccc}
+      \toprule    
+                                       & Arsenic MR (1-yr) & Arsenic MR (3-yr)  & Nitrate MR (1-yr) & Nitrate MR (3-yr)  & Pooled IOC (1-yr) & Pooled IOC (3-yr) \\   
+                                       & (1)               & (2)                & (3)               & (4)                & (5)               & (6)\\  
+      \midrule 
+      Detected (1/0)                           & 0.0137            & 0.0280             & 0.0024            & 0.0046             & 0.0096            & $-3.56\times 10^{-5}$\\    
+                                       & (0.0101)          & (0.0235)           & (0.0211)          & (0.0233)           & (0.0058)          & (0.0089)\\   
+       \\
+      Observations                     & 419               & 419                & 851               & 851                & 3,705             & 3,705\\  
+       \\
+      CWS fixed effects              & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$\\   
+      YEAR fixed effects               & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$       & $\checkmark$      & $\checkmark$\\   
+      Contaminant fixed effects  &                   &                    &                   &                    & $\checkmark$      & $\checkmark$\\   
+      \bottomrule
+   \end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright SYR2 only (1998--2005), strictly-downstream mining sample. Regressor: Detected = 1 if the reading is above the detection limit (at any level), 0 otherwise. Outcome: same-contaminant MR violation within the year (1-yr) or three years (3-yr) following the reading; pooled IOC uses any RULE\_CODE 333 MR violation and excludes arsenic/nitrate, which have their own rule codes. This tests the detection/monitoring-status trigger (a detection can revoke a monitoring waiver and raise sampling frequency), which -- unlike the 50\%-MCL magnitude trigger -- can operate for IOCs that never approach their MCL. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level.}
+\end{table}

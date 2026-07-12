@@ -1,0 +1,54 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:sanitary_visit_syr2_test_iterative} Sanitary and Enforcement Visit Timing and SYR2 Test Occurrence}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccc}
+         \toprule
+         
+          & \multicolumn{4}{c}{SYR2 test occurred in month t}\\
+         
+                                                & (1)            & (2)            & (3)            & (4)\\  
+         
+         \midrule 
+         Constant                               & 0.0656$^{***}$ &                & 0.0813$^{***}$ &   \\   
+                                                & (0.0059)       &                & (0.0109)       &   \\   
+         Sanitary visit lead (1, 6) months      & 0.0448$^{*}$   & 0.0336$^{***}$ &                &   \\   
+                                                & (0.0226)       & (0.0104)       &                &   \\   
+         Sanitary visit lag (-6, -1) months     & 0.0446$^{*}$   & 0.0268$^{***}$ &                &   \\   
+                                                & (0.0239)       & (0.0090)       &                &   \\   
+         Enforcement visit lead (1, 6) months   &                &                & 0.0084         & -0.0317\\   
+                                                &                &                & (0.0355)       & (0.0288)\\   
+         Enforcement visit lag (-6, -1) months  &                &                & -0.0429$^{**}$ & -0.0673$^{***}$\\   
+                                                &                &                & (0.0171)       & (0.0129)\\   
+         
+          \\
+         
+         Observations                           & 11,808         & 11,808         & 11,808         & 11,808\\  
+         
+          \\
+         
+         CWS fixed effects                      &                & $\checkmark$   &                & $\checkmark$\\   
+         Calendar month (Jan-Dec) fixed effects &                & $\checkmark$   &                & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample: downstream CWSs with >=1 SYR2 measurement of arsenic, barium, chromium, nitrate, or selenium (123), CWS-months 1998-01 to 2005-12. Outcome = 1 if >=1 SYR2 (Six-Year Review 2) measurement of one of those 5 chemicals was recorded for that CWS in that calendar month. before6 = 1 if the CWS-month falls in the 6 calendar months preceding any visit of that type; after6 = 1 if it falls in the 6 months following one; both are 0 outside any such window. Sanitary visits = SNSV/SNSP/SSVF; enforcement visits = FENF/INVG/EMRG. Columns (2) and (4) include CWS fixed effects and calendar-month-of-year fixed effects (Jan-Dec, not absolute calendar time), which absorb seasonality in SYR2 testing rather than the specific year-month. Columns (1) and (3) have no fixed effects. N=11808 in all columns. SEs clustered at the CWS (PWSID) level in all columns.}
+   
+\end{table}
+
+

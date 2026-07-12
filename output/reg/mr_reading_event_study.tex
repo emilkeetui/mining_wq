@@ -1,0 +1,23 @@
+\begin{table}[htbp]
+   \caption{\label{tab:mr_reading_event_study} SYR2 Reading Probability Around MR Violation Onset (Event Study)}
+   \bigskip
+   \centering
+   \begin{adjustbox}{width = \textwidth, center}
+      \begin{tabular}{lcccccccccccc}
+         \toprule
+         Chemical group (ref. month $=-1$) & -6 & -5 & -4 & -3 & -2 & 0 & 1 & 2 & 3 & 4 & 5 & 6 \\
+         \midrule
+         Arsenic (N onsets = 23) & -0.0870 & -0.0435 & -0.0870 & -0.0870 & -0.0870 & 0.0000 & 0.0000 & 0.0000 & 0.0000 & 0.0435 & 0.0000 & -- \\
+          & (0.0862) & (0.1006) & (0.0862) & (0.0862) & (0.0862) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0452) & (0.0000) &  \\
+         Nitrate (N onsets = 83) & -0.0359$^{*}$ & 0.0003 & -0.0238 & -0.0361$^{*}$ & -0.0120 & -0.0122 & -0.0243 & -0.0363$^{*}$ & -0.0366$^{*}$ & -0.0125 & -0.0245 & -0.0252 \\
+          & (0.0204) & (0.0244) & (0.0240) & (0.0205) & (0.0273) & (0.0316) & (0.0164) & (0.0203) & (0.0204) & (0.0275) & (0.0236) & (0.0236) \\
+         Pooled IOC (N onsets = 252) & -0.0714 & -0.0317 & -0.0714 & -0.0714 & -0.0714 & -0.0934 & -0.0894 & -0.0894 & -0.0934 & -0.0497 & -0.0934 & -0.0934 \\
+          & (0.0699) & (0.0828) & (0.0699) & (0.0699) & (0.0699) & (0.0662) & (0.0667) & (0.0667) & (0.0662) & (0.0808) & (0.0662) & (0.0662) \\
+         Any target chemical (N onsets = 358) & -0.0668 & 0.0030 & -0.0640 & -0.0642 & -0.0615 & -0.0701 & -0.0729 & -0.0478 & -0.0785 & -0.0450 & -0.0785 & -0.0727 \\
+          & (0.0565) & (0.0744) & (0.0565) & (0.0566) & (0.0567) & (0.0505) & (0.0500) & (0.0591) & (0.0497) & (0.0627) & (0.0498) & (0.0501) \\
+         \bottomrule
+      \end{tabular}
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright Sample: strictly downstream CWSs (349), stacked event panel of same-group MR violation onsets x 13 relative months (-6 to +6). Outcome = 1 if any SYR2 reading for that group's chemical(s) occurred at that CWS in that calendar month. Chemical groups: Arsenic (contaminant 1005), Nitrate (1040), Pooled IOC (selenium 1045, barium 1010, chromium 1020), Any target chemical (union of all five). Onsets restricted to 1998-07--2005-06 so the full [-6,+6] window falls inside SYR2 coverage (1998-2005); this avoids left/right censoring of reading data near the sample edges. Rel\_month = calendar months relative to NON\_COMPL\_PER\_BEGIN\_DATE of the MR violation onset (0 = onset month); reference period = month -1. LPM with CWS and calendar-year fixed effects (year, not month, to avoid collinearity from heavy onset-window overlap per CWS in the stacked design); SEs clustered at the CWS (PWSID) level. Same CWS-month can appear in multiple onsets' windows (stacked design). '--' indicates a rel\_month dummy dropped by feols due to collinearity with the fixed effects (occurs for the Arsenic column, N onsets = 23).}
+\end{table}
+

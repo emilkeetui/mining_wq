@@ -606,7 +606,8 @@ def collapse_to_pwsid_year(df: pd.DataFrame) -> pd.DataFrame:
     agg_spec: dict = dict(
         VALUE            = ("VALUE",  "mean"),
         VALUE_max        = ("VALUE",  "max"),
-        DETECT           = ("DETECT", "max"),
+        DETECT           = ("DETECT", "max"),   # 1 if any sample that year was a detection
+        detect_share     = ("DETECT", "mean"),  # share of the year's samples that were detections
         UNITS            = ("UNITS",  "first"),   # all non-null units in group are identical after filter
         num_measurements = ("VALUE",  "count"),
     )
@@ -618,7 +619,7 @@ def collapse_to_pwsid_year(df: pd.DataFrame) -> pd.DataFrame:
         .agg(**agg_spec)
     )
 
-    out_cols = ["PWSID", "CHEMID_name", "DETECT", "VALUE", "VALUE_max", "UNITS", "YEAR", "num_measurements"]
+    out_cols = ["PWSID", "CHEMID_name", "DETECT", "detect_share", "VALUE", "VALUE_max", "UNITS", "YEAR", "num_measurements"]
     if "share_above_mcl" in collapsed.columns:
         out_cols.append("share_above_mcl")
     collapsed = collapsed[out_cols].copy()

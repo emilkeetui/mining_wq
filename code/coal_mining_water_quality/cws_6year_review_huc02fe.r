@@ -121,6 +121,9 @@ fml_val <- VALUE            ~ coal_prod_upstream_cumsum_10mst + num_facilities |
 fml_shr <- share_above_mcl  ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
 fml_cnt <- num_measurements ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
 fml_max <- VALUE_max         ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
+# Detection-share outcome: detect_share = share of a CWS-year's samples that were
+# detections (above the reporting/detection limit).
+fml_dsh <- detect_share     ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
 
 # ---------------------------------------------------------------------------
 # Table notes
@@ -176,6 +179,7 @@ note_tc_main_rav <- paste0(
 dict_global <- c(
   VALUE                           = "Mean conc.",
   share_above_mcl                 = "Share $>$ MCL",
+  detect_share                    = "Share of samples detected",
   coal_prod_upstream_cumsum_10mst = "Cumul. upstream coal prod. (10M ST)",
   num_facilities                  = "Num. intake facilities",
   "PWSID"                         = "CWS"
@@ -268,7 +272,8 @@ nice_chem <- function(x) {
 #   file_sfx  — suffix appended to output file name (e.g. "", "_2005", "_ravalli")
 #   title_sfx — appended to table title
 # ---------------------------------------------------------------------------
-run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_main_std) {
+run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_main_std,
+                             detect_for = character(0)) {
   for (grp in chem_groups) {
     cat("\n--- Group:", grp$group_label, file_sfx, "---\n")
 
@@ -282,8 +287,9 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
     # TC group uses note_tc; all others use note
     grp_note      <- if (isTRUE(grp$is_tc)) note_tc else note
 
-    models_list <- list()
-    hdr_vec     <- character(0)
+    models_list   <- list()
+    hdr_vec       <- character(0)
+    val_chems_ok  <- character(0)  # chems that produced a mean-conc. model (for detect block)
 
     for (chem in grp$chems) {
       d <- df[df$CHEMID_name == chem, ]
@@ -302,8 +308,9 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
           error = function(e) { cat("  ERROR (VALUE):", conditionMessage(e), "\n"); NULL }
         )
         if (!is.null(m_val)) {
-          models_list <- c(models_list, list(m_val))
-          hdr_vec     <- c(hdr_vec, nm)
+          models_list  <- c(models_list, list(m_val))
+          hdr_vec      <- c(hdr_vec, nm)
+          val_chems_ok <- c(val_chems_ok, chem)
           cat("  n_val =", m_val$nobs,
               "| coef_val =", round(coef(m_val)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
         }
@@ -326,6 +333,38 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
           }
         }
       }
+    }
+
+    # ---- Detection-share block -----------------------------------------------
+    # For requested groups, append a trailing block of detect_share models, one
+    # per contaminant that produced a mean-conc. model. Appending after all the
+    # mean-conc. models keeps the depvar header a single "Share of samples
+    # detected" span mirroring the "Mean conc." span, rather than interleaving.
+    if (grp$file_label %in% detect_for) {
+      for (chem in val_chems_ok) {
+        d <- df[df$CHEMID_name == chem, ]
+        dsh_var <- var(d$detect_share, na.rm = TRUE)
+        if (is.na(dsh_var) || dsh_var == 0) {
+          cat("  detect_share constant for", chem, "— skipping detection-share model.\n")
+          next
+        }
+        m_dsh <- tryCatch(
+          feols(fml_dsh, data = d, cluster = ~PWSID),
+          error = function(e) { cat("  ERROR (detect_share):", conditionMessage(e), "\n"); NULL }
+        )
+        if (!is.null(m_dsh)) {
+          models_list <- c(models_list, list(m_dsh))
+          hdr_vec     <- c(hdr_vec, nice_chem(chem))
+          cat("  n_dsh =", m_dsh$nobs,
+              "| coef_dsh =", round(coef(m_dsh)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+        }
+      }
+      grp_note <- paste0(
+        grp_note,
+        " The ``Share of samples detected'' columns report the share of a ",
+        "CWS-year's samples that were detections (above the reporting/detection ",
+        "limit)."
+      )
     }
 
     if (length(models_list) == 0) {
@@ -574,6 +613,21 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
     "selenium" = "0.050 mg/L"
   )
 
+  # Numeric MCL values (mg/L), matching _MCL_RECORDS in cws_6year_review.py.
+  # Arsenic is time-varying: 0.050 through 2005, 0.010 from 2006 onward.
+  mcl_values <- c(
+    "nitrate"  = 10.000,
+    "barium"   = 2.000,
+    "cadmium"  = 0.005,
+    "chromium" = 0.100,
+    "mercury"  = 0.002,
+    "selenium" = 0.050
+  )
+  mcl_value_for <- function(chem, year) {
+    if (chem == "arsenic") return(ifelse(year <= 2005, 0.050, 0.010))
+    rep(unname(mcl_values[[chem]]), length(year))
+  }
+
   for (chem in inorg_val_chems) {
     d_s <- df6_arg[df6_arg$CHEMID_name == chem, ]
     if (nrow(d_s) < 30) next
@@ -589,6 +643,13 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
     d_reg_s <- d_s[keep_s, ]
     cat("  ", chem, ": n_complete =", nrow(d_reg_s), "| feols nobs =", m_s$nobs, "\n")
 
+    near_mcl_share <- if (chem %in% names(mcl_values) || chem == "arsenic") {
+      half_mcl <- 0.5 * mcl_value_for(chem, d_reg_s$year)
+      mean(d_reg_s$VALUE > half_mcl, na.rm = TRUE)
+    } else {
+      NA_real_
+    }
+
     sum_rows[[chem]] <- data.frame(
       variable  = paste0(nice_chem(chem), " (mg/L)"),
       mcl_label = ifelse(chem %in% names(mcl_labels), mcl_labels[[chem]], "---"),
@@ -596,6 +657,7 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
       max_val   = max(d_reg_s$VALUE_max,  na.rm = TRUE),
       sd_val    = sd(d_reg_s$VALUE,       na.rm = TRUE),
       n_obs     = nrow(d_reg_s),
+      near_mcl  = near_mcl_share,
       stringsAsFactors = FALSE
     )
     coal_list[[chem]] <- d_reg_s[, c("PWSID", "year", "coal_prod_upstream_cumsum_10mst")]
@@ -610,6 +672,7 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
     max_val   = max(coal_df$coal_prod_upstream_cumsum_10mst,  na.rm = TRUE),
     sd_val    = sd(coal_df$coal_prod_upstream_cumsum_10mst,   na.rm = TRUE),
     n_obs     = sum(!is.na(coal_df$coal_prod_upstream_cumsum_10mst)),
+    near_mcl  = NA_real_,
     stringsAsFactors = FALSE
   )
 
@@ -625,6 +688,7 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
     return(sprintf("%.2f", x))
   }
   fmt_n <- function(x) formatC(x, format = "d", big.mark = ",")
+  fmt_pct <- function(x) if (is.na(x)) "---" else sprintf("%.1f\\%%", 100 * x)
 
   note_ss <- paste0(
     note_ss_period,
@@ -632,6 +696,8 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
     "Table~\\ref{tab:6yr_huc02fe_inorg_val", file_sfx, "}. ",
     "For cumulative upstream coal production, statistics are computed over unique ",
     "PWSID$\\times$year pairs that appear in at least one regression sample. ",
+    "``Near MCL'' is the share of CWS-year mean concentrations exceeding 50\\% ",
+    "of the applicable MCL. ",
     "Sample: CWSs at most one HUC12 downstream of a coal mine ",
     "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0)."
   )
@@ -646,9 +712,9 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
     "   \\bigskip",
     "   \\centering",
     "   \\begin{adjustbox}{width = 0.9\\textwidth, center}",
-    "      \\begin{tabular}{lp{3.8cm}cccc}",
+    "      \\begin{tabular}{lp{3.8cm}ccccc}",
     "         \\toprule",
-    "         Variable & MCL & Mean & Max & Std.\\ Dev. & $N$ \\\\",
+    "         Variable & MCL & Mean & Max & Std.\\ Dev. & $N$ & Near MCL \\\\",
     "         \\midrule"
   )
 
@@ -660,7 +726,8 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
       fmt_num(r$mean_val), " & ",
       fmt_num(r$max_val), " & ",
       fmt_num(r$sd_val), " & ",
-      fmt_n(r$n_obs), " \\\\"
+      fmt_n(r$n_obs), " & ",
+      fmt_pct(r$near_mcl), " \\\\"
     ))
   }
 
@@ -775,7 +842,7 @@ cat("Rows (1998-2005):", nrow(df6r_2005),
     "| year range:", min(df6r_2005$year), "-", max(df6r_2005$year), "\n")
 run_group_tables(df6r_2005, note_2005_rav, file_sfx = "_ravalli_2005",
                  title_sfx = ", Ravalli et al.~(2022) cleaning, robustness 1998--2005",
-                 note_tc = note_tc_main_rav)
+                 note_tc = note_tc_main_rav, detect_for = "inorg")
 
 cat("\n=== COUNT TABLES: MAIN SAMPLE 1998-2011 ===\n")
 run_count_tables(df6r, note_cnt_main_rav, file_sfx = "_ravalli",
