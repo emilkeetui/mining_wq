@@ -41,9 +41,9 @@ cat("Measurement rows dropped to NA value_z:", sum(is.na(meas$value_z)), "\n\n")
 
 # ── 3. Build features shared by both models ───────────────────────────────────
 # Per PWSID x chemical, sorted by year:
-#   running_mean_z      = cummean(value_z) through this test (inclusive) -- both
-#                         last_level_z and running_mean_z are benchmarked against
-#                         the z-score of all observations of that contaminant at that CWS
+#   running_mean_z      = cumulative mean of raw VALUE through this test (inclusive),
+#                         z-scored against v_mean/v_sd of all observations of that
+#                         CWS x chemical (same reference distribution as last_level_z)
 #   year_next           = year of the next test (NA if this is the last)
 #   year_prev           = year of the prior test (NA if this is the first)
 #   years_since_last_test = gap to prior test; NA for first test in series
@@ -55,7 +55,7 @@ meas_feats <- meas |>
   group_by(PWSID, CHEMID_name) |>
   arrange(year, .by_group = TRUE) |>
   mutate(
-    running_mean_z         = cummean(value_z),
+    running_mean_z         = (cummean(VALUE) - v_mean) / v_sd,
     year_next              = lead(year),
     years_since_last_test  = year - lag(year)
   ) |>
@@ -181,7 +181,7 @@ dir.create(file.path(ROOT, "output/reg"), showWarnings = FALSE, recursive = TRUE
 out_tex <- file.path(ROOT, "output/reg/monitoring_retesting_hazard.tex")
 
 etable(
-  m1, m2, m3, m4, m5, m6,
+  m1, m2, m3,
   style.tex = style.tex("aer", adjustbox = TRUE),
   title     = "Effect of Contaminant Level on Likelihood of Re-Testing (SYR2 CWSs)",
   label     = "tab:monitoring_retesting",
@@ -199,16 +199,10 @@ etable(
     "Cols 1--3: unit = CWS $\\times$ chemical $\\times$ test year (LPM data); ",
     "outcome = 1 if CWS submitted a reading for the same chemical in the following ",
     "calendar year. Cols 1--2 are LPM; col 3 is logit; all include years since last test. ",
-    "Cols 4--6: discrete-time hazard panel; ",
-    "unit = CWS $\\times$ chemical $\\times$ at-risk year; ",
-    "outcome = 1 if CWS tested that year. ",
-    "Col 4 includes CWS fixed effects; col 5 adds year and chemical fixed effects; ",
-    "col 6 is logit with CWS, year, and chemical fixed effects. ",
     "Both last level and mean level z-scored against the distribution of all ",
     "observations of that contaminant at that CWS; mean level is the cumulative ",
     "mean of the z-scored readings through this test. ",
-    "Years since last test controls for persistence in the testing schedule (cols 1--3) ",
-    "and baseline hazard shape (cols 4--6). ",
+    "Years since last test controls for persistence in the testing schedule. ",
     "SEs clustered at CWS level. ",
     "Sample: SYR2 CWSs, 1998--2005."
   ),

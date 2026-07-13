@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+\caption{\label{tab:sanitary_visit_formal_enforcement_rate_syr2_above_mean} Formal Enforcement Rate, by Sample Restriction, Visit Timing, and SYR2 Level (Downstream CWSs, 1985--2005) -- Test Version, Above Mean}
+\bigskip
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+\begin{tabular}{lcc}
+\toprule
+Sample & N (CWS-years) & Formal enforcement rate \\
+\midrule
+All CWS-years (downstream 2SLS panel) & 7{,}329 & 2.52\% \\
+CWS-years with an MR violation & 1{,}018 & 11.59\% \\
+CWS-years with an MR violation and a sanitary visit (same year) & 162 & 22.22\% \\
+CWS-years with an MR violation following sanitary visit & 155 & 17.42\% \\
+CWS-years with an MR violation preceding sanitary visit & 186 & 24.19\% \\
+CWS-years with an MR violation, sanitary visit (same year), and SYR2 above mean & 17 & 5.88\% \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright 
+Sample: strictly downstream CWSs (349), CWS-years 1985--2005 (7329 CWS-years). Rows 1-5 reproduce sanitary\_visit\_formal\_enforcement\_rate.r exactly. Formal enforcement = 1 if a violations-enforcement action with ENF\_ACTION\_CATEGORY = Formal is ongoing at any point during the calendar year t. MR violation = 1 if a violation onset with VIOLATION\_CATEGORY\_CODE = MR begins in year t. Sanitary visit = 1 if a site visit with VISIT\_REASON\_CODE in \{SNSV, SNSP, SSVF\} occurs in year t. Row 4 (``following sanitary visit''): sanitary visit in the 365 days immediately preceding the MR onset date. Row 5 (``preceding sanitary visit''): sanitary visit in the 365 days immediately following the MR onset date; rows 4-5 use year t = the MR onset's calendar year and are not mutually exclusive. Row 6 (test row): restricts row 3's sample (MR violation and same-year sanitary visit) to CWS-years where at least one SYR2 (6-Year Review) reading of arsenic, nitrate, barium, chromium, or selenium taken that year is above that chemical's mean, using the fixed published means from Table~\ref{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005} (arsenic = 0.0029 mg/L; nitrate = 0.7520 mg/L; barium = 0.0748 mg/L; chromium = 0.0059 mg/L; selenium = 0.0048 mg/L); any one of the 5 tested chemicals being above its mean qualifies the CWS-year (not all 5 required to be tested or above), and CWS-years with no SYR2 reading of any of the 5 chemicals that year do not qualify. Row Ns: row 2\,=\,1{,}018; row 3\,=\,162; row 4\,=\,155; row 5\,=\,186; row 6\,=\,17.
+}
+\end{table}

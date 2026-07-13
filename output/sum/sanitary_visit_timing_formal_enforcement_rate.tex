@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\caption{\label{tab:sanitary_visit_timing_formal_enforcement_rate} Formal Enforcement Rate, by Sample Restriction and Visit Timing (Downstream CWSs, 1985--2005)}
+\bigskip
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+\begin{tabular}{lcc}
+\toprule
+Sample & N (CWS-years) & Formal enforcement rate \\
+\midrule
+All CWS-years (downstream 2SLS panel) & 7{,}329 & 2.52\% \\
+CWS-years with an MR violation & 1{,}018 & 11.59\% \\
+CWS-years with an MR violation and a sanitary visit (same year) & 162 & 22.22\% \\
+CWS-years with an MR violation following sanitary visit & 155 & 17.42\% \\
+CWS-years with an MR violation preceding sanitary visit & 186 & 24.19\% \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright 
+Sample: strictly downstream CWSs (349), CWS-years 1985--2005 (7329 CWS-years). Formal enforcement = 1 if a violations-enforcement action with ENF\_ACTION\_CATEGORY = Formal is ongoing at any point during the calendar year t (spell runs from the month of ENFORCEMENT\_DATE through the month of CALCULATED\_RTC\_DATE, fallback NON\_COMPL\_PER\_END\_DATE if RTC missing, else the enforcement month itself). MR violation = 1 if a violation onset with VIOLATION\_CATEGORY\_CODE = MR begins in year t (NON\_COMPL\_PER\_BEGIN\_DATE). Sanitary visit = 1 if a site visit with VISIT\_REASON\_CODE in \{SNSV, SNSP, SSVF\} occurs in year t. Row 2 N\,=\,1{,}018; row 3 (visit in the same calendar year as the MR onset) N\,=\,162. Row 4 (``following sanitary visit''): CWS-year t of an MR violation onset where a sanitary visit occurred in the 365 days immediately preceding that onset date (visit, then MR violation within a year), N\,=\,155. Row 5 (``preceding sanitary visit''): CWS-year t of an MR violation onset where a sanitary visit occurred in the 365 days immediately following that onset date (MR violation, then visit within a year), N\,=\,186. Rows 4-5 use year t = the calendar year of the MR onset for the formal-enforcement outcome, and the 365-day window is measured in calendar days and may cross year boundaries; a CWS-year with more than one qualifying MR onset appears once. Rows 4 and 5 are not mutually exclusive.
+}
+\end{table}

@@ -1,0 +1,56 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:sanitary_visit_enforcement_type_iterative} Sanitary Visit Timing and Enforcement Action Type}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccc}
+         \toprule
+         
+          & \multicolumn{2}{c}{Formal enforcement action in month t} & \multicolumn{2}{c}{Informal enforcement action in month t} & \multicolumn{2}{c}{No enforcement action in month t}\\
+         
+         Outcome & \multicolumn{2}{c}{Formal} & \multicolumn{2}{c}{Informal} & \multicolumn{2}{c}{None} \\ 
+         
+                                            & (1)            & (2)                     & (3)            & (4)            & (5)             & (6)\\  
+         
+         \midrule 
+         Constant                           & 0.0021$^{***}$ &                         & 0.0220$^{***}$ &                & 0.9770$^{***}$  &   \\   
+                                            & (0.0002)       &                         & (0.0015)       &                & (0.0016)        &   \\   
+         Sanitary visit lead (1, 6) months  & 0.0048$^{***}$ & 0.0008                  & 0.0145$^{***}$ & 0.0008         & -0.0158$^{***}$ & -0.0017\\   
+                                            & (0.0014)       & (0.0010)                & (0.0039)       & (0.0072)       & (0.0039)        & (0.0074)\\   
+         Sanitary visit lag (-6, -1) months & 0.0036$^{**}$  & $-9.84\times 10^{-6}$   & 0.0153$^{***}$ & -0.0009        & -0.0161$^{***}$ & 0.0009\\   
+                                            & (0.0015)       & (0.0001)                & (0.0042)       & (0.0083)       & (0.0044)        & (0.0083)\\   
+         N prior violations                 &                & $-5.84\times 10^{-5}$   &                & 0.0025$^{***}$ &                 & -0.0024$^{***}$\\   
+                                            &                & ($4.68\times 10^{-5}$)  &                & (0.0009)       &                 & (0.0009)\\   
+         Last max conc. (\% of MCL)         &                & -0.0021                 &                & 0.0541         &                 & -0.0521\\   
+                                            &                & (0.0029)                &                & (0.0560)       &                 & (0.0558)\\   
+         
+          \\
+         
+         Observations                       & 87,948         & 6,743                   & 87,948         & 6,743          & 87,948          & 6,743\\  
+         
+          \\
+         
+         CWS fixed effects                  &                & $\checkmark$            &                & $\checkmark$   &                 & $\checkmark$\\   
+         Year-month fixed effects           &                & $\checkmark$            &                & $\checkmark$   &                 & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample: strictly downstream CWSs (349), CWS-months 1985-01 to 2005-12 in columns (1), (3), (5). Outcomes: formal\_enforcement = 1 if a formal enforcement action (ENF\_ACTION\_CATEGORY = Formal) was taken against that CWS in that calendar month; informal\_enforcement = 1 if an informal action (ENF\_ACTION\_CATEGORY = Informal) was taken; no\_enforcement = 1 if neither occurred. san\_before6 = 1 if the CWS-month falls in the 6 calendar months preceding a sanitary visit (SNSV/SNSP/SSVF); san\_after6 = 1 if it falls in the 6 months following one; both are 0 outside any such window. N\_prior\_violations = cumulative count of prior violation onsets (any category) at that CWS. Last max conc. (\% of MCL) = running-max SYR2 contaminant concentration as a share of the MCL. Columns (1), (3), (5) use the full panel with no fixed effects, N=87948. Columns (2), (4), (6) add the prior-violation and concentration controls, include CWS and year-month fixed effects, and are restricted to CWSs with >=1 SYR2 measurement and CWS-months within the SYR2 window (1998-2005), N=6743. SEs clustered at the CWS (PWSID) level in all columns.}
+   
+\end{table}
+
+
