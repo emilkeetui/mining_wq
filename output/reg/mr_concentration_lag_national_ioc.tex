@@ -1,0 +1,25 @@
+
+\begin{table}[htbp]
+\caption{Inorganic-contaminant MR violations following a reading at 50--100\% of the MCL (national SYR2 sample)}\label{tab:mr_concentration_lag_national_ioc}
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+   \begin{tabular}{lcccc}
+      \toprule    
+                                  & IOC MR (1-yr)   & IOC MR (6-mon)      & Placebo: past (1-yr) & Placebo: past (6-mon) \\   
+                                  & (1)             & (2)                 & (3)                  & (4)\\  
+      \midrule 
+      Concen. $>$ 50\% MCL                   & 0.0029          & 0.0012              & 0.0029               & 0.0042$^{**}$\\   
+                                  & (0.0026)        & (0.0019)            & (0.0027)             & (0.0021)\\   
+      Mean concen./MCL (z-score)              & 0.0030$^{***}$  & 0.0017$^{***}$      & 0.0020$^{***}$       & 0.0010$^{**}$\\   
+                                  & (0.0007)        & (0.0005)            & (0.0007)             & (0.0004)\\   
+       \\
+      Observations                & 587,986         & 587,986             & 587,986              & 587,986\\  
+       \\
+      CWS fixed effects         & $\checkmark$    & $\checkmark$        & $\checkmark$         & $\checkmark$\\   
+      YEAR fixed effects          & $\checkmark$    & $\checkmark$        & $\checkmark$         & $\checkmark$\\   
+      Chemical fixed effects  & $\checkmark$    & $\checkmark$        & $\checkmark$         & $\checkmark$\\   
+      \bottomrule
+   \end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright National SYR2 sample (all PWSIDs, 1998--2005), arsenic + barium + selenium pooled. Outcome: same-contaminant MR (monitoring/reporting) violation in the forward window (1--365 days for the 1-yr column; 1--182 days for the 6-mon column) following the sample date; placebo columns use the same windows measured BEFORE the sample date. MCLs in force 1993--2005: arsenic 0.05 mg/L, barium 2.0 mg/L, selenium 0.05 mg/L. Concen. $>$ 50\% MCL = reading at 50--100\% of the MCL. Unlike nitrate (40 CFR 141.23(d)(2), trigger at 50\% of MCL), the IOC quarterly-monitoring trigger is MCL exceedance itself (40 CFR 141.23(c)(7)), and 141.23(c)(2)--(6) waivers (down to 1 sample per 9-year cycle) require all previous results below the MCL; Concen. $>$ 50\% MCL therefore proxies ratchet risk on the next reading rather than a sub-MCL statutory trigger. N of readings with concentration at 50--100 percent of the MCL: 7125 (arsenic 6179, barium 448, selenium 498). Unique PWSIDs: 50213. Mean concen./MCL = PWSID-YEAR-chemical mean of reading/MCL, z-scored within chemical. Chemical fixed effects included. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS (PWSID) level.}
+\end{table}

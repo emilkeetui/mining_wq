@@ -1,10 +1,13 @@
 # ============================================================
 # Script: sanitary_visit_upstream_mines_ols.r
-# Purpose: OLS of formal enforcement on sanitary visit (binary) and an
-#          above-median-upstream-mines binary, on the main D1 2SLS panel
-#          (downstream, one step from mine, same sample as didhet.r /
-#          enforcement_chain_d12.r). Col 1: no fixed effects. Col 2: year FE.
-#          Col 3: CWS (PWSID) FE.
+# Purpose: OLS of formal enforcement on sanitary visit (binary), an
+#          above-median-upstream-mines binary, and an MR violation onset
+#          binary, on the main D1 2SLS panel (downstream, one step from
+#          mine, same sample as didhet.r / enforcement_chain_d12.r).
+#          Col 1: no fixed effects. Col 2: year FE. Col 3: CWS (PWSID) FE.
+#          Col 4: year + CWS FE. MR violation onset defined as in
+#          sanitary_visit_formal_enforcement_rate.r (VIOLATION_CATEGORY_CODE
+#          == "MR", deduped on VIOLATION_ID, year of NON_COMPL_PER_BEGIN_DATE).
 # Inputs:  clean_data/cws_data/prod_vio_sulfur.parquet
 #          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_SITE_VISITS.csv
 #          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.csv
@@ -62,19 +65,39 @@ enf_agg <- enf[, .(any_formal = any(ENF_ACTION_CATEGORY == "Formal", na.rm = TRU
 cat(sprintf("PWSID-years with formal enforcement: %d\n", sum(enf_agg$any_formal)))
 rm(enf); gc()
 
+# ── 3b. MR violation onsets, PWSID-year ──────────────────────────────────────
+# Same definition as sanitary_visit_formal_enforcement_rate.r: dedupe on
+# VIOLATION_ID, year of NON_COMPL_PER_BEGIN_DATE, VIOLATION_CATEGORY_CODE == "MR".
+ve <- fread(file.path(SDWA_DIR, "SDWA_VIOLATIONS_ENFORCEMENT.csv"),
+            select = c("PWSID", "VIOLATION_ID", "NON_COMPL_PER_BEGIN_DATE", "VIOLATION_CATEGORY_CODE"))
+ve <- ve[PWSID %in% ids_d1]
+onsets <- unique(ve[, .(PWSID, VIOLATION_ID, NON_COMPL_PER_BEGIN_DATE, VIOLATION_CATEGORY_CODE)])
+onsets[, onset_dt := as.Date(NON_COMPL_PER_BEGIN_DATE, "%m/%d/%Y")]
+onsets <- onsets[!is.na(onset_dt)]
+onsets[, onset_yr := as.integer(format(onset_dt, "%Y"))]
+onsets <- onsets[onset_yr >= YR_LO & onset_yr <= YR_HI]
+
+mr_onsets <- onsets[VIOLATION_CATEGORY_CODE == "MR", .(PWSID, VIOLATION_ID, onset_dt, onset_yr)]
+mr_agg <- unique(mr_onsets[, .(PWSID, year = onset_yr, mr_violation = 1L)])
+cat(sprintf("PWSID-years with an MR violation onset: %d\n", nrow(mr_agg)))
+rm(ve, onsets, mr_onsets); gc()
+
 # ── 4. Merge onto D1 main panel ───────────────────────────────────────────────
 panel_d1 <- d1_main %>%
   left_join(as.data.frame(sv_agg),  by = c("PWSID", "year")) %>%
-  left_join(as.data.frame(enf_agg), by = c("PWSID", "year"))
+  left_join(as.data.frame(enf_agg), by = c("PWSID", "year")) %>%
+  left_join(as.data.frame(mr_agg),  by = c("PWSID", "year"))
 
-panel_d1$any_snsv[is.na(panel_d1$any_snsv)]     <- FALSE
-panel_d1$any_formal[is.na(panel_d1$any_formal)] <- FALSE
+panel_d1$any_snsv[is.na(panel_d1$any_snsv)]         <- FALSE
+panel_d1$any_formal[is.na(panel_d1$any_formal)]     <- FALSE
+panel_d1$mr_violation[is.na(panel_d1$mr_violation)] <- 0L
 panel_d1$any_snsv   <- as.integer(panel_d1$any_snsv)
 panel_d1$any_formal <- as.integer(panel_d1$any_formal)
 
 cat(sprintf("Main 2SLS panel (D1): %d PWSID-years\n", nrow(panel_d1)))
 cat(sprintf("any_snsv = 1 in %d (%.1f%%)\n", sum(panel_d1$any_snsv), 100 * mean(panel_d1$any_snsv)))
 cat(sprintf("any_formal = 1 in %d (%.1f%%)\n", sum(panel_d1$any_formal), 100 * mean(panel_d1$any_formal)))
+cat(sprintf("mr_violation = 1 in %d (%.1f%%)\n", sum(panel_d1$mr_violation), 100 * mean(panel_d1$mr_violation)))
 
 # ── 5. Above-median-upstream-mines binary ────────────────────────────────────
 # Median taken over CWS-years in this same D1 main downstream 2SLS panel.
@@ -86,17 +109,19 @@ cat(sprintf("upstream_mines_above_median = 1 in %d (%.1f%%)\n",
     sum(panel_d1$upstream_mines_above_median), 100 * mean(panel_d1$upstream_mines_above_median)))
 
 # ── 6. OLS regressions ────────────────────────────────────────────────────────
-fml_nofe    <- any_formal ~ any_snsv + upstream_mines_above_median
-fml_yearfe  <- any_formal ~ any_snsv + upstream_mines_above_median | year
-fml_pwsidfe <- any_formal ~ any_snsv + upstream_mines_above_median | PWSID
+fml_nofe     <- any_formal ~ any_snsv + upstream_mines_above_median + mr_violation
+fml_yearfe   <- any_formal ~ any_snsv + upstream_mines_above_median + mr_violation | year
+fml_pwsidfe  <- any_formal ~ any_snsv + upstream_mines_above_median + mr_violation | PWSID
+fml_bothfe   <- any_formal ~ any_snsv + upstream_mines_above_median + mr_violation | PWSID + year
 
 m1 <- feols(fml_nofe,    data = panel_d1, cluster = ~ PWSID)
 m2 <- feols(fml_yearfe,  data = panel_d1, cluster = ~ PWSID)
 m3 <- feols(fml_pwsidfe, data = panel_d1, cluster = ~ PWSID)
+m4 <- feols(fml_bothfe,  data = panel_d1, cluster = ~ PWSID)
 
 cat("\n--- OLS: formal enforcement on sanitary visit + above-median upstream mines (D1 main 2SLS panel) ---\n")
-etable(m1, m2, m3,
-  headers = list("Fixed effects" = list("None" = 1, "Year" = 1, "CWS" = 1)),
+etable(m1, m2, m3, m4,
+  headers = list("Fixed effects" = list("None" = 1, "Year" = 1, "CWS" = 1, "Year + CWS" = 1)),
   se.below = TRUE, fitstat = ~ n + r2)
 
 # ── 7. LaTeX table (style.tex("aer", adjustbox = TRUE); captioned/labeled) ──
@@ -123,14 +148,15 @@ out_tex <- file.path(ROOT, "output/reg/sanitary_visit_upstream_mines_ols.tex")
 dict_main <- c(
   "any_snsv"                     = "Sanitary visit",
   "upstream_mines_above_median"  = "Upstream mines $>$ median",
+  "mr_violation"                 = "MR violation",
   "PWSID"                        = "CWS"
 )
 
-etable(m1, m2, m3,
+etable(m1, m2, m3, m4,
        title          = "Effect of Sanitary Visits and Upstream Coal Mining on Formal Enforcement (D1 Downstream Sample)",
        label          = "tab:sanitary_visit_upstream_mines_ols",
        dict           = dict_main,
-       headers        = list("Fixed effects" = list("None" = 1, "Year" = 1, "CWS" = 1)),
+       headers        = list("Fixed effects" = list("None" = 1, "Year" = 1, "CWS" = 1, "Year + CWS" = 1)),
        fitstat        = ~ n + r2,
        notes          = paste0(
          "D1 downstream sample (minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0), ",
@@ -140,7 +166,10 @@ etable(m1, m2, m3,
          "site visit with VISIT\\_REASON\\_CODE in \\{SNSV, SSVF\\} occurs in that calendar year (",
          sprintf("%.1f", 100 * mean(panel_d1$any_snsv)), "\\% of panel). Upstream mines $>$ median = 1 ",
          "if num\\_coal\\_mines\\_upstream\\_sum exceeds the median (", median_upstream_mines,
-         ") across CWS-years in this D1 main downstream 2SLS panel. Standard errors clustered by CWS."),
+         ") across CWS-years in this D1 main downstream 2SLS panel. MR violation = 1 if a ",
+         "VIOLATION\\_CATEGORY\\_CODE = MR violation has its onset (NON\\_COMPL\\_PER\\_BEGIN\\_DATE) ",
+         "in that calendar year (", sprintf("%.1f", 100 * mean(panel_d1$mr_violation)),
+         "\\% of panel). Standard errors clustered by CWS."),
        style.tex       = style.tex("aer", adjustbox = TRUE),
        tex             = TRUE,
        postprocess.tex = postprocess_table,

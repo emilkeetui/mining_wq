@@ -1,0 +1,24 @@
+
+\begin{table}[htbp]
+\caption{Nitrate MR violations following a reading above 50\% of the MCL (national sample, downstream-2SLS-sample states)}\label{tab:mr_concentration_lag_national_downstream_states}
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+   \begin{tabular}{lcccc}
+      \toprule    
+                          & Nitrate MR (1-yr) & Nitrate MR (6-mon)  & Placebo: past (1-yr) & Placebo: past (6-mon) \\   
+                          & (1)               & (2)                 & (3)                  & (4)\\  
+      \midrule 
+      Concen. $>$ 50\% MCL           & 0.0042$^{*}$      & 0.0015$^{*}$        & 0.0007               & 0.0008\\   
+                          & (0.0025)          & (0.0008)            & (0.0015)             & (0.0011)\\   
+      Mean concen. (z-score)       & 0.0220$^{**}$     & 0.0106$^{***}$      & 0.0088$^{**}$        & 0.0080$^{**}$\\   
+                          & (0.0093)          & (0.0038)            & (0.0044)             & (0.0034)\\   
+       \\
+      Observations        & 541,483           & 541,483             & 541,483              & 541,483\\  
+       \\
+      CWS fixed effects & $\checkmark$      & $\checkmark$        & $\checkmark$         & $\checkmark$\\   
+      YEAR fixed effects  & $\checkmark$      & $\checkmark$        & $\checkmark$         & $\checkmark$\\   
+      \bottomrule
+   \end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright National SYR2 sample restricted to states with at least one CWS in the main downstream 2SLS sample (minehuc\_downstream\_of\_mine==1 \& minehuc\_mine==0, 1985--2005), nitrate only. Outcome: nitrate MR (monitoring/reporting) violation in the forward window (1--365 days for the 1-yr column; 1--182 days for the 6-mon column) following the sample date; placebo columns use the same windows measured BEFORE the sample date. Concen. $>$ 50\% MCL = reading at 50--100\% of the MCL, the 40 CFR 141.23(d)(2) quarterly-monitoring trigger. States retained: 18. Unique PWSIDs: 53335. N of readings with concentration above 50 percent of the MCL: 85766. Mean concentration = PWSID-YEAR mean reading, z-scored across the sample. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS (PWSID) level.}
+\end{table}

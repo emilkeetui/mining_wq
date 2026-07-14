@@ -2,14 +2,15 @@
 # Script: regulator_response_by_viol_type_main_states.r
 # Purpose: (1) Summary table of regulator responses (IOC MR vs IOC MCL) and
 #          (2) specific enforcement action type breakdown, both restricted to
-#          the main one-step downstream 2SLS sample (minehuc_downstream_of_mine==1
-#          & minehuc_mine==0) and IOC rules (nitrate 331, arsenic 332,
-#          inorganic chemicals 333), 1985-2005
-# Inputs:  clean_data/cws_data/prod_vio_sulfur.parquet (downstream PWSID list)
+#          IOC rules (nitrate 331, arsenic 332, inorganic chemicals 333),
+#          1985-2005, for all CWSs located in states that have at least one
+#          CWS in the main one-step downstream 2SLS sample
+#          (minehuc_downstream_of_mine==1 & minehuc_mine==0).
+# Inputs:  clean_data/cws_data/prod_vio_sulfur.parquet (downstream states list)
 #          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.parquet
 #          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_REF_CODE_VALUES.csv
 # Outputs: output/sum/regulator_response_by_viol_type_main_states.tex
-# Author: EK  Date: 2026-06-07
+# Author: EK  Date: 2026-07-14
 # ============================================================
 
 .libPaths("Z:/ek559/RPackages")
@@ -17,18 +18,21 @@ library(arrow)
 library(dplyr)
 library(data.table)
 
-# ── 0. Strictly downstream PWSID list — main one-step downstream 2SLS sample ─
-cat("Loading downstream 2SLS sample...\n")
+# ── 0. States represented in the main one-step downstream 2SLS sample ───────
+cat("Loading downstream 2SLS sample states...\n")
 pws_ds <- as.data.frame(
   arrow::read_parquet("Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
                       col_select = c("PWSID", "STATE_CODE",
                                      "minehuc_downstream_of_mine", "minehuc_mine")))
 downstream_mask <- pws_ds$minehuc_downstream_of_mine == 1 &
                    pws_ds$minehuc_mine == 0
-sample_pwsids    <- unique(pws_ds$PWSID[downstream_mask])
 downstream_states <- sort(unique(pws_ds$STATE_CODE[downstream_mask & !is.na(pws_ds$STATE_CODE)]))
-cat("States in downstream sample:", paste(sort(downstream_states), collapse = ", "), "\n")
-cat("CWSs in downstream 2SLS sample:", length(sample_pwsids), "\n\n")
+cat("States in downstream 2SLS sample:", paste(downstream_states, collapse = ", "), "\n")
+
+# All CWSs (any minehuc status) located in those states
+sample_pwsids <- unique(pws_ds$PWSID[!is.na(pws_ds$STATE_CODE) &
+                                      pws_ds$STATE_CODE %in% downstream_states])
+cat("CWSs in main-states sample:", length(sample_pwsids), "\n\n")
 
 # ── 1. Load violations (column subset to limit memory) ────────────────────────
 cat("Reading SDWA_VIOLATIONS_ENFORCEMENT.parquet...\n")
@@ -50,7 +54,7 @@ ve[, NON_COMPL_PER_BEGIN_DATE := as.Date(NON_COMPL_PER_BEGIN_DATE, format = "%m/
 ve[, viol_year := as.integer(format(NON_COMPL_PER_BEGIN_DATE, "%Y"))]
 
 ve <- ve[PWSID %in% sample_pwsids & viol_year >= 1985 & viol_year <= 2005]
-cat("Rows in downstream sample (1985-2005):", nrow(ve), "\n")
+cat("Rows in main-states sample (1985-2005):", nrow(ve), "\n")
 
 ve[, CALCULATED_RTC_DATE := as.Date(CALCULATED_RTC_DATE, format = "%m/%d/%Y")]
 ve[, days_to_rtc := as.numeric(CALCULATED_RTC_DATE - NON_COMPL_PER_BEGIN_DATE)]
@@ -200,7 +204,8 @@ n_cws_fmt  <- format(length(sample_pwsids), big.mark = ",")
 
 shared_notes <- paste0(
   "Unit of observation: violation (unique VIOLATION\\_ID). ",
-  "Sample: downstream 2SLS sample (minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0), ",
+  "Sample: all CWSs in states with at least one CWS in the main downstream 2SLS sample ",
+  "(minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0), ",
   "1985--2005 (", n_cws_fmt, " CWSs; states: ", state_list, "). ",
   "IOC rules: nitrate (331), arsenic (332), inorganic chemicals (333). ",
   "Multiple enforcement actions per violation assigned the most severe (Formal $>$ Resolving $>$ Informal). ",
@@ -212,7 +217,7 @@ t1 <- make_frame(
   grps        = c("ioc_mr", "ioc_mcl"),
   col_headers = c("IOC MR", "IOC MCL"),
   frame_title = "Regulator Response by IOC Violation Type, 1985--2005",
-  label       = "tab:reg_response_ioc_dwnstrm",
+  label       = "tab:reg_response_ioc_mainstates",
   notes       = shared_notes
 )
 
@@ -230,7 +235,7 @@ ref_enf <- ref_all[VALUE_TYPE == "ENFORCEMENT_ACTION_TYPE_CODE",
 # Use action-level rows that have an actual enforcement action and are IOC-rule violations
 ve_enf <- ve[!is.na(ENFORCEMENT_ID) & rule_num %in% ioc_rules &
              VIOLATION_CATEGORY_CODE %in% c("MR", "MCL")]
-cat("Enforcement action rows (IOC rules, downstream, 1985-2005):", nrow(ve_enf), "\n")
+cat("Enforcement action rows (IOC rules, main-states, 1985-2005):", nrow(ve_enf), "\n")
 
 grp_names_enf <- c("mr_ioc", "mcl_ioc")
 groups_enf <- list(
@@ -286,8 +291,8 @@ enf_lines <- c(
   "\\begin{table}[htbp]",
   "\\centering",
   paste0("\\caption{Specific Enforcement Actions for IOC Violations, 1985--2005",
-         " (Downstream 2SLS Sample)}"),
-  "\\label{tab:enf_action_type_ioc_dwnstrm}",
+         " (Main States Sample)}"),
+  "\\label{tab:enf_action_type_ioc_mainstates}",
   "\\small",
   "\\begin{tabular}{llp{6.5cm}rr}",
   "\\hline\\hline",
@@ -339,7 +344,8 @@ enf_notes <- paste0(
   "compliance meetings, technical assistance visits); ",
   "\\textit{Resolving} = closure actions recording that the system returned to compliance. ",
   "``All other informal actions'' aggregates codes each below 1\\% in every column. ",
-  "Sample: downstream 2SLS sample (minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0), ",
+  "Sample: all CWSs in states with at least one CWS in the main downstream 2SLS sample ",
+  "(minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0), ",
   "1985--2005 (", n_cws_fmt, " CWSs; states: ", state_list, "). ",
   "Source: SDWA\\_VIOLATIONS\\_ENFORCEMENT.parquet, SDWA\\_REF\\_CODE\\_VALUES.csv."
 )
@@ -368,7 +374,7 @@ header <- paste0(
   "% Purpose: (1) Share of violations receiving each type of regulator response,\n",
   "%          conditional on violation category (MR vs MCL) for IOC rules;\n",
   "%          (2) specific enforcement action type breakdown.\n",
-  "% Sample:  Downstream 2SLS sample (minehuc_downstream_of_mine=1, minehuc_mine=0).\n",
+  "% Sample:  All CWSs in states with >=1 CWS in the main downstream 2SLS sample.\n",
   "% Source:  SDWA_VIOLATIONS_ENFORCEMENT.parquet\n",
   "% N IOC MR:  ", fmt_n(s$ioc_mr$n), " violations\n",
   "% N IOC MCL: ", fmt_n(s$ioc_mcl$n), " violations\n",
