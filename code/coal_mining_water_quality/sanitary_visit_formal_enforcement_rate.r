@@ -9,12 +9,18 @@
 #          sanitary visit in that same year.
 #          Second table: same 3 rows as above, plus row 4 ("CWS-years with
 #          an MR violation following sanitary visit" -- a sanitary visit in
-#          the 365 days immediately before the MR onset) and row 5 ("CWS-years
+#          the 365 days immediately before the MR onset), row 5 ("CWS-years
 #          with an MR violation preceding sanitary visit" -- a sanitary visit
 #          in the 365 days immediately after the MR onset), each evaluated
 #          against the formal-enforcement outcome in the MR onset's calendar
 #          year t (tests whether the row-3 same-calendar-year result depends
-#          on visit ordering relative to the onset within a 365-day window).
+#          on visit ordering relative to the onset within a 365-day window),
+#          and row 6 ("CWS-years with an MR violation, sanitary visit (same
+#          year), and upstream mines above median" -- restricts row 3's
+#          sample to CWS-years where num_coal_mines_upstream_sum is above
+#          the median computed over all CWS-years in the downstream 2SLS
+#          main sample; the median is 0, so this selects CWS-years with at
+#          least one upstream mine).
 # Inputs:  clean_data/cws_data/prod_vio_sulfur.parquet
 #          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.parquet
 #          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_SITE_VISITS.csv
@@ -36,10 +42,18 @@ YR_HI <- 2005L
 # ── 0. Sample: strictly-downstream CWSs ───────────────────────────────────────
 panel <- as.data.table(
   arrow::read_parquet(file.path(ROOT, "clean_data/cws_data/prod_vio_sulfur.parquet"),
-    col_select = c("PWSID", "minehuc_downstream_of_mine", "minehuc_mine")))
+    col_select = c("PWSID", "year", "num_coal_mines_upstream_sum",
+                   "minehuc_downstream_of_mine", "minehuc_mine")))
 downstream_mask <- panel$minehuc_downstream_of_mine == 1 & panel$minehuc_mine == 0
 sample_pwsids   <- unique(panel$PWSID[downstream_mask])
 cat("Downstream CWSs in sample:", length(sample_pwsids), "\n")
+
+# Median number of upstream mines across all CWS-years in the downstream
+# 2SLS main sample (used as the row-6 cutoff below).
+upstream_mines_py <- unique(panel[downstream_mask, .(PWSID, year, num_coal_mines_upstream_sum)])
+median_upstream_mines <- median(upstream_mines_py$num_coal_mines_upstream_sum, na.rm = TRUE)
+cat("Median num_coal_mines_upstream_sum across downstream 2SLS CWS-years:",
+    median_upstream_mines, "\n")
 
 # ── 1. Violations + enforcement ───────────────────────────────────────────────
 ve <- as.data.table(arrow::read_parquet(
@@ -228,16 +242,30 @@ preceding_py <- unique(mr_onsets[preceding_visit == 1, .(PWSID, year = onset_yr)
 row4_dt <- skel[following_py, on = .(PWSID, year), nomatch = NULL]
 row5_dt <- skel[preceding_py, on = .(PWSID, year), nomatch = NULL]
 
+# ── 4c. Row 6: row-3 sample + upstream mines above the median ──────────────
+# For each CWS-year in row3_dt (MR violation + same-year sanitary visit),
+# require num_coal_mines_upstream_sum to be above the median computed over
+# all CWS-years in the downstream 2SLS main sample (median = 0, so this
+# selects CWS-years with at least one upstream mine).
+above_median_py <- upstream_mines_py[num_coal_mines_upstream_sum > median_upstream_mines,
+                                      .(PWSID, year)]
+cat("\nCWS-years with upstream mines above the median:", nrow(above_median_py), "\n")
+
+row6_dt <- row3_dt[above_median_py, on = .(PWSID, year), nomatch = NULL]
+cat("CWS-years with MR violation + same-year sanitary visit + upstream mines above median:",
+    nrow(row6_dt), "\n")
+
 rows5 <- data.table(
   sample = c("All CWS-years (downstream 2SLS panel)",
              "CWS-years with an MR violation",
              "CWS-years with an MR violation and a sanitary visit (same year)",
              "CWS-years with an MR violation following sanitary visit",
-             "CWS-years with an MR violation preceding sanitary visit"),
-  n    = c(nrow(row1_dt), nrow(row2_dt), nrow(row3_dt), nrow(row4_dt), nrow(row5_dt)),
-  rate = c(rate(row1_dt), rate(row2_dt), rate(row3_dt), rate(row4_dt), rate(row5_dt))
+             "CWS-years with an MR violation preceding sanitary visit",
+             "CWS-years with an MR violation, sanitary visit (same year), and upstream mines above median"),
+  n    = c(nrow(row1_dt), nrow(row2_dt), nrow(row3_dt), nrow(row4_dt), nrow(row5_dt), nrow(row6_dt)),
+  rate = c(rate(row1_dt), rate(row2_dt), rate(row3_dt), rate(row4_dt), rate(row5_dt), rate(row6_dt))
 )
-cat("\n--- Formal enforcement rate table (5 rows) ---\n")
+cat("\n--- Formal enforcement rate table (6 rows) ---\n")
 print(rows5)
 
 rows5_tex <- sprintf("%s & %s & %s\\%% \\\\", rows5$sample, fmt_n(rows5$n), fmt_pct(rows5$rate))
@@ -260,15 +288,19 @@ notes_5row <- paste0(
   "N\\,=\\,", fmt_n(nrow(row5_dt)), ". Rows 4-5 use year t = the calendar year of the MR onset ",
   "for the formal-enforcement outcome, and the 365-day window is measured in calendar days and ",
   "may cross year boundaries; a CWS-year with more than one qualifying MR onset appears once. ",
-  "Rows 4 and 5 are not mutually exclusive."
+  "Rows 4 and 5 are not mutually exclusive. Row 6 restricts row 3's sample (MR violation and ",
+  "same-year sanitary visit) to CWS-years where the number of upstream coal mines ",
+  "(num\\_coal\\_mines\\_upstream\\_sum) is above the median computed over all CWS-years in the ",
+  "downstream 2SLS main sample (median = ", median_upstream_mines, "), i.e. CWS-years with at ",
+  "least one upstream mine, N\\,=\\,", fmt_n(nrow(row6_dt)), "."
 )
 
 out_5row_tex <- file.path(ROOT, "output/sum/sanitary_visit_timing_formal_enforcement_rate.tex")
 lines_5row_tex <- c(
   "\\begin{table}[htbp]",
   paste0("\\caption{\\label{tab:sanitary_visit_timing_formal_enforcement_rate} Formal ",
-         "Enforcement Rate, by Sample Restriction and Visit Timing (Downstream CWSs, ",
-         YR_LO, "--", YR_HI, ")}"),
+         "Enforcement Rate, by Sample Restriction, Visit Timing, and Upstream Mine Count ",
+         "(Downstream CWSs, ", YR_LO, "--", YR_HI, ")}"),
   "\\bigskip",
   "\\centering",
   "\\begin{adjustbox}{width = \\textwidth, center}",
@@ -293,5 +325,6 @@ stopifnot(file.exists(out_tex), file.info(out_tex)$size > 0)
 stopifnot(nrow(row1_dt) > nrow(row2_dt), nrow(row2_dt) >= nrow(row3_dt), nrow(row3_dt) > 0)
 stopifnot(file.exists(out_5row_tex), file.info(out_5row_tex)$size > 0)
 stopifnot(nrow(row4_dt) > 0, nrow(row5_dt) > 0, nrow(row4_dt) <= nrow(row2_dt), nrow(row5_dt) <= nrow(row2_dt))
+stopifnot(nrow(row6_dt) >= 0, nrow(row6_dt) <= nrow(row3_dt))
 cat("Output verified: both files exist and are non-zero; row Ns consistent.\n")
 cat("=== DONE ===\n")

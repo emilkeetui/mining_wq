@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\caption{\label{tab:sanitary_visit_formal_enforcement_rate_syr2_measurement} Formal Enforcement Rate, by Sample Restriction (CWS-Date Level, Downstream CWSs, 1985--2005)}
+\bigskip
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+\begin{tabular}{lcc}
+\toprule
+Sample & N (CWS-dates) & Formal enforcement rate \\
+\midrule
+All CWS-dates with an SYR2 measurement (downstream 2SLS sample) & 1{,}054 & 1.04\% \\
+CWS-dates with an MR violation covering that date & 155 & 5.16\% \\
+CWS-dates with an MR violation and a sanitary visit (same year) & 63 & 7.94\% \\
+CWS-dates with an MR violation, sanitary visit (same year), and $\geq$1 SYR2 reading above mean & 44 & 9.09\% \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright 
+Sample: strictly downstream CWSs (349), CWS-dates with an SYR2 (6-Year Review) measurement, 1985--2005 (1054 CWS-dates). Unit of observation is PWSID x sample\_date (not PWSID x year). Formal enforcement = 1 if a violations-enforcement action with ENF\_ACTION\_CATEGORY = Formal is ongoing at any point during the calendar year of the sample\_date. MR violation = 1 if an MR violation's non-compliance period (NON\_COMPL\_PER\_BEGIN\_DATE to NON\_COMPL\_PER\_END\_DATE, or open-ended through 2005 if no end date) covers the sample\_date. Sanitary visit = 1 if a site visit with VISIT\_REASON\_CODE in \{SNSV, SNSP, SSVF\} occurs in the same calendar year as the sample\_date. Row 4 restricts row 3's sample to CWS-dates where, in that same calendar year, at least one SYR2 reading of arsenic, nitrate, barium, chromium, or selenium exceeds that chemical's fixed published mean from Table~\ref{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005} (arsenic = 0.0029 mg/L; nitrate = 0.7520 mg/L; barium = 0.0748 mg/L; chromium = 0.0059 mg/L; selenium = 0.0048 mg/L); only one of the 5 chemicals need exceed its mean to qualify. Row Ns: row 2\,=\,155; row 3\,=\,63; row 4\,=\,44.
+}
+\end{table}

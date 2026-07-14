@@ -1,0 +1,53 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:sanitary_visit_upstream_mines_ols} Effect of Sanitary Visits and Upstream Coal Mining on Formal Enforcement (D1 Downstream Sample)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{any\_formal}\\
+         
+         Fixed effects             & None           & Year          & CWS \\   
+         
+                                   & (1)            & (2)           & (3)\\  
+         
+         \midrule 
+         Constant                  & 0.0350$^{***}$ &               &   \\   
+                                   & (0.0042)       &               &   \\   
+         Sanitary visit            & 0.0244$^{***}$ & -0.0104       & 0.0409$^{***}$\\   
+                                   & (0.0089)       & (0.0084)      & (0.0091)\\   
+         Upstream mines $>$ median & -0.0103$^{*}$  & 0.0089        & -0.0482$^{***}$\\   
+                                   & (0.0062)       & (0.0059)      & (0.0090)\\   
+         
+          \\
+         
+         Observations              & 6,232          & 6,232         & 6,225\\  
+         R$^2$                     & 0.00299        & 0.12555       & 0.10133\\  
+         
+          \\
+         
+         year fixed effects        &                & $\checkmark$  & \\  
+         CWS fixed effects         &                &               & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   D1 downstream sample (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0), CWS-years 1985--2005 (N\,=\,6232). Dependent variable: any formal enforcement action ongoing in the calendar year (3.5\% of panel). Sanitary visit = 1 if a site visit with VISIT\_REASON\_CODE in \{SNSV, SSVF\} occurs in that calendar year (14.6\% of panel). Upstream mines $>$ median = 1 if num\_coal\_mines\_upstream\_sum exceeds the median (0) across CWS-years in this D1 main downstream 2SLS panel. Standard errors clustered by CWS.}
+   
+\end{table}
+
+
