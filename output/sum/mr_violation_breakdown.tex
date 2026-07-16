@@ -3,7 +3,8 @@
 % Purpose: Three-panel table describing violation codes and rule codes for
 %          MR and MCL violations under IOC rules (nitrate 331, arsenic 332,
 %          inorganic chemicals 333).
-% Sample:  Strictly downstream CWSs (minehuc_downstream_of_mine=1, minehuc_mine=0)
+% Sample:  Downstream 2SLS CWS-year sample (minehuc_downstream_of_mine=1, minehuc_mine=0,
+%          1985-2005, excluding PWSID WV3303401)
 % Source:  SDWA_VIOLATIONS_ENFORCEMENT.parquet + SDWA_REF_CODE_VALUES.csv
 % N MR:    1,273 unique IOC MR violations, 1985--2005
 % N MCL:   16 unique IOC MCL violations, 1985--2005
@@ -65,6 +66,6 @@
 \begin{minipage}{\linewidth}
 \vspace{4pt}
 \footnotesize
-\textit{Notes:} Panel A: violation codes classify the type of monitoring-and-reporting failure; code 03 = Monitoring, Regular; 04 = Monitoring, Check/Repeat/Confirmation. Panel B: violation codes classify the type of MCL exceedance. Panel C: rule 331 = Nitrate; 332 = Arsenic; 333 = Inorganic Chemicals; MR = monitoring and reporting violation; MCL = maximum contaminant level violation; inorganic chemicals (333) encompasses nitrates and arsenic as sub-contaminants. All panels restricted to IOC rules (nitrate 331, arsenic 332, inorganic chemicals 333). Sample restricted to strictly downstream CWSs (minehuc\_downstream\_of\_mine\,=\,1 and minehuc\_mine\,=\,0), 1985--2005. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
+\textit{Notes:} Panel A: violation codes classify the type of monitoring-and-reporting failure; code 03 = Monitoring, Regular; 04 = Monitoring, Check/Repeat/Confirmation. Panel B: violation codes classify the type of MCL exceedance. Panel C: rule 331 = Nitrate; 332 = Arsenic; 333 = Inorganic Chemicals; MR = monitoring and reporting violation; MCL = maximum contaminant level violation; inorganic chemicals (333) encompasses nitrates and arsenic as sub-contaminants. All panels restricted to IOC rules (nitrate 331, arsenic 332, inorganic chemicals 333). Sample restricted to the downstream 2SLS CWS-year sample (minehuc\_downstream\_of\_mine\,=\,1 and minehuc\_mine\,=\,0, 1985--2005, excluding PWSID WV3303401). Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
 \end{minipage}
 \end{table}

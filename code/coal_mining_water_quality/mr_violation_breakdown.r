@@ -2,9 +2,11 @@
 # Script: mr_violation_breakdown.r
 # Purpose: Describe MR and MCL violations in SDWA for IOC rules —
 #          by violation code and regulatory rule code.
-#          Restricted to strictly downstream CWSs
-#          (minehuc_downstream_of_mine == 1 & minehuc_mine == 0)
-#          and IOC rules: nitrate (331), arsenic (332), inorganic chemicals (333).
+#          Restricted to the downstream 2SLS CWS-year sample
+#          (minehuc_downstream_of_mine == 1 & minehuc_mine == 0,
+#          year 1985-2005, PWSID != "WV3303401") — same filter as
+#          the "dwnstrm" sample_specs entry in didhet.r (full_unbal).
+#          IOC rules: nitrate (331), arsenic (332), inorganic chemicals (333).
 # Inputs:  clean_data/cws_data/prod_vio_sulfur.parquet (downstream PWSID filter)
 #          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.parquet
 #          Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_REF_CODE_VALUES.csv
@@ -17,13 +19,17 @@
 library(arrow)
 library(data.table)
 
-# ── 0. Strictly downstream PWSID list ────────────────────────────────────────
+# ── 0. Downstream 2SLS CWS-year sample PWSID list ────────────────────────────
+# Matches full_unbal's "dwnstrm" sample_specs filter in didhet.r:
+# year 1985-2005, PWSID != "WV3303401", minehuc_downstream_of_mine == 1 & minehuc_mine == 0.
 pws_sample <- as.data.frame(
   arrow::read_parquet("Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
-                      col_select = c("PWSID", "minehuc_downstream_of_mine", "minehuc_mine")))
+                      col_select = c("PWSID", "year", "minehuc_downstream_of_mine", "minehuc_mine")))
+pws_sample <- pws_sample[pws_sample$year > 1984 & pws_sample$year < 2006, ]
+pws_sample <- pws_sample[pws_sample$PWSID != "WV3303401", ]
 pws_ids <- unique(pws_sample$PWSID[
   pws_sample$minehuc_downstream_of_mine == 1 & pws_sample$minehuc_mine == 0])
-cat("Strictly downstream PWSIDs:", length(pws_ids), "\n")
+cat("Downstream 2SLS sample PWSIDs:", length(pws_ids), "\n")
 
 # ── 1. Load violations from parquet ──────────────────────────────────────────
 cat("Loading violations parquet...\n")
@@ -115,8 +121,9 @@ trunc_desc <- function(x, w = 48) {
 }
 
 sample_note <- paste0(
-  "Sample restricted to strictly downstream CWSs ",
-  "(minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0), 1985--2005. ",
+  "Sample restricted to the downstream 2SLS CWS-year sample ",
+  "(minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0, 1985--2005, ",
+  "excluding PWSID WV3303401). ",
   "Source: SDWA\\_VIOLATIONS\\_ENFORCEMENT.parquet, SDWA\\_REF\\_CODE\\_VALUES.csv."
 )
 
@@ -228,7 +235,8 @@ header <- c(
   "% Purpose: Three-panel table describing violation codes and rule codes for",
   "%          MR and MCL violations under IOC rules (nitrate 331, arsenic 332,",
   "%          inorganic chemicals 333).",
-  "% Sample:  Strictly downstream CWSs (minehuc_downstream_of_mine=1, minehuc_mine=0)",
+  "% Sample:  Downstream 2SLS CWS-year sample (minehuc_downstream_of_mine=1, minehuc_mine=0,",
+  "%          1985-2005, excluding PWSID WV3303401)",
   "% Source:  SDWA_VIOLATIONS_ENFORCEMENT.parquet + SDWA_REF_CODE_VALUES.csv",
   paste0("% N MR:    ", fn(N_mr),  " unique IOC MR violations, 1985--2005"),
   paste0("% N MCL:   ", fn(N_mcl), " unique IOC MCL violations, 1985--2005"),
@@ -283,9 +291,10 @@ d1_panel <- as.data.frame(
 d1_panel <- d1_panel[
   d1_panel$minehuc_downstream_of_mine == 1 &
   d1_panel$minehuc_mine == 0 &
-  d1_panel$year >= 1985 & d1_panel$year <= 2005, ]
+  d1_panel$year > 1984 & d1_panel$year < 2006 &
+  d1_panel$PWSID != "WV3303401", ]
 
-cat("D1 downstream obs (1985-2005):", nrow(d1_panel), "\n")
+cat("Downstream 2SLS sample obs (1985-2005):", nrow(d1_panel), "\n")
 N_d1     <- nrow(d1_panel)
 N_pws_d1 <- length(unique(d1_panel$PWSID))
 
@@ -335,8 +344,9 @@ t_days_lines <- c(
   "\\begin{minipage}{\\linewidth}",
   "\\vspace{4pt}",
   "\\footnotesize",
-  paste0("\\textit{Notes:} Sample restricted to strictly downstream community water systems ",
-         "(minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0), years 1985--2005. ",
+  paste0("\\textit{Notes:} Sample restricted to the downstream 2SLS CWS-year sample ",
+         "(minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0, years 1985--2005, ",
+         "excluding PWSID WV3303401). ",
          "MR = monitoring and reporting violation; MCL = maximum contaminant level violation. ",
          "Inorganic chemicals encompasses nitrates and arsenic as sub-contaminants. ",
          "Outcomes measured as days out of the year in violation. ",

@@ -1,0 +1,32 @@
+% ============================================================
+% Table: MR/MCL Violation Incidence Summary, Downstream 2SLS Sample, 1985--2005
+% Purpose: Rate (share of obs with any violation days), count, and N for
+%          arsenic, inorganic chemicals, and nitrates MR/MCL violations.
+% Sample:  Downstream 2SLS CWS-year sample (minehuc_downstream_of_mine=1, minehuc_mine=0,
+%          1985-2005, excluding PWSID WV3303401)
+% N:       6,232 CWS-year observations
+% ============================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Incidence of MR and MCL Violations, Downstream 2SLS CWS-Year Sample, 1985--2005}
+\label{tab:mr_mcl_incidence_summary}
+\small
+\begin{tabular}{lrrr}
+\hline\hline
+\textbf{Violation} & \textbf{Rate} & \textbf{Count} & \textbf{N} \\
+\hline
+Arsenic MR violation & 0.040 & 250 & 6,232 \\
+Arsenic MCL violation & 0.000 & 2 & 6,232 \\
+Inorganic chemicals MR violation & 0.046 & 286 & 6,232 \\
+Inorganic chemicals MCL violation & 0.003 & 20 & 6,232 \\
+Nitrate MR violation & 0.060 & 377 & 6,232 \\
+Nitrate MCL violation & 0.001 & 4 & 6,232 \\
+\hline\hline
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\textit{Notes:} Sample restricted to the downstream 2SLS CWS-year sample (minehuc\_downstream\_of\_mine\,=\,1 and minehuc\_mine\,=\,0, years 1985--2005, excluding PWSID WV3303401). Rate is the share of CWS-year observations with a nonzero violation share for that category (count of observations with share\,$>$\,0, divided by N). MR = monitoring and reporting violation; MCL = maximum contaminant level violation. Inorganic chemicals encompasses nitrates and arsenic as sub-contaminants. Source: clean\_data/cws\_data/prod\_vio\_sulfur.parquet.
+\end{minipage}
+\end{table}

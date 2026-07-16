@@ -63,27 +63,17 @@ cat("\n--- Raw means: mr_same_fwd by near_mcl ---\n")
 print(tapply(df$mr_same_fwd, df$near_mcl, mean, na.rm = TRUE))
 cat("\n--- Raw means: mr_same_fwd6mon by near_mcl ---\n")
 print(tapply(df$mr_same_fwd6mon, df$near_mcl, mean, na.rm = TRUE))
-cat("\n--- Raw means: mr_same_past by near_mcl ---\n")
-print(tapply(df$mr_same_past, df$near_mcl, mean, na.rm = TRUE))
-cat("\n--- Raw means: mr_same_past6mon by near_mcl ---\n")
-print(tapply(df$mr_same_past6mon, df$near_mcl, mean, na.rm = TRUE))
 
 # ── Step 2: Named formulas ─────────────────────────────────────────────────────
 fml_fwd       <- mr_same_fwd      ~ near_mcl + mean_conc_z | PWSID + YEAR
 fml_fwd6mon   <- mr_same_fwd6mon  ~ near_mcl + mean_conc_z | PWSID + YEAR
-fml_past      <- mr_same_past     ~ near_mcl + mean_conc_z | PWSID + YEAR
-fml_past6mon  <- mr_same_past6mon ~ near_mcl + mean_conc_z | PWSID + YEAR
 
 # ── Step 3: Regressions ────────────────────────────────────────────────────────
 fwd      <- feols(fml_fwd,      data = df, cluster = ~PWSID)
 fwd6mon  <- feols(fml_fwd6mon,  data = df, cluster = ~PWSID)
-past     <- feols(fml_past,     data = df, cluster = ~PWSID)
-past6mon <- feols(fml_past6mon, data = df, cluster = ~PWSID)
 
 cat("\n--- Nitrate MR (1-yr), forward window ---\n");   print(summary(fwd))
 cat("\n--- Nitrate MR (6-mon), forward window ---\n");  print(summary(fwd6mon))
-cat("\n--- Placebo: past (1-yr) ---\n");                print(summary(past))
-cat("\n--- Placebo: past (6-mon) ---\n");                print(summary(past6mon))
 
 # ── Step 4: table helpers (copied verbatim from mr_concentration_lag_national.r) ─
 wrap_table_float <- function(path, caption_text, label = NULL) {
@@ -137,15 +127,13 @@ rename_tex <- function(path) {
     c("Clustered \\(PWSID\\) standard-errors in parentheses",
       "Clustered (CWS) standard-errors in parentheses"),
     c("mr\\_same\\_fwd6mon",   ""),
-    c("mr\\_same\\_fwd",       ""),
-    c("mr\\_same\\_past6mon",  ""),
-    c("mr\\_same\\_past",      "")
+    c("mr\\_same\\_fwd",       "")
   )
   for (s in subs) txt <- gsub(s[[1]], s[[2]], txt, fixed = TRUE)
   txt <- gsub("(?<![a-zA-Z])ratio(?![a-zA-Z])", "Concen./MCL", txt, perl = TRUE)
   txt <- gsub("[ \t]*Dependent Variables:.*?\\\\\\\\\n", "", txt)
-  # Blank dep-var row: 4 columns -> 4 "&" cells, all blank
-  txt <- gsub("\n[ \t]*&[ \t]*&[ \t]*&[ \t]*&[ \t]*\\\\\\\\", "", txt)
+  # Blank dep-var row: 2 columns -> 2 "&" cells, all blank
+  txt <- gsub("\n[ \t]*&[ \t]*&[ \t]*\\\\\\\\", "", txt)
   writeLines(strsplit(txt, "\n")[[1]], path)
 }
 
@@ -175,7 +163,7 @@ note_main <- paste0(
   "2SLS sample (minehuc\\_downstream\\_of\\_mine==1 \\& minehuc\\_mine==0, 1985--2005), ",
   "nitrate only. Outcome: nitrate MR (monitoring/reporting) violation in the forward window ",
   "(1--365 days for the 1-yr column; 1--182 days for the 6-mon column) following the sample ",
-  "date; placebo columns use the same windows measured BEFORE the sample date. near\\_mcl = ",
+  "date. near\\_mcl = ",
   "reading at 50--100\\% of the MCL, the 40 CFR 141.23(d)(2) quarterly-monitoring trigger. ",
   sprintf("States retained: %d. Unique PWSIDs: %d. ", n_states_kept, n_pwsid),
   sprintf("N of readings with concentration above 50 percent of the MCL: %d. ", n_near_mcl),
@@ -184,9 +172,8 @@ note_main <- paste0(
 )
 
 out_tex <- file.path(ROOT, "output/reg/mr_concentration_lag_national_downstream_states.tex")
-etable(fwd, fwd6mon, past, past6mon,
-       headers   = c("Nitrate MR (1-yr)", "Nitrate MR (6-mon)",
-                      "Placebo: past (1-yr)", "Placebo: past (6-mon)"),
+etable(fwd, fwd6mon,
+       headers   = c("Nitrate MR (1-yr)", "Nitrate MR (6-mon)"),
        notes     = note_main,
        fitstat   = ~n,
        style.tex = style.tex("aer", adjustbox = TRUE),
