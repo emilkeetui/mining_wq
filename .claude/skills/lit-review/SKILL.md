@@ -1,8 +1,8 @@
 ---
 name: lit-review
 description: Structured literature search and synthesis with citation extraction and gap identification
-argument-hint: "[topic, paper title, or research question]"
-allowed-tools: ["Read", "Grep", "Glob", "Write", "WebSearch", "WebFetch"]
+argument-hint: "[topic, paper title, or research question] [--no-verify]"
+allowed-tools: ["Read", "Grep", "Glob", "Write", "WebSearch", "WebFetch", "Task"]
 ---
 
 # Literature Review
@@ -15,12 +15,13 @@ Conduct a structured literature search and synthesis on the given topic.
 
 ## Steps
 
-1. **Parse the topic** from `$ARGUMENTS`.
+1. **Parse the topic** from `$ARGUMENTS`. If a specific paper is named, use it as the anchor.
 
-2. **Search for related work:**
+2. **Search for related work (local corpus first):**
    - Check `lit/` directory for uploaded PDFs
+   - Read any existing `.bib` files in the project for papers already cited
    - Use `WebSearch` to find recent publications (if available)
-   - Check for any `.bib` files in the project
+   - Use `WebFetch` for working-paper repositories (NBER, SSRN, RePEc) when reachable
 
 3. **Organize findings** into:
    - **Theoretical contributions** — mechanisms, frameworks
@@ -61,8 +62,33 @@ Date: YYYY-MM-DD
 [bibtex entries]
 ```
 
+## Post-Flight Verification (mandatory, CoVe)
+
+Before returning the draft review to the user, run the Post-Flight Verification protocol in
+[`.claude/rules/post-flight-verification.md`](../../rules/post-flight-verification.md).
+Literature reviews are **very high** hallucination risk: WebSearch can return
+plausible-sounding fabricated citations, and this skill cannot reliably catch its own
+mistakes. CoVe catches them architecturally.
+
+1. **Extract claims** — every cited paper, every paraphrased finding ("Smith 2019 shows X"),
+   and every negative-literature assertion ("no prior work studies Y") is one atomic claim.
+2. **Generate verification questions** per claim (author/year/venue correct? finding and
+   sign/magnitude actually reported? gap claim honest?).
+3. **Spawn `claim-verifier`** via `Task` (`subagent_type=claim-verifier`, fresh context).
+   Pass the claims table, the verification questions, and source pointers (URLs, DOIs,
+   `lit/` paths). **Do NOT pass the draft prose** — the fresh-context independence is what
+   makes CoVe work.
+4. **Reconcile:** PASS → attach the green Post-Flight block; PARTIAL → flag unverifiable
+   claims with uncertainty markers in text and BibTeX; FAIL → **remove or rewrite the
+   contradicted citations** before returning. Never ship a FAIL.
+
+**Skip conditions:** `--no-verify` flag, or the user hands you ≤3 papers they have already
+read and confirmed. Append the Post-Flight block (collapsed) to the report.
+
+---
+
 ## Important
 
-- **Do NOT fabricate citations.** If you cannot verify a paper's details, flag it for verification.
+- **Do NOT fabricate citations.** If you cannot verify a paper's details, flag it for verification. Post-Flight Verification catches most fabrications automatically; this rule is the backup.
 - Note working papers vs. published papers — working papers may change.
 - Prioritize work that uses similar identification strategies (IV/DiD with environmental policy).

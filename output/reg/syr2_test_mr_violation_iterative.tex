@@ -1,0 +1,50 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:syr2_test_mr_violation_iterative} SYR2 Test Timing and IOC MR Violation Onset}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcc}
+         \toprule
+         
+          & \multicolumn{2}{c}{IOC MR violation onset in month t}\\
+         
+                                                & (1)            & (2)\\  
+         
+         \midrule 
+         Constant                               & 0.0035$^{***}$ &   \\   
+                                                & (0.0007)       &   \\   
+         SYR2 test lead (1, 6) months           & 0.0002         & -0.0021$^{*}$\\   
+                                                & (0.0014)       & (0.0012)\\   
+         SYR2 test lag (-6, -1) months          & 0.0004         & 0.0004\\   
+                                                & (0.0013)       & (0.0016)\\   
+         
+          \\
+         
+         Observations                           & 13,284         & 13,284\\  
+         
+          \\
+         
+         CWS fixed effects                      &                & $\checkmark$\\   
+         Calendar month (Jan-Dec) fixed effects &                & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample: downstream CWSs with >=1 SYR2 measurement of arsenic, nitrate, barium, or selenium (123), CWS-months 1997-01 to 2005-12. Outcome = 1 if an IOC MR violation (nitrate rule 331, arsenic rule 332, or inorganic chemicals rule 333) onset occurs in that CWS-month. before6 = 1 if the CWS-month falls in the 6 calendar months preceding any SYR2 (Six-Year Review 2) test of arsenic, nitrate, barium, or selenium; after6 = 1 if it falls in the 6 months following one; both are 0 outside any such window. Column (2) includes CWS fixed effects and calendar-month-of-year fixed effects (Jan-Dec, not absolute calendar time), which absorb seasonality in violation reporting rather than the specific year-month. Column (1) has no fixed effects. N=13284 in both columns. SEs clustered at the CWS (PWSID) level in both columns.}
+   
+\end{table}
+
+

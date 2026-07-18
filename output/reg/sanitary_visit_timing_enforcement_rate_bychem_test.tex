@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+\caption{\label{tab:sanitary_visit_timing_enforcement_rate_bychem_test} Enforcement Rate (Formal, Informal, and None), by Sample Restriction, Visit Timing, and Upstream Mine Count --- IOC MR Violations Only (Downstream CWSs, 1985--2005)}
+\bigskip
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+\begin{tabular}{lcccc}
+\toprule
+Sample & N (CWS-years) & Formal & Informal & No enforcement \\
+\midrule
+All CWS-years (downstream 2SLS panel) & 7{,}329 & 2.52\% [185] & 17.21\% [1{,}261] & 82.51\% [6{,}047] \\
+CWS-years with an MR violation & 291 & 7.22\% [21] & 48.45\% [141] & 51.20\% [149] \\
+CWS-years with an MR violation and a sanitary visit (same year) & 35 & 8.57\% [3] & 60.00\% [21] & 37.14\% [13] \\
+CWS-years with an MR violation following sanitary visit & 24 & 0.00\% [0] & 54.17\% [13] & 45.83\% [11] \\
+CWS-years with an MR violation preceding sanitary visit & 38 & 10.53\% [4] & 52.63\% [20] & 44.74\% [17] \\
+CWS-years with an MR violation, sanitary visit (same year), and upstream mines above median & 12 & 0.00\% [0] & 50.00\% [6] & 50.00\% [6] \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright 
+Sample: strictly downstream CWSs (349), CWS-years 1985--2005 (7329 CWS-years). MR violations are restricted to the mining-related inorganic chemicals only: nitrate (RULE\_CODE 331), arsenic (332), and inorganic chemicals (333). Each enforcement column reports the CWS-year rate as ``rate\% [k]'', where k is the number of CWS-years in that enforcement category within the row's sample (the numerator) and the rate equals k divided by the N (CWS-years) column. The three enforcement indicators are INDEPENDENT: formal = 1 if a violations-enforcement action with ENF\_ACTION\_CATEGORY = Formal is ongoing at any point during year t; informal = 1 if an action with ENF\_ACTION\_CATEGORY = Informal is ongoing during year t; no enforcement = 1 if neither is ongoing. A CWS-year may be both formal and informal, so the rates need not sum to 100\%. Enforcement spells run from the month of ENFORCEMENT\_DATE through the month of CALCULATED\_RTC\_DATE (fallback NON\_COMPL\_PER\_END\_DATE if RTC missing, else the enforcement month itself). MR violation = 1 if an IOC MR violation onset begins in year t (NON\_COMPL\_PER\_BEGIN\_DATE). Sanitary visit = 1 if a site visit with VISIT\_REASON\_CODE in \{SNSV, SNSP, SSVF\} occurs in year t. Row 2 N\,=\,291; row 3 (visit in the same calendar year as the MR onset) N\,=\,35. Row 4 (``following sanitary visit''): CWS-year t of an IOC MR onset where a sanitary visit occurred in the 365 days immediately preceding that onset date (visit, then MR within a year), N\,=\,24. Row 5 (``preceding sanitary visit''): CWS-year t of an IOC MR onset where a sanitary visit occurred in the 365 days immediately following that onset date (MR, then visit within a year), N\,=\,38. Rows 4-5 use year t = the calendar year of the MR onset for the enforcement outcome; the 365-day window is measured in calendar days and may cross year boundaries; a CWS-year with more than one qualifying MR onset appears once; rows 4 and 5 are not mutually exclusive. Row 6 restricts row 3's sample to CWS-years where num\_coal\_mines\_upstream\_sum is above the median over all downstream 2SLS CWS-years (median = 0), i.e. at least one upstream mine, N\,=\,12.
+}
+\end{table}

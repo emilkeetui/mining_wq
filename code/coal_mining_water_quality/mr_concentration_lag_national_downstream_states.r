@@ -72,8 +72,13 @@ fml_fwd6mon   <- mr_same_fwd6mon  ~ near_mcl + mean_conc_z | PWSID + YEAR
 fwd      <- feols(fml_fwd,      data = df, cluster = ~PWSID)
 fwd6mon  <- feols(fml_fwd6mon,  data = df, cluster = ~PWSID)
 
+fwd_logit      <- feglm(fml_fwd,     data = df, cluster = ~PWSID, family = binomial)
+fwd6mon_logit  <- feglm(fml_fwd6mon, data = df, cluster = ~PWSID, family = binomial)
+
 cat("\n--- Nitrate MR (1-yr), forward window ---\n");   print(summary(fwd))
 cat("\n--- Nitrate MR (6-mon), forward window ---\n");  print(summary(fwd6mon))
+cat("\n--- Nitrate MR (1-yr), forward window, logit ---\n");   print(summary(fwd_logit))
+cat("\n--- Nitrate MR (6-mon), forward window, logit ---\n");  print(summary(fwd6mon_logit))
 
 # ── Step 4: table helpers (copied verbatim from mr_concentration_lag_national.r) ─
 wrap_table_float <- function(path, caption_text, label = NULL) {
@@ -116,7 +121,7 @@ wrap_table_float <- function(path, caption_text, label = NULL) {
 }
 
 # rename_tex: adapted from mr_concentration_lag.r -- blank-dep-var-row regex
-# updated from 6 columns to 4 columns (4 "&" cells instead of 6).
+# updated to 4 columns (LPM x2, logit x2) -> 4 "&" cells.
 rename_tex <- function(path) {
   txt <- paste(readLines(path), collapse = "\n")
   subs <- list(
@@ -132,8 +137,8 @@ rename_tex <- function(path) {
   for (s in subs) txt <- gsub(s[[1]], s[[2]], txt, fixed = TRUE)
   txt <- gsub("(?<![a-zA-Z])ratio(?![a-zA-Z])", "Concen./MCL", txt, perl = TRUE)
   txt <- gsub("[ \t]*Dependent Variables:.*?\\\\\\\\\n", "", txt)
-  # Blank dep-var row: 2 columns -> 2 "&" cells, all blank
-  txt <- gsub("\n[ \t]*&[ \t]*&[ \t]*\\\\\\\\", "", txt)
+  # Blank dep-var row: 4 columns -> 4 "&" cells, all blank
+  txt <- gsub("\n[ \t]*&[ \t]*&[ \t]*&[ \t]*&[ \t]*\\\\\\\\", "", txt)
   writeLines(strsplit(txt, "\n")[[1]], path)
 }
 
@@ -168,12 +173,15 @@ note_main <- paste0(
   sprintf("States retained: %d. Unique PWSIDs: %d. ", n_states_kept, n_pwsid),
   sprintf("N of readings with concentration above 50 percent of the MCL: %d. ", n_near_mcl),
   "Mean concentration = PWSID-YEAR mean reading, z-scored across the sample. ",
+  "Cols 1--2 are LPM (feols); cols 3--4 are logit (feglm, binomial family); ",
+  "all include CWS and year fixed effects. ",
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS (PWSID) level."
 )
 
 out_tex <- file.path(ROOT, "output/reg/mr_concentration_lag_national_downstream_states.tex")
-etable(fwd, fwd6mon,
-       headers   = c("Nitrate MR (1-yr)", "Nitrate MR (6-mon)"),
+etable(fwd, fwd6mon, fwd_logit, fwd6mon_logit,
+       headers   = c("Nitrate MR (1-yr)", "Nitrate MR (6-mon)",
+                      "Nitrate MR (1-yr) Logit", "Nitrate MR (6-mon) Logit"),
        notes     = note_main,
        fitstat   = ~n,
        style.tex = style.tex("aer", adjustbox = TRUE),

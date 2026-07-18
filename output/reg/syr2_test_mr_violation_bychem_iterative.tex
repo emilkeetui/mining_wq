@@ -1,0 +1,56 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:syr2_test_mr_violation_bychem_iterative} SYR2 Test Timing and MR Violation Onset, by Chemical}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccc}
+         \toprule
+         
+          & \multicolumn{6}{c}{MR violation onset in month t}\\
+         
+          & \multicolumn{2}{c}{Nitrate MR} & \multicolumn{2}{c}{Arsenic MR} & \multicolumn{2}{c}{IOC MR} \\ 
+         
+                                                & (1)          & (2)           & (3)                   & (4)           & (5)            & (6)\\  
+         
+         \midrule 
+         Constant                               & 0.0037$^{*}$ &               & 0.0022                &               & 0.0020$^{*}$   &   \\   
+                                                & (0.0019)     &               & (0.0016)              &               & (0.0010)       &   \\   
+         SYR2 test lead (1, 6) months           & -0.0019      & -0.0032       & -0.0018               & -0.0035       & 0.0006         & -0.0013\\   
+                                                & (0.0017)     & (0.0021)      & (0.0012)              & (0.0025)      & (0.0018)       & (0.0016)\\   
+         SYR2 test lag (-6, -1) months          & -0.0006      & -0.0002       & -0.0019               & -0.0025       & -0.0008        & $-7.32\times 10^{-5}$\\    
+                                                & (0.0015)     & (0.0019)      & (0.0013)              & (0.0017)      & (0.0014)       & (0.0019)\\   
+         Lagged test value (z-score)            & -0.0002      & -0.0012       & -0.0006               & -0.0014       & 0.0031$^{*}$   & 0.0043$^{*}$\\   
+                                                & (0.0005)     & (0.0010)      & (0.0008)              & (0.0010)      & (0.0017)       & (0.0023)\\   
+         Lagged running mean value (z-score)    & 0.0021       & 0.0034        & $5.29\times 10^{-5}$  & 0.0014        & -0.0041$^{**}$ & -0.0082$^{**}$\\   
+                                                & (0.0016)     & (0.0027)      & (0.0011)              & (0.0013)      & (0.0019)       & (0.0040)\\   
+         
+          \\
+         
+         Observations                           & 5,296        & 5,296         & 2,313                 & 2,313         & 3,809          & 3,809\\  
+         
+          \\
+         
+         CWS fixed effects                      &              & $\checkmark$  &                       & $\checkmark$  &                & $\checkmark$\\   
+         Calendar month (Jan-Dec) fixed effects &              & $\checkmark$  &                       & $\checkmark$  &                & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample: downstream CWSs, CWS-months 1997-01 to 2005-12. Each pair of columns restricts to CWSs with >=1 SYR2 measurement of the relevant chemical(s): nitrate (87 CWSs, N=5296), arsenic (118 CWSs, N=2313), barium/selenium (117 CWSs, N=3809). Outcome = 1 if an MR violation onset under the matched IOC rule occurs in that CWS-month: nitrate rule 331 (cols 1-2), arsenic rule 332 (cols 3-4), inorganic chemicals rule 333 (cols 5-6). before6 = 1 if the CWS-month falls in the 6 calendar months preceding any SYR2 (Six-Year Review 2) test of the matched chemical(s) (nitrate for cols 1-2, arsenic for cols 3-4, barium or selenium for cols 5-6); after6 = 1 if it falls in the 6 months following one; both are 0 outside any such window. Lagged test value (z-score) = (tested value - CWS x chemical mean) / (CWS x chemical SD) from the most recent test of the matched chemical(s) at or before that CWS-month, carried forward until the next test; lagged running mean value (z-score) = running mean of the z-scored values through that same lagged test, also carried forward. For the IOC spec (cols 5-6), barium and selenium's lagged z-scores are averaged. Both are undefined (and the CWS-month dropped from estimation) before a CWS's first test of the matched chemical(s). Columns (2), (4), (6) include CWS fixed effects and calendar-month-of-year fixed effects (Jan-Dec, not absolute calendar time), which absorb seasonality in violation reporting rather than the specific year-month. Columns (1), (3), (5) have no fixed effects. SEs clustered at the CWS (PWSID) level in all columns.}
+   
+\end{table}
+
+

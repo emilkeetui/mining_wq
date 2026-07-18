@@ -1,0 +1,64 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:mr_concentration_lag_national_downstream_states_yearly_reconciled} Reading-Anchored Nitrate MR Violation Outcome and Near-MCL Readings, 6- and 12-Month Lead/Lag Windows (National Sample, Downstream-2SLS-Sample States, CWS-Year, Reconciled)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccc}
+         \toprule
+         
+          & \multicolumn{2}{c}{MR onset in fwd. window of a lag(-6,-1)mo. reading} & \multicolumn{2}{c}{MR onset in fwd. window of a lag(-12,-1)mo. reading}\\
+         
+         Window & \multicolumn{2}{c}{6-month} & \multicolumn{2}{c}{12-month} \\ 
+         
+                                                      & (1)             & (2)             & (3)             & (4)\\  
+         
+         \midrule 
+         Constant                                     & 0.0139$^{***}$  &                 & 0.0305$^{***}$  &   \\   
+                                                      & (0.0004)        &                 & (0.0006)        &   \\   
+         Reading $>$50\% MCL, lead (1, 6) months      & -0.0081$^{***}$ & -0.0045$^{*}$   &                 &   \\   
+                                                      & (0.0027)        & (0.0027)        &                 &   \\   
+         Reading $>$50\% MCL, lag (-6, -1) months     & 0.0937$^{***}$  & 0.0785$^{***}$  &                 &   \\   
+                                                      & (0.0038)        & (0.0037)        &                 &   \\   
+         Mean concen. (z-score), lead (1, 6) months   & 0.0093$^{***}$  & 0.0053$^{***}$  &                 &   \\   
+                                                      & (0.0009)        & (0.0009)        &                 &   \\   
+         Mean concen. (z-score), lag (-6, -1) months  & -0.0345$^{***}$ & -0.0259$^{***}$ &                 &   \\   
+                                                      & (0.0016)        & (0.0017)        &                 &   \\   
+         Reading $>$50\% MCL, lead (1, 12) months     &                 &                 & -0.0194$^{***}$ & -0.0231$^{***}$\\   
+                                                      &                 &                 & (0.0027)        & (0.0030)\\   
+         Reading $>$50\% MCL, lag (-12, -1) months    &                 &                 & 0.1314$^{***}$  & 0.1028$^{***}$\\   
+                                                      &                 &                 & (0.0041)        & (0.0042)\\   
+         Mean concen. (z-score), lead (1, 12) months  &                 &                 & 0.0260$^{***}$  & 0.0296$^{***}$\\   
+                                                      &                 &                 & (0.0010)        & (0.0011)\\   
+         Mean concen. (z-score), lag (-12, -1) months &                 &                 & -0.0597$^{***}$ & -0.0404$^{***}$\\   
+                                                      &                 &                 & (0.0018)        & (0.0018)\\   
+         
+          \\
+         
+         Observations                                 & 480,015         & 480,015         & 480,015         & 480,015\\  
+         
+          \\
+         
+         CWS fixed effects                            &                 & $\checkmark$    &                 & $\checkmark$\\   
+         Year fixed effects                           &                 & $\checkmark$    &                 & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Reconciled CWS-year version of mr\_concentration\_lag\_national\_downstream\_states.tex (reading-level); see .claude/logs/2026-07-16-mr\_concentration\_lag\_downstream\_states\_vs\_yearly\_comparison.md and .claude/logs/2026-07-17-mr-concentration-lag-yearly-reconciliation.md for reconciliation rationale. Sample: national SYR2 nitrate sample restricted to states with at least one CWS in the main downstream 2SLS sample (minehuc\_downstream\_of\_mine==1 \& minehuc\_mine==0, 1985--2005), nitrate only (53335 CWSs), CWS-years 1997 to 2005. Outcome (reading-anchored, nests the reading-level script's causal logic): 1 if any SYR2 nitrate reading in the 6- or 12-month LAG window of some month in that CWS-year itself had a nitrate MR (monitoring/reporting) violation onset in ITS OWN forward window (mr\_same\_fwd6mon for the 6-month column, mr\_same\_fwd for the 12-month column, matching the reading-level script's outcome variables exactly). near\_mcl lead/lag = 1 if any SYR2 nitrate reading at 50--100\% of the MCL (the 40 CFR 141.23(d)(2) quarterly-monitoring trigger, n=85766 readings) occurred in the 6 or 12 calendar months following (lead) or preceding (lag) any month in that CWS-year; both are 0 outside any such window (built at CWS-month grain from day-level reading dates, then rolled up to the CWS-year: the year indicator is 1 if any of its 12 months has the monthly window indicator equal to 1). Mean concen. (z-score) lead/lag = mean, across that CWS-year's months, of the PWSID-YEAR mean concentration (z-scored across the sample) among readings in the same lead/lag window; 0 in months with no reading in that window. Note: the near\_mcl\_lag regressor and the reading-triggered outcome both condition on the same lag-window reading population by construction (the outcome asks whether that reading's own forward MR onset materialized); this mechanical overlap is expected and is what makes this table nest the reading-level specification. Columns (2) and (4) include CWS and year fixed effects; columns (1) and (3) have no fixed effects. N=480015 in all columns. SEs clustered at the CWS (PWSID) level in all columns.}
+   
+\end{table}
+
+
