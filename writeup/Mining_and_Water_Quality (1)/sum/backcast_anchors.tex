@@ -1,0 +1,27 @@
+\begin{table}[ht]
+\centering
+\caption{Reported population-served anchors for downstream community water systems.}
+\label{tab:backcast_anchors}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{llrrrr}
+\toprule
+Source & Year(s) & Systems & Service-area & County & Median reported pop. \\
+\midrule
+SYR2 occurrence inventory & 1998--2005 & 140 & 118 & 22 & 1,646 \\
+CWSS 2006 \texttt{cwssframe} & 2006 & 259 & 225 & 34 & 710 \\
+SDWIS 2010 freeze & 2010 & 360 & 235 & 125 & 254 \\
+SDWIS 2011 freeze & 2011 & 361 & 236 & 125 & 250 \\
+\midrule
+\textbf{Any anchor} & 1998--2011 & \textbf{361} & 236 & 125 & 258 \\
+\quad with 1 anchor & & 1 & & & \\
+\quad with 2--3 anchors & & 226 & & & \\
+\quad with 4 anchors & & 134 & & & \\
+No anchor (imputed) & & 5 & & & \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\textwidth}\footnotesize
+\vspace{0.5em}
+\textit{Notes:} An anchor is a year in which a system's \emph{reported} population served is directly observed and linkable to its \texttt{PWSID}. Each source supplies one inventory value per system, not an annual series: the SYR2 occurrence databases carry a single \texttt{POPULATION} field stamped on every sample record, which does not vary across a system's 1998--2005 samples, so the SYR2 anchor is dated to the system's first sample year. The 1995 and 2000 Community Water System Surveys are de-identified samples and cannot be attached to a \texttt{PWSID}; the 2005 SDWIS ``freeze'' is a summary pivot with no system records. No anchor of any kind exists before 1998.
+\end{minipage}
+\end{table}

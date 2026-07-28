@@ -1,0 +1,36 @@
+\begin{table}[ht]
+\centering
+\caption{Annual residential population downstream of active coal mining, $E^{G}_t$.}
+\label{tab:backcast_exposure_series}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrr@{\hskip 2.5em}lrr}
+\toprule
+Year & Population & Systems & Year & Population & Systems \\
+\midrule
+1990 & 15,125,365 & 340 & 2006 & 7,312,518 & 278 \\
+1991 & 14,573,742 & 335 & 2007 & 7,045,472 & 274 \\
+1992 & 12,272,317 & 328 & 2008 & 7,068,446 & 274 \\
+1993 & 11,962,006 & 324 & 2009 & 6,907,767 & 271 \\
+1994 & 10,909,728 & 317 & 2010 & 6,898,693 & 270 \\
+1995 & 10,263,840 & 310 & 2011 & 6,315,274 & 267 \\
+1996 & 9,764,084 & 308 & 2012 & 6,066,657 & 265 \\
+1997 & 9,381,764 & 304 & 2013 & 6,002,545 & 263 \\
+1998 & 9,132,325 & 298 & 2014 & 5,830,862 & 261 \\
+1999 & 8,733,603 & 295 & 2015 & 5,738,928 & 259 \\
+2000 & 8,535,326 & 293 & 2016 & 5,716,969 & 257 \\
+2001 & 8,283,427 & 291 & 2017 & 4,416,305 & 255 \\
+2002 & 7,986,655 & 287 & 2018 & 4,421,952 & 254 \\
+2003 & 7,472,219 & 283 & 2019 & 3,994,390 & 250 \\
+2004 & 7,338,453 & 280 & 2020 & 3,986,997 & 249 \\
+2005 & 7,296,393 & 278 & 2021 & 3,859,245 & 248 \\
+ & &  & 2022 & 3,874,681 & 248 \\
+ & &  & 2023 & 3,813,456 & 246 \\
+ & &  & 2024 & 3,838,695 & 245 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\textwidth}\footnotesize
+\vspace{0.5em}
+\textit{Notes:} $E^{G}_t=\sum_{i\in\mathcal{D}_t}\hat{G}_{i,t}$ sums backcast residential population over the systems that are one HUC12 directly downstream of an active coal mine in year $t$. Per-system population is roughly flat over the period, so the decline is driven by systems leaving $\mathcal{D}_t$ as upstream mines close. Levels are inflated by county-tier systems, which each contribute a whole county's population.
+\end{minipage}
+\end{table}
