@@ -11,7 +11,9 @@
 %           sum/backcast_anchors.tex, sum/backcast_ratio.tex,
 %           sum/backcast_reported_exposure.tex
 %           (from code/coal_mining_water_quality/backcast_step3_tables.py)
-% Author:   EK   Date: 2026-07-27
+%           sum/backcast_loao.tex, sum/backcast_lodo.tex
+%           (from code/coal_mining_water_quality/backcast_validation_tables.py)
+% Author:   EK   Date: 2026-07-27 (validation added 2026-07-29)
 % ------------------------------------------------------------
 % This file is a section body with no preamble: \input{} it into main.tex,
 % which already loads amsmath, adjustbox, booktabs, and graphicx.
@@ -285,7 +287,7 @@ modestly, because the systems that dropped out were small.
 
 \subsubsection{Validation}
 
-Four checks discipline the pipeline, all run against live data.
+Six checks discipline the pipeline, all run against live data.
 
 First, an external check on the overlay itself. For the 127 county-tier systems
 the apportionment target is a whole county, so \eqref{eq:apportion} should
@@ -312,11 +314,40 @@ moves $1.15\times$ between its lowest and highest anchor, and the 90th percentil
 moves $2.19\times$. This measures directly how much the constant- and
 interpolated-$r$ assumptions strain, rather than assuming the question away.
 
-Two exercises remain outstanding and are noted as limitations rather than
-claimed: a leave-one-decade-out test that predicts the 2000 apportionment by
-PEP-scaling from 1990 and 2010 and compares it to the true 2000 block
-apportionment, and a leave-one-anchor-out test that withholds a reported anchor
-and predicts it from the others.
+Fifth, leave-one-decade-out on the $G_{i,t}$ backbone (Table
+\ref{tab:backcast_lodo}): each of the two interior decennials, 2000 and 2010, is
+predicted from each of its two neighbors by PEP-scaling
+\eqref{eq:chain-closed} and compared to the true block apportionment, with no
+reported figure anywhere in the loop. For the service-area tier --- the
+substantive test of the $\kappa$-constant assumption, since the county tier
+moves with the county PEP series by construction --- aggregate error across the
+four target$\times$direction combinations is small, $-1.0\%$ to $+1.9\%$, while
+median per-system absolute error is $7$--$12\%$ and $70$--$78\%$ of systems land
+within $25\%$. The pattern matches what \eqref{eq:chain-closed} predicts: a
+decade of $\kappa$ drift is enough to move individual systems but not enough to
+bias the sum, because drift is not one-signed across systems.
+
+\input{sum/backcast_lodo}
+
+Sixth, leave-one-anchor-out on the reported-served layer $\hat S_{i,t}$
+(Table~\ref{tab:backcast_loao}): each of three eras of reported anchors ---
+2010--2011, 2006, and the SYR2 era (1998--2005) --- is withheld in turn and
+re-predicted from the remaining eras using the production estimator of Section
+\ref{sec:backcast-step3}, with folds built as whole eras rather than individual
+anchors because 2010 and 2011 are near-duplicates (correlation $0.998$; $90.8\%$
+of systems report an identical value in both years) and a per-anchor
+leave-one-out would trivially predict one from the other. Service-area
+aggregate error ranges $-21.5\%$ to $+7.3\%$ across the three folds, with median
+per-system absolute error $12.5$--$14.8\%$; the hardest fold, which predicts the
+1998--2005 anchors from only 2006 and 2010--2011 (a gap of up to 12 years), has
+the largest error, as expected. County-tier aggregate error is larger in
+magnitude ($-26.1\%$ to $+22.6\%$) but its median per-system error is smaller
+($1.8$--$6.1\%$), consistent with the level-and-county-growth carry being
+accurate for most systems but occasionally missing a large one. As with LODO,
+aggregate accuracy exceeds per-system accuracy throughout, which is the reading
+the exercise was designed to support rather than assume.
+
+\input{sum/backcast_loao}
 
 \subsubsection{Results}
 
