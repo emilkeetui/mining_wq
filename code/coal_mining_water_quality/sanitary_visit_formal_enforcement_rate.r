@@ -271,14 +271,13 @@ print(rows5)
 rows5_tex <- sprintf("%s & %s & %s\\%% \\\\", rows5$sample, fmt_n(rows5$n), fmt_pct(rows5$rate))
 
 notes_5row <- paste0(
-  "Sample: strictly downstream CWSs (", length(sample_pwsids), "), CWS-years ", YR_LO, "--",
-  YR_HI, " (", nrow(row1_dt), " CWS-years). Formal enforcement = 1 if a violations-enforcement ",
-  "action with ENF\\_ACTION\\_CATEGORY = Formal is ongoing at any point during the calendar ",
-  "year t (spell runs from the month of ENFORCEMENT\\_DATE through the month of CALCULATED\\_",
-  "RTC\\_DATE, fallback NON\\_COMPL\\_PER\\_END\\_DATE if RTC missing, else the enforcement month ",
-  "itself). MR violation = 1 if a violation onset with VIOLATION\\_CATEGORY\\_CODE = MR begins ",
-  "in year t (NON\\_COMPL\\_PER\\_BEGIN\\_DATE). Sanitary visit = 1 if a site visit with VISIT\\_",
-  "REASON\\_CODE in \\{SNSV, SNSP, SSVF\\} occurs in year t. Row 2 N\\,=\\,", fmt_n(nrow(row2_dt)),
+  "\\textit{Notes:} Sample: community water systems strictly downstream of a coal mine (",
+  length(sample_pwsids), "), CWS-years ", YR_LO, "--",
+  YR_HI, " (", nrow(row1_dt), " CWS-years). Formal enforcement = 1 if a formal enforcement ",
+  "action is ongoing at any point during the calendar ",
+  "year t. Monitoring and reporting (MR) violation = 1 if a monitoring-and-reporting violation begins ",
+  "in year t. Sanitary visit = 1 if a sanitary visit or follow-up sanitary visit ",
+  "occurs in year t. Row 2 N\\,=\\,", fmt_n(nrow(row2_dt)),
   "; row 3 (visit in the same calendar year as the MR onset) N\\,=\\,", fmt_n(nrow(row3_dt)), ". ",
   "Row 4 (``following sanitary visit''): CWS-year t of an MR violation onset where a sanitary ",
   "visit occurred in the 365 days immediately preceding that onset date (visit, then MR ",
@@ -289,8 +288,8 @@ notes_5row <- paste0(
   "for the formal-enforcement outcome, and the 365-day window is measured in calendar days and ",
   "may cross year boundaries; a CWS-year with more than one qualifying MR onset appears once. ",
   "Rows 4 and 5 are not mutually exclusive. Row 6 restricts row 3's sample (MR violation and ",
-  "same-year sanitary visit) to CWS-years where the number of upstream coal mines ",
-  "(num\\_coal\\_mines\\_upstream\\_sum) is above the median computed over all CWS-years in the ",
+  "same-year sanitary visit) to CWS-years with the number of upstream coal mines ",
+  "above the median computed over all CWS-years in the ",
   "downstream 2SLS main sample (median = ", median_upstream_mines, "), i.e. CWS-years with at ",
   "least one upstream mine, N\\,=\\,", fmt_n(nrow(row6_dt)), "."
 )

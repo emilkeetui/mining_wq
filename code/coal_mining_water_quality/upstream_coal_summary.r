@@ -13,7 +13,6 @@
 .libPaths("Z:/ek559/RPackages")
 library(arrow)
 library(dplyr)
-library(tinytable)
 
 full <- read_parquet("Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet")
 
@@ -58,10 +57,42 @@ upstream_coal_summary <- cbind(
 
 print(upstream_coal_summary)
 
-tt(upstream_coal_summary, digits = 2) |>
-  format_tt(j = c("Mean", "Max", "SD"), num_fmt = "decimal", digits = 2) |>
-  format_tt(j = "N", num_fmt = "decimal", digits = 0) |>
-  theme_latex(outer = "label={tblr:upstream_coal_summary}", resize_width = 1, resize_direction = "down") |>
-  save_tt("Z:/ek559/mining_wq/output/sum/upstream_coal_summary.tex", overwrite = TRUE)
+fp2 <- function(x) sprintf("%.2f", x)
+fn0 <- function(x) format(round(x), big.mark = ",")
 
-cat("Wrote Z:/ek559/mining_wq/output/sum/upstream_coal_summary.tex\n")
+make_row <- function(i) {
+  paste0(upstream_coal_summary$Variable[i], " & ",
+         fp2(upstream_coal_summary$Mean[i]), " & ",
+         fp2(upstream_coal_summary$Max[i]), " & ",
+         fp2(upstream_coal_summary$SD[i]), " & ",
+         fn0(upstream_coal_summary$N[i]), " \\\\")
+}
+
+table_lines <- c(
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\caption{\\label{tab:upstream_coal_summary} Summary Statistics: Upstream Coal Mining Intensity}",
+  "\\begin{adjustbox}{width = \\textwidth, center}",
+  "\\begin{tabular}{lrrrr}",
+  "\\toprule",
+  "Variable & Mean & Max & SD & N \\\\",
+  "\\midrule",
+  sapply(seq_len(nrow(upstream_coal_summary)), make_row),
+  "\\bottomrule",
+  "\\end{tabular}",
+  "\\end{adjustbox}",
+  "\\begin{minipage}{\\linewidth}",
+  "\\vspace{4pt}",
+  "\\footnotesize",
+  paste0(
+    "\\textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine, ",
+    "years 1985--2005. Coal produced per active upstream mine is restricted to CWS-years with at ",
+    "least one active upstream mine."
+  ),
+  "\\end{minipage}",
+  "\\end{table}"
+)
+
+out_path <- "Z:/ek559/mining_wq/output/sum/upstream_coal_summary.tex"
+writeLines(table_lines, out_path)
+cat("Wrote", out_path, "\n")

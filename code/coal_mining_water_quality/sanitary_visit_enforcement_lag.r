@@ -11,7 +11,9 @@
 # Outputs: output/sum/sanitary_visit_to_enforcement.tex
 #          output/reg/sanitary_visit_to_enforcement_timing.tex
 #          output/reg/mr_to_sanitary_visit.tex
-#          output/sum/visit_type_summary.tex
+#          output/sum/visit_type_summary.tex (conditioned on CWS-years with an
+#            MR-violation onset; reports visit-type rates in the 12mo window
+#            before/after the onset)
 # Author: EK  Date: 2026-06-24
 # ============================================================
 
@@ -501,51 +503,6 @@ visit_type_labels <- c(
   WHPP = "Wellhead protection program", WSHD = "Watershed evaluation"
 )
 
-# Per-type PWSID-month indicators for every VISIT_REASON_CODE observed in the
-# sample (already restricted to sample_pwsids and 1985-2005 above).
-present_types <- sort(unique(sv$VISIT_REASON_CODE))
-type_pm <- unique(sv[, .(PWSID, month_idx, VISIT_REASON_CODE)])
-type_wide <- dcast(type_pm, PWSID + month_idx ~ VISIT_REASON_CODE,
-                    fun.aggregate = length, value.var = "VISIT_REASON_CODE", fill = 0L)
-
-skel_types <- merge(skel[, .(PWSID, month_idx, mr_any, mr_any_next12, mr_any_prev12)],
-                     type_wide, by = c("PWSID", "month_idx"), all.x = TRUE)
-for (cl in present_types) skel_types[is.na(get(cl)), (cl) := 0L]
-setorder(skel_types, PWSID, month_idx)
-skel_types[, year := 1985L + (month_idx - 1L) %/% 12L]
-
-# Right-censored version (consistent with section 5): a month only carries a
-# valid mr_any_next12 window if it isn't within 12 months of the sample end.
-# mr_any_prev12 is NA only for the first 11 months of the sample (no backward
-# window), handled by build_backward's fill = NA.
-reg12_types <- skel_types[month_idx <= max_origin_12]
-
-# CWS-year level summary. Col 1/2: does a visit of this type occur at all in
-# the CWS-year (sum / share over all CWS-years). Col 4: among CWS-years in
-# which the visit occurs, the share where that visit (in a non-censored
-# month) precedes an MR violation within the next 12 months. Col 5: among
-# CWS-years in which the visit occurs, the share where that visit follows an
-# MR violation that began within the prior 12 months.
-visit_summary <- data.table(code = present_types)
-visit_summary[, label := visit_type_labels[code]]
-
-year_stats <- rbindlist(lapply(present_types, function(cd) {
-  visited_dt <- skel_types[, .(visited = as.integer(any(get(cd) > 0))), by = .(PWSID, year)]
-  pre12_dt   <- reg12_types[, .(pre12  = as.integer(any(get(cd) > 0 & mr_any_next12 == 1, na.rm = TRUE))),
-                            by = .(PWSID, year)]
-  post12_dt  <- skel_types[,  .(post12 = as.integer(any(get(cd) > 0 & mr_any_prev12 == 1, na.rm = TRUE))),
-                            by = .(PWSID, year)]
-  m <- merge(visited_dt, pre12_dt,  by = c("PWSID", "year"), all.x = TRUE)
-  m <- merge(m,          post12_dt, by = c("PWSID", "year"), all.x = TRUE)
-  data.table(
-    n_obs             = sum(m$visited),
-    unconditional_pct = 100 * mean(m$visited),
-    precede_pct       = 100 * mean(m$pre12[m$visited == 1],  na.rm = TRUE),
-    follow_pct        = 100 * mean(m$post12[m$visited == 1], na.rm = TRUE)
-  )
-}))
-visit_summary <- cbind(visit_summary, year_stats)
-
 # Group visit types into the five categories used as dependent variables in
 # h2_snsv_d12.tex and sanitary_visit_enforcement_iterative.tex. Codes not
 # listed here (OTHR, TRNG, LABC, PRMT, VAEX, CPEV, RCDR, ...) are dropped from
@@ -560,51 +517,123 @@ visit_group_map <- c(
 group_order <- c("Sanitary visits", "Technical assistance", "Enforcement visits",
                   "Sample collection", "Inspection")
 
+present_types <- intersect(sort(unique(sv$VISIT_REASON_CODE)), names(visit_group_map))
+cat("\nVisit types in sample belonging to a group:", length(present_types), "\n")
+
+# MR-violation onsets, deduped to one row per PWSID-month (multiple MR
+# violations can begin in the same PWSID-month).
+mr_onsets <- unique(mr[, .(PWSID, year = 1985L + (month_idx - 1L) %/% 12L, month_idx)])
+mr_cws_years <- unique(mr_onsets[, .(PWSID, year)])
+cat("MR-violation onsets:", nrow(mr_onsets), "| CWS-years with >=1 onset:",
+    nrow(mr_cws_years), "\n")
+
+# Per-onset windows: the set of PWSID-months in the 12-month window before
+# each onset and the 12-month window after it.
+before_cells <- mr_onsets[, .(month_idx = seq(month_idx - 12L, month_idx - 1L)),
+                            by = .(PWSID, year, onset = month_idx)]
+before_cells <- before_cells[month_idx >= 1 & month_idx <= n_months]
+
+after_cells <- mr_onsets[, .(month_idx = seq(month_idx + 1L, month_idx + 12L)),
+                           by = .(PWSID, year, onset = month_idx)]
+after_cells <- after_cells[month_idx >= 1 & month_idx <= n_months]
+
+# Right-censoring: only CWS-years whose onset has a fully observed backward
+# (onset month >= 13, i.e. >= 1986-01) or forward (onset month <= max_origin_12,
+# i.e. <= 2004-12, consistent with section 5) window are valid denominators.
+mr_before_ok <- mr_onsets[month_idx >= 13L]
+mr_after_ok  <- mr_onsets[month_idx <= max_origin_12]
+cws_years_before_ok <- unique(mr_before_ok[, .(PWSID, year)])
+cws_years_after_ok  <- unique(mr_after_ok[,  .(PWSID, year)])
+
+sv_pm <- unique(sv[, .(PWSID, month_idx, VISIT_REASON_CODE)])
+all_cws_years <- CJ(PWSID = sample_pwsids, year = 1985:2005)
+
+# CWS-year level summary, conditioned on CWS-years containing an MR-violation
+# onset (fixes a denominator bug in an earlier version of this table, which
+# conditioned on CWS-years with a visit of the given type — a rare-visit-type
+# row like formal enforcement, N=4, could show spurious 50% precede/follow
+# rates against the ~1,000+ MR-onset CWS-years in the sample). Col 3
+# (unconditional probability) is the share of ALL CWS-years with a visit of
+# that type, for reference. Col 4: among CWS-years with an MR onset and a
+# fully observed backward window, the share with a visit of that type in the
+# 12 months before some onset that year. Col 5: same, forward window/12
+# months after.
+compute_rows <- function(cd) {
+  visit_months <- sv_pm[VISIT_REASON_CODE == cd, .(PWSID, month_idx)]
+
+  b_join <- merge(before_cells[PWSID %in% cws_years_before_ok$PWSID],
+                   visit_months, by = c("PWSID", "month_idx"))
+  years_with_precede <- unique(b_join[, .(PWSID, year)])
+  denom_before <- nrow(cws_years_before_ok)
+  precede_pct  <- if (denom_before > 0) {
+    100 * nrow(years_with_precede[cws_years_before_ok, on = c("PWSID", "year"), nomatch = 0]) / denom_before
+  } else NaN
+
+  a_join <- merge(after_cells[PWSID %in% cws_years_after_ok$PWSID],
+                   visit_months, by = c("PWSID", "month_idx"))
+  years_with_follow <- unique(a_join[, .(PWSID, year)])
+  denom_after <- nrow(cws_years_after_ok)
+  follow_pct  <- if (denom_after > 0) {
+    100 * nrow(years_with_follow[cws_years_after_ok, on = c("PWSID", "year"), nomatch = 0]) / denom_after
+  } else NaN
+
+  v_years    <- unique(sv_pm[VISIT_REASON_CODE == cd][, year := 1985L + (month_idx - 1L) %/% 12L][, .(PWSID, year)])
+  m_unc      <- merge(all_cws_years, v_years[, visited := 1L], by = c("PWSID", "year"), all.x = TRUE)
+  m_unc[is.na(visited), visited := 0L]
+
+  data.table(
+    code              = cd,
+    unconditional_pct = round(100 * mean(m_unc$visited), 2),
+    precede_pct       = round(precede_pct, 2),
+    follow_pct        = round(follow_pct, 2)
+  )
+}
+
+visit_summary <- rbindlist(lapply(present_types, compute_rows))
+visit_summary[, label := visit_type_labels[code]]
 visit_summary[, group := visit_group_map[code]]
-visit_summary <- visit_summary[!is.na(group)]
 visit_summary[, group := factor(group, levels = group_order)]
 setorder(visit_summary, group, -unconditional_pct)
 
-cat("\nVisit-type summary: ", nrow(visit_summary), " types observed in sample (",
-    length(present_types) - nrow(visit_summary), " dropped, not in any group)\n", sep = "")
+# NaN occurs when every MR-onset CWS-year is fully right-censored at the
+# given horizon; display as "--" rather than "NaN".
+fmt_pct <- function(x) ifelse(is.nan(x) | is.na(x), "--", sprintf("%.2f", x))
 
-# NaN occurs when every CWS-year with that visit type is fully right-censored
-# at the given horizon (e.g. a type observed only in 2005 for the 12-month
-# window); display as "--" rather than "NaN".
-fmt_pct <- function(x) ifelse(is.nan(x), "--", sprintf("%.2f", x))
-
-rows_summary <- sprintf("%d & %s & %s & %.2f & %s & %s \\\\",
-                         visit_summary$n_obs,
+rows_summary <- sprintf("%s & %s & %.2f & %s & %s \\\\",
                          as.character(visit_summary$group), visit_summary$label,
                          visit_summary$unconditional_pct,
                          fmt_pct(visit_summary$precede_pct), fmt_pct(visit_summary$follow_pct))
 
-n_mr_pwsids <- uniqueN(mr$PWSID)
+n_mr_pwsids <- uniqueN(mr_onsets$PWSID)
 notes_summary <- paste0(
-  "Sample: strictly downstream CWSs (", length(sample_pwsids), "), CWS-years 1985 to ",
-  "2005 (", length(sample_pwsids), " CWSs x 21 years). Visit types are grouped into ",
-  "sanitary visits (SNSV, SSVF), technical assistance (TECH, ENGR, OM), enforcement ",
-  "visits (FENF, INVG, EMRG), sample collection (SMPL), and inspection (SITE, RSCH, ",
-  "INFI); types not falling into one of these five groups are omitted. Column 1: ",
-  "number of CWS-years with at least one visit of that type, 1985--2005. Column 3: ",
-  "share of all CWS-years with at least one visit of that type. Column 4: among ",
-  "CWS-years with at least one visit of that type, the share in which that visit (in ",
-  "a month with a fully observed forward window) precedes an MR violation onset ",
-  "within the next 12 months, right-censored at 2004-12 as in the regressions above. ",
-  "Column 5: among CWS-years with at least one visit of that type, the share in which ",
-  "that visit follows an MR violation onset that began within the prior 12 months."
+  "\\textit{Notes:} Sample: community water systems strictly downstream of a coal mine (",
+  length(sample_pwsids), "), CWS-years 1985 to ",
+  "2005. Denominator population: CWS-years containing at least one monitoring-and-reporting ",
+  "violation onset (",
+  nrow(mr_cws_years), " CWS-years, ", nrow(mr_onsets), " onsets, ", n_mr_pwsids,
+  " distinct CWSs). Visit types are grouped into sanitary visits, technical ",
+  "assistance, enforcement visits, sample collection, ",
+  "and inspection; types not falling into one of these five ",
+  "groups are omitted. Column 3 (Unconditional probability): share of all CWS-years (not ",
+  "just violation-onset years) with at least one visit of that type, 1985--2005, shown for ",
+  "reference. Column 4: among CWS-years with a violation onset whose 12-month backward window ",
+  "is fully observed, the share in which a visit of that ",
+  "type occurred in the 12 months before some onset in that year. Column 5: among ",
+  "CWS-years with a violation onset whose 12-month forward window is fully observed, ",
+  "the share in which a visit of that type occurred in the 12 months after some onset ",
+  "in that year."
 )
 
 out_summary <- file.path(ROOT, "output/sum/visit_type_summary.tex")
 lines_summary <- c(
   "\\begin{table}[htbp]",
-  "\\caption{\\label{tab:visit_type_summary} Site Visit Types: Frequency and Timing Relative to MR Violations (Downstream CWSs, 1985--2005)}",
+  "\\caption{\\label{tab:visit_type_summary} Site Visit Types Around MR-Violation Onsets (Downstream CWSs, 1985--2005)}",
   "\\bigskip",
   "\\centering",
   "\\begin{adjustbox}{width = \\textwidth, center}",
-  "\\begin{tabular}{lllccc}",
+  "\\begin{tabular}{llcccc}",
   "\\toprule",
-  "N & Group & Visit type & Unconditional probability (\\%) & Visit precedes MR within year (\\%) & Visit follows MR within year (\\%) \\\\",
+  "Group & Visit type & Unconditional probability (\\%) & Visit in 12mo before MR onset (\\%) & Visit in 12mo after MR onset (\\%) \\\\",
   "\\midrule",
   rows_summary,
   "\\bottomrule",

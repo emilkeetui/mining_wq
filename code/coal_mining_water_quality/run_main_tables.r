@@ -337,13 +337,13 @@ vio_dict_bin <- c(
 )
 
 std_note_ivsum_bin <- paste0(
-  "Columns show OLS, reduced form, and 2SLS estimates. ",
+  "\\textit{Notes:} Columns show OLS, reduced form, and 2SLS estimates. ",
   "Dependent variable is an indicator equal to 1 if the CWS had any violation of that type during the year, 0 otherwise. ",
-  "Instrument is post95 interacted with sum of coal sulfur content across upstream HUC12s ",
-  "(post95 x sulfur_unified_sum). ",
-  "All regressions include CWS and year fixed effects. ",
-  "Standard errors clustered at CWS level. ",
-  "Sample period 1985--2005."
+  "The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content ",
+  "across upstream watersheds. ",
+  "Standard errors clustered at the CWS level. ",
+  "Sample period 1985--2005. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 
 vio_specs_bin <- list(

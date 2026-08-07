@@ -164,18 +164,17 @@ reformat_notes_tiny <- function(path) {
 dir.create(file.path(ROOT, "output/reg"), showWarnings = FALSE, recursive = TRUE)
 
 note_main <- paste0(
-  "National SYR2 sample restricted to states with at least one CWS in the main downstream ",
-  "2SLS sample (minehuc\\_downstream\\_of\\_mine==1 \\& minehuc\\_mine==0, 1985--2005), ",
+  "\\textit{Notes:} National SYR2 sample restricted to states with at least one CWS in the main ",
+  "downstream 2SLS sample (community water systems strictly downstream of a coal mine, 1985--2005), ",
   "nitrate only. Outcome: nitrate MR (monitoring/reporting) violation in the forward window ",
   "(1--365 days for the 1-yr column; 1--182 days for the 6-mon column) following the sample ",
-  "date. near\\_mcl = ",
-  "reading at 50--100\\% of the MCL, the 40 CFR 141.23(d)(2) quarterly-monitoring trigger. ",
-  sprintf("States retained: %d. Unique PWSIDs: %d. ", n_states_kept, n_pwsid),
+  "date. Concen. $>$ 50\\% MCL = ",
+  "reading at 50--100\\% of the MCL, the quarterly-monitoring trigger. ",
+  sprintf("States retained: %d. Unique CWSs: %d. ", n_states_kept, n_pwsid),
   sprintf("N of readings with concentration above 50 percent of the MCL: %d. ", n_near_mcl),
-  "Mean concentration = PWSID-YEAR mean reading, z-scored across the sample. ",
-  "Cols 1--2 are LPM (feols); cols 3--4 are logit (feglm, binomial family); ",
-  "all include CWS and year fixed effects. ",
-  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS (PWSID) level."
+  "Mean concentration = CWS-year mean reading, z-scored across the sample. ",
+  "Cols 1--2 are linear probability models; cols 3--4 are logit models. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level."
 )
 
 out_tex <- file.path(ROOT, "output/reg/mr_concentration_lag_national_downstream_states.tex")

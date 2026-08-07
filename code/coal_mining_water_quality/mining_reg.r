@@ -438,6 +438,47 @@ hist(coal_sulfur_hist$sulfur, main = "HUC12 Coal Sulfur % Histogram", xlab = "Co
 mtext("Sample: mine HUC12s upstream of downstream-only 2SLS CWS intakes, >= 1 active mine year 1985-2005", side = 1, line = 4, cex = 0.75, col = "grey40")
 dev.off()
 
+# HUC12 sulfur histogram — restricted to HUC12s one hop upstream of the
+# intake HUC12s of CWSs actually in the downstream-only 2SLS estimation sample
+# (minehuc_downstream_of_mine == 1 & minehuc_mine == 0 in prod_vio_sulfur.parquet),
+# rather than all downstream_of_mine rows in prod_sulfur.csv.
+pvs_ds <- arrow::read_parquet("Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
+                              col_select = c("PWSID", "minehuc_downstream_of_mine", "minehuc_mine"))
+ds_pwsids <- unique(pvs_ds$PWSID[pvs_ds$minehuc_downstream_of_mine == 1 & pvs_ds$minehuc_mine == 0])
+
+facilities <- read.csv("Z:/ek559/mining_wq/clean_data/cws_data/sdwa_facilities.csv", stringsAsFactors = FALSE) %>%
+  select(PWSID, huc12, minehuc_downstream_of_mine) %>%
+  distinct()
+ds_facility_hucs <- unique(facilities$huc12[facilities$PWSID %in% ds_pwsids &
+                                            facilities$minehuc_downstream_of_mine == 1])
+ds_facility_hucs <- sprintf("%012.0f", as.numeric(ds_facility_hucs))
+
+ds_rows_2sls <- prod_s[sprintf("%012.0f", prod_s$huc12) %in% ds_facility_hucs & !is.na(prod_s$fromhuc), ]
+upstream_mine_hucs_2sls <- unique(sprintf("%012.0f", ds_rows_2sls$fromhuc))
+cat("Downstream-only 2SLS CWSs:", length(ds_pwsids),
+    "| downstream-of-mine intake HUC12s:", length(ds_facility_hucs),
+    "| one-hop-upstream HUC12s:", length(upstream_mine_hucs_2sls), "\n")
+
+coal_data_2sls <- arrow::read_parquet("Z:/ek559/mining_wq/clean_data/huc_coal_charac_geom_match.parquet")
+coal_data_2sls <- coal_data_2sls[coal_data_2sls$huc12 %in% upstream_mine_hucs_2sls &
+                                 coal_data_2sls$year >= 1985 & coal_data_2sls$year <= 2005, ]
+active_mine_hucs_2sls <- coal_data_2sls %>%
+  group_by(huc12) %>%
+  summarise(max_mines = max(num_coal_mines_colocated, na.rm = TRUE)) %>%
+  filter(max_mines > 0) %>%
+  pull(huc12)
+coal_data_2sls <- coal_data_2sls[coal_data_2sls$huc12 %in% active_mine_hucs_2sls, ]
+
+coal_sulfur_hist_2sls <- coal_data_2sls %>% group_by(huc12) %>%
+  summarise(sulfur = max(sulfur_colocated, na.rm = TRUE))
+
+png("Z:/ek559/mining_wq/output/fig/sulfur_histogram_downstream2sls.png")
+par(mar = c(7, 4, 4, 2) + 0.1)
+hist(coal_sulfur_hist_2sls$sulfur, main = "HUC12 Coal Sulfur % Histogram", xlab = "Coal bed % sulfur", col = "lightblue", border = "black")
+mtext("Sample: HUC12's with at least one active mine between 1985 and 2005 and", side = 1, line = 4, cex = 0.75, col = "grey40")
+mtext("directly upstream of a utility water intake.", side = 1, line = 4.8, cex = 0.75, col = "grey40")
+dev.off()
+
 # plot coal prod by high sulfur
 coal_prod_over_time <- coal_data[coal_data$year<2006,] %>% group_by(high_sulfur, year) %>%
   summarise(avg_huc_coal = mean(production_short_tons_coal_colocated, na.rm = TRUE),

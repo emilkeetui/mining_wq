@@ -53,3 +53,8 @@ writer before proceeding.
 - Figures to `output/fig/*.png` — publication-ready, no titles unless necessary,
   informative axis labels, no gridlines on coefficient plots
 - Summary statistics to `output/sum/*.tex`
+- Table notes for any table `\input{}`'d into `main.tex`'s body must follow
+  `table-notes-conventions.md` (starts with `\textit{Notes:}`, no variable
+  names, no cross-references, no file paths, no individual sample IDs, stars
+  legend on regressions, no FE discussion, no sample-cleaning narration, no
+  robustness-check labeling)

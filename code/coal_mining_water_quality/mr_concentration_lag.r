@@ -251,7 +251,7 @@ main_headers <- if (have_ars) {
 }
 
 note_main <- paste0(
-  "SYR2 only (1998--2005). Outcome: same-contaminant MR violation within the year following ",
+  "\\textit{Notes:} SYR2 only (1998--2005). Outcome: same-contaminant MR violation within the year following ",
   "the contaminant reading or the 6 months following the contaminant reading. ",
   "Pooled IOC MR violations exclude arsenic and nitrate, which have their own rule codes. ",
   "Mean concentration z-scored within chemical. ",

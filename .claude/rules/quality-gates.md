@@ -45,9 +45,14 @@
 - Sample size footnote present with plausible N
 - No `\undefined` or `??` references
 - Coefficient cells are non-trivially non-zero
+- Notes begin with `\textit{Notes:}` (see `table-notes-conventions.md`)
 
 **90 (peer-review ready):**
 - All of the above, plus:
 - First-stage F-statistic row present in 2SLS tables
-- Stars legend correct (*** p<0.01, ** p<0.05, * p<0.1)
+- Stars legend correct (*** p<0.01, ** p<0.05, * p<0.1) and present in every
+  regression table's notes, per `table-notes-conventions.md`
 - Table compiles without errors or overfull hboxes
+- Notes contain no variable names, cross-references, file paths, individual
+  sample IDs, fixed-effects discussion, sample-cleaning narration, or
+  robustness-check labeling — full checklist in `table-notes-conventions.md`

@@ -133,15 +133,12 @@ fml_dsh <- detect_share     ~ coal_prod_upstream_cumsum_10mst + num_facilities |
 note_base_std <- paste0(
   "Within each chemical, columns show (1) mean measured concentration and ",
   "(2) share of annual samples exceeding the MCL, both from the EPA 6-Year Review. ",
-  "Non-detect values are not imputed (SYR2 non-detects recorded as MRL; ",
-  "SYR3 non-detects missing). ",
+  "Non-detect values are not imputed. ",
   "Explanatory variable is cumulative coal production since 1985 ",
-  "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
-  "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
-  "interacted with year). ",
-  "Sample: CWSs at most one HUC12 downstream of a coal mine ",
-  "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0). ",
-  "Standard errors clustered at PWSID level."
+  "(in 10 million short tons) one watershed upstream of the CWS intake. ",
+  "Sample: community water systems strictly downstream of a coal mine. ",
+  "Standard errors clustered at the CWS level. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 
 note_base_rav <- paste0(
@@ -149,30 +146,26 @@ note_base_rav <- paste0(
   "(2) share of annual samples exceeding the MCL, both from the EPA 6-Year Review. ",
   "Non-detect values replaced by MDL$/\\sqrt{2}$ following Ravalli et al.~(2022). ",
   "Explanatory variable is cumulative coal production since 1985 ",
-  "(in 10 million short tons) in the HUC12 one step upstream of the CWS intake. ",
-  "Fixed effects: PWSID and HUC02$\\times$year (first two digits of intake HUC12 ",
-  "interacted with year). ",
-  "Sample: CWSs at most one HUC12 downstream of a coal mine ",
-  "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0). ",
-  "Standard errors clustered at PWSID level."
+  "(in 10 million short tons) one watershed upstream of the CWS intake. ",
+  "Sample: community water systems strictly downstream of a coal mine. ",
+  "Standard errors clustered at the CWS level. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 
-note_main_std  <- paste0("Sample period 1998--2011. ", note_base_std)
-note_2005_std  <- paste0("Sample period 1998--2005 (robustness). ", note_base_std)
-note_main_rav  <- paste0("Sample period 1998--2011. ", note_base_rav)
-note_2005_rav  <- paste0("Sample period 1998--2005 (robustness). ", note_base_rav)
+note_main_std  <- paste0("\\textit{Notes:} Sample period 1998--2011. ", note_base_std)
+note_2005_std  <- paste0("\\textit{Notes:} Sample period 1998--2005. ", note_base_std)
+note_main_rav  <- paste0("\\textit{Notes:} Sample period 1998--2011. ", note_base_rav)
+note_2005_rav  <- paste0("\\textit{Notes:} Sample period 1998--2005. ", note_base_rav)
 
 note_tc_main_std <- paste0(
-  "Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). ",
+  "\\textit{Notes:} Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). ",
   note_base_std,
-  " Outcome is the fraction of annual samples testing positive for total coliform ",
-  "under the Total Coliform Rule (40 CFR 141.63; 54 FR 27544, Jun 29 1989)."
+  " Outcome is the fraction of annual samples testing positive for total coliform."
 )
 note_tc_main_rav <- paste0(
-  "Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). ",
+  "\\textit{Notes:} Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). ",
   note_base_rav,
-  " Outcome is the fraction of annual samples testing positive for total coliform ",
-  "under the Total Coliform Rule (40 CFR 141.63; 54 FR 27544, Jun 29 1989). ",
+  " Outcome is the fraction of annual samples testing positive for total coliform. ",
   "Total coliform presence/absence encoding is binary; MDL imputation is not applied."
 )
 
@@ -691,15 +684,13 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
   fmt_pct <- function(x) if (is.na(x)) "---" else sprintf("%.1f\\%%", 100 * x)
 
   note_ss <- paste0(
+    "\\textit{Notes:} ",
     note_ss_period,
-    "Statistics computed on the sample used in each chemical's regression in ",
-    "Table~\\ref{tab:6yr_huc02fe_inorg_val", file_sfx, "}. ",
     "For cumulative upstream coal production, statistics are computed over unique ",
-    "PWSID$\\times$year pairs that appear in at least one regression sample. ",
+    "CWS$\\times$year pairs that appear in at least one regression sample. ",
     "``Near MCL'' is the share of CWS-year mean concentrations exceeding 50\\% ",
     "of the applicable MCL. ",
-    "Sample: CWSs at most one HUC12 downstream of a coal mine ",
-    "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0)."
+    "Sample: community water systems strictly downstream of a coal mine."
   )
 
   tab_label <- paste0("tab:6yr_huc02fe_inorg_val_sumstats", file_sfx)
@@ -861,7 +852,7 @@ run_inorg_val_table(df6r, file_sfx = "_ravalli",
 run_inorg_val_table(df6r_2005, file_sfx = "_ravalli_2005",
                     title_sfx = ", Ravalli et al.~(2022) cleaning, robustness 1998--2005",
                     note_val = note_inorg_val_rav_2005,
-                    note_ss_period = "Sample period 1998--2005 (robustness). ")
+                    note_ss_period = "Sample period 1998--2005. ")
 
 # ---------------------------------------------------------------------------
 # Scatter plot: beta particle mean concentration vs cumulative upstream coal

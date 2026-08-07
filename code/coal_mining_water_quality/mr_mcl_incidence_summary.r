@@ -83,14 +83,12 @@ table_lines <- c(
   "\\vspace{4pt}",
   "\\footnotesize",
   paste0(
-    "\\textit{Notes:} Sample restricted to the downstream 2SLS CWS-year sample ",
-    "(minehuc\\_downstream\\_of\\_mine\\,=\\,1 and minehuc\\_mine\\,=\\,0, years 1985--2005, ",
-    "excluding PWSID WV3303401). ",
+    "\\textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine, ",
+    "years 1985--2005. ",
     "Rate is the share of CWS-year observations with a nonzero violation share for that ",
-    "category (count of observations with share\\,$>$\\,0, divided by N). ",
+    "category. ",
     "MR = monitoring and reporting violation; MCL = maximum contaminant level violation. ",
-    "Inorganic chemicals encompasses nitrates and arsenic as sub-contaminants. ",
-    "Source: clean\\_data/cws\\_data/prod\\_vio\\_sulfur.parquet."
+    "Inorganic chemicals encompasses nitrates and arsenic as sub-contaminants."
   ),
   "\\end{minipage}",
   "\\end{table}"
