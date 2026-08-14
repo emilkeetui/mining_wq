@@ -28,7 +28,7 @@ mining_wq/
 │   ├── cws_6year_review.parquet            # CWS × year × chemical: EPA 6-Year Review data (SYR2 only)
 │   ├── cws_6year_review_ravalli.parquet   # same with MDL/sqrt(2) non-detect imputation (SYR2 only)
 │   └── cws_data/
-│       ├── prod_vio_sulfur.parquet     # PWSID × year: main analysis dataset (input to didhet.r)
+│       ├── prod_vio_sulfur.parquet     # PWSID × year: main analysis dataset (input to run_main_tables.r)
 │       └── violation.csv              # raw violation records for distributional plots
 │
 ├── code/coal_mining_water_quality/    # All analysis scripts
@@ -37,7 +37,7 @@ mining_wq/
 │   ├── huc_coal_charac_geom_match.py  # step 3: build HUC-level panel
 │   ├── sdwismatch*.py         # step 4: match SDWIS facilities/PWS to HUCs
 │   ├── match_prod_vio_sulfur.py       # step 5: merge production, violations, sulfur
-│   ├── didhet.r               # step 6: main analysis — all regressions, tables, figures
+│   ├── run_main_tables.r      # step 6: main analysis — all regressions, tables, figures
 │   ├── mining_reg.r           # regression utilities
 │   ├── spatial_kriging.r      # sulfur interpolation
 │   └── kriging_sulfur.py
