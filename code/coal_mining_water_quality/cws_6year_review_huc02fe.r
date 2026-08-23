@@ -16,7 +16,7 @@
 # Author: EK  Date: 2026-05-27
 # ============================================================
 
-.libPaths("Z:/ek559/RPackages")
+.libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
 library(fixest)
 library(arrow)
 library(dplyr)
