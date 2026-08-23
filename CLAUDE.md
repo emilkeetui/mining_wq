@@ -110,7 +110,7 @@ wait for the user to approve before executing.
 
 ### R tables
 
-R is accessed at C:\Program Files\R\R-4.5.2\bin\Rscript.exe
+R is accessed at C:\Program Files\R\R-4.6.1\bin\Rscript.exe
 
 Beamer-compatible tables — after every etable() write, call wrap_for_beamer(path) (defined in enforcement_chain_d12.r; copy the function into any new script that generates .tex tables). This prepends a \@ifclassloaded{beamer} conditional so \input{reg/table} works unchanged in both beamer frames and regular LaTeX documents, and moves the notes = text outside the adjustbox so it renders below the table. Both documents must load \usepackage{adjustbox}.
 

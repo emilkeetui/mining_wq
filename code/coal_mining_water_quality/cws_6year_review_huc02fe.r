@@ -266,7 +266,7 @@ nice_chem <- function(x) {
 #   title_sfx — appended to table title
 # ---------------------------------------------------------------------------
 run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_main_std,
-                             detect_for = character(0)) {
+                             detect_for = character(0), exclude_chems = character(0)) {
   for (grp in chem_groups) {
     cat("\n--- Group:", grp$group_label, file_sfx, "---\n")
 
@@ -279,12 +279,13 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
     grp_dict      <- if (!is.null(grp$dict))     grp$dict     else dict_global
     # TC group uses note_tc; all others use note
     grp_note      <- if (isTRUE(grp$is_tc)) note_tc else note
+    grp_chems     <- setdiff(grp$chems, exclude_chems)
 
     models_list   <- list()
     hdr_vec       <- character(0)
     val_chems_ok  <- character(0)  # chems that produced a mean-conc. model (for detect block)
 
-    for (chem in grp$chems) {
+    for (chem in grp_chems) {
       d <- df[df$CHEMID_name == chem, ]
       cat("  Chemical:", chem, "| n rows:", nrow(d), "\n")
 
@@ -833,7 +834,7 @@ cat("Rows (1998-2005):", nrow(df6r_2005),
     "| year range:", min(df6r_2005$year), "-", max(df6r_2005$year), "\n")
 run_group_tables(df6r_2005, note_2005_rav, file_sfx = "_ravalli_2005",
                  title_sfx = ", Ravalli et al.~(2022) cleaning, robustness 1998--2005",
-                 note_tc = note_tc_main_rav, detect_for = "inorg")
+                 note_tc = note_tc_main_rav, exclude_chems = "chromium")
 
 cat("\n=== COUNT TABLES: MAIN SAMPLE 1998-2011 ===\n")
 run_count_tables(df6r, note_cnt_main_rav, file_sfx = "_ravalli",

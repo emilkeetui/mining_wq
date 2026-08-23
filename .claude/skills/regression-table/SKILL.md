@@ -20,7 +20,7 @@ specific table name to check (e.g., `2sls_nitrates_downstream`).
 ### Step 1: Run the Script
 
 ```bash
-"Z:/R/R-4.5.2/bin/x64/Rscript.exe" --vanilla code/coal_mining_water_quality/${SCRIPT:-run_main_tables.r}
+"C:/Program Files/R/R-4.6.1/bin/x64/Rscript.exe" --vanilla code/coal_mining_water_quality/${SCRIPT:-run_main_tables.r}
 ```
 
 Capture exit code. If non-zero: report the error and stop.

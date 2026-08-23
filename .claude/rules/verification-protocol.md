@@ -6,7 +6,7 @@
 
 1. Run end-to-end:
    ```bash
-   "Z:/R/R-4.5.2/bin/x64/Rscript.exe" --vanilla code/coal_mining_water_quality/<script>.r
+   "C:/Program Files/R/R-4.6.1/bin/x64/Rscript.exe" --vanilla code/coal_mining_water_quality/<script>.r
    ```
 2. Confirm the script exits 0 (no error message)
 3. Confirm expected output file exists (e.g., `.tex` in `output/reg/`, `.png` in `output/fig/`)

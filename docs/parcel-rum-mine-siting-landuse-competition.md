@@ -164,7 +164,7 @@ RUM canon is the backbone of the writeup and is entirely missing from the local 
 
 Target unit: **parcel (grid cell) × year**, restricted to the coal-feasible universe.
 All outputs → `clean_data/` (never `raw_data/`). New scripts in `code/coal_mining_water_quality/`.
-Python = venv path in CLAUDE.md; R = `C:\Program Files\R\R-4.5.2\bin\Rscript.exe`.
+Python = venv path in CLAUDE.md; R = `C:\Program Files\R\R-4.6.1\bin\Rscript.exe`.
 
 ```
 Step 1 — BUILD CHOICE FRAME
