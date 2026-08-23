@@ -1,4 +1,4 @@
-.libPaths("Z:/ek559/RPackages")
+.libPaths(c(.libPaths(), "Z:/ek559/RPackages"))
 library(fixest)
 library(arrow)
 library(dplyr)
@@ -61,6 +61,25 @@ move_notes_below_adjustbox <- function(x) {
   x <- sub(note_block, "", x, fixed = TRUE)
   x <- sub(end_adj, paste0(end_adj, "\n   {\\tiny\\linespread{1}\\selectfont ", trimws(note_block), "}"), x, fixed = TRUE)
   x
+}
+
+# Two stored first stages are the same regression when the estimation sample and
+# every coefficient / standard error coincide; used to drop redundant columns.
+fs_fingerprint <- function(m) {
+  paste(nobs(m),
+        paste(names(coef(m)), collapse = "|"),
+        paste(signif(coef(m), 10), collapse = "|"),
+        paste(signif(se(m), 10), collapse = "|"),
+        sep = "||")
+}
+
+# etable's adjustbox always writes width = \textwidth, which blows a one- or
+# two-column table up to full page width. Narrow it after the fact.
+set_adjustbox_width <- function(x, w) {
+  x <- paste(x, collapse = "\n")
+  sub("\\begin{adjustbox}{width = \\textwidth, center}",
+      paste0("\\begin{adjustbox}{width = ", w, "\\textwidth, center}"),
+      x, fixed = TRUE)
 }
 
 # Replace the auto-numbered column row "(1) (2) (3) ..." with cycling OLS / RF / 2SLS.
@@ -142,7 +161,10 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
     }
     for (y in names(result)) {
       for (cv in coalvar) {
-        fs_list[[subheader]][[y]][[cv]] <- result[[y]]$IV$iv_first_stage[[cv]]
+        fs_list[[subheader]][[y]][[cv]] <- list(
+          model       = result[[y]]$IV$iv_first_stage[[cv]],
+          f_clustered = result[[y]]$f_clustered
+        )
       }
     }
     assign(storage_list_name, fs_list, envir = .GlobalEnv)
@@ -182,39 +204,78 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
 
 first_stage_table <- function(storage_list_name, outfile, title = NULL,
                                label = NULL, which_coalvar = NULL,
-                               drop = NULL) {
-  fs_list       <- get(storage_list_name, envir = .GlobalEnv)
-  model_list    <- list()
-  inner_headers <- list()
-  outer_headers <- list()
+                               drop = NULL, dict = NULL, notes = NULL,
+                               fitstat = ~ n) {
+  fs_list      <- get(storage_list_name, envir = .GlobalEnv)
+  model_list   <- list()
+  f_vals       <- numeric(0)
+  col_depvars  <- character(0)
+  col_subheads <- character(0)
+  seen         <- character(0)
 
   for (subheader in names(fs_list)) {
     depvar_bucket <- fs_list[[subheader]]
-    n_cols        <- 0
     for (depvar in names(depvar_bucket)) {
       coal_models <- depvar_bucket[[depvar]]
-      cv <- if (!is.null(which_coalvar)) which_coalvar else names(coal_models)[1]
-      model_list              <- c(model_list, list(coal_models[[cv]]))
-      inner_headers[[depvar]] <- 1L
-      n_cols                  <- n_cols + 1L
+      cv    <- if (!is.null(which_coalvar)) which_coalvar else names(coal_models)[1]
+      entry <- coal_models[[cv]]
+      fp    <- fs_fingerprint(entry$model)
+      # The outcome does not enter the first stage, so columns sharing a sample
+      # and an instrument are the identical regression - keep only the first.
+      if (fp %in% seen) next
+      seen         <- c(seen, fp)
+      model_list   <- c(model_list, list(entry$model))
+      f_vals       <- c(f_vals, entry$f_clustered)
+      col_depvars  <- c(col_depvars, depvar)
+      col_subheads <- c(col_subheads, subheader)
     }
-    outer_headers[[subheader]] <- n_cols
+  }
+  if (length(model_list) == 0) {
+    cat("  No stored first stages for", storage_list_name, "- skipping.\n")
+    return(invisible(NULL))
+  }
+  cat("  First-stage columns after collapsing duplicates:", length(model_list), "\n")
+
+  # Clustered first-stage F, matching the value reported in the 2SLS tables.
+  el        <- list(ifelse(is.na(f_vals), "", format(round(f_vals, 2), nsmall = 2)))
+  names(el) <- "F-test (1st stage, clustered)"
+
+  # Column headers only make sense when more than one distinct first stage survives.
+  # Built as plain character vectors (one entry per column) rather than named
+  # span lists: fixest's span-list form (list("label" = span)) mis-renders when
+  # a header row reduces to a single group, which happens routinely here once
+  # duplicate columns are dropped. A character vector lets fixest handle the
+  # multicolumn spanning itself and is robust to that case.
+  headers_arg <- NULL
+  if (length(model_list) > 1) {
+    translate_depvar <- function(v) if (!is.null(dict) && v %in% names(dict)) dict[[v]] else v
+    outer_vec   <- col_subheads
+    inner_vec   <- vapply(col_depvars, translate_depvar, character(1), USE.NAMES = FALSE)
+    headers_arg <- list(outer_vec, inner_vec)
   }
 
-  two_level_headers <- list(outer_headers, inner_headers)
-  do.call(etable, c(
-    model_list,
-    list(
-      fitstat   = ~ . + ivf1,
-      style.tex = style.tex("aer", adjustbox = TRUE),
-      tex       = TRUE,
-      drop      = drop,
-      headers   = two_level_headers,
-      title     = title,
-      label     = label,
-      file      = paste0("Z:/ek559/mining_wq/output/reg/", outfile, ".tex")
-    )
-  ))
+  box_width <- if (length(model_list) <= 2) 0.45 else 1
+  post_fun  <- function(x) {
+    x <- move_notes_below_adjustbox(x)
+    if (box_width < 1) x <- set_adjustbox_width(x, box_width)
+    x
+  }
+
+  etable_args <- list(
+    fitstat         = fitstat,
+    style.tex       = style.tex("aer", adjustbox = TRUE),
+    tex             = TRUE,
+    drop            = drop,
+    title           = title,
+    label           = label,
+    extralines      = el,
+    postprocess.tex = post_fun,
+    file            = paste0("Z:/ek559/mining_wq/output/reg/", outfile, ".tex")
+  )
+  if (!is.null(headers_arg)) etable_args$headers <- headers_arg
+  if (!is.null(dict))        etable_args$dict    <- dict
+  if (!is.null(notes))       etable_args$notes   <- notes
+  do.call(etable, c(model_list, etable_args))
 }
 
 std_note <- paste0(
@@ -252,12 +313,29 @@ nonmine_note_ivsum <- paste0(
 )
 
 sample_specs <- list(
-  list(sample="dwnstrm",        suffix="",       dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most one HUC12 down-stream"),
-  list(sample="dwnstrm",        suffix="_ivsum", dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_sum",  instr="post95:sulfur_unified_sum",  titlesamp="CWSs at most one HUC12 down-stream"),
-  list(sample="dwnstrmcolocate",suffix="",       dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified_mean",  instr="post95:sulfur_unified_mean", titlesamp="downstream and colocated PWS's"),
-  list(sample="dwnstrm2step",   suffix="",       dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most two HUC12's downstream of coal mines"),
-  list(sample="dwnstrm2step",   suffix="_ivsum", dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream_sum",  instr="post95:sulfur_unified_sum",  titlesamp="CWSs at most two HUC12's downstream of coal mines")
+  list(sample="dwnstrm",        suffix="",       dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most one HUC12 down-stream",                notesamp="community water systems at most one watershed downstream of a coal mine"),
+  list(sample="dwnstrm",        suffix="_ivsum", dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_sum",  instr="post95:sulfur_unified_sum",  titlesamp="CWSs at most one HUC12 down-stream",                notesamp="community water systems at most one watershed downstream of a coal mine"),
+  list(sample="dwnstrmcolocate",suffix="",       dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified_mean",  instr="post95:sulfur_unified_mean", titlesamp="downstream and colocated PWS's",                    notesamp="community water systems colocated with or downstream of a coal mine"),
+  list(sample="dwnstrm2step",   suffix="",       dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most two HUC12's downstream of coal mines", notesamp="community water systems at most two watersheds downstream of a coal mine"),
+  list(sample="dwnstrm2step",   suffix="_ivsum", dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream_sum",  instr="post95:sulfur_unified_sum",  titlesamp="CWSs at most two HUC12's downstream of coal mines", notesamp="community water systems at most two watersheds downstream of a coal mine")
 )
+
+# Plain-language notes for first-stage tables (see table-notes-conventions.md: no variable names).
+fs_note <- function(is_sum, notesamp) {
+  agg <- if (is_sum) "sum of coal sulfur content across upstream watersheds" else
+                     "mean coal sulfur content of the intake watershed"
+  dep <- if (is_sum) "summed across upstream watersheds" else
+                     "averaged across upstream watersheds"
+  paste0(
+    "\\textit{Notes:} The dependent variable is the number of coal mines in watersheds upstream ",
+    "of the community water system's intake, ", dep, ". ",
+    "The instrument interacts an indicator for the post-1995 period with the ", agg, ". ",
+    "The sample is ", notesamp, ". ",
+    "Standard errors clustered at the CWS level. ",
+    "Sample period 1985--2005. ",
+    "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+  )
+}
 vio_specs <- list(
   list(name="minevio",    allcat=c("nitrates_share_days","arsenic_share_days","inorganic_chemicals_share_days","radionuclides_share_days"),             mcl=c("nitrates_MCL_share_days","arsenic_MCL_share_days","inorganic_chemicals_MCL_share_days","radionuclides_MCL_share_days"),             mr=c("nitrates_MR_share_days","arsenic_MR_share_days","inorganic_chemicals_MR_share_days","radionuclides_MR_share_days"),             titlevio="IOC violations"),
   list(name="nonminevio", allcat=c("total_coliform_share_days","voc_share_days"),                mcl=c("total_coliform_MCL_share_days","voc_MCL_share_days"),                mr=c("total_coliform_MR_share_days","voc_MR_share_days"),                titlevio="non-mining violations")
@@ -290,14 +368,19 @@ for (sp in sample_specs) {
                            fitstat           = tab_fitstat)
     }
     fs_outfile <- paste0("fs_", sp$sample, "_", vp$name, sp$suffix)
-    fs_title   <- paste0("First Stage: ", vp$titlevio, " (", sp$titlesamp, ")")
+    fs_agg     <- if (sp$suffix == "_ivsum") "summed across upstream watersheds" else "averaged across upstream watersheds"
+    fs_title   <- paste0("First stage: effect of the Acid Rain Program on the number of upstream coal mines (",
+                         fs_agg, ", ", sp$titlesamp, ")")
     cat("\nProducing first-stage table:", fs_outfile, "\n")
     first_stage_table(
       storage_list_name = fs_store_name,
       outfile           = fs_outfile,
       title             = fs_title,
       label             = paste0("tab:", fs_outfile),
-      drop              = "num_facilities"
+      drop              = "num_facilities",
+      dict              = vio_dict,
+      notes             = fs_note(sp$suffix == "_ivsum", sp$notesamp),
+      fitstat           = if (sp$suffix == "_ivsum") ~ n else ~ .
     )
   }
 }
@@ -357,6 +440,7 @@ vio_specs_bin <- list(
 bin_sample_specs <- list(
   list(sample="dwnstrm", suffix="_ivsum", coalvar="num_coal_mines_upstream_sum",
        instr="post95:sulfur_unified_sum", titlesamp="CWSs at most one HUC12 down-stream",
+       notesamp="community water systems at most one watershed downstream of a coal mine",
        dset=full[(full$minehuc_downstream_of_mine==1) & (full$minehuc_mine==0), ])
 )
 
@@ -376,14 +460,18 @@ for (sp in bin_sample_specs) {
                            fitstat=~ n)
     }
     fs_outfile <- paste0("fs_", sp$sample, "_", vp$name, sp$suffix, "_binvio")
-    fs_title   <- paste0("First Stage: ", vp$titlevio, " (", sp$titlesamp, ")")
+    fs_title   <- paste0("First stage: effect of the Acid Rain Program on the number of upstream coal mines (",
+                         "summed across upstream watersheds, ", sp$titlesamp, ")")
     cat("\nProducing first-stage table:", fs_outfile, "\n")
     first_stage_table(
       storage_list_name=fs_store_name,
       outfile=fs_outfile,
       title=fs_title,
       label=paste0("tab:", fs_outfile),
-      drop="num_facilities"
+      drop="num_facilities",
+      dict=vio_dict_bin,
+      notes=fs_note(TRUE, sp$notesamp),
+      fitstat=~ n
     )
   }
 }

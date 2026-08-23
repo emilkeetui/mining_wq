@@ -1,29 +1,50 @@
 
 \begin{table}[htbp]
-   \caption{\label{tab:fs_dwnstrm2step_minevio} First Stage: IOC violations (CWSs at most two HUC12's downstream of coal mines)}
+   
+   \caption{\label{tab:fs_dwnstrm2step_minevio} First stage: effect of the Acid Rain Program on the number of upstream coal mines (averaged across upstream watersheds, CWSs at most two HUC12's downstream of coal mines)}
    \bigskip
+   
    \centering
-   \begin{adjustbox}{width = \textwidth, center}
-      \begin{tabular}{lcccccccccccc}
+   
+   \begin{adjustbox}{width = 0.45\textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lc}
          \toprule
-          & \multicolumn{12}{c}{num\_coal\_mines\_upstream\_mean}\\
-          & \multicolumn{4}{c}{any violation category} & \multicolumn{4}{c}{MCL violations only} & \multicolumn{4}{c}{MR violations only} \\ 
-                                                  & nitrates\_share\_days   & arsenic\_share\_days   & inorganic\_chemicals\_share\_days    & radionuclides\_share\_days   & nitrates\_MCL\_share\_days    & arsenic\_MCL\_share\_days    & inorganic\_chemicals\_MCL\_share\_days     & radionuclides\_MCL\_share\_days    & nitrates\_MR\_share\_days    & arsenic\_MR\_share\_days    & inorganic\_chemicals\_MR\_share\_days     & radionuclides\_MR\_share\_days \\      
-                                                  & (1)                     & (2)                    & (3)                                  & (4)                          & (5)                           & (6)                          & (7)                                        & (8)                                & (9)                          & (10)                        & (11)                                      & (12)\\  
+         
+                                                  & num\_coal\_mines\_upstream\_mean\\      
+         
+                                                  & (1)\\  
+         
          \midrule 
-         post95 $\times$ sulfur\_unified\_mean    & -0.0747$^{***}$         & -0.0747$^{***}$        & -0.0747$^{***}$                      & -0.0747$^{***}$              & -0.0747$^{***}$               & -0.0747$^{***}$              & -0.0747$^{***}$                            & -0.0747$^{***}$                    & -0.0747$^{***}$              & -0.0747$^{***}$             & -0.0747$^{***}$                           & -0.0747$^{***}$\\   
-                                                  & (0.0278)                & (0.0278)               & (0.0278)                             & (0.0278)                     & (0.0278)                      & (0.0278)                     & (0.0278)                                   & (0.0278)                           & (0.0278)                     & (0.0278)                    & (0.0278)                                  & (0.0278)\\   
+         post95 $\times$ sulfur\_unified\_mean    & -0.0747$^{***}$\\   
+                                                  & (0.0278)\\   
+         
+         F-test (1st stage, clustered)            & 7.23\\  
+         
           \\
-         Observations                             & 12,189                  & 12,189                 & 12,189                               & 12,189                       & 12,189                        & 12,189                       & 12,189                                     & 12,189                             & 12,189                       & 12,189                      & 12,189                                    & 12,189\\  
-         R$^2$                                    & 0.73280                 & 0.73280                & 0.73280                              & 0.73280                      & 0.73280                       & 0.73280                      & 0.73280                                    & 0.73280                            & 0.73280                      & 0.73280                     & 0.73280                                   & 0.73280\\  
-         Within R$^2$                             & 0.00998                 & 0.00998                & 0.00998                              & 0.00998                      & 0.00998                       & 0.00998                      & 0.00998                                    & 0.00998                            & 0.00998                      & 0.00998                     & 0.00998                                   & 0.00998\\  
-         F-test (1st stage)                       & 120.18                  & 120.18                 & 120.18                               & 120.18                       & 120.18                        & 120.18                       & 120.18                                     & 120.18                             & 120.18                       & 120.18                      & 120.18                                    & 120.18\\  
+         
+         Observations                             & 12,189\\  
+         R$^2$                                    & 0.73280\\  
+         Within R$^2$                             & 0.00998\\  
+         
           \\
-         PWSID fixed effects                      & $\checkmark$            & $\checkmark$           & $\checkmark$                         & $\checkmark$                 & $\checkmark$                  & $\checkmark$                 & $\checkmark$                               & $\checkmark$                       & $\checkmark$                 & $\checkmark$                & $\checkmark$                              & $\checkmark$\\   
-         year fixed effects                       & $\checkmark$            & $\checkmark$           & $\checkmark$                         & $\checkmark$                 & $\checkmark$                  & $\checkmark$                 & $\checkmark$                               & $\checkmark$                       & $\checkmark$                 & $\checkmark$                & $\checkmark$                              & $\checkmark$\\   
+         
+         CWS fixed effects                        & $\checkmark$\\   
+         year fixed effects                       & $\checkmark$\\   
+         
          \bottomrule
+         
       \end{tabular}
+      
+      %end:tab
+      
+      
    \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   \textit{Notes:} The dependent variable is the number of coal mines in watersheds upstream of the community water system's intake, averaged across upstream watersheds. The instrument interacts an indicator for the post-1995 period with the mean coal sulfur content of the intake watershed. The sample is community water systems at most two watersheds downstream of a coal mine. Standard errors clustered at the CWS level. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   
 \end{table}
 
 

@@ -1,29 +1,48 @@
 
 \begin{table}[htbp]
-   \caption{\label{tab:fs_dwnstrm_minevio_ivsum_binvio} First Stage: IOC violations (CWSs at most one HUC12 down-stream)}
+   
+   \caption{\label{tab:fs_dwnstrm_minevio_ivsum_binvio} First stage: effect of the Acid Rain Program on the number of upstream coal mines (summed across upstream watersheds, CWSs at most one HUC12 down-stream)}
    \bigskip
+   
    \centering
-   \begin{adjustbox}{width = \textwidth, center}
-      \begin{tabular}{lccccccccc}
+   
+   \begin{adjustbox}{width = 0.45\textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lc}
          \toprule
-          & \multicolumn{9}{c}{num\_coal\_mines\_upstream\_sum}\\
-          & \multicolumn{3}{c}{any violation category} & \multicolumn{3}{c}{MCL violations only} & \multicolumn{3}{c}{MR violations only} \\ 
-                                                 & nitrates\_bin   & arsenic\_bin    & inorganic\_chemicals\_bin   & nitrates\_MCL\_bin   & arsenic\_MCL\_bin   & inorganic\_chemicals\_MCL\_bin    & nitrates\_MR\_bin   & arsenic\_MR\_bin   & inorganic\_chemicals\_MR\_bin \\      
-                                                 & (1)             & (2)             & (3)                         & (4)                  & (5)                 & (6)                               & (7)                 & (8)                & (9)\\  
+         
+                                              & Upstream coal mines (sum)\\  
+         
+                                              & (1)\\  
+         
          \midrule 
-         post95 $\times$ sulfur\_unified\_sum    & -0.2404$^{***}$ & -0.2404$^{***}$ & -0.2404$^{***}$             & -0.2404$^{***}$      & -0.2404$^{***}$     & -0.2404$^{***}$                   & -0.2404$^{***}$     & -0.2404$^{***}$    & -0.2404$^{***}$\\   
-                                                 & (0.0458)        & (0.0458)        & (0.0458)                    & (0.0458)             & (0.0458)            & (0.0458)                          & (0.0458)            & (0.0458)           & (0.0458)\\   
+         post95 $\times$ Upstream sulfur \%   & -0.2404$^{***}$\\   
+                                              & (0.0458)\\   
+         
+         F-test (1st stage, clustered)        & 27.52\\  
+         
           \\
-         Observations                            & 6,225           & 6,225           & 6,225                       & 6,225                & 6,225               & 6,225                             & 6,225               & 6,225              & 6,225\\  
-         R$^2$                                   & 0.74844         & 0.74844         & 0.74844                     & 0.74844              & 0.74844             & 0.74844                           & 0.74844             & 0.74844            & 0.74844\\  
-         Within R$^2$                            & 0.04616         & 0.04616         & 0.04616                     & 0.04616              & 0.04616             & 0.04616                           & 0.04616             & 0.04616            & 0.04616\\  
-         F-test (1st stage)                      & 293.79          & 293.79          & 293.79                      & 293.79               & 293.79              & 293.79                            & 293.79              & 293.79             & 293.79\\  
+         
+         Observations                         & 6,225\\  
+         
           \\
-         PWSID fixed effects                     & $\checkmark$    & $\checkmark$    & $\checkmark$                & $\checkmark$         & $\checkmark$        & $\checkmark$                      & $\checkmark$        & $\checkmark$       & $\checkmark$\\   
-         year fixed effects                      & $\checkmark$    & $\checkmark$    & $\checkmark$                & $\checkmark$         & $\checkmark$        & $\checkmark$                      & $\checkmark$        & $\checkmark$       & $\checkmark$\\   
+         
+         CWS fixed effects                    & $\checkmark$\\   
+         year fixed effects                   & $\checkmark$\\   
+         
          \bottomrule
+         
       \end{tabular}
+      
+      %end:tab
+      
+      
    \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   \textit{Notes:} The dependent variable is the number of coal mines in watersheds upstream of the community water system's intake, summed across upstream watersheds. The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content across upstream watersheds. The sample is community water systems at most one watershed downstream of a coal mine. Standard errors clustered at the CWS level. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   
 \end{table}
 
 
