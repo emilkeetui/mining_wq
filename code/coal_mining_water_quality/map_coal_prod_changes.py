@@ -791,30 +791,20 @@ if not inc_all.empty:
     inc_all.plot(ax=ax, markersize=inc_all["s"], color="tomato",    alpha=0.75, marker="o", linewidth=0)
 
 ax.set_axis_off()
-ax.set_title(
-    "Change in coal production (short tons) by HUC12, 1985 to 2005\n"
-    "All active mine HUC12s  |  Red = increase, Blue = decrease",
-    fontsize=11
-)
 
 ref_mags_a = np.array([vmax_a * 0.25, vmax_a * 0.5, vmax_a])
 ref_s_a    = S_MIN_A + (ref_mags_a - vmin_a) * (S_MAX_A - S_MIN_A) / (vmax_a - vmin_a + 1e-12)
 size_handles_a = [ax.scatter([], [], s=s, color="grey", alpha=0.6, edgecolors="k") for s in ref_s_a]
 size_labels_a  = [f"{int(v):,.0f} short tons" for v in ref_mags_a]
 leg1_a = ax.legend(size_handles_a, size_labels_a, title="|Change|", loc="lower left",
-                   bbox_to_anchor=(0.01, 0.05), frameon=True, fontsize=8)
+                   bbox_to_anchor=(0.01, 0.05), frameon=True, fontsize=13)
 ax.add_artist(leg1_a)
 
 color_handles_a = [
     Line2D([0], [0], marker="o", color="w", markerfacecolor="tomato",    markersize=9, label="Increase"),
     Line2D([0], [0], marker="o", color="w", markerfacecolor="steelblue", markersize=9, label="Decrease"),
 ]
-ax.legend(handles=color_handles_a, title="Direction", loc="lower right", fontsize=8)
-
-fig.text(0.5, 0.01,
-         "Circle area proportional to absolute change in coal production (short tons), 1985–2005.\n"
-         "All HUC12s with positive coal production in at least one year, 1985–2005.",
-         ha="center", fontsize=8, color="0.4")
+ax.legend(handles=color_handles_a, title="Direction", loc="lower right", fontsize=13)
 
 plt.tight_layout()
 out_path_all = "Z:/ek559/mining_wq/output/fig/proportionatecircleprod_diff_allminehuc12_1985_2005.png"
@@ -1051,11 +1041,6 @@ if not inc_d.empty:
     inc_d.plot(ax=ax_d, markersize=inc_d["s_pop"],  color="tomato",    alpha=0.75, marker="o", linewidth=0)
 
 ax_d.set_axis_off()
-ax_d.set_title(
-    "Population served by CWSs one HUC12 downstream of coal mining, 1985–2005\n"
-    "Circle area ∝ population  |  Red = upstream mining rose, Blue = upstream mining fell",
-    fontsize=11
-)
 
 # Size legend (population)
 ref_pop   = np.array([pop_vmax * 0.25, pop_vmax * 0.5, pop_vmax])
@@ -1063,20 +1048,17 @@ ref_s_p   = S_MIN_D + (ref_pop - pop_vmin) * (S_MAX_D - S_MIN_D) / (pop_vmax - p
 sz_p_hnd  = [ax_d.scatter([], [], s=s, color="grey", alpha=0.6, edgecolors="k") for s in ref_s_p]
 sz_p_lbl  = [f"{int(v):,.0f} people" for v in ref_pop]
 leg_pop   = ax_d.legend(sz_p_hnd, sz_p_lbl, title="Pop. served", loc="lower left",
-                        bbox_to_anchor=(0.01, 0.05), frameon=True, fontsize=8)
+                        bbox_to_anchor=(0.01, 0.05), frameon=True, fontsize=13)
 ax_d.add_artist(leg_pop)
 
 color_handles_d = [
     Line2D([0], [0], marker="o", color="w", markerfacecolor="tomato",    markersize=9, label="Mining rose"),
     Line2D([0], [0], marker="o", color="w", markerfacecolor="steelblue", markersize=9, label="Mining fell"),
 ]
-ax_d.legend(handles=color_handles_d, title="Upstream mining", loc="lower right", fontsize=8)
+ax_d.legend(handles=color_handles_d, title="Upstream mining", loc="lower right", fontsize=13)
 
-fig.text(0.5, 0.01,
-         f"Circle area proportional to avg. population served by CWSs with intakes one HUC12 downstream of an active coal mine HUC12.\n"
-         f"Color based on net change in coal production in the upstream mine HUC12, 1985–2005.\n"
-         f"The total population one HUC12 downstream of active coal mines in 1985 was {pop_1985:,} and in 2005 was {pop_2005:,}. Net change of {pop_net_change:+,}.",
-         ha="center", fontsize=8, color="0.4")
+print(f"Population served (upstream mining HUC12 downstream CWSs): 1985 = {pop_1985:,}, "
+      f"2005 = {pop_2005:,}, net change = {pop_net_change:+,}")
 
 plt.tight_layout()
 out_mines = "Z:/ek559/mining_wq/output/fig/proportionatecircle_upstream_mines_huc12_1985_2005.png"

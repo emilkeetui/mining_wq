@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.8.24)  24 AUG 2026 15:34
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.8.24)  24 AUG 2026 16:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -887,29 +887,28 @@ LaTeX Font Info:    Overwriting symbol font `cmletters' in version `bold'
 \@quotelevel=\count519
 \@quotereset=\count520
 Package translations Info: No language package found. I am going to use `englis
-h' as default language. on input line 56.
-LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 5
-6.
+h' as default language. on input line 88.
+LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 8
+8.
  (C:\Users\ek559\AppData\Roaming\MiKTeX\tex/latex/psnfss\ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
-)
-No file main.aux.
+) (main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 88.
+LaTeX Font Info:    ... okay on input line 88.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 88.
+LaTeX Font Info:    ... okay on input line 88.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 88.
+LaTeX Font Info:    ... okay on input line 88.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 88.
+LaTeX Font Info:    ... okay on input line 88.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 88.
+LaTeX Font Info:    ... okay on input line 88.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 88.
+LaTeX Font Info:    ... okay on input line 88.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 88.
+LaTeX Font Info:    ... okay on input line 88.
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -955,12 +954,19 @@ Package biblatex Info: Automatic encoding selection.
 \openout3 = `main.bcf'.
 
 Package biblatex Info: Trying to load bibliographic data...
-Package biblatex Info: ... file 'main.bbl' not found.
+Package biblatex Info: ... file 'main.bbl' found.
+ (main.bbl
 
-No file main.bbl.
-Package biblatex Info: Reference section=0 on input line 56.
-Package biblatex Info: Reference segment=0 on input line 56.
-(C:\Program Files\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+Package biblatex Warning: The following entry could not be found
+(biblatex)                in the database:
+(biblatex)                mu2024s
+(biblatex)                Please verify the spelling and rerun
+(biblatex)                LaTeX afterwards.
+
+)
+Package biblatex Info: Reference section=0 on input line 88.
+Package biblatex Info: Reference segment=0 on input line 88.
+ (C:\Program Files\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count521
 \scratchdimen=\dimen348
@@ -987,699 +993,337 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 56.
+or `english'. on input line 88.
  [1
 
 {C:/Users/ek559/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Program Fi
 les/MiKTeX/fonts/enc/dvips/base/8r.enc}]
-
-LaTeX Warning: Citation 'zou2021unwatched' on page 2 undefined on input line 83
-.
-
-
-LaTeX Warning: Citation '10.1162/rest_a_01477' on page 2 undefined on input lin
-e 83.
-
 [2]
 LaTeX Font Info:    Trying to load font information for OML+zplm on input line 
-85.
+117.
  (C:\Users\ek559\AppData\Roaming\MiKTeX\tex/latex/psnfss\omlzplm.fd
 File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OMS+zplm on input line 
-85.
+117.
 
 (C:\Users\ek559\AppData\Roaming\MiKTeX\tex/latex/psnfss\omszplm.fd
 File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OMX+zplm on input line 
-85.
+117.
 
 (C:\Users\ek559\AppData\Roaming\MiKTeX\tex/latex/psnfss\omxzplm.fd
 File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OT1+zplm on input line 
-85.
+117.
 
 (C:\Users\ek559\AppData\Roaming\MiKTeX\tex/latex/psnfss\ot1zplm.fd
 File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
 )
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 12.50409pt on input line 85.
+(Font)              scaled to size 12.50409pt on input line 117.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 9.37807pt on input line 85.
+(Font)              scaled to size 9.37807pt on input line 117.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 7.29405pt on input line 85.
+(Font)              scaled to size 7.29405pt on input line 117.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 12.50409pt on input line 85.
+(Font)              scaled to size 12.50409pt on input line 117.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 9.37807pt on input line 85.
+(Font)              scaled to size 9.37807pt on input line 117.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 7.29405pt on input line 85.
+(Font)              scaled to size 7.29405pt on input line 117.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 10.42007pt on input line 85.
+(Font)              scaled to size 10.42007pt on input line 117.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 7.91925pt on input line 85.
+(Font)              scaled to size 7.91925pt on input line 117.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 6.25204pt on input line 85.
+(Font)              scaled to size 6.25204pt on input line 117.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 10.42007pt on input line 85.
+(Font)              scaled to size 10.42007pt on input line 117.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 7.91925pt on input line 85.
+(Font)              scaled to size 7.91925pt on input line 117.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 6.25204pt on input line 85.
+(Font)              scaled to size 6.25204pt on input line 117.
 
-Overfull \hbox (0.63606pt too wide) in paragraph at lines 87--88
+Overfull \hbox (0.63606pt too wide) in paragraph at lines 119--120
 []\OT1/ppl/m/n/12 I ad-dress these iden-ti-fi-ca-tion chal-lenges by in-stru-me
 nt-ing for the num-ber of coal mines
  []
 
-
-LaTeX Warning: Citation 'wallsten2008effects' on page 3 undefined on input line
- 91.
-
-
-LaTeX Warning: Citation 'foster2019arsenic' on page 3 undefined on input line 9
-1.
-
-
-LaTeX Warning: Citation 'zou2021unwatched' on page 3 undefined on input line 91
-.
-
-
-LaTeX Warning: Citation '10.1162/rest_a_01477' on page 3 undefined on input lin
-e 91.
-
-
-Overfull \hbox (0.76212pt too wide) in paragraph at lines 91--92
-\OT1/ppl/m/n/12 ([]; []; []; []). I find
- []
-
 [3]
 
-LaTeX Warning: Citation 'mi2026technology' on page 4 undefined on input line 95
-.
+LaTeX Warning: Citation 'mu2024s' on page 4 undefined on input line 127.
 
 
-LaTeX Warning: Citation 'zou2021unwatched' on page 4 undefined on input line 95
-.
-
-
-LaTeX Warning: Citation 'mu2024s' on page 4 undefined on input line 95.
-
-
-Overfull \hbox (1.53873pt too wide) in paragraph at lines 95--96
+Overfull \hbox (1.53873pt too wide) in paragraph at lines 127--128
 \OT1/ppl/m/n/12 con-tam-i-na-tion in-creases and self-reporting falls, reg-u-la
 -tors sub-sti-tute util-ity self-reporting
  []
 
 
-LaTeX Warning: Citation 'keiser2019consequences' on page 4 undefined on input l
-ine 105.
-
-
-LaTeX Warning: Citation 'christensen2023flint' on page 4 undefined on input lin
-e 105.
-
-
-LaTeX Warning: Citation 'allaire2018national' on page 4 undefined on input line
- 105.
-
-
-LaTeX Warning: Citation 'hill2017shale' on page 4 undefined on input line 105.
-
-
-LaTeX Warning: Citation 'keiser2019us' on page 4 undefined on input line 105.
-
-
-LaTeX Warning: Citation 'disalvo2024drinking' on page 4 undefined on input line
- 105.
-
-
-LaTeX Warning: Citation 'marcus2025testing' on page 4 undefined on input line 1
-05.
-
-
-Overfull \hbox (0.51521pt too wide) in paragraph at lines 105--106
+Overfull \hbox (0.51521pt too wide) in paragraph at lines 137--138
 []\OT1/ppl/m/n/12 My pa-per con-tributes to the lit-er-a-ture on drink-ing wa-t
 er qual-ity, par-tic-u-larly US drink-
  []
 
-
-Overfull \hbox (4.4924pt too wide) in paragraph at lines 105--106
-\OT1/ppl/m/n/12 per year are served by util-i-ties in vi-o-la-tion of health-ba
-sed stan-dards ([]).
- []
-
-
-Overfull \hbox (25.18005pt too wide) in paragraph at lines 105--106
-\OT1/ppl/m/n/12 out-weigh the costs due to the large health costs of con-tam-i-
-nated drink-ing wa-ter ([];
- []
-
-[4]
-
-LaTeX Warning: Citation 'bingham2000' on page 5 undefined on input line 107.
-
-
-LaTeX Warning: Citation 'keiser2019missing' on page 5 undefined on input line 1
-07.
-
-
-LaTeX Warning: Citation 'Trump2025EO14260' on page 5 undefined on input line 10
-9.
-
-
-LaTeX Warning: Citation 'Trump2025EO14261' on page 5 undefined on input line 10
-9.
-
-
-LaTeX Warning: Citation 'Trump2025Proc10914' on page 5 undefined on input line 
-109.
-
-
-LaTeX Warning: Citation 'Daly2025CoalMining' on page 5 undefined on input line 
-109.
-
-
-LaTeX Warning: Citation 'muller2011environmental' on page 5 undefined on input 
-line 109.
-
-
-LaTeX Warning: Citation 'parfitt2024there' on page 5 undefined on input line 10
-9.
-
-
-LaTeX Warning: Citation 'skousen2019acid' on page 5 undefined on input line 109
-.
-
-
-LaTeX Warning: Citation 'akcil2006acid' on page 5 undefined on input line 109.
-
-
-LaTeX Warning: Citation 'ceto2000abandoned' on page 5 undefined on input line 1
-09.
-
-
-LaTeX Warning: Citation 'rouhani2023overview' on page 5 undefined on input line
- 109.
-
-
-LaTeX Warning: Citation 'liang2017spatial' on page 5 undefined on input line 10
-9.
-
-
-LaTeX Warning: Citation 'boente2020benzo' on page 5 undefined on input line 109
-.
-
-
-Overfull \hbox (94.71983pt too wide) in paragraph at lines 109--110
-\OT1/ppl/m/n/12 ments coal min-ing's ef-fects on air qual-ity, green-house gas 
-emis-sions, and health ([];
- []
-
-
-Overfull \hbox (33.6771pt too wide) in paragraph at lines 109--110
-\OT1/ppl/m/n/12 es-tab-lished in the geo-chem-i-cal lit-er-a-ture ([]; []; [];
- []
-
-
-LaTeX Warning: Citation 'shimshack2014economics' on page 5 undefined on input l
-ine 111.
-
-
-LaTeX Warning: Citation 'bennear2009sampling' on page 5 undefined on input line
- 111.
-
-
-LaTeX Warning: Citation 'naylor5537637strategic' on page 5 undefined on input l
-ine 111.
-
-
-LaTeX Warning: Citation 'andarge2025quantifying' on page 5 undefined on input l
-ine 111.
-
-
-LaTeX Warning: Citation 'lee2020essays' on page 5 undefined on input line 111.
-
-
-LaTeX Warning: Citation 'tazhitdinova2018reducing' on page 5 undefined on input
- line 111.
-
-
-LaTeX Warning: Citation 'innes1999remediation' on page 5 undefined on input lin
-e 111.
-
-
-LaTeX Warning: Citation 'malik1993self' on page 5 undefined on input line 111.
-
-
-Overfull \hbox (57.52116pt too wide) in paragraph at lines 111--112
-\OT1/ppl/m/n/12 con-tam-i-na-tion vi-o-la-tion ([]; []; []).
- []
-
-[5]
-
-LaTeX Warning: Citation 'harford1987self' on page 6 undefined on input line 115
-.
-
-
-LaTeX Warning: Citation 'blundell2020escalation' on page 6 undefined on input l
-ine 115.
-
-
-LaTeX Warning: Citation 'blundell2020threats' on page 6 undefined on input line
- 115.
-
-
-LaTeX Warning: Citation 'duflo2018value' on page 6 undefined on input line 115.
-
-
-[6]
-
-LaTeX Warning: Citation 'oleckno1982national' on page 7 undefined on input line
- 134.
-
-
-LaTeX Warning: Citation 'rouhani2023overview' on page 7 undefined on input line
- 136.
-
-
-LaTeX Warning: Citation 'boente2020benzo' on page 7 undefined on input line 136
-.
-
-
-LaTeX Warning: Citation 'liang2017spatial' on page 7 undefined on input line 13
-6.
-
-
-LaTeX Warning: Citation 'ceto2000abandoned' on page 7 undefined on input line 1
-36.
-
-
-LaTeX Warning: Citation 'akcil2006acid' on page 7 undefined on input line 136.
-
-
-LaTeX Warning: Citation 'skousen2019acid' on page 7 undefined on input line 136
-.
-
-
-LaTeX Warning: Citation 'Sealey2000' on page 7 undefined on input line 138.
-
-
-LaTeX Warning: Citation 'wheelock1984coal' on page 7 undefined on input line 14
-0.
-
-[7]
-
-LaTeX Warning: Citation 'bennear2008impacts' on page 8 undefined on input line 
-144.
-
-
-LaTeX Warning: Citation 'mookherjee1994marginal' on page 8 undefined on input l
-ine 148.
-
-
-LaTeX Warning: Citation 'kaplow1994optimal' on page 8 undefined on input line 1
-48.
-
-[8] [9]
-
-LaTeX Warning: Reference `eq:chat' on page 10 undefined on input line 197.
-
-[10] [11]
-
-LaTeX Warning: Reference `img:mineviolengthhist_downstream' on page 12 undefine
-d on input line 215.
-
-
-LaTeX Warning: Reference `tab:ioc_days_dwnstrm' on page 12 undefined on input l
-ine 217.
-
-
-LaTeX Warning: Reference `tab:mr_mcl_incidence_summary' on page 12 undefined on
- input line 221.
-
-[12]
-
-LaTeX Warning: Citation 'epaviolationreliability' on page 13 undefined on input
- line 223.
-
+[4] [5] [6] [7] [8] [9] [10] [11] [12]
 LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 2
-25.
+57.
+
 (C:\Users\ek559\AppData\Roaming\MiKTeX\tex/latex/psnfss\ts1ppl.fd
 File: ts1ppl.fd 2001/06/04 font definitions for TS1/ppl.
-)
-
-LaTeX Warning: Citation 'epaarsenicbat' on page 13 undefined on input line 225.
-
-
-<plots/mineviolengthhist_downstream.png, id=47, 578.16pt x 433.62pt>
-File: plots/mineviolengthhist_downstream.png Graphic file (type png)
-<use plots/mineviolengthhist_downstream.png>
-Package pdftex.def Info: plots/mineviolengthhist_downstream.png  used on input 
-line 232.
-(pdftex.def)             Requested size: 312.20175pt x 234.1513pt.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-(sum/ioc_days_dwnstrm.tex
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 11.40997pt on input line 6.
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 8.33606pt on input line 6.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 11.40997pt on input line 6.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 8.33606pt on input line 6.
-) (sum/visit_type_summary.tex)
-(sum/mr_mcl_incidence_summary.tex)
-
-LaTeX Warning: Reference `tab:visit_type_summary' on page 13 undefined on input
- line 244.
-
-[13] [14]
-
-LaTeX Warning: Citation 'ravalli2022sociodemographic' on page 15 undefined on i
-nput line 252.
-
-[15]
-
-LaTeX Warning: Reference `tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005' on p
-age 16 undefined on input line 256.
-
-(sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005.tex
-Underfull \hbox (badness 10000) in paragraph at lines 11--11
-[]|\OT1/ppl/m/n/12 Pre-2006: 0.050
- []
-
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 20.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 20.
-)
-
-LaTeX Warning: Reference `tab:syr2_mr_comparison' on page 16 undefined on input
- line 260.
-
-[16] (sum/syr2_mr_comparison.tex)
-
-LaTeX Warning: Reference `img:WBD_Base_HUStructure_small' on page 17 undefined 
-on input line 268.
-
-[17]
-<img/WBD_Base_HUStructure_small.png, id=64, 40.953pt x 40.953pt>
-File: img/WBD_Base_HUStructure_small.png Graphic file (type png)
-<use img/WBD_Base_HUStructure_small.png>
-Package pdftex.def Info: img/WBD_Base_HUStructure_small.png  used on input line
- 272.
-(pdftex.def)             Requested size: 469.75502pt x 469.93143pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-LaTeX Warning: Reference `map:eia_msha_mine_huc12s' on page 18 undefined on inp
-ut line 279.
-
-[18]
-
-LaTeX Warning: Reference `hist:sulfurhuc12' on page 19 undefined on input line 
-290.
-
-
-LaTeX Warning: Reference `map:map_huc12_main_sample' on page 19 undefined on in
-put line 292.
-
-(sum/upstream_coal_summary.tex) [19]
-
-LaTeX Warning: Citation 'lattanzio2022clean' on page 20 undefined on input line
- 310.
-
-
-LaTeX Warning: Citation 'freme2000us' on page 20 undefined on input line 314.
-
-
-LaTeX Warning: Citation 'epaarpcoalemp' on page 20 undefined on input line 314.
-
-
-
-LaTeX Warning: Citation 'stratford2015coalprod' on page 20 undefined on input l
-ine 314.
-
-[20]
-
-LaTeX Warning: Citation 'schweinfurth2009introduction' on page 21 undefined on 
-input line 320.
-
-
-LaTeX Warning: Reference `plot:coal_summary_plot' on page 21 undefined on input
- line 320.
-
-
-LaTeX Warning: Reference `map:proportionatecircleprod_diff_allminehuc12_1985_20
-05' on page 21 undefined on input line 320.
-
-
-LaTeX Warning: Reference `map:proportionatecircle_upstream_mines_huc12_1985_200
-5' on page 21 undefined on input line 322.
-
-<plots/coal_summary_plot.png, id=75, 361.35pt x 361.35pt>
-File: plots/coal_summary_plot.png Graphic file (type png)
-<use plots/coal_summary_plot.png>
-Package pdftex.def Info: plots/coal_summary_plot.png  used on input line 326.
-(pdftex.def)             Requested size: 242.10324pt x 242.10324pt.
-<plots/sulfur_histogram_downstream2sls.png, id=76, 481.8pt x 481.8pt>
-File: plots/sulfur_histogram_downstream2sls.png Graphic file (type png)
-<use plots/sulfur_histogram_downstream2sls.png>
-Package pdftex.def Info: plots/sulfur_histogram_downstream2sls.png  used on inp
-ut line 332.
-(pdftex.def)             Requested size: 240.8994pt x 240.8994pt.
-<plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png, id=77, 742.2129
-pt x 505.89pt>
-File: plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png Graphic fil
-e (type png)
-<use plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png>
-Package pdftex.def Info: plots/proportionatecircleprod_diff_allminehuc12_1985_2
-005.png  used on input line 337.
-(pdftex.def)             Requested size: 274.61447pt x 187.17636pt.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<plots/proportionatecircle_upstream_mines_huc12_1985_2005.png, id=79, 742.2129p
-t x 505.89pt>
-File: plots/proportionatecircle_upstream_mines_huc12_1985_2005.png Graphic file
- (type png)
-<use plots/proportionatecircle_upstream_mines_huc12_1985_2005.png>
-Package pdftex.def Info: plots/proportionatecircle_upstream_mines_huc12_1985_20
-05.png  used on input line 343.
-(pdftex.def)             Requested size: 274.61447pt x 187.17636pt.
-[21]
-
-LaTeX Warning: Citation 'schweinfurth2009introduction' on page 22 undefined on 
-input line 375.
-
-
-Overfull \hbox (99.35146pt too wide) in paragraph at lines 375--376
-\OT1/ppl/m/n/12 mak-ing the in-ci-dence of acid mine drainage in-crease with co
-al sul-fur lev-els ([]).
- []
-
-
-Overfull \hbox (55.00009pt too wide) in paragraph at lines 379--380
+) [13]
+[14] [15] [16] [17] [18] [19]
+Overfull \hbox (55.00009pt too wide) in paragraph at lines 350--351
 \OT1/ppl/m/n/12 stream coal sul-fur con-tent in 1995, so that $\OML/zplm/m/it/1
 2 f\OT1/ppl/m/n/12 (\OML/zplm/m/it/12 UpstreamCoalSulfur\OT1/ppl/m/n/12 %[] \OM
 S/zplm/m/n/12 ^^A \OML/zplm/m/it/12 Post\OT1/ppl/m/n/12 95[]\OML/zplm/m/it/12 ;
  []\OT1/ppl/m/n/12 ) =
  []
 
-[22] [23]
-
-LaTeX Warning: Reference `fig:scatterhuccoalsulfur' on page 24 undefined on inp
-ut line 387.
-
-
-LaTeX Warning: Reference `fig:first_stage_scatter_dwnstrm' on page 24 undefined
- on input line 389.
-
-<plots/scatterhuccoalsulfur_pooled.png, id=90, 578.16pt x 361.35pt>
-File: plots/scatterhuccoalsulfur_pooled.png Graphic file (type png)
-<use plots/scatterhuccoalsulfur_pooled.png>
-Package pdftex.def Info: plots/scatterhuccoalsulfur_pooled.png  used on input l
-ine 392.
-(pdftex.def)             Requested size: 346.89867pt x 216.81168pt.
-<plots/first_stage_scatter_dwnstrm.png, id=91, 505.89pt x 419.166pt>
-File: plots/first_stage_scatter_dwnstrm.png Graphic file (type png)
-<use plots/first_stage_scatter_dwnstrm.png>
-Package pdftex.def Info: plots/first_stage_scatter_dwnstrm.png  used on input l
-ine 396.
-(pdftex.def)             Requested size: 303.53633pt x 251.50154pt.
-(reg/fs_dwnstrm_minevio_ivsum.tex) [24]
-
-LaTeX Warning: Citation 'angrist1994identification' on page 25 undefined on inp
-ut line 405.
-
-
-Overfull \hbox (0.50577pt too wide) in paragraph at lines 405--406
+[20] [21] [22]
+Overfull \hbox (0.50577pt too wide) in paragraph at lines 366--367
 \OT1/ppl/m/n/12 and $[][]$ af-ter. For a given sul-fur level $\OML/zplm/m/it/12
  w$\OT1/ppl/m/n/12 , mono-tonic-ity re-quires ei-ther $[][](0) \OMS/zplm/m/n/12
  ^^T
  []
 
-
-LaTeX Warning: Reference `2sls_dwnstrm_minevio_allcat_ivsum_binvio' on page 25 
-undefined on input line 409.
-
-
-LaTeX Warning: Reference `2ndstage2sls' on page 25 undefined on input line 409.
-
-
-[25]
-
-LaTeX Warning: Reference `2sls_dwnstrm_minevio_mr_ivsum_binvio' on page 26 unde
-fined on input line 417.
-
-
-LaTeX Warning: Reference `2ndstage2sls' on page 26 undefined on input line 417.
-
-
-
-LaTeX Warning: Reference `tab:mr_mcl_incidence_summary' on page 26 undefined on
- input line 417.
+[23] [24] [25]
+Overfull \hbox (12.43532pt too wide) in paragraph at lines 412--413
+\OT1/ppl/m/n/12 Table 11[] con-tains the re-sults of re-gres-sion 7[] on IOC co
+n-tam-i-nant con-cen-tra-tion tests through-
+ []
 
 [26]
-
-LaTeX Warning: Reference `2sls_dwnstrm_minevio_mcl_ivsum_binvio' on page 27 und
-efined on input line 419.
-
-[27] [28] [29] [30] [31] (reg/2sls_dwnstrm_minevio_allcat_ivsum_binvio.tex)
-[32
-
-] (reg/2sls_dwnstrm_minevio_mr_ivsum_binvio.tex)
-(reg/2sls_dwnstrm_minevio_mcl_ivsum_binvio.tex) [33
-
-]
-
-LaTeX Warning: Reference `eq:huc02reg' on page 34 undefined on input line 447.
-
-
-LaTeX Warning: Citation 'callaway2024difference' on page 34 undefined on input 
-line 447.
-
-(reg/6yr_huc02fe_inorg_ravalli_2005.tex)
-
-LaTeX Warning: Reference `tab:6yr_huc02fe_inorg_ravalli_2005' on page 34 undefi
-ned on input line 461.
-
-
-LaTeX Warning: Reference `eq:huc02reg' on page 34 undefined on input line 461.
-
-[34]
-
-LaTeX Warning: Reference `tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005' on p
-age 35 undefined on input line 470.
-
-[35]
-
-LaTeX Warning: Reference `tab:mr_concentration_lag' on page 36 undefined on inp
-ut line 474.
-
-(reg/mr_concentration_lag.tex)
-(reg/mr_concentration_lag_national_downstream_states.tex)
-Overfull \hbox (0.10165pt too wide) in paragraph at lines 480--480
+Overfull \hbox (0.10165pt too wide) in paragraph at lines 427--427
 []\OT1/ppl/b/n/17.28 Regulator re-sponses to in-creased util-ity self-reporting
  vi-
  []
 
-(sum/sanitary_visit_timing_formal_enforcement_rate.tex)
-
-LaTeX Warning: Reference `tab:sanitary_visit_timing_formal_enforcement_rate' on
- page 36 undefined on input line 486.
-
-[36] [37]
-
-LaTeX Warning: Reference `1ststage2sls' on page 38 undefined on input line 492.
-
-
-[38]
-
-LaTeX Warning: Reference `tab:h3_inf_formal_d12' on page 39 undefined on input 
-line 520.
-
-
-LaTeX Warning: Reference `2ndstage2slsreg' on page 39 undefined on input line 5
-20.
-
-[39]
-
-LaTeX Warning: Reference `tab:h2_snsv_d12' on page 40 undefined on input line 5
-26.
-
-
-LaTeX Warning: Reference `2ndstage2slsreg' on page 40 undefined on input line 5
-26.
-
-
-LaTeX Warning: Reference `tab:h2_snsv_d12' on page 40 undefined on input line 5
-30.
-
-
-LaTeX Warning: Reference `2ndstage2slsreg' on page 40 undefined on input line 5
-30.
-
-(reg/h3_inf_formal_d12.tex) (reg/h2_snsv_d12.tex) [40] [41]
-
-LaTeX Warning: Citation 'olmstead2010economics' on page 42 undefined on input l
-ine 548.
-
-
-LaTeX Warning: Citation 'kang2021understanding' on page 42 undefined on input l
-ine 548.
-
-
-Overfull \hbox (0.99974pt too wide) in paragraph at lines 548--549
-\OT1/ppl/m/n/12 is gen-er-ally per-ceived as a lo-cal is-sue with lim-ited ex-t
-er-nal-i-ties ([]).
+[27] [28] [29] [30] [31] [32]
+Overfull \hbox (2.37097pt too wide) in paragraph at lines 538--538
+[][]\OT1/ppl/m/it/12 Arsenic Re-moval from Drink-ing Wa-ter by Co-ag-u-la-tion/
+Filtration U.S. EPA Demon-stra-tion Project
  []
 
-[42] [43]
 
-LaTeX Warning: Empty bibliography on input line 596.
+Overfull \hbox (15.97556pt too wide) in paragraph at lines 538--538
+[][]\OT1/ppl/m/n/12 Blundell, Wes-ley, Gau-tam Gowrisankaran, and Ash-ley Lange
+r (2020). ``Es-ca-la-tion of scrutiny:
+ []
 
-(main.aux)
+
+Overfull \hbox (11.9033pt too wide) in paragraph at lines 538--538
+[][]\OT1/ppl/m/n/12 Ceto, Nick and Shahid Mah-mud (2000). ``Aban-doned mine sit
+e char-ac-ter-i-za-tion and cleanup
+ []
+
+[33] [34]
+Overfull \hbox (5.43834pt too wide) in paragraph at lines 538--538
+[][]\OT1/ppl/m/n/12 Lee, Rui-wen (2020). \OT1/ppl/m/it/12 Es-says on the reg-u-
+la-tion and re-mote sens-ing of nat-u-ral gas flar-ing\OT1/ppl/m/n/12 . Columbi
+a
+ []
+
+[35]
+Overfull \hbox (2.6664pt too wide) in paragraph at lines 538--538
+[][]\OT1/ppl/m/n/12 Tazhitdinova, Al-isa (2018). ``Re-duc-ing eva-sion through 
+self-reporting: Ev-i-dence from char-
+ []
+
+
+Overfull \hbox (3.14716pt too wide) in paragraph at lines 538--538
+[][][]\OT1/ppl/m/n/12 (Apr. 2025c). ``Procla-ma-tion No. 10914: Reg-u-la-tory R
+e-lief for Cer-tain Sta-tion-ary Sources
+ []
+
+
+Overfull \hbox (1.82732pt too wide) in paragraph at lines 538--538
+\OT1/ppl/m/n/12 to Pro-mote Amer-i-can En-ergy''. In: \OT1/ppl/m/it/12 Fed-eral
+ Reg-is-ter \OT1/ppl/m/n/12 90. Pres-i-den-tial procla-ma-tion, signed
+ []
+
+[36] [37] (sum/ioc_days_dwnstrm.tex) [38
+
+] (sum/visit_type_summary.tex) [39
+
+]
+(sum/mr_mcl_incidence_summary.tex) [40
+
+]
+(sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005.tex
+Underfull \hbox (badness 10000) in paragraph at lines 11--11
+[]|\OT1/ppl/m/n/12 Pre-2006: 0.050
+ []
+
+) [41
+
+] (sum/syr2_mr_comparison.tex) [42
+
+] (sum/upstream_coal_summary.tex)
+[43
+
+] (reg/fs_dwnstrm_minevio_ivsum.tex) [44
+
+]
+(reg/2sls_dwnstrm_minevio_allcat_ivsum_binvio.tex) [45
+
+
+]
+(reg/2sls_dwnstrm_minevio_mr_ivsum_binvio.tex) [46
+
+
+]
+(reg/2sls_dwnstrm_minevio_mcl_ivsum_binvio.tex) [47
+
+
+]
+(reg/6yr_huc02fe_inorg_ravalli_2005.tex) [48
+
+] (reg/mr_concentration_lag.tex)
+[49
+
+] (reg/mr_concentration_lag_national_downstream_states.tex) [50
+
+]
+(sum/sanitary_visit_timing_formal_enforcement_rate.tex) [51
+
+]
+(reg/h3_inf_formal_d12.tex) [52
+
+
+] (reg/h2_snsv_d12.tex) [53
+
+
+]
+<plots/mineviolengthhist_downstream.png, id=181, 578.16pt x 433.62pt>
+File: plots/mineviolengthhist_downstream.png Graphic file (type png)
+<use plots/mineviolengthhist_downstream.png>
+Package pdftex.def Info: plots/mineviolengthhist_downstream.png  used on input 
+line 591.
+(pdftex.def)             Requested size: 469.75502pt x 352.31538pt.
+ [54
+
+ <./plots/mineviolengthhist_downstream.png>]
+<img/WBD_Base_HUStructure_small.png, id=185, 40.953pt x 40.953pt>
+File: img/WBD_Base_HUStructure_small.png Graphic file (type png)
+<use img/WBD_Base_HUStructure_small.png>
+Package pdftex.def Info: img/WBD_Base_HUStructure_small.png  used on input line
+ 601.
+(pdftex.def)             Requested size: 234.8775pt x 234.9654pt.
+ [55
+
+ <./img/WBD_Base_HUStructure_small.png>]
+<plots/data_cleaning/eia_msha_mine_huc12s.png, id=190, 462.528pt x 346.896pt>
+File: plots/data_cleaning/eia_msha_mine_huc12s.png Graphic file (type png)
+<use plots/data_cleaning/eia_msha_mine_huc12s.png>
+Package pdftex.def Info: plots/data_cleaning/eia_msha_mine_huc12s.png  used on 
+input line 611.
+(pdftex.def)             Requested size: 469.75502pt x 352.33655pt.
+
+[56
+
+ <./plots/data_cleaning/eia_msha_mine_huc12s.png>]
+<plots/map_huc12_main_sample.png, id=196, 715.11165pt x 493.24275pt>
+File: plots/map_huc12_main_sample.png Graphic file (type png)
+<use plots/map_huc12_main_sample.png>
+Package pdftex.def Info: plots/map_huc12_main_sample.png  used on input line 62
+1.
+(pdftex.def)             Requested size: 469.75502pt x 324.01338pt.
+ [57
+
+ <./plots/map_huc12_main_sample.png>]
+<plots/coal_summary_plot.png, id=201, 361.35pt x 361.35pt>
+File: plots/coal_summary_plot.png Graphic file (type png)
+<use plots/coal_summary_plot.png>
+Package pdftex.def Info: plots/coal_summary_plot.png  used on input line 631.
+(pdftex.def)             Requested size: 375.80544pt x 375.80617pt.
+ [58
+
+ <./plots/coal_summary_plot.png>]
+<plots/sulfur_histogram_downstream2sls.png, id=205, 469.755pt x 325.215pt>
+File: plots/sulfur_histogram_downstream2sls.png Graphic file (type png)
+<use plots/sulfur_histogram_downstream2sls.png>
+Package pdftex.def Info: plots/sulfur_histogram_downstream2sls.png  used on inp
+ut line 641.
+(pdftex.def)             Requested size: 469.75502pt x 325.2142pt.
+ [59
+
+ <./plots/sulfur_histogram_downstream2sls.png>]
+<plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png, id=210, 783.768
+14pt x 498.663pt>
+File: plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png Graphic fil
+e (type png)
+<use plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png>
+Package pdftex.def Info: plots/proportionatecircleprod_diff_allminehuc12_1985_2
+005.png  used on input line 652.
+(pdftex.def)             Requested size: 552.86948pt x 351.7629pt.
+ [60
+
+
+ <./plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png>]
+<plots/proportionatecircle_upstream_mines_huc12_1985_2005.png, id=215, 783.7681
+4pt x 498.663pt>
+File: plots/proportionatecircle_upstream_mines_huc12_1985_2005.png Graphic file
+ (type png)
+<use plots/proportionatecircle_upstream_mines_huc12_1985_2005.png>
+Package pdftex.def Info: plots/proportionatecircle_upstream_mines_huc12_1985_20
+05.png  used on input line 663.
+(pdftex.def)             Requested size: 552.86948pt x 351.7629pt.
+ [61
+
+
+ <./plots/proportionatecircle_upstream_mines_huc12_1985_2005.png>] [62]
+<plots/scatterhuccoalsulfur_pooled.png, id=224, 578.16pt x 361.35pt>
+File: plots/scatterhuccoalsulfur_pooled.png Graphic file (type png)
+<use plots/scatterhuccoalsulfur_pooled.png>
+Package pdftex.def Info: plots/scatterhuccoalsulfur_pooled.png  used on input l
+ine 673.
+(pdftex.def)             Requested size: 469.75502pt x 293.59616pt.
+ [63
+
+ <./plots/scatterhuccoalsulfur_pooled.png>]
+<plots/first_stage_scatter_dwnstrm.png, id=228, 505.89pt x 419.166pt>
+File: plots/first_stage_scatter_dwnstrm.png Graphic file (type png)
+<use plots/first_stage_scatter_dwnstrm.png>
+Package pdftex.def Info: plots/first_stage_scatter_dwnstrm.png  used on input l
+ine 683.
+(pdftex.def)             Requested size: 469.75502pt x 389.23192pt.
+ [64
+
+ <./plots/first_stage_scatter_dwnstrm.png>] (main.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-06-18>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package biblatex Warning: Please (re)run Biber on the file:
-(biblatex)                main
-(biblatex)                and rerun LaTeX afterwards.
-
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 21576 strings out of 467510
- 469954 string characters out of 5418903
- 1299888 words of memory out of 5000000
- 50484 multiletter control sequences out of 15000+600000
- 674455 words of font info for 165 fonts, out of 8000000 for 9000
+ 21909 strings out of 467510
+ 481688 string characters out of 5418903
+ 1301395 words of memory out of 5000000
+ 50816 multiletter control sequences out of 15000+600000
+ 665397 words of font info for 139 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 65i,18n,93p,2110b,1276s stack positions out of 10000i,1000n,20000p,200000b,200000s
-
-pdfTeX warning: \pdfdraftmode enabled, not changing output pdf
-
+ 65i,18n,93p,2110b,1518s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Progra
+m Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKT
+eX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type
+1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmtt12.pfb><C:/Users/ek559/AppData/Roaming/MiKTeX/fonts/type1/public/m
+athpazo/fplmr.pfb><C:/Users/ek559/AppData/Roaming/MiKTeX/fonts/type1/public/mat
+hpazo/fplmri.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/symbols/m
+sam10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.p
+fb><C:/Program Files/MiKTeX/fonts/type1/urw/palatino/uplb8a.pfb><C:/Program Fil
+es/MiKTeX/fonts/type1/urw/palatino/uplr8a.pfb><C:/Program Files/MiKTeX/fonts/ty
+pe1/urw/palatino/uplri8a.pfb>
+Output written on main.pdf (64 pages, 3792556 bytes).
 PDF statistics:
- 157 PDF objects out of 1000 (max. 8388607)
+ 285 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 41 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 51 words of extra memory for PDF output out of 10000 (max. 10000000)
 

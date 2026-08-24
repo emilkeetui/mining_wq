@@ -53,38 +53,6 @@ style=authoryear
 \DeclareMathSymbol{\Phi}{\mathalpha}{cmletters}{"08}
 \DeclareMathSymbol{\Psi}{\mathalpha}{cmletters}{"09}
 \DeclareMathSymbol{\Omega}{\mathalpha}{cmletters}{"0A}
-
-% ============================================================
-% Float formatting: end-of-paper placement, uniform font sizes
-% ============================================================
-
-% (a) Force every float to typeset exactly where it is written.
-%     The generated table files hardcode [htbp]; this swallows that optional
-%     argument and substitutes float's [H] so ordering in the end-matter is
-%     deterministic and floats cannot escape a landscape page.
-\let\origtable\table
-\let\endorigtable\endtable
-\renewenvironment{table}[1][htbp]{\origtable[H]}{\endorigtable}
-\let\origfigure\figure
-\let\endorigfigure\endfigure
-\renewenvironment{figure}[1][htbp]{\origfigure[H]}{\endorigfigure}
-
-% (b) Neutralise the per-table scaling baked into the generated .tex files.
-%     They call \begin{adjustbox}{width = \textwidth, center}, which forces a
-%     scale factor and therefore an arbitrary font size per table. Redefine
-%     what the "width" key itself does (ignoring whatever value is passed,
-%     e.g. \textwidth) so it behaves like "max width" + "max totalheight"
-%     combined: shrink ONLY when a table genuinely does not fit, otherwise
-%     leave it at document body size. "center" is untouched and still works.
-%     \adjustbox is not a plain \newenvironment (its environment form is
-%     implemented via the collectbox package, whose \endadjustbox is only
-%     ever bound locally, per-call -- so it cannot be \let-captured here);
-%     patching the "width" key through adjustbox's own public
-%     \define@adjboxkey mechanism is the supported, non-recursive way in.
-\makeatletter
-\define@adjboxkey{width}{\@maxsizebox\height{\linewidth}{0.92\textheight}}
-\makeatother
-
 \begin{document}
 \title{The Effect of Contamination on Contamination Limit Regulation: US Coal Mining and Drinking Water Utilities}
 \author{Emil Kee-Tui}
@@ -259,7 +227,19 @@ The SDWIS data contains enforcement actions that the regulator took against a ut
 
 Informal enforcement actions are the dominant type of enforcement. They include public notification requests, reminders to the utilities, notifications to the utility that a violation has occurred, and technical assistance. Informal enforcement includes more direct assistance to the utility than formal enforcement. The state is the main regulator in the sample. The federal regulator only intervenes to issue informal enforcement in 2.6 percent of the IOC MR cases, and the intervention is to issue a notice of violation.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.54]{plots/mineviolengthhist_downstream.png}
+    \label{img:mineviolengthhist_downstream}
+\end{figure}
+
+\input{sum/ioc_days_dwnstrm}
+
 %\input{sum/mr_violation_breakdown}
+
+\input{sum/visit_type_summary}
+
+\input{sum/mr_mcl_incidence_summary}
 
 SDWIS contains information on visits conducted by the regulator to the utility. Table \ref{tab:visit_type_summary} contains the share of sample utility-years where a regulator visited a utility. Sanitary visits are the most common type of visits, occurring during 12.5 percent of utility-years. Most visits are slightly more likely to occur in the 12 months before or after an MR violation. The sanitary visit cannot be further broken down by reason for the sanitary visit or findings from the visit because it is incomplete; over half of the sanitary visit data lacks a reason for the visit or a finding. 
 
@@ -275,23 +255,49 @@ After cleaning, sample-level records are collapsed to the utility\,$\times$\,con
 
 Table \ref{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005} includes the summary statistics of the contaminants I include in my analysis. The maximum value of all contaminant readings is below their MCL. The maximum arsenic reading of 0.0110 mg/L would exceed the stricter arsenic MCL of 0.01 mg/L that became regulation in 2006 but would not exceed the pre-2006 MCL of 0.05 mg/L. That mean concentrations do not exceed the MCL is consistent with the low rates of MCL violations at utilities. Conditional on testing, the water contaminants appear to be within the regulatory limits. However, the majority of MR violations are for not conducting testing on schedule. These summary statistics do not provide information on the contaminant concentrations that would be measured when a test was required by regulation but was not conducted by the utility.
 
+\input{sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005}
+
 The SYR2 results represent the testing behavior of the more negligent utilities. Utilities that appear in the SYR2 data are more likely to violate SDWA than those utilities that never appear in the data. Table \ref{tab:syr2_mr_comparison} reports a two-sample t-test to compare the shares of utilities that appear in the SYR2 that violate to the share of utilities that never appear in the SYR2 data that ever violate. Utilities that appear in the SYR2 data are 18 to 22 percent more likely to ever experience an MR violation than those utilities that never appear in the SYR2 data. The lack of SYR2 observations does not mean the utility was not self-reporting since utilities can be compliant with MR rules and not have any SYR2 observations. The utilities that are more likely to self-report data are also more likely to have contaminant concentration observations in SYR2. 
 
 Utilities in the SYR2 are between 1.3 percent and 3.7 percent more likely to ever experience an MCL violation than those utilities that never appear in the SYR2 data. SYR2 does not contain all test results submitted to regulators, but it is more likely to contain the test results of utilities that, at some point during my sample, fail to self-report their water quality and receive an MR violation.
+
+\input{sum/syr2_mr_comparison}
 
 \subsection{River and stream connectivity data}
 
 Drinking water utilities are exposed to water pollution from coal mining when the locations where they source their water are downstream of coal mines. The exposure is strongest when a utility draws from surface water. Groundwater sources downstream of coal mining are also exposed to upstream pollution since groundwater is also recharged by water flow from above. In order to measure which utilities are downstream of coal mining, I identify which watersheds utilities source water from using the NHDplus hydrological connectivity dataset that identifies the boundaries of watersheds across the US and an EPA dataset on the watershed-level location of utility water intakes. The watershed dataset is a connected graph that identifies which watersheds flow into one another, allowing me to identify utilities' water source watersheds and any upstream watersheds that flow into a source water watershed. The NHDplus identifies watersheds as geographical boundaries where water that falls within that boundary would drain into the same stream segment. The NHDplus assigns watersheds a unique 2-12 digit code known as a HUC (hydrological unit code). The number of digits corresponds to the size of the area, with the geographical area decreasing with the number of digits; for example, the lower 48 US states are divided into 18 HUC02s and over 87,000 HUC12s (see Figure \ref{img:WBD_Base_HUStructure_small}). I use HUC12 watersheds to identify utility water intakes. HUC12 watersheds are the smallest mapped watersheds available for the entire continental US and are small enough that coal mining activities may impact the water in the HUC12 directly downstream. However, HUC12s are also large enough that a utility water intake located upstream of a coal mine but within the same HUC12 may not be affected. To ensure a utility is downstream of a coal mine, I exclude those utilities with an intake located in the same HUC12 as a coal mine and limit my sample to utilities with at least one water intake in a HUC12 directly downstream from a HUC12 with a coal mine.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/WBD_Base_HUStructure_small.png}
+    \caption{}
+    \label{img:WBD_Base_HUStructure_small}
+\end{figure}
+
 \subsection{Coal mine and coal sulfur data}
 
 Individual coal mine production data are obtained from the Energy Information Administration (EIA). It includes the tons of coal produced by each mine in each year from 1985 to 2005. EIA coal mines are matched to mine latitude and longitude coordinates from the Mine Safety and Health Administration (MSHA). Figure \ref{map:eia_msha_mine_huc12s} shows the HUC12s where mine production data from the EIA were matched to MSHA data of mine coordinates. I measure coal production in a given year as the total number of active coal mines and the total tons of coal mined within a HUC12.
+
+%\begin{figure}[h]
+%    \centering
+%    \includegraphics[width=\textwidth]{plots/data_cleaning/eia_msha_mine_huc12s.png}
+%    \caption{}
+%    \label{map:eia_msha_mine_huc12s}
+%\end{figure} 
 
 I measure coal sulfur as a percentage of coal weight at the HUC12 level to match the upstream coal quality to utility water intakes and the HUC12 level coal production data. I use the USGS COALQUAL dataset to measure the percent of sulfur by weight in a coal bed. The USGS COALQUAL dataset consists of geospatially explicit drilled coal core samples from coal beds across the US, measured for characteristics including the percent of sulfur by coal weight. I match a HUC12 to all USGS COALQUAL samples within 30 km of the HUC12 boundary and assign the mean sulfur percent of matched samples to each HUC12. This approximates coal quality into watersheds that may not have coal production during the sample time period but are likely to contain coal deposits. HUC12s are geographically small areas that, on average, have low variation in measured coal sulfur levels. This reduces the mismeasurement that would occur if coal sulfur has extreme variation within HUC12s, where some high-sulfur coal HUC12s may actually host low-sulfur coal.
 
 Figure \ref{hist:sulfurhuc12} plots a histogram of the sulfur percentage of the coal bed within the HUC12s where a utility water intake and coal production are co-located. The sulfur content of HUC12 coal beds ranges from zero to 4.5 percent, with most of the HUC12 watersheds below 1.5 percent. Slightly more than half of the HUC12s are low sulfur coal beds.
 
 HUC12s are only included in my dataset if I am able to match COALQUAL samples. Map \ref{map:map_huc12_main_sample} shows the location of HUC12s in the sample that have utility intakes and COALQUAL samples.
+
+%\begin{figure}[h]
+%    \centering
+%    \includegraphics[scale=0.5]%{plots/map_huc12_main_sample.png}
+%\label{map:map_huc12_main_sample}
+%\end{figure}
+
+\input{sum/upstream_coal_summary}
 
 \section{Identification Strategy}
 
@@ -315,7 +321,30 @@ I find that between 1983 and 2005, tons of coal mined from low sulfur HUC12s inc
 
 The increases in coal production largely did not occur upstream of utility water intakes. Map \ref{map:proportionatecircle_upstream_mines_huc12_1985_2005} plots coal mining HUC12s upstream of utility water intakes with circles proportionate to the size of the population that obtains their drinking water from a directly downstream HUC12 utility. HUC12s where coal production fell are plotted blue and where coal production increased are plotted red. HUC12s with no utility water intake directly downstream are not plotted. The size of the population downstream of HUC12s where coal production fell was larger than the population downstream of HUC12s where coal production increased.
 
-\subsection{Research Design}
+\begin{figure}
+ \centering
+\includegraphics[scale=0.67]{plots/coal_summary_plot.png}
+\label{plot:coal_summary_plot}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{plots/sulfur_histogram_downstream2sls.png}
+\label{hist:sulfurhuc12}
+\end{figure}
+
+\begin{figure}[h]
+    \centering    \includegraphics[scale=0.37]{plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png}
+\label{map:proportionatecircleprod_diff_allminehuc12_1985_2005}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.37]{plots/proportionatecircle_upstream_mines_huc12_1985_2005.png}
+\label{map:proportionatecircle_upstream_mines_huc12_1985_2005}
+\end{figure}
+
+\subsection{Research Design} 
 
 The theoretical model predicts an ambiguous effect of coal mining on self-reporting rates. Coal mining acts on the incentive to self-report by raising the cost of self-reporting and raising the contamination above the MCL. Coal mining raises self-reporting if it raises contamination above the MCL and the expected penalty from being in violation and not self-reporting is outweighed by the expected penalty from being in violation and self-reporting. Coal mining can lower self-reporting even if it does not raise contamination above the MCL, but it raises self-reporting costs.
 
@@ -359,6 +388,16 @@ The instrument does predict the location and size of coal production. Figure \re
 
 The strength of the instrument is still evident after controlling for covariates. Figure \ref{fig:first_stage_scatter_dwnstrm} is a scatter plot of the residualized number of upstream coal mines and the residualized instrumental variable. There is a negative relationship between the residualized number of upstream coal mines and $UpstreamCoalSulfur\%_c \cdot Post95_t$.
 
+\begin{figure}\label{fig:scatterhuccoalsulfur}
+\includegraphics[scale=0.6]{plots/scatterhuccoalsulfur_pooled.png}
+\end{figure}
+
+\begin{figure}\label{fig:first_stage_scatter_dwnstrm}
+\includegraphics[scale=0.6]{plots/first_stage_scatter_dwnstrm.png}
+\end{figure}    
+
+\input{reg/fs_dwnstrm_minevio_ivsum.tex}
+
 \subsubsection{Assessing monotonicity}
 
 The instrument requires monotonicity and for there to be no defiers to recover the local average treatment effect (LATE) estimate of the instrument. A defier in this context is a utility that is upstream of a high-sulfur coal watershed where coal production increased after 1995 but would have decreased production after 1995 if it had instead been a low-sulfur coal watershed. An example of a never-taker is a high-HUC12 that maintains production after 1995 because its customers are electricity generators that install scrubbers. As long as scrubber adoption is not positively correlated with sulfur in a way that causes production to increase post-ARP in high-sulfur areas, this is not a violation of monotonicity and only reduces first-stage power. To be a defier with scrubber installation requires a power plant to expand production after installing scrubbers and increase electricity market share. Power plants that rely on high sulfur coal and scrubbers are more likely to lose market share and reduce production since scrubbers are expensive to install, increase operating costs, and require higher electricity rates to retain profits. If some high-sulfur regions had a comparative advantage in low-cost production that offset the ARP cost increase, such as very low labor costs or transportation advantages, they might expand production even as ARP made their coal relatively more expensive. Unless this expansion would not have occurred if the low-cost high-sulfur regions had been low-sulfur coal regions, this would not create defiers and would instead create never-takers.
@@ -382,6 +421,14 @@ The impact of coal mining on downstream utility MCL violations for nitrates, ars
 Despite all the significant effects of coal mining being concentrated in MR violations and not in MCL violations, I cannot conclude that coal mining does not impact actual contaminant levels. Coal mining can increase contaminant levels, but they can remain below an MCL. A maximum contaminant level violation is only issued by the regulator when they receive the results of a test that a utility conducted. Consistently failing to conduct tests or report the results of tests and incurring an MR violation prevents an MCL from being issued, even if contaminant concentration legitimately exceeds the MCL. The SDWA ECHO violation dataset is, for that reason, unable to measure drinking water contamination when systems do not monitor and report tests. 
 
 The theoretical model predicts that lapses in self-reporting can occur without contaminant concentration violations occurring when contamination increases following mining and testing costs rise or utilities seek to avoid MCL penalties by hiding MCL violations in MR violations, or if penalties fall. I next test whether contamination rises with mining.
+
+\begin{landscape}
+\input{reg/2sls_dwnstrm_minevio_allcat_ivsum_binvio}
+\end{landscape}
+
+\input{reg/2sls_dwnstrm_minevio_mr_ivsum_binvio}
+
+\input{reg/2sls_dwnstrm_minevio_mcl_ivsum_binvio}
 
 \section{The impact of coal mining on downstream utility contamination}
 
@@ -409,6 +456,8 @@ Equation \ref{eq:huc02reg} is a continuous differences-in-differences regression
 
 \subsection{Results}
 
+\input{reg/6yr_huc02fe_inorg_ravalli_2005}
+
 Table \ref{tab:6yr_huc02fe_inorg_ravalli_2005} contains the results of regression \ref{eq:huc02reg} on IOC contaminant concentration tests throughout utility water processing stages. An additional 10 million cumulative short tons of coal mined upstream since 1985 increases mean concentrations of IOC contaminants at utilities. The effect is significant for all IOC contaminants except for nitrates, which I lack the power to identify at a statistically significant level.
 
 Arsenic increases by 0.0023 mg/L after an additional 10 million short tons of coal mined upstream. This is economically significant, equivalent to almost a 100 percent increase over the mean arsenic concentration of 0.0029 mg/L, and is statistically significant at the 1\% level. The effect represents 23 percent of the EPA arsenic MCL of 0.010 mg/L after 2005 and 4.6 percent of the MCL before 2006, which is 0.050 mg/L.
@@ -424,9 +473,15 @@ I estimate the effect of SYR2 contaminant concentrations of nitrates on the like
 
 Table \ref{tab:mr_concentration_lag} reports regressions of linear probability models of the likelihood of a utility failing to monitor and report their water for nitrate levels within 6 months and a year of a contaminant reading. I find that when nitrate contaminant readings are greater than 50 percent of the nitrate MCL, a utility is 0.5 percentage points more likely to fail to self-report water tests for nitrates in the following year and 0.2 percentage points more likely to fail to monitor and report nitrate water tests within six months. The failures after a nitrate reading has exceeded 50 percent occur during a time of enhanced nitrate monitoring at the utility since these results are from 1997 to 2005. This suggests that utilities are more likely to fail to keep up with marginal increases in monitoring and reporting schedules. Enforcement does not increase. 
 
+\input{reg/mr_concentration_lag}
+
+\input{reg/mr_concentration_lag_national_downstream_states}
+
 \section{Regulator responses to increased utility self-reporting violations}
 
 The theoretical model predicts that utilities' self-reporting depends on the expected penalties from regulator enforcement. To investigate the penalties and disincentives for missing self-reporting requirements, I estimate the impact of coal mining on the likelihood that a utility receives enforcement and regulatory visits. This measures the enforcement received by the utilities which underreport due to coal mining contamination.
+
+\input{sum/sanitary_visit_timing_formal_enforcement_rate}
 
 Formal enforcement is a large cost burden to utilities. It involves fines, court orders, and prosecution. To summarize the likelihood of receiving formal enforcement, table \ref{tab:sanitary_visit_timing_formal_enforcement_rate} calculates the rate of formal enforcement at utilities downstream of coal mines. Rates are calculated across the utility-year panel. Formal enforcement is more likely to be used when a utility fails to self-report, and formal enforcement is even more likely to be used when a utility fails to self-report and receives a sanitary visit. However, receiving a sanitary visit and being downstream of more coal mines, which induces more self-reporting violations, does not induce any more likelihood of receiving formal enforcement. Increases in self-reporting failures are not penalized any more harshly than standard rates of self-reporting non-compliance.
 
@@ -473,6 +528,10 @@ Regulators increase the likelihood of conducting enforcement visits when the num
 The regulator necessarily lacks information about the quality of water at a utility incurring an MR violation. If the actual contaminant concentration is above the MCL, then the violation requires urgent action to protect public health. However, if the actual contaminant concentration is below the MCL, then the violation does not require urgent action to protect public health. The regulator can use sanitary inspections of utilities to determine the risk to public health and determine the type of action that must be taken to enforce compliance.
 
 Table \ref{tab:h2_snsv_d12} presents the coefficients from estimating equation \ref{2ndstage2slsreg} on the likelihood of a regulator conducting a sanitary visit to a utility following an increase in upstream coal mining. Coal mining leads to a 14 percentage point increase in sanitary visits by the regulator to the utility. This is statistically significant at the 1 percent level. The absence of an increase in formal enforcement rates at the utilities where sanitary visits take place suggests that regulators do not uncover hidden MCLs.
+
+\input{reg/h3_inf_formal_d12}
+
+\input{reg/h2_snsv_d12}
 
 \section{Discussion}
 
@@ -535,158 +594,4 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 %\input{sum/npdwr_changes}
 
 \printbibliography
-
-\clearpage
-\section*{Tables and Figures}
-\addcontentsline{toc}{section}{Tables and Figures}
-
-% Uniform float typography for the whole end-matter block.
-%  \tiny (used for Notes in 12 of 16 table files) -> \footnotesize (10pt)
-%  \scriptsize -> \footnotesize, for safety
-%  \small (used for the tabular body in 2 table files) -> \normalsize (12pt)
-% Scoped to this group so the \small on the title-page affiliation is untouched.
-\begingroup
-\let\tiny\footnotesize
-\let\scriptsize\footnotesize
-\let\small\normalsize
-
-% ---------- Tables ----------
-\input{sum/ioc_days_dwnstrm}\clearpage
-\input{sum/visit_type_summary}\clearpage
-\input{sum/mr_mcl_incidence_summary}\clearpage
-\input{sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005}\clearpage
-\input{sum/syr2_mr_comparison}\clearpage
-\input{sum/upstream_coal_summary}\clearpage
-\input{reg/fs_dwnstrm_minevio_ivsum.tex}\clearpage
-
-\begin{landscape}\null\vfill
-\input{reg/2sls_dwnstrm_minevio_allcat_ivsum_binvio}
-\vfill\null\end{landscape}
-
-\begin{landscape}\null\vfill
-\input{reg/2sls_dwnstrm_minevio_mr_ivsum_binvio}
-\vfill\null\end{landscape}
-
-\begin{landscape}\null\vfill
-\input{reg/2sls_dwnstrm_minevio_mcl_ivsum_binvio}
-\vfill\null\end{landscape}
-
-\input{reg/6yr_huc02fe_inorg_ravalli_2005}\clearpage
-\input{reg/mr_concentration_lag}\clearpage
-\input{reg/mr_concentration_lag_national_downstream_states}\clearpage
-\input{sum/sanitary_visit_timing_formal_enforcement_rate}\clearpage
-
-\begin{landscape}\null\vfill
-\input{reg/h3_inf_formal_d12}
-\vfill\null\end{landscape}
-
-\begin{landscape}\null\vfill
-\input{reg/h2_snsv_d12}
-\vfill\null\end{landscape}
-
-% ---------- Figures ----------
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{plots/mineviolengthhist_downstream.png}
-\caption{Distribution of violation lengths, by contaminant}
-\label{img:mineviolengthhist_downstream}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Panels show the distribution of the number of days each violation lasts for the arsenic, nitrate, and inorganic chemical contaminant categories analyzed in this paper. Violation length is measured as the number of days between a violation's recorded start and end dates.}
-\end{figure}
-\clearpage
-
-\begin{figure}
-\centering
-\includegraphics[width=0.5\linewidth]{img/WBD_Base_HUStructure_small.png}
-\caption{Hierarchical structure of USGS hydrologic unit codes}
-\label{img:WBD_Base_HUStructure_small}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Illustrates how a hydrologic region is nested into progressively smaller watershed units, from two-digit units covering large multi-state regions down to twelve-digit units covering a few square miles. Each smaller unit is fully contained within the boundaries of the larger unit above it.}
-\end{figure}
-\clearpage
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{plots/data_cleaning/eia_msha_mine_huc12s.png}
-\caption{Watersheds matched to coal mine location and production data}
-\label{map:eia_msha_mine_huc12s}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Shading indicates whether a watershed contains a mine with only location data, only production data, both matched together, or a mine that has since closed. Only watersheds matched to both mine location and mine production data are used to measure coal production in the main analysis.}
-\end{figure}
-\clearpage
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{plots/map_huc12_main_sample.png}
-\caption{Watersheds with a coal mine in the main analysis sample}
-\label{map:map_huc12_main_sample}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Shading distinguishes watersheds containing a coal mine that lie directly upstream of a water utility in the main sample from watersheds containing a coal mine with no water utility located downstream.}
-\end{figure}
-\clearpage
-
-\begin{figure}
-\centering
-\includegraphics[width=0.8\linewidth]{plots/coal_summary_plot.png}
-\caption{Coal production trends by watershed sulfur content, 1983 to 2005}
-\label{plot:coal_summary_plot}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Lines show average tons of coal produced per watershed and year, separately for watersheds classified as high sulfur and low sulfur based on the sulfur content of the coal bed.}
-\end{figure}
-\clearpage
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{plots/sulfur_histogram_downstream2sls.png}
-\caption{Distribution of coal sulfur content across watersheds}
-\label{hist:sulfurhuc12}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Histogram of the percentage of sulfur by weight in the coal bed for watersheds where a water utility intake and coal production are co-located.}
-\end{figure}
-\clearpage
-
-\begin{landscape}\null\vfill
-\begin{figure}
-\centering
-\includegraphics[width=0.85\linewidth]{plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png}
-\caption{Change in coal production by watershed, 1985 to 2005}
-\label{map:proportionatecircleprod_diff_allminehuc12_1985_2005}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Circles are centered on watersheds with at least one active coal mine between 1985 and 2005 and are sized proportionate to the change in total coal production over the period. Red circles indicate an increase in production and blue circles indicate a decrease.}
-\end{figure}
-\vfill\null\end{landscape}
-
-\begin{landscape}\null\vfill
-\begin{figure}
-\centering
-\includegraphics[width=0.85\linewidth]{plots/proportionatecircle_upstream_mines_huc12_1985_2005.png}
-\caption{Change in upstream coal production weighted by downstream population}
-\label{map:proportionatecircle_upstream_mines_huc12_1985_2005}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Circles are centered on coal-mining watersheds located directly upstream of a water utility intake and are sized proportionate to the population served by the downstream utility. Red circles indicate an increase in production and blue circles indicate a decrease. Watersheds with no water utility directly downstream are omitted. The total population one watershed downstream of an active coal mine was 1,257,836 in 1985 and 218,874 in 2005, a net decrease of 1,038,962.}
-\end{figure}
-\vfill\null\end{landscape}
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{plots/scatterhuccoalsulfur_pooled.png}
-\caption{Coal mines and coal sulfur content, before and after 1995}
-\label{fig:scatterhuccoalsulfur}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Each point is a watershed-year observation. Lines are separate linear fits of the number of coal mines on coal sulfur content for the periods before and after 1995.}
-\end{figure}
-\clearpage
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{plots/first_stage_scatter_dwnstrm.png}
-\caption{Residualized first-stage relationship}
-\label{fig:first_stage_scatter_dwnstrm}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Each point is a community water system by year observation for the sample strictly downstream of a coal mine, 1985 to 2005. Both axes show residuals from separate regressions of each variable on community water system and year fixed effects, retaining only within-utility variation over time. The vertical axis residualizes the number of upstream coal mines; the horizontal axis residualizes the instrument, the post-1995 indicator interacted with the sulfur content of upstream coal. By the Frisch-Waugh-Lovell theorem, the slope of the fitted line equals the first-stage coefficient from the two-stage least squares specification.}
-\end{figure}
-\clearpage
-
-\endgroup
 \end{document}

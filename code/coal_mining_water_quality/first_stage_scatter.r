@@ -7,7 +7,7 @@
 # Author: EK  Date: 2026-04-17
 # ============================================================
 
-.libPaths("Z:/ek559/RPackages")
+.libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
 library(fixest)
 library(arrow)
 library(ggplot2)
@@ -17,14 +17,17 @@ full <- full[full$year < 2006 & full$year > 1984, ]
 full <- full[full$PWSID != "WV3303401", ]
 
 # Downstream-only sample
+# NOTE: prod_vio_sulfur.parquet's sulfur_unified/num_coal_mines_upstream were
+# split into _mean/_sum variants; use _sum to match the "ivsum" first-stage
+# specification (run_main_tables.r) that this scatter plot accompanies.
 dset <- full[(full$minehuc_downstream_of_mine == 1) & (full$minehuc_mine == 0), ]
-dset$instrument <- dset$post95 * dset$sulfur_unified
-dset <- dset[!is.na(dset$instrument) & !is.na(dset$num_coal_mines_upstream), ]
+dset$instrument <- dset$post95 * dset$sulfur_unified_sum
+dset <- dset[!is.na(dset$instrument) & !is.na(dset$num_coal_mines_upstream_sum), ]
 rownames(dset) <- NULL   # reset so residual names index into dset cleanly
 cat("Downstream sample rows:", nrow(dset), "\n")
 
 # Frisch-Waugh: residualize both mine count and instrument on PWSID + year FEs
-m_mines <- lm(num_coal_mines_upstream ~ as.factor(PWSID) + as.factor(year), data = dset)
+m_mines <- lm(num_coal_mines_upstream_sum ~ as.factor(PWSID) + as.factor(year), data = dset)
 m_instr <- lm(instrument             ~ as.factor(PWSID) + as.factor(year), data = dset)
 
 plot_df <- data.frame(
@@ -35,18 +38,6 @@ plot_df <- data.frame(
 fs_coef <- coef(lm(e_mines ~ e_instr, data = plot_df))[["e_instr"]]
 cat("FWL first-stage slope:", round(fs_coef, 4), "\n")
 
-caption_raw <- paste0(
-  "Each point is a CWS \u00d7 year observation (downstream CWSs, 1985\u20132005, ",
-  "n = ", format(nrow(plot_df), big.mark = ","), "). ",
-  "Both axes show residuals from separate regressions of each variable on PWSID and year ",
-  "fixed effects, retaining only within-CWS variation over time. ",
-  "The vertical axis residualizes upstream mine count; the horizontal axis residualizes ",
-  "the instrument (post-1995 indicator \u00d7 mean coal sulfur content of the upstream watershed). ",
-  "By the Frisch-Waugh-Lovell theorem, the slope of the OLS line (\u03b2 = ",
-  round(fs_coef, 3), ") equals the first-stage coefficient from the 2SLS specification."
-)
-caption_text <- paste(strwrap(caption_raw, width = 115), collapse = "\n")
-
 p <- ggplot(plot_df, aes(x = e_instr, y = e_mines)) +
   geom_point(alpha = 0.12, size = 0.5, color = "steelblue") +
   geom_smooth(method = "lm", se = TRUE, color = "black", linewidth = 0.8,
@@ -54,16 +45,12 @@ p <- ggplot(plot_df, aes(x = e_instr, y = e_mines)) +
   labs(
     title   = "First Stage: ARP \u00d7 Coal Sulfur Content and Upstream Mine Activity",
     x       = "Residualized instrument (post-1995 \u00d7 coal sulfur content)",
-    y       = "Residualized upstream mine count",
-    caption = caption_text
+    y       = "Residualized upstream mine count"
   ) +
   theme_classic(base_size = 11) +
   theme(
     plot.title             = element_text(size = 11, face = "bold",
                                           margin = margin(b = 6)),
-    plot.caption           = element_text(hjust = 0, size = 7.5, lineheight = 1.35,
-                                          margin = margin(t = 8)),
-    plot.caption.position  = "plot",
     plot.margin            = margin(t = 8, r = 12, b = 8, l = 8)
   )
 

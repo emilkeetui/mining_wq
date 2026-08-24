@@ -1,17 +1,4 @@
-.libPaths("Z:/ek559/RPackages")
-
-install.packages('fixest')
-install.packages('arrow')
-install.packages('ggplot2')
-install.packages('ISOweek')
-install.packages("data.table")
-install.packages("dplyr")
-install.packages("modelsummary")
-install.packages("grid")
-install.packages('tinytable')
-install.packages('patchwork')
-install.packages('grid')
-install.packages('estimatr')
+.libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
 
 library(patchwork)
 library(grid)
@@ -472,7 +459,7 @@ coal_data_2sls <- coal_data_2sls[coal_data_2sls$huc12 %in% active_mine_hucs_2sls
 coal_sulfur_hist_2sls <- coal_data_2sls %>% group_by(huc12) %>%
   summarise(sulfur = max(sulfur_colocated, na.rm = TRUE))
 
-png("Z:/ek559/mining_wq/output/fig/sulfur_histogram_downstream2sls.png")
+png("Z:/ek559/mining_wq/output/fig/sulfur_histogram_downstream2sls.png", width = 6.5, height = 4.5, units = "in", res = 300)
 par(mar = c(7, 4, 4, 2) + 0.1)
 hist(coal_sulfur_hist_2sls$sulfur, main = "HUC12 Coal Sulfur % Histogram", xlab = "Coal bed % sulfur", col = "lightblue", border = "black")
 mtext("Sample: HUC12's with at least one active mine between 1985 and 2005 and", side = 1, line = 4, cex = 0.75, col = "grey40")
