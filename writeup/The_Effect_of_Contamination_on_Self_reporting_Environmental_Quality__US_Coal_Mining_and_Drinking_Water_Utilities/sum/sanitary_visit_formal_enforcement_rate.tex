@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\caption{\label{tab:sanitary_visit_formal_enforcement_rate} Formal Enforcement Rate, by Sample Restriction (Downstream CWSs, 1985--2005)}
+\bigskip
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+\begin{tabular}{lcc}
+\toprule
+Sample & N (CWS-years) & Formal enforcement rate \\
+\midrule
+All CWS-years (downstream 2SLS panel) & 7{,}329 & 2.52\% \\
+CWS-years with an MR violation & 1{,}018 & 11.59\% \\
+CWS-years with an MR violation and a sanitary visit (same year) & 162 & 22.22\% \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright 
+Sample: strictly downstream CWSs (349), CWS-years 1985--2005 (7329 CWS-years). Formal enforcement = 1 if a violations-enforcement action with ENF\_ACTION\_CATEGORY = Formal is ongoing at any point during the calendar year (spell runs from the month of ENFORCEMENT\_DATE through the month of CALCULATED\_RTC\_DATE, fallback NON\_COMPL\_PER\_END\_DATE if RTC missing, else the enforcement month itself). MR violation = 1 if a violation onset with VIOLATION\_CATEGORY\_CODE = MR begins in that calendar year (NON\_COMPL\_PER\_BEGIN\_DATE). Sanitary visit = 1 if a site visit with VISIT\_REASON\_CODE in \{SNSV, SNSP, SSVF\} occurs in that calendar year. Row 2 restricts to CWS-years with an MR violation onset (N\,=\,1{,}018). Row 3 further restricts to CWS-years with an MR violation onset and a sanitary visit in that same calendar year (N\,=\,162).
+}
+\end{table}

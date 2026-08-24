@@ -1,0 +1,31 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of ARP on drinking water violations not associated with mining},
+note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
+note{ }={All estimations include PWS and year fixed effects.},
+note{  }={Data is from 1990 to 2005.},
+note{   }={Standard errors clustered at PWS level.},
+note{    }={MiningHUC12 = 1 if PWS intake HUC12 has coal mining over sample period.},
+note{     }={Coefficients names are displayed in column headers and dependent variable names in the first column.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]},
+column{2}={}{halign=c,},
+column{1}={}{halign=l,},
+}                     %% tabularray inner close
+\toprule
+& post95 x CoalMineHUC12 \\ \midrule %% TinyTableHeader
+Total coliform & 0.005 \\
+& [-0.020, 0.030] \\
+Surface/ground water rule & -0.012 \\
+& [-0.031, 0.007] \\
+Volatile organic compounds & 0.023*** \\
+& [0.007, 0.040] \\
+Synthetic organic compounds & 0.026*** \\
+& [0.012, 0.041] \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}

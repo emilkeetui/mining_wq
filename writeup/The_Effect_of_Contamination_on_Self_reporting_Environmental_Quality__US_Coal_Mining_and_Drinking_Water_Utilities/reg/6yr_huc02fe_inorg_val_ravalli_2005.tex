@@ -1,0 +1,48 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:6yr_huc02fe_inorg_val_ravalli_2005} Effect of cumulative upstream coal production on mean measured concentration (6-Year Review, downstream CWSs, Ravalli et al.~(2022) cleaning, robustness 1998--2005)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccccc}
+         \toprule
+         
+          & \multicolumn{5}{c}{Mean conc.}\\
+         
+                                             & Arsenic        & Nitrate       & Barium        & Chromium       & Selenium \\   
+         
+                                             & (1)            & (2)           & (3)           & (4)            & (5)\\  
+         
+         \midrule 
+         Cumul. upstream coal prod. (10M ST) & 0.0023$^{***}$ & 0.0572        & 0.0171$^{*}$  & 0.0027$^{***}$ & 0.0033$^{**}$\\   
+                                             & (0.0004)       & (0.0922)      & (0.0093)      & (0.0006)       & (0.0016)\\   
+         
+          \\
+         
+         Observations                        & 334            & 432           & 322           & 328            & 319\\  
+         
+          \\
+         
+         CWS fixed effects                   & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$\\   
+         huc02-year fixed effects            & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample period 1998--2005 (robustness). Outcome is the mean measured concentration of the analyte in a given CWS-year from the EPA 6-Year Review (Ravalli et al.~2022 cleaning: non-detects replaced by MDL$/\sqrt{2}$). For arsenic, the MCL is 0.050 mg/L through 2005. Explanatory variable is cumulative coal production since 1985 (in 10 million short tons) in the HUC12 one step upstream of the CWS intake. Fixed effects: PWSID and HUC02$\times$year (first two digits of intake HUC12 interacted with year). Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0). Standard errors clustered at PWSID level.}
+   
+\end{table}
+
+

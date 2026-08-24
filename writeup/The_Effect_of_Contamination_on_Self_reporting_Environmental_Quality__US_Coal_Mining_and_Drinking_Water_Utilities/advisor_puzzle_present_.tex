@@ -1,0 +1,257 @@
+\documentclass{beamer}
+\usetheme{Boadilla}
+\setbeamertemplate{footline}[page number]
+\usepackage{tabularray}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{codehigh}
+\usepackage{breqn}
+\usepackage{amssymb}
+\usepackage{adjustbox}
+\usepackage[normalem]{ulem}
+\usepackage{booktabs}
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{siunitx}
+\newcommand{\tinytableTabularrayUnderline}[1]{\underline{#1}}
+\newcommand{\tinytableTabularrayStrikeout}[1]{\sout{#1}}
+\NewTableCommand{\tinytableDefineColor}[3]{\definecolor{#1}{#2}{#3}}
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=bwl-FU
+]{biblatex}
+\addbibresource{citation.bib}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\title{The Impact of the Acid Rain Program and Coal Mining on Drinking Water Quality}
+\author{Emil Kee-Tui}
+\institute{Cornell University}
+
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Research question}
+    \begin{itemize}
+        \item What is the effect of contamination on environmental self-reporting?
+        \item Study within the context of drinking water utilities self reporting requirements.
+        \item Identify exogenous changes in contamination from coal mining.
+        \item Unique to other self-reporting context where reporter endogenously controls the contaminant they must report.
+        \item Utilities control water treatment and exert influence over source water, my instrument identifies exogenous changes in source water and therefore in contamination.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Data}
+\begin{itemize}
+    \item $NumMines_{ct}=$Number of mines/tons of coal mined upstream
+    \begin{itemize}
+        \item EIA mine output
+    \end{itemize}
+    \item $UpstreamCoalSulfur\%_c=$Coal Sulfur \% for HUC12's upstream of CWS c
+    \begin{itemize}
+        \item USGS samples of coal bed characteristics
+    \end{itemize}
+    \item Regulator visits and formal/informal enforcement against each CWS
+    \begin{itemize}
+        \item SDWIS/ECHO
+    \end{itemize}
+    \item Contaminant concentrations at CWS in year
+    \begin{itemize}
+        \item EPA six year review rounds 2 (SYR2)
+        \item Exclude contaminants if missing $\geq$ 90\% and outliers 100x MCL
+        \item Missing PA in SYR2, covers 1997-2005, subset of CWSs
+    \end{itemize}
+    \item Population using CWS, $\text{Days in Violation}_{vct}$
+    \begin{itemize}
+        \item SDWIS/ECHO
+        \item Survey: 10\% MR in SDWIS but 95\% MR in SDWIS were accurate.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{SYR2 data}  \input{sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005}
+\end{frame}
+
+\begin{frame}{SYR2 data}  \input{sum/syr2_mr_comparison}
+\end{frame}
+
+\begin{frame}{IV Model: mining on CWS violations}
+First stage:
+\begin{equation}\label{1ststage2sls}
+\begin{split}
+\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{NumIntakes}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + Y_t + C_c + \nu_{ct}
+\end{split}
+\end{equation}
+
+Second stage:
+\begin{equation}\label{2ndstage2sls}
+\begin{split}
+\text{Days in Violation}_{vct} &= \beta_0 + \beta_1\text{NumIntakes}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} \\
+&\quad + Y_t + C_c + \epsilon_{ct}
+\end{split}
+\end{equation}
+
+\begin{itemize}
+    \begin{itemize}
+        \item $Post95_t=$ 1 if year $>$ 1995 
+        \item Standard errors are clustered at the CWS level
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{IV identification assumptions}
+    \begin{itemize}
+        \item Exclusion: $\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t$ did not affect violations outside of number of upstream mines.
+        \item Independence: $\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t$, as good as random conditional on covariates. $\text{Post95}_t$ determined by the national CAAA legislation, and control for time invariant $\text{UpstreamCoalSulfur\%}$ with CWS fixed effects.
+        \item Monotonicity/no defiers: A defier is a HUC12 that experienced more mining after 1995 because it had higher sulfur.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Results: mining on CWS MR violations}
+\input{reg/2sls_dwnstrm_minevio_mr_ivsum_binvio}
+\end{frame}
+
+\begin{frame}{Results: mining on CWS MCL violations}
+\input{reg/2sls_dwnstrm_minevio_mcl_ivsum_binvio}
+\end{frame}
+
+\begin{frame}{Results}
+\begin{itemize}
+    \item Mining increases MR violations.
+    \item Mining does not increase MCL violations.
+    \item MR violations are a form of non-compliance with SDWA.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{DiD Model: mining on CWS contaminant concentrations}
+\begin{itemize}
+    \item Panel data
+    \begin{equation}\label{eq:huc02reg}
+    \textit{Concen}_{cht}= \beta\cdot\sum_{\tau=1985}^t\text{UpstreamCoalProd}_{c\tau}  + \rho_c + HUC02_h\cdot\tau_t + \epsilon_{cht}
+\end{equation}
+
+    \begin{itemize}
+        \item $\textit{Concen}_{cht}=$ mean contaminant concentration at CWS c in HUC02 h in year t.
+        \item $\sum_{\tau=1985}^t\text{upstream coal prod}_{c\tau}=$ cumulative tons of coal mined upstream of CWS c in the HUC12 h from 1985 to year t.
+        \item $\rho_c=$CWS fixed effects
+        \item $HUC02_h\cdot\tau_t=$HUC02 interacted with time fixed effects
+        \item Standard errors are clustered at the CWS level
+    \end{itemize}
+    \item Continuous DiD with no pure control observations. 
+    \item Identification: CWSs that experience a large decline in coal production would have trended the same as CWSs with a small decline.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Results: mining on CWS contaminant concentrations}
+    \input{reg/6yr_huc02fe_inorg_val}
+\end{frame}
+
+\begin{frame}{Results}
+\begin{itemize}
+    \item Mining increases mean inorganic chemical contamination (by 40-80\% of mean concentrations).
+    \item Below MCL but above CWS contamination preferences.
+    \item Mining raises CWS costs to completely remove contaminants.
+    \item CWSs downstream of mines face costlier SDWA compliance. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}{IV Model: mining on regulator actions}
+
+First stage:
+\begin{equation}\label{1ststage2sls}
+\begin{split}
+\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{NumIntakes}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + Y_t + C_c + \nu_{ct}
+\end{split}
+\end{equation}
+
+Second stage:
+\begin{equation}\label{2ndstage2sls}
+\begin{split}
+\text{Regulatory Action}_{vct} &= \beta_0 + \beta_1\text{NumIntakes}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} \\
+&\quad + Y_t + C_c + \epsilon_{ct}
+\end{split}
+\end{equation}
+
+\begin{itemize}
+    \begin{itemize}
+        \item $Post95_t=$ 1 if year $>$ 1995 
+        \item $NumIntakes_{ct}=$Number of CWS water intakes
+        \item $\text{Regulatory Action}_{vct}=$sanitary visits/formal enforcement/informal enforcement
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Results: regulator informal vs formal enforcement response to CWS violations}
+\input{reg/test_h3_inf_formal_chem}
+\end{frame}
+
+\begin{frame}{Results: regulator sanitary visits to CWS}
+\input{reg/test_h2_snsv_chem}
+\end{frame}
+
+\begin{frame}{Burden or substitution?}
+\input{reg/mr_concentration_lag_national_downstream_states}
+\end{frame}
+
+\begin{frame}{Burden - more testing}
+\input{reg/monitoring_retesting_hazard}
+\end{frame}
+
+\begin{frame}{Sanitary and enforcement correlation with MR violation}
+\input{reg/sanitary_visit_syr2_test_iterative}
+\end{frame}
+
+\begin{frame}{Sanitary visits pre-empt violations?}
+    \input{reg/sanitary_visit_mr_violation_iterative}
+\end{frame}
+
+\begin{frame}{Sanitary visits pre-empt violations?}
+\input{reg/sanitary_visit_mr_violation_iterative_12mo_test}
+\end{frame}
+
+\begin{frame}{Sanitary visits pre-empt violations?}
+    \input{reg/sanitary_visit_mr_violation_iterative_lagonly_test}
+\end{frame}
+
+\begin{frame}{SYR2 tests preempt violations?}
+    \input{reg/syr2_test_mr_violation_bychem_leadonly_test}
+\end{frame}
+
+\begin{frame}{SYR2 tests preempt violations?}
+    \input{reg/syr2_test_mr_violation_bychem_iterative}
+\end{frame}
+
+\begin{frame}{Conclusion}
+\begin{itemize}
+    \item Mining induces lower CWS SDWA compliance.
+    \item $\uparrow$ mining $\rightarrow$   $\uparrow$ inorganic chemical water contamination.
+    \item Below MCL but still above CWS preferences.
+    \item $\uparrow$ inorganic chemical water contamination $\rightarrow$ $\uparrow$ CWS cost of SDWA compliance.
+    \item $\uparrow$ inorganic chemical water contamination $\rightarrow$ $\uparrow$ increasing regulator scrutiny.    
+    \item $\uparrow$ mining $\rightarrow$ $\uparrow$ sanitary visits (non-punitive enforcement).
+    \item $\uparrow$ mining $\rightarrow$ $\uparrow$ tests.
+    \item Testing burden increases, low penalty for missing new testing requirements.
+    \item (Lower punishment for violations + higher costs of compliance) $\rightarrow$ reduced CWS SDWA compliance.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Thank you!}
+    Email: ek559@cornell.edu
+\end{frame}
+\end{document}

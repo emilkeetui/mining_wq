@@ -1,0 +1,32 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of ARP on drinking water violations at high sulfur coal PWSs},
+note{}={* p < 0.1, ** p < 0.05, *** p < 0.01},
+note{ }={All estimations include PWS and year fixed effects.},
+note{  }={Data is from 1985 to 2005.},
+note{   }={Standard errors clustered at PWS level.},
+note{    }={MiningHUC12 = 1 if PWS intake HUC12 has coal production over sample period.},
+note{     }={Coefficients names are displayed in column headers and dependent variable names in the first column.},
+label={tblr:diff_diff_miningviol_highsulf},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]},
+column{2}={}{halign=c,},
+column{1}={}{halign=l,},
+}                     %% tabularray inner close
+\toprule
+& post93:CoalMineHUC12Upstream \\ \midrule %% TinyTableHeader
+Nitrates & -0.045** \\
+& [-0.088, -0.002] \\
+Arsenic & -0.033 \\
+& [-0.074, 0.009] \\
+Inorganic chemicals & -0.049** \\
+& [-0.092, -0.006] \\
+Radionuclides & -0.084*** \\
+& [-0.136, -0.032] \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}

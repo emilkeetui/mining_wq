@@ -1,0 +1,674 @@
+\documentclass{beamer}
+\usetheme{Boadilla}
+\usepackage{tabularray}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{codehigh}
+\usepackage{breqn}
+\usepackage{amssymb}
+\usepackage{adjustbox}
+\usepackage[normalem]{ulem}
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{siunitx}
+\newcommand{\tinytableTabularrayUnderline}[1]{\underline{#1}}
+\newcommand{\tinytableTabularrayStrikeout}[1]{\sout{#1}}
+\NewTableCommand{\tinytableDefineColor}[3]{\definecolor{#1}{#2}{#3}}
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=bwl-FU
+]{biblatex}
+\addbibresource{citation.bib}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\title{The Impact of Coal Mining on Drinking Water Quality}
+\author{Emil Kee-Tui and Nicolas Ramkumar}
+
+\institute{Cornell University}
+\date{February 27, 2026}
+
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Coal's impact on the environment}
+\begin{figure}
+\includegraphics[scale=0.52]{img/Olena Hasii and Grygorii Gasii 2024.png}\caption{Olena Hasii and Grygorii Gasii 2024 IOP Conf. Ser.: Earth Environ. Sci. 1348012017}
+\end{figure}
+\begin{itemize}
+    \item \textbf{Main water pollutants: pH decreases and inorganic chemicals.}
+    \item Air pollution: CO2, SO2, NOx, PM, mercury, and heavy metals.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Expected impact of coal mining on water quality}
+
+\begin{itemize}
+    \item The direct impact of coal mining is expected to be non-organic chemicals entering the waterways.
+    \item Acid mine drainage (AMD) forms when sulfide minerals are exposed during mining, highway construction, and other
+large-scale excavations. 
+\item Upon exposure to water and oxygen, most
+sulfide minerals oxidize to form sulfuric acid, metal ions, and sulfate,
+which, if untreated, enter surface or groundwater
+(\cite{akcil2006acid}).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Summary of results}
+    \begin{itemize}
+        
+        \item \textbf{Result:} An additional coal mine upstream or within a PWS's water source watershed leads to:
+        \begin{itemize}
+            \item An increase in the length of violations for nitrate, arsenic, surface and groundwater, and synthetic organic chemical rules.
+            \item A decrease in the average length of violations for radionuclides.
+        \end{itemize}
+        \item \textbf{Method:} We use a two stage least squares approach and instrument for coal production using the Acid Rain Program of 1990.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Acid rain program (ARP)}
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.06]{img/president_clean_coal.PNG}
+        \caption{Williams, R \& Nelson, M. (1/18/2023). It's Time To Let Coal Die. YouTube. \url{https://www.youtube.com/watch?v=BwP2mSZpe0Q}}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}{Acid rain program (ARP)}
+    \begin{itemize}
+        \item Reduce acid rain through reductions in sulfur dioxide and nitrogen oxides below 1980 levels.
+        \item Targeted mostly coal burning electric utility plants in eastern and Midwestern states.
+        \item Used cap and trade and technology incentives.
+        \item Passed in 1990.
+        \item Phase I (began in 1995) affected 263 units.
+        \item Phase II (began in 2000) added more units, affecting over 2,000 units in total. 
+        \item Changed demand for low and high sulfur coal.
+        \ Production of high sulfur coal ($\geq 2\%$ sulfur content) fell relative to low sulfur coal.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Assessing the effect of ARP on coal production}
+    \begin{itemize}
+        \item \textbf{Result:} Production of high sulfur coal  ($\geq 2\%$ sulfur content) fell relative to low sulfur coal.
+        \item \textbf{Method:} Measure HUC12 (sub watershed tributary level) changes in coal production across coal bed sulfur characteristics following ARP.
+        \item \textbf{Data:}
+    \begin{itemize}
+        \item Coal mine production (EIA).
+        \item Coal mine locations (MSHA).
+        \item Coal bed sulfur \% (USGS).
+    \end{itemize}
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Assessing the effect of ARP on coal production}
+\begin{figure}
+\includegraphics[scale=0.5]{plots/sulfur_histogram.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Assessing the effect of ARP on coal production}
+\begin{figure}
+\includegraphics[scale=0.67]{plots/coal_summary_plot.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Assessing the effect of ARP on coal production}
+\begin{figure}
+\includegraphics[scale=0.56]{plots/scatterhuccoalsulfur.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Changes in total output in HUC12's with PWS intakes}
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.37]{plots/proportionatecircleprod_huc12_1985_2005.png}
+\label{map:proportionatecircleprod_huc12_1985_2005}
+\end{figure}
+\end{frame}
+
+\begin{frame}{}
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{plots/pop_exposed_change.png}
+\label{map:pop_exposed_change}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Location of CWS's in sample}
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{plots/map_huc12_main_sample.png}
+\label{map:map_huc12_main_sample}
+\end{figure}
+\end{frame}
+
+\begin{frame}{}
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{plots/pop_exposed_two_panel.png}
+\label{map:pop_exposed_two_panel}
+\end{figure}
+\end{frame}
+
+\begin{frame}{{Assessing the effect of ARP on coal production}}
+\begin{equation}
+CoalOutcome_{ht}=\beta_0+\beta_1HUC12_h+\beta_2Post95_t + \beta_3HUC12_h*Post95_t+\epsilon_{ht}
+\end{equation}
+    \input{reg/coal_did_sulf}
+
+\begin{itemize}
+    \item Idiosyncratic HUC variation dominates, HUC level noise.
+    \item CWS instrument uses an aggregation of several HUC's, aggregation amplifies signal and reduces the effect of noise allowing effect identification.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{This project}
+    \begin{itemize}
+    \item \textbf{Research Question:} What impact does coal mining have on Public Water Systems' (PWS) Safe Drinking Water Act (SDWA) violations?
+    \item \textbf{Empirical Approach:}
+    \begin{itemize}
+    \item PWS violations following ARP induced quasi-experimental changes in coal production.
+    \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Data}
+    \begin{itemize}
+        \item Public water system characteristics, violations, and violation enforcement (ECHO: SDWA, EPA PWS water intake).
+        \item Coal mine production (EIA).
+        \item Coal mine locations (MSHA).
+        \item Coal bed sulfur \% (USGS).
+    \end{itemize}
+\end{frame}
+
+
+
+\section{Descriptive data on public water systems (1985-1995)}
+
+\begin{frame}{}
+    \input{sum/balance_sum_pws_downstream}
+\end{frame}
+
+\begin{frame}{}
+    \input{sum/balance_sum_downstream}
+\end{frame}
+
+\begin{frame}{}
+\input{sum/balance_sum_hucfeatures_downstream}
+\end{frame}
+
+\begin{frame}{Summary stats of violations}
+\input{sum/balance_sum_viol_category_downstream}  
+\end{frame}
+
+\begin{frame}{}
+    \input{sum/balance_sum_viol_rule_downstream}
+\end{frame}
+
+\begin{frame}{}
+\begin{figure}
+\includegraphics[scale=0.5]{plots/mineviolengthhist_downstream.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{}
+\begin{figure}
+\includegraphics[scale=0.5]{plots/nonmineviolengthhist_downstream.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{}
+\begin{figure}
+\includegraphics[scale=0.5]{plots/dayvioendstarthist_downstream.png}
+\end{figure}
+\end{frame}
+
+\section{Summary of variables on regulator enforcement action}
+
+\begin{frame}{}
+\input{sum/sdwa_regulator_data_inventory}
+\end{frame}
+
+\begin{frame}{Violation trends across low/high sulfur and colocated mining/downstream PWSs}
+\begin{figure}
+\includegraphics[scale=0.62]{plots/number_vio_mean_line1985to2005_dwnstreamcolocatedsulfur.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Violation trends across low/high sulfur and colocated mining/downstream PWSs}
+\begin{figure}
+\includegraphics[scale=0.62]{plots/non_mining_viol_mean_line1985to2005_dwnstreamcolocatedsulfur.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Violation trends across low/high sulfur and colocated mining/downstream PWSs}
+\begin{figure}
+\includegraphics[scale=0.62]{plots/mining_viol_mean_line1985to2005_dwnstreamcolocatedsulfur.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Instrumental Variable Identification Strategy}
+
+This may actually be a shift-share instrument (see  Nunn and Qian (2014), "US Food Aid and Civil Conflict,", Autor, Dorn, and Hanson (2013), "The China Syndrome: Local Labor Market Effects of Import Competition in the United States", and Evan Riehl's empirical strategy slides from labor econ class.
+
+First Stage:
+\begin{equation}
+CoalProduction_{ht}=\alpha_0+ \alpha_1sulfur_h*Post95_t+ \eta+\tau+\nu_{ht}    
+\end{equation}
+
+Second Stage:
+\begin{equation}
+Violation_{pt}=\beta X_{pt}+\gamma\widehat{CoalProduction}+\rho+\tau+\sigma+\epsilon_{ht}
+\end{equation}
+
+We cannot have both an upstream and a colocated variable because for many huc12's with mining, they are at the headwater and there are no huc's above. If we include an upstream sulfur characteristic by itself, the interpretation of 0 sulfur will be contaminated by true 0 sulfur and no sulfur because upstream doesnt exist. The unified sulfur characteristic averages the colocated and upstream when upstream exists and takes only the colocated when upstream does not exist.
+\end{frame}
+
+\begin{frame}{Exclusion and independence of instrument: sulfur x Acid Rain Program}
+    \begin{itemize}
+    \item The omitted variable is a local PWS or community's ability to influence where mines are sited. 
+    \begin{itemize}
+        \item The instrument (sulfur X acid rain program) meets the exclusion restriction (Cov(political power, sulfur X acid rain program=0) because the legislation targeting national air quality and primarily envisioned SO2 scrubbers rather than low sulfur coal as the abatement solution. Local political power over water quality did not affect how stringent the national ARP law was, nor the degree that low sulfur coal should be a part of the abatement technology.
+        \item The instrument is independent because by knowing about sulfur X ARP tells us nothing about how much political power a local PWS has about mine siting. Likewise, ARP was a national air quality regulation and not influenced by local water and the importance of sulfur percentage was not the primary abatement mechanism forseen in the legislation.
+    \end{itemize}
+        \item Sulfur is endogenous to water quality: higher sulfur levels are associated with more sulfide minerals in the rock that oxidize and cause AMD.
+        \item Post95 is exogenous to water quality since ARP was not passed to address water quality.
+        \item Exclusion comes from the $sulfur*post95$ and controlling for observable PWS characteristics and geochemistry at water intakes.
+    \end{itemize}
+    \begin{itemize}
+        \item To argue independence we say that the reason why ARPxsulfur bites has nothing to do with the local power over source protection. ARPxsulfur happens at the national coal demand level. ARP was made without local water quality in mind and sulfur (which may induce a tougher source protection) is controlled for and the reverse causal relationship where local power causes sulfur levels is impossible.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Threats to exclusion}
+    It would be a violation restriction if shifts to low sulfur HUCs are associated with higher water quality violations in the post period relative to the pre period
+Yes, exactly right. Here is the precise mechanism:
+
+The exclusion restriction requires that sulfur_h × post95 affects violations only through the HUC's own instrumented coal production. The violation occurs when:
+
+Low-sulfur HUCs receive production inflows post-ARP (demand substitution)
+Those production increases raise their violations in the post period
+But their instrument value (sulfur_low × post95) is near zero — so the IV attributes none of this production to the instrument
+The consequence is in the reduced form. The reduced form estimates the correlation between sulfur_h × post95 and violations. With demand substitution:
+
+High-sulfur HUCs: production falls, violations fall → negative correlation with instrument
+Low-sulfur HUCs: production rises, violations rise → also a negative correlation with instrument (high instrument value → relatively lower violations)
+Both channels push the reduced form coefficient in the same direction. The IV estimate inflates the apparent effect because the denominator (first stage) only captures the high-sulfur production decline, while the numerator (reduced form) is picking up both the high-sulfur decline in violations and the low-sulfur increase in violations as separate contributions to the cross-sectional differential.
+
+The testable implication: violations should increase in low-sulfur HUCs post-1995 relative to pre-1995, controlling for year and unit FEs. If the pre-post trend in violations is flat or negative for low-sulfur HUCs, the demand substitution channel is not contaminating the reduced form through this pathway.
+\end{frame}
+
+\begin{frame}{Assessing monotonicity}
+
+Why the Economic Mechanism Supports Monotonicity
+The compliance channel is a regulatory cost shifter on the supply side:
+
+ARP Phase I required SO₂ reductions, primarily from high-sulfur coal combustion
+Utilities substituted toward low-sulfur coal and away from high-sulfur coal
+Demand for high-sulfur coal fell everywhere post-1995, proportional to sulfur content
+This is a market-wide demand shift — not a behavioral response that depends on unobserved unit characteristics. There is no natural story for a defier HUC: a region with higher sulfur content that expanded production post-ARP because of the regulation. A high-sulfur mine that installs scrubbers and maintains production is not a defier — it is a never-taker (the instrument failed to shift its treatment).
+
+The geological origin of sulfur_h matters here: sulfur content is assigned by nature, not by producer choice. There is no selection into high-sulfur HUCs based on characteristics that would make producers respond perversely to ARP.
+
+Potential Monotonicity Concerns
+1. Scrubber installation
+
+Some high-sulfur operations may have installed scrubbers, avoiding production reductions. These are never-takers in your compliance framework — the instrument does not shift their treatment. As long as scrubber adoption is not positively correlated with sulfur in a way that causes production to increase post-ARP in high-sulfur areas, this is not a violation of monotonicity, just reduced first-stage power.
+
+2. Permit trading
+
+High-sulfur producers may have bought permits rather than cutting production. If this response is stronger in high-sulfur HUCs — i.e., they avoided production cuts more than low-sulfur HUCs — it attenuates the first stage but does not reverse it. Defiance would require high-sulfur producers to expand production relative to low-sulfur producers post-1995 as a result of ARP, which has no clear mechanism.
+
+3. Measurement error in sulfur_h
+
+If sulfur_h is a noisy proxy for the true cost exposure (e.g., the HUC-level average masks within-HUC heterogeneity), some "high sulfur" HUCs may actually host low-sulfur seams. This creates classical measurement error that attenuates the first stage — it does not generate defiers, it generates misclassified compliers.
+
+4. Non-monotone demand responses (the hardest case)
+
+If some high-sulfur regions had comparative advantage in low-cost production that offset the ARP cost increase — for example, very low labor costs or transportation advantages — they might expand production even as ARP made their coal relatively more expensive. This is the main theoretical risk. The question is whether this is a realistic local concern in your Appalachian sample or more of a theoretical possibility.
+
+\end{frame}
+
+\begin{frame}{Monotonicity}
+    \begin{itemize}
+
+    \item From Imben and Angrist 1994 econometrica Let $\Psi$ be the support of the instrument $Z_i$. Define for each $z \in \Psi$ a random variable $D_i(z)$
+    Monotonicity: For all z, w $\in$ $\Psi$, either $D_i(z) \leq D_i(w)$ for all i, or $D_i(z) \geq D_i(w)$ for all i. This is defined on pairwise elements of $\Psi$, does not say how z,w are related.
+    Since ARP = 0 before 1995 and 1 after, for a given sulfur percent w the assumption is that $num\_mines_i(0) \leq num\_mines_i(w)$ for all i or $num\_mines_i(0) \leq num\_mines_i(w)$ for all i. This allows for differential changes in number of mines based on sulfur percent. Suppose $sulfur= 1$, it is low sulfur so number of mines could increase after 1995 then monotonicity requires that for all i $num\_mines_i(0) \leq num\_mines_i(1)$. Now suppose $sulfur = 4$, it is high sulfur so number of mines likely decrease after 1995 then monotonicity requires that for all i $num\_mines_i(0) \geq num\_mines_i(4)$. Monotonicity can be satisfied even if $num\_mines_i(0) \leq num\_mines_i(1)$ and $num\_mines_i(0) \geq num\_mines_i(4)$.
+
+    
+        \item Following \cite{angrist1995identification} we identify LATE if among other assumptions there is monotonicity, such that for $ z,w\in \Psi$, $D_i(z)\geq D_i(w) \forall i$ or $D_i(z)\leq D_i(w) \forall i$. Although Z is multivariate, $Z(post95,sulfur, X)$, $Z:\mathbb{R}^n:\rightarrow\mathbb{R}$. The instrument is the enaction of ARP, post95 = 1, and sulfur, ie sulfurXpost95. 
+        \item Consider a sulfur percent of 0, sulfurXpost95 = 0, and a sulfur percent of 1, sulfurXpost95 = 1. The monotonicity assumption requires that $number\_mines_i(0) \geq number\_mines_i(1)$ $\forall i$. This is a potential outcomes framework so we can never see the same mine realize two different sulfur levels but we can infer from the descriptive data of the relationship between sulfur and mining than for any mine the production will be more in the post period with low sulfur than in the post period with high sulfur.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{A threat to LATE identification}
+Theorem 2 from \cite{angrist1994identification}: Suppose that Conditions 1, 2, and 3 are satisfied. Let Z be a discrete random variable with support $\{z_o, z_1. . .  ,z_K\}$, ordered in such a way that if $l <
+m$ then $P(z_l) <P(z_m)$. Then, if $Cov(D, g(Z)) \neq 0$, the IV estimator for the effect of D on Y using g(Z) as an instrument estimates
+    \alpha_g^{IV} = \operatorname{Cov}(Y, g(Z))/\operatorname{Cov}(D, g(Z)) = \sum_{k=1}^{K} \lambda_k \cdot a_{z_k, z_{k-1}}, \\
+\text{with weights} \\
+\lambda_k = \frac{(P(z_k) - P(z_{k-1})) \cdot \sum_{l=k}^{K} \pi_l \cdot (g(z_l) - \mathbb{E}[g(Z)])}{\sum_{m=1}^{K} (P(z_m) - P(z_{m-1})) \cdot \sum_{l=m}^{K} \pi_l \cdot (g(z_l) - \mathbb{E}[g(Z)])}
+
+where $\pi_k = Pr(Z = z_k)$ and $a_{z_k, z_{k-1}}$ is the local average treatment effect $E[Y_i(l) -Y(O)_0|D_i(z_k) = 1, Di(z_{k-1})= 0]$. The weights $\lambda_k$ are nonnegative and add up to 1.
+
+\begin{itemize}
+    \item The non-negative weights do not automatically apply to the ARP*sulfur instrument because it not satisfy this condition: $l <
+m$ then $P(z_l) <P(z_m)$.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{}
+\begin{figure}
+\includegraphics[scale=0.62]{plots/first_stage_scatter_dwnstrm.png}
+\end{figure}    
+\end{frame}
+
+\section{Downstream only}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrm_minevio_allcat}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrm_nonminevio_allcat}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrm_minevio_mr}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrm_nonminevio_mr}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrm_minevio_mcl}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrm_nonminevio_mcl}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/fs_dwnstrm_minevio}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/fs_dwnstrm_nonminevio}
+\end{frame}
+
+\begin{frame}{}
+\begin{figure}
+\includegraphics[scale=0.62]{plots/first_stage_scatter_dwnstrm.png}
+\end{figure}
+\end{frame}
+
+\section{Health outcomes: Infant mortality}
+
+\begin{frame}{}
+
+\textbf{is_mining_county}
+County has at least one MSHA coal mine within its boundaries during 1985–2005. 
+
+\textbf{is_downstream_neighbor}
+County that receives water flow directly from a mining county, traced through the HUC12 network. This is immediate downstream only — it does not continue tracing further downstream.
+
+\textbf{is_strictly_downstream}
+is_downstream_neighbor AND is NOT is_mining_county. A county that receives flow from a mining county but has no mines of its own. This is the "clean" downstream group.
+
+Counties that are both is_mining_county and is_downstream_neighbor have mines and also receive flow from another mining county upstream.
+
+\textbf{frac_area_downstream} what share of the county receives water that flowed through mine-containing HUC12s specifically.
+\end{frame}
+
+\begin{frame}{}
+\begin{figure}
+\includegraphics[scale=0.3]{plots/mplus_county_huc12_map.png}
+\end{figure}    
+\end{frame}
+
+\begin{frame}{}
+\begin{figure}
+\includegraphics[scale=0.5]{plots/imr_mining_vs_downstream.png}
+\end{figure} 
+\end{frame}
+
+\begin{frame}{}
+\input{reg/county_imr_dwnstrm}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/county_imr_dwnstrmcolocate}
+\end{frame}
+
+\section{Robustness checks}
+
+\section{Downstream and colocated}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrmcolocate_minevio_allcat}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrmcolocate_nonminevio_allcat}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrmcolocate_minevio_mr}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrmcolocate_nonminevio_mr}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrmcolocate_minevio_mcl}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/2sls_dwnstrmcolocate_nonminevio_mcl}
+\end{frame}
+
+\section{Old tests and old robustness tests}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_mine_vio_1985to2005colocate_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_mine_vio_1985to2005colocate}
+\end{frame}
+
+\section{Number of Mines Colocated and Downstream and Mine Violation}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_mine_vio_1985to2005colocateddownstream_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_mine_vio_1985to2005_colocateddownstream}
+\end{frame}
+
+\section{Number of Mines Upstream and Mine Violation}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_mine_vio_1985to2005dwnstrm_coalunified}
+\end{frame}
+
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_mine_vio_1985to2005dwnstrm}
+\end{frame}
+
+\section{end}
+
+\section{All HUCs and Mine Violation}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_mine_vio_1985to2005allhucs_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_mine_vio_1990to2000allhucs_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_mine_vio_1985to2005allhucs}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_mine_vio_1990to2000allhucs}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_mine_vio_binary_1985to2005allhucs}
+\end{frame}
+
+\section{Number of Mines Colocated and Non Mine Violation}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1985to2005colocate_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1990to2000colocate_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1985to2005colocate}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1990to2000colocate}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_binary_1985to2005colocate}
+
+\end{frame}
+\section{Number of Mines Colocated and Downstream and Non Mine Violation}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1985to2005_colocateddownstream}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_binary_1985to2005_colocateddownstream}
+\end{frame}
+
+\section{Number of Mines Upstream and Non Mine Violation}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1985to2005dwnstrm_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1990to2000dwnstrm_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1985to2005dwnstrm}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1990to2000dwnstrm}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_binary_1985to2005dwnstrm}
+\end{frame}
+
+\section{All HUCs and Non Mine Violation}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1985to2005allhucs_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1990to2000allhucs_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1985to2005allhucs}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_1990to2000allhucs}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_non_mine_vio_binary_1985to2005allhucs}
+\end{frame}
+
+\section{Number of Colocated Mines and Count of Violation}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1985to2005colocate_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1990to2000colocate_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1985to2005colocate}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1990to2000colocate}
+\end{frame}
+
+\section{Number of Upstream Mines and Count of Violation}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1985to2005dwnstrm_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1990to2000dwnstrm_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1985to2005dwnstrm}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1990to2000dwnstrm}
+\end{frame}
+
+\section{Number of All Mines and Count of Violation}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1985to2005allhucs_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1990to2000allhucs_coalunified}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1985to2005allhucs}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/olsrf2sls_nummine_count_vio_1990to2000allhucs}
+\end{frame}
+
+
+\end{document}

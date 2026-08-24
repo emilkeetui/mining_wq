@@ -1,0 +1,55 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:mr_healthbased_decomp} MR Violation Decomposition: Regular vs. Confirmation Monitoring}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Regular MR (days)} & \multicolumn{3}{c}{Confirmation MR (days)}\\
+         
+          & \multicolumn{3}{c}{Regular monitoring} & \multicolumn{3}{c}{Confirmation monitoring} \\ 
+                                                     & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS  \\   
+         
+                                                     & (1)           & (2)           & (3)           & (4)           & (5)           & (6)\\  
+         
+         \midrule 
+         N coal mines (upstream)                     & 9.923         &               & 51.87         & -0.4428       &               & -3.324\\   
+                                                     & (6.254)       &               & (41.25)       & (0.5555)      &               & (4.554)\\   
+         post95 $\times$ sulfur                      &               & -4.263        &               &               & 0.2732        &   \\   
+                                                     &               & (3.402)       &               &               & (0.3699)      &   \\   
+         
+          \\
+         
+         Observations                                & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225\\  
+         R$^2$                                       & 0.22660       & 0.22624       & 0.22624       & 0.12178       & 0.12184       & 0.12184\\  
+         Within R$^2$                                & 0.00133       & 0.00086       & 0.00086       & 0.00023       & 0.00030       & 0.00030\\  
+         F-test (1st stage), N coal mines (upstream) &               &               & 149.79        &               &               & 149.79\\  
+         
+          \\
+         
+         PWSID fixed effects                         & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Effect of upstream coal mine count on regular vs. confirmation MR violation days. Columns show OLS, reduced form, and 2SLS estimates. Instrument: \textit{post}95$\,\times\,$\textit{sulfur\textunderscore unified}. \textbf{Regular monitoring} (VIOLATION\_CODE `03'): failure to conduct required routine contaminant-specific testing. \textbf{Confirmation monitoring} (VIOLATION\_CODE `04'): failure to conduct check/repeat/confirmation testing triggered by a prior positive result. Strategic substitution predicts the effect concentrated in regular monitoring (CWSs avoiding routine tests when contamination likely); compliance-investment story predicts the effect in procedural/confirmation violations. Note: IS\_HEALTH\_BASED\_IND = `N' for 100\% of mining MR violations in SDWIS; VIOLATION\_CODE is the fallback decomposition. PWSID-years with any regular MR $> 0$: 667; with any confirmation MR $> 0$: 9. All regressions include PWSID, state, and year fixed effects; SEs clustered at PWSID level. Sample: at most two-step downstream CWSs, 1985--2005.}
+   
+\end{table}
+
+

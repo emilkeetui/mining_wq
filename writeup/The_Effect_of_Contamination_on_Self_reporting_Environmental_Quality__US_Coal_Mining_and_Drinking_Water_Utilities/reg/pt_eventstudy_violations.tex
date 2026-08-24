@@ -1,0 +1,71 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:pt_eventstudy_violations} Continuous-dose event study on SDWA violations: pre-trends for CWSs with upstream mining onset 1986--1997}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccc}
+         \toprule
+         
+                                                      & Inorg. chem. (any) & Inorg. chem. (MCL) & Arsenic (any) & Nitrate (any)\\  
+         
+                                                      & Inorg. chem. (any) & Inorg. chem. (MCL) & Arsenic (any) & Nitrate (any) \\   
+         
+                                                      & (1)                & (2)                & (3)           & (4)\\  
+         
+         \midrule 
+         Dose (10M ST/yr) $\times$ Event time $=$ -6  & 0.3100             & -0.0088            & 0.0482        & 0.8661\\   
+                                                      & (0.8132)           & (0.0079)           & (0.7722)      & (0.9544)\\   
+         Dose (10M ST/yr) $\times$ Event time $=$ -5  & -0.0120            & -0.0091            & -0.2876       & 0.4649\\   
+                                                      & (0.3555)           & (0.0081)           & (0.2591)      & (0.5618)\\   
+         Dose (10M ST/yr) $\times$ Event time $=$ -4  & 0.6210$^{*}$       & -0.0092            & 0.2457        & 0.9851$^{*}$\\   
+                                                      & (0.3730)           & (0.0083)           & (0.2309)      & (0.5764)\\   
+         Dose (10M ST/yr) $\times$ Event time $=$ -3  & 0.1860             & -0.0073            & 0.2266        & -0.2951\\   
+                                                      & (0.2469)           & (0.0079)           & (0.2375)      & (0.8149)\\   
+         Dose (10M ST/yr) $\times$ Event time $=$ -2  & -0.1968            & -0.0069            & -0.1109       & 1.661\\   
+                                                      & (0.4146)           & (0.0080)           & (0.4143)      & (1.179)\\   
+         Dose (10M ST/yr) $\times$ Event time $=$ 0   & 0.2071             & 0.0040             & -0.1049       & 0.3928\\   
+                                                      & (0.4786)           & (0.0041)           & (0.4062)      & (0.5989)\\   
+         Dose (10M ST/yr) $\times$ Event time $=$ 1   & 3.969              & 0.0039             & 3.680         & 0.7285\\   
+                                                      & (3.498)            & (0.0040)           & (3.474)       & (0.5751)\\   
+         Dose (10M ST/yr) $\times$ Event time $=$ 2   & 3.483              & -0.0065            & 3.225         & 0.7514\\   
+                                                      & (3.528)            & (0.0066)           & (3.504)       & (1.100)\\   
+         Dose (10M ST/yr) $\times$ Event time $=$ 3   & 0.4795$^{*}$       & -0.0105            & 0.2706        & -0.0776\\   
+                                                      & (0.2685)           & (0.0107)           & (0.2325)      & (0.6537)\\   
+         Dose (10M ST/yr) $\times$ Event time $=$ 4   & 0.0826             & -0.0105            & -0.1402       & 0.4606\\   
+                                                      & (0.4306)           & (0.0107)           & (0.3755)      & (0.6010)\\   
+         Dose (10M ST/yr) $\times$ Event time $=$ 5   & 0.3060             & -0.0275            & 0.0801        & 0.6243\\   
+                                                      & (0.3732)           & (0.0204)           & (0.2686)      & (0.6159)\\   
+         Dose (10M ST/yr) $\times$ Event time $=$ 6   & 0.3706             & -0.0153            & 0.2174        & 0.4928\\   
+                                                      & (0.5968)           & (0.0149)           & (0.5750)      & (0.7042)\\   
+         
+          \\
+         
+         Observations                                 & 2,818              & 2,818              & 2,818         & 2,818\\  
+         R$^2$                                        & 0.25267            & 0.21829            & 0.22967       & 0.20073\\  
+         
+          \\
+         
+         CWS fixed effects                            & $\checkmark$       & $\checkmark$       & $\checkmark$  & $\checkmark$\\   
+         huc02-year fixed effects                     & $\checkmark$       & $\checkmark$       & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Continuous-dose event study on SDWA violations, 1985--2005. Sample: downstream CWSs whose upstream HUC12 begins coal production between 1986 and 1997 (so that pre-treatment periods are observed), plus never-treated downstream CWSs with no upstream production in any year. Each event-time indicator is interacted with a time-invariant dose, defined as mean annual upstream coal production over the five years following onset (10 million short tons). Dose is fixed at onset and therefore does not trend mechanically with calendar time. Event time $k = t - G$, where $G$ is the first year of upstream production; $k = -1$ is the omitted category and endpoints are binned at $\pm 6$. Fixed effects: PWSID and HUC02$\times$year. Standard errors clustered at PWSID level. Coefficients on $k < -1$ are the pre-trend estimates: jointly insignificant pre-treatment coefficients support parallel trends. Violation outcomes are a censored transformation of concentration (a violation is recorded only when a measured concentration crosses the MCL) and are jointly determined with monitoring behavior; this test is therefore a necessary but not sufficient condition for parallel trends in the concentration regressions. Columns 1, 3 and 4 use any-violation outcomes; column 2 is restricted to MCL violations, which are rare. Of 2,822 CWS-year observations, positive values are recorded in 111 (42 CWSs) for any inorganic chemical violation, 9 (3 CWSs) for inorganic chemical MCL violations, 85 (36 CWSs) for any arsenic violation, and 130 (56 CWSs) for any nitrate violation. The pre-trend test in column 2 is correspondingly low-powered and a null there is weak evidence. Arsenic and nitrate are sub-contaminants of the inorganic chemicals category, so columns 3 and 4 are nested within column 1 rather than independent of it. Over 1985--2005, 1,207 of the 1,215 CWS-years with a positive arsenic violation share also record a positive inorganic chemicals violation share, and the two measures take identical values in 1,204 of them; the corresponding figure for nitrate is 1,040 of 1,732 co-occurring and 952 identical. The four columns should therefore be read as overlapping views of the same underlying violations, not as four independent tests.}
+   
+\end{table}
+
+

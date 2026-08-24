@@ -1,0 +1,35 @@
+
+\begin{table}[htbp]
+   \caption{\label{olsrf2sls_nummine_mine_vio_1990to2000colocate} Effect of number of mines on PWS violations 1990-2000 (only colocated PWS's)}
+   \bigskip
+   \centering
+   \begin{adjustbox}{width = \textwidth, center}
+      \begin{tabular}{lcccccccccccc}
+         \toprule
+          & \multicolumn{3}{c}{nitrates\_share} & \multicolumn{3}{c}{arsenic\_share} & \multicolumn{3}{c}{inorganic\_chemicals\_share} & \multicolumn{3}{c}{radionuclides\_share}\\
+                                                            & (1)             & (2)                   & (3)                   & (4)             & (5)                   & (6)                   & (7)             & (8)                   & (9)                   & (10)          & (11)                  & (12)\\  
+         \midrule 
+         num\_coal\_mines\_colocated                        & 0.0009          &                       & 0.0245                & 0.0010          &                       & -0.0161               & -0.0058         &                       & 0.0228                & 0.0044        &                       & -0.3098\\   
+                                                            & (0.0027)        &                       & (0.0680)              & (0.0029)        &                       & (0.0598)              & (0.0040)        &                       & (0.0594)              & (0.0049)      &                       & (0.2282)\\   
+         num\_coal\_mines\_upstream                         & -0.0093$^{***}$ &                       & 0.0263                & -0.0153$^{***}$ &                       & 0.0684                & -0.0191$^{***}$ &                       & 0.0147                & 0.0080$^{*}$  &                       & 0.5132\\   
+                                                            & (0.0035)        &                       & (0.1604)              & (0.0057)        &                       & (0.1342)              & (0.0070)        &                       & (0.1473)              & (0.0044)      &                       & (0.4562)\\   
+         post95 $\times$ sulfur\_colocated                  &                 & 0.0013                &                       &                 & 0.0029                &                       &                 & 0.0008                &                       &               & 0.0204$^{*}$          &   \\   
+                                                            &                 & (0.0065)              &                       &                 & (0.0053)              &                       &                 & (0.0061)              &                       &               & (0.0111)              &   \\   
+         post95 $\times$ sulfur\_upstream                   &                 & -0.0031               &                       &                 & -0.0019               &                       &                 & -0.0024               &                       &               & $4.08\times 10^{-5}$  &   \\   
+                                                            &                 & (0.0062)              &                       &                 & (0.0049)              &                       &                 & (0.0057)              &                       &               & (0.0115)              &   \\   
+          \\
+         Observations                                       & 6,736           & 6,736                 & 6,736                 & 6,736           & 6,736                 & 6,736                 & 6,736           & 6,736                 & 6,736                 & 6,736         & 6,736                 & 6,736\\  
+         R$^2$                                              & 0.24266         & 0.24168               & 0.24168               & 0.27684         & 0.27301               & 0.27301               & 0.32189         & 0.31638               & 0.31638               & 0.44294       & 0.44420               & 0.44420\\  
+         Within R$^2$                                       & 0.00136         & $7.16\times 10^{-5}$  & $7.16\times 10^{-5}$  & 0.00534         & $6.58\times 10^{-5}$  & $6.58\times 10^{-5}$  & 0.00812         & $4.71\times 10^{-5}$  & $4.71\times 10^{-5}$  & 0.00185       & 0.00411               & 0.00411\\  
+         F-test (1st stage), num\_coal\_mines\_colocated    &                 &                       & 7.0442                &                 &                       & 7.0442                &                 &                       & 7.0442                &               &                       & 7.0442\\  
+         F-test (1st stage), num\_coal\_mines\_upstream     &                 &                       & 2.8890                &                 &                       & 2.8890                &                 &                       & 2.8890                &               &                       & 2.8890\\  
+          \\
+         PWSID fixed effects                                & $\checkmark$    & $\checkmark$          & $\checkmark$          & $\checkmark$    & $\checkmark$          & $\checkmark$          & $\checkmark$    & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         STATE\_CODE fixed effects                          & $\checkmark$    & $\checkmark$          & $\checkmark$          & $\checkmark$    & $\checkmark$          & $\checkmark$          & $\checkmark$    & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         year fixed effects                                 & $\checkmark$    & $\checkmark$          & $\checkmark$          & $\checkmark$    & $\checkmark$          & $\checkmark$          & $\checkmark$    & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$          & $\checkmark$\\   
+         \bottomrule
+      \end{tabular}
+   \end{adjustbox}
+\end{table}
+
+

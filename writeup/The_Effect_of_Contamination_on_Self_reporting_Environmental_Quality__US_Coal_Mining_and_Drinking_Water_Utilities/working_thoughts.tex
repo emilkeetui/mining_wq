@@ -1,0 +1,322 @@
+\documentclass{article}
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=bwl-FU
+]{biblatex}
+\addbibresource{citation.bib}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{tabularray}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{codehigh}
+\usepackage{breqn}
+\usepackage[normalem]{ulem}
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{siunitx}
+\newcommand{\tinytableTabularrayUnderline}[1]{\underline{#1}}
+\newcommand{\tinytableTabularrayStrikeout}[1]{\sout{#1}}
+\NewTableCommand{\tinytableDefineColor}[3]{\definecolor{#1}{#2}{#3}}
+% Beamer presentation requires \usepackage{colortbl} instead of \usepackage[table,xcdraw]{xcolor}
+
+\title{Mining and Water Quality}
+\author{Emil Kee-Tui}
+\date{July 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Water pollution levels in drinking water and non-drinking water have fallen in the US since the passage of the Clean Water Act of 1972 and the Safe Drinking Water Act of 1974 (\cite{keiser2019us}; \cite{keiser2023us}). Despite the overall progress, millions of people in the US struggle to access safe drinking water either because they are served by drinking water systems that violate health standards or because they face water affordability barriers (\cite{allaire2018national}; \cite{cardoso2022water}). Community water system's (CWS) are the main source of drinking water for 85\% of US households.
+
+The degree of local, state, and federal involvement varies from complete local control to authorities sharing governance for infrastructure financed through the Water Infrastructure Finance and Innovation Act (WIFIA) and the Clean Water State Revolving Fund (CWSRF), to total federal control, such as for a federally owned CWS (Mullin and Daley (2018)). 
+
+
+CWS's can take pre-emptive actions to protect the water at the source before intake into the system. New York City has protected the reservoirs in the adirondaks that it sources its drinking water from by purchasing the land surrounding the reserviors and heavily restricting the activities that can take place on the land. CWS's treat the water after intake to bring it to potable standards that meet the SDWA requirements. Removing contaminants requires infrastructure and water treatment inputs. Despite the efforts CWSs make to treat their water, pollution in source water can result in CWS water quality falling below legal standards resulting in a violation. Heavily polluted source water and fluctuations in the quality of the water make treatment difficult and violations at CWSs more likely. 
+
+\section{Low and High sulfur coal}
+low sulfur coal contains less than 1\% weight sulfur, medium sulfur coal contains 1-3 \% weight sulfur, and high sulfur coal contains greater than 3 \% weight sulfur \cite{schweinfurth2009introduction}. I use 2\% as the boundary between high and low sulfur because it is in the middle of medium, and below 2\%, we do not have enough observations to measure radionuclide violations.
+
+
+\section{Endogeneity of violations and enforcement}
+
+1. Enforcement action in other contexts has shown to depend on other characteristics of the polluter in addition to the pollution. To look at just the enforcement action ignores the potential selection bias (\cite{hanna2010impact} finds selection bias in clean air act). We can measure impact of enforcement action or violation after convincing causal identification of the violation.
+
+2. I am interested in estimating the regulator's enforcement response to violations. But enforcement will be autocorrelated with previous enforcement. A system's violations and the regulators enforcement action will both be affected by past enforcement and violations and the enforcement and violation of other systems. 
+
+\section{Institutional Background and Data}
+\subsection{Community Water Systems (CWS)}
+
+Community water systems provides water to the same population year-round. We measure the impact of coal production on drinking water quality by comparing the water quality from CWS's that source their water from watersheds with coal mines to CWS's that source their water from watersheds upstream of coal mines. This approach treats systems sourcing water upstream as counterfactuals to systems co-located with coal production. This follows the standard approach in the literature measuring the impact of policies or pollutants on water quality (\cite{keiser}; \cite{keiser};\cite{china cancer upstream}). The EPA collects data on the location of CWS water supply intakes. In order to protect the security of the CWS we are only able to observe the HUC12 which all water intakes belonging to a CWS are located. A HUC (hyrdrological unit code) is a 2-12 digit code assigned by the United States Geological Survey to each geographical area that drains into the same stream segment. Smaller geographic areas are represented by more HUC digits, for example the lower 48 US states are divided into 18 HUC2's and over 87000 HUC12's. For example a river will have tributaries such as creeks - a HUC12 is the area that drains into the creek (see image \ref{img:huc12}). HU watershed boundary data is from the National Hydrography Dataset Plus data. HUC12's are the smallest geographical HU's available for the entire US. HUC12 watersheds are small enough geographic areas that coal mining activities which impact the hydrology surrounding the mine will impact the HUC12 water quality; the water quality of a CWS which sources water from that HUC12 may be affected too. 
+
+It is possible for CWS's to obtain water from multiple HUC12's. We consider a CWS to be co-located with a coal mine if any of its primary water intakes are located in a HUC12 where coal mining took place. We consider a CWS to be located upstream of a coal mine if its primary water intakes are located in a HUC12 that is upstream of a HUC12 where coal mining takes places and none of its water intakes are co-located with a coal mine.
+
+We use water quality violation data from the EPA Safe Drinking Water Information System (SDWIS) accessed through the Enforcement and Compliance History Online (ECHO) system. The quality of drinking water supplied by CWSs in the US is regulated at the state and federal level through the Safe Drinking Water Act (SDWA). CWSs are required to follow testing schedules for a list of regulated contaminants under the SDWA and submit the test results to the EPA or state EPA. Any CWS violations are stored in the SDWIS database. Violations can be issued when a regulated pollutant exceeds a certain quantity in the CWS's water supply. These violations can occur because a bacteria or non-organic substance is present in the water, in which case the violation is a maximum contaminant level violation. Treatment chemicals are added to the water to remove bacteria and organic matter, but in excessive amounts these chemicals produce harmful by-products which cause treatment technique violations if they exceed contaminant levels. A CWS receives a monitoring and reporting violation for any contaminant whose test it fails to report. In 2025, there were over 90 regulated contaminants.
+
+Violations can be grouped into rule groups (lead and copper rule, Surface Water Treatment Rule, Ground Water rule, etc.), and rule families (organic chemical, bacterial, inorganic chemical, etc.). We create a binary violation variable for each type of violation category and rule code combination, as well as for each type of violation category and rule family combination. The SDWIS data records the start and end date of the violation. The violation variable is one for a CWS in a given year if a CWS had an active violation of that type in that year. 
+
+We form an annual panel of CWS characteristics and violations from 1983 until 2005. CWS characteristics and violations come from . ECHO incorporates CWS data from the EPA's Safe Drinking Water Information System (SDWIS) database. SDWIS consists of separate files covering CWS violations and enforcement, CWS characteristics, site visits, facilities, and several other files. The characteristic file contains the type of PWS, the characteristics of the community served, the primary water source, if and when a system was deactivated.
+
+\input{sum/balance_sum_pws_key_exante}
+
+\input{sum/balance_sum_miningviol_exante}
+
+\input{sum/balance_sum_nonminingviol_exante}
+
+\subsection{The Acid Rain Program's Impact on Coal Production}
+
+The Acid Rain Program (ARP) was signed into law on November 15, 1990, under the Acid Deposition Control (Title IV) of the Clean Air Act amendments. The purpose of Title IV was to reduce emissions of sulfur dioxide (SO2) and nitrogen oxides (NOx), the primary precursors of acid rain, from fossil fuel burning power plants.\footnote{Annual SO2 and NOx emissions goals were set to 10 million and 2 million fewer tons, respectively, from their 1980 emission levels \cite{lattanzio2022clean}}. 
+
+The ARP used a cap and trade system to meet SO2 goals. In two phases the SO2 emissions from facilities built before November 15, 1990 were capped at a fraction of each facility's individual baseline SO2 emissions in 1985. In Phase I, the EPA and states with permitting capacity issued emission permits and allowances to 110 high polluting electricity generating facilities which used fossil fuels - mostly coal. The electric power industry accounted for 90\% of coal demand in 2000 (\cite{freme2000us}). The Phase I targetted facilities were required to achieve compliance with SO2 emission reductions by 1995. Compliance began even earlier because Phase I affected plants were required to apply to the EPA or state permitters for binding permits and compliance plans by 1993.\footnote{Title IV required the phase I facilities to submit an application for an emissions permit with a compliance plan within 27 months of the passage of the ARP (CAA Title IV. sec 408. c.1).} Facilities built after November 15, 1990 were not issued any SO2 allowances and any emissions they produced had to be purchased from facilities with allowances through an auction. Phase II capped the SO2 emissions from facilities with power generation capacity greater than 75 megawatts. The deadline for compliance with phase II was January 1, 2000. The ARP achieved 100\% compliance (\cite{lattanzio2022clean}). 
+
+As opposed to SO2 emissions, the ARP did not limit total NOx emissions from sources; instead it limited the NOx emissions per mmBTU of fossil fuels burned.
+NOx limits affected coal fired facilities at the same time they came under SO2 emission limits. For all other in two phases. Phase I NOx rules were promulgated in 1995. Phase II NOx regulation was promulagted in 2000.
+
+Regulated facilities could meet the requirements by changing their fuel to ones that emit fewer SO2 and NOx, or installing abatement technology. The ARP incentivised coal fired power plants to switch to achieve emissions reduction from switching the type or quality of fossil fuel consumed - in practice this could be achieved through coal with less sulfur. It also subsidized a variety of coal firing technologies which reduced the emissions of SO2 and NOx. Title IV required electricity producers who sought to meet the emissions requirements by shutting down power generating units to make up electricity production that it lost 408 c.1.B. Title IV allowed regulated  facilities to exceed emission requirements during emergencies and guaranteeing facilities would not be shut-down even if they fail to obtain an emissions permit or compliance plan.
+
+The ARP increased the demand for low sulfur coal and reduced the demand for high sulfur coal (\cite{epaarpcoalemp}; \cite{stratford2015coalprod}). We summarize the trends in coal output at the HUC12 level using HUC12. We match coal mine locations from the Mine Safety and Health Administration (MSHA) to HUC12 boundaries from USGS; we match coal mine production data to each coal mine using data from the Energy Information Administration; finally we measure the sulfur content of the coal bed within a HUC12 using coal bed characterisitics from the Coal Quality (COALQUAL) database from USGS. The COALQUAL database consists of over 7000 coal bed samples which we match to HUC12 watershed boundary maps from the USGS National Hydrography Dataset Plus data. The HUC12 coal bed characterisitics are the average characterisitics of all samples within 40 km's of the HUC12 boundary. We aggregate individual coal mine data to the HUC12 level. 
+
+Figure \ref{hist:sulfurhuc12} plots a histogram of the sulfur percentage of the coal bed within the HUC12's where a PWS water intake and coal production are co-located. The sulfur content of HUC12 coal beds ranges from zero to 4.5\%, with most of the HUC12 watersheds below 1.5\%. Following the USGS literature low sulfur coal is 1 percent or less sulfur by weight, medium sulfur coal is 1 to 3 percent sulfur by weight, and high suflur coal is greater than 3 percent sulfur by weight (\cite{schweinfurth2009introduction}). We consider a HUC12 watershed and all the mines within that watershed to have high sulfur coal if sulfur is greater than or equal to 2\%. Slightly more than half of HUC12's are low sulfur coal beds.
+
+The average and total short tons of coal produced from high sulfur HUC12's fell from 1983 to 2005. The top panel of figure \ref{plot:aggprod_huc12_1983_2005} plots the average short tons of coal produced within a HUC12 and the middle panel plots the total short tons of coal produced from HUC12's with high and low sulfur coal beds. The bottom panel of figure \ref{plot:aggprod_huc12_1983_2005} plots the average number of coal mines within each HUC12 by coal bed sulfur percent. Low sulfur coal increased after 1993 while high sulfur coal stayed relatively flat. The majority of US coal production was produced at low sulfur coal HUC12's after 1991. The mean number of coal mines within high sulfur HUC12's fell from one to 0.5, this implies that high sulfur HUC12's with active mines in 1983 lost all mines during this period. By contrast the mean and total coal production from low sulfur coal beds increased during the same time period. Although the average number of mines in low sulfur coal beds also fell during this period from a high of 2 to 1.5 in 2005, the decline flattened from 1993 and slightly increased.
+
+The coal bed sulfur content of HUC12's varies spatially across the country, and as a result, coal production increased in some HUC12's and decreased in others. Map \ref{map:all_huc12_prod_change_1985_2005} plots the boundaries of HUC12's with active coal mines between 1983 and 2005, colored blue if the total short tons of coal produced in that HUC12 increased between 1983 and 2005 and red if the total short tons of coal produced in that HUC12 decreased. Coal increased and decreased in both the western and eastern coal fields. Coal production mostly decreased in Pennsylvania and mostly increased in West Virginia. Other state's coal production saw both increases and decreases.
+
+The change in coal production is strongly associated with whether the HUC12 has a low or high sulfur coal bed. Table \ref{tblr:coal_did_sulf} presents the result of equation \ref{coalsummreg} which regresses coal production outcomes on a panel of HUC12 level, h, coal production. The main variable of interest is $\beta_3HighSulfur_h*Post93_t$ the interaction term between a binary variable equal to 1 if the HUC12 coal bed sulfur is high sulfur, $HighSulfur_h$, and a binary variable that is 1 if the time period is after 1993, $Post93_t$, when most coal burning electricity plants submitted compliance plans and applied for emission permits. Column 1 shows that over the sample period 1983 to 2005, coal production was 260,000 tons lower in high sulfur HUC12's after 1993 compared to low sulfur coal production before 1993.
+
+\begin{equation}\label{coalsummreg}
+CoalOutcome_{ht}=\beta_0+\beta_1HighSulfur_h+\beta_2Post93_t + \beta_3HighSulfur_h*Post93_t+\epsilon_{ht}
+\end{equation}
+
+\input{reg/coal_did_sulf}
+
+The spatial variations in coal production allows us to compare the drinking water quality violations at PWSs where coal production increased to places where coal production fell. Coal mining affects drinking water quality at PWSs directly through its impact on surface water and ground water which PWSs extract to use in their drinking water supply. The location of PWS water sources is avaialble from the EPA at the HUC12 watershed level.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{plots/all_huc12_prod_change_1985_2005.png}
+        \caption{}
+\label{map:all_huc12_prod_change_1985_2005}
+\end{figure}
+
+\begin{figure}
+ \centering
+\includegraphics[scale=0.67]{plots/coal_summary_plot.png}
+\label{plot:aggprod_huc12_1983_2005}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{plots/sulfur_histogram.png}
+\label{hist:sulfurhuc12}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{img/HUC-12 usgs ngp user engagement office.jpg}
+\label{img:huc12}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{plots/all_huc12_prod_change_1985_2005.png}
+        \caption{}
+\label{map:all_huc12_prod_change_1985_2005}
+\end{figure}
+
+\begin{frame}{Location of coal production: total production}
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.2]{plots/proportionatecircleprod_huc12_1990_2005.png}
+\label{map:proportionatecircleprod_huc12_1990_2005}
+\end{figure}
+\end{frame}
+
+\subsection{The Impact of Coal Mining on Water Quality}
+
+Coal mining pollutes water by exposing rocks containingn produces non-organic compound pollutants. 
+
+Dissolved pollutants at a mine site are primarily metals and can include lead, copper, silver, manganese, cadmium, iron, arsenic, and zinc. It can also be sulfates, nitrates, and radionuclides. They can be in the ground water and can seep into the surface water. It depends on the minerals in the rock at the mine. \cite{ceto2000abandoned}
+
+\cite{duhigg2009clean} water (slurry) from coal washing to remove impurities are pumped into the ground or abandoned coal mines. Contain arsenic, lead, chromium, beryllium or nickel. ARP increases incentives for washing and closing mines, lowering the cost of disposing of the slurry.
+
+Acid mine drainage.
+"One of the problems that accompany the mining and use of coal is acid mine drainage, which results when coal beds and surrounding strata containing medium to high amounts of sulfur, in the form of compounds known as sulfides, are disrupted by mining, thereby exposing the sulfides to air and water."\cite{schweinfurth2009introduction}
+
+"In March 1997, the U.S. Department of Interior, Office of Surface
+Mining Control and Reclamation (OSM) issued policy guidance to state
+programs on the correction, prevention and control of acid/toxic mine
+drainage. Known as the AMD Policy of 1997, it states “In no case should
+a permit be approved if the determination of probable hydrologic
+consequences or other reliable hydrologic analysis predicts the formation
+of a post-mining pollutional discharge that would require continuing
+long-term treatment without a defined endpoint.” The policy
+encouraged the development of AMD prevention and control methods.
+Some of these control methods are best suited for abandoned mines,
+while others are only practical on active operations. Other methods can
+be used in either setting."\cite{skousen2019acid}
+
+"Acid mine drainage (AMD) forms when sulfide minerals deep in the
+earth are exposed during mining, highway construction, and other
+large-scale excavations. Upon exposure to water and oxygen, most
+sulfide minerals oxidize to form sulfuric acid, metal ions and sulfate,
+which, if untreated, enter surface or groundwater (\cite{akcil2006acid}). The pH of AMD may range from 2 to 8. Group II and the transition
+metals, particularly iron (Fe) and aluminum (Al), dominate the
+dissolved cations in AMD while sulfate and bicarbonate are the most
+common anions (\cite{skousen1998handbook})."\cite{skousen2019acid}
+
+Point source coal mining effluent guidelines monitor mines and coal preparation plants for iron, manganese, TSS, and pH.
+
+
+
+Less likely to have bacterial pollution from mining ie total coliform rule violation.
+
+110- Total Coliform Rule (bacterial)
+121- Surface Water Treatment Rule (viruses and microbes)
+122- Long Term 1 Enhanced Surface Water Treatment Rule (microbial)
+123- Long Term 2 Enhanced Surface Water Treatment Rule (micrbial to prevent DBR)
+130- Filter Backwash Rule (microbial)
+140- Ground Water Rule (microbial)
+210- Stage 1 Disinfectants and Disinfection Byproducts Rule (kills bacteria)
+220- Stage 2 Disinfectants and Disinfection Byproducts Rule (kills bacteria)
+230- Total Trihalomethanes (kills bacteria)
+310- Volatile Organic Chemicals (fuels and disinfectants)
+331- Nitrates (can come from coal mining)
+332- Arsenic (can come from coal mining)
+333- Inorganic Chemicals (can come from coal mining)
+320- Synthetic Organic Chemicals (herbicide, fungicide, insecticide, and non-coal mining industrial processes)
+340- Radionuclides (can come from coal mining)
+350- Lead and Copper Rule (can come from coal mining from corrosive water leaching lead and copper plumbing)
+410- Public Notice Rule (anytime you get a drinking water violation)
+420- Consumer Confidence Rule (inform customers about risks to health)
+430- Miscellaneous
+500- Not Regulated
+111- Revised Total Coliform Rule (bacterial)
+
+\section{Identification Strategy}
+
+\subsection{Hydrology Network}
+
+We use the National Hydrography Dataset Plus data on HUC12 polygons to map the boundaries of HUC12 watersheds. The upstream and downstream relationship between each HUC12 watershed comes from the USGS Watershed Boundary Dataset on HUC12 watershed connectivity.
+
+\subsection{Coal Mining and Coal Bed}
+
+We have both individual coal mine and HUC12 coal production data. Individual coal mine production data from 1983 until 2024 are sourced from the Energy Information Administration (EIA). Coal mine latitude and longitude data come from the Mine Safety and Health Administration (MSHA). Mine location and production data are matched using each mine's unique MSHA ID, which is found in both datasets. We spatially match individual coal mines to HUC12 shapefiles from the USGS NHDplus hydrography network. HUC12 coal production is an aggregate measure of either the mean or total short tons of coal produced at mines within a HUC12, along with the number of active coal mines within a HUC12.
+
+We measure the sulfur characterisitics of a coal bed within a HUC12 watershed. The sulfur characteristics of coal beds in HUC12 come from the USGS COALQUAL database. The database records the sample results of a nationwide survey of coal bed characteristics conducted by the USGS. Each observation in COALQUAL contains sample level results of chemical analyzes conducted on the sample, including sulfur percentage, sampling depth, and the geographic coordinates of the sample with latitude and longitude. The HUC12 watershed coal bed sulfur percentage is an average of the coal sulfur percentage of all COALQUAL samples collected within at most 50 kilometers from the boundary of the HUC12. Every mine located in a particular HUC12 watershed is assumed to extract coal with the sulfur percent of the HUC12 watershed coal bed sulfur percent. Figure \ref{} shows the histogram of HUC12 watershed coal bed characterisitics. 
+
+Any HUC12 watershed within 50 km of a sulfur sample is assigned a coal bed sulfur level. Even with mining and the direct upstream watersheds are all assigned sulfur. This means that even watersheds upstream but without coal mining have a sulfur percent. 
+
+\subsection{Community Water System (CWS)}
+
+We form an annual panel of all CWSs that were active in a year from 1983 until 2005. CWS characteristics and active violations in each year come from the federal EPA Enforcement and Compliance History Online (ECHO) system. ECHO incorporates public water system data from the EPA's Safe Drinking Water Information System (SDWIS) database. It consists of separate files covering CWS violations and enforcement, CWS characteristics, site visits, facilities, and several other files. The characteristic file contains the type of PWS, the characteristics of the community served, the primary water source, and other variables. The file contains the date of the systems deactivation; a system appears in the panel every year before it is deactivated. We present these in tables.
+
+We obtain data for yearly mine level coal production in short tones from the Energy Information Administration. This data The production data 
+We obtain coal mine output in short ton
+Figure \ref{map:cws_intake_hucs_updwn_stream_mine} is a map of the HUC12's which contain at least one mine in the MSHA mine characteristic dataset or the EIA individual mine production data. MSHA production data is publicly only available from 2000 while EIA is available from 1983. Both use the data from form Form EIA‐7A.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"/plots/data_cleaning/cws_updownstream_huc12s.png"}
+        \caption{}
+    \label{map:cws_intake_hucs_updwn_stream_mine}
+\end{figure}
+ I look at a natural experiment created by the Acid Rain Program amendments to the Clean Air Act that reduced coal fired power plants’ demand for high sulfur coal, which led to changes in coal production in watersheds with co-located CWS source water intakes and coal mines. 
+
+Using a triple difference estimator, comparing the drinking water quality violations of CWS’s with a source water intake co-located with mining in a watershed with high sulfur coal beds to those with low sulfur coal beds and to a group of control CWS’s with source water intakes upstream of coal mining watersheds, I find that maximum contaminant violations for arsenic and inorganic chemicals increase by 4-6 percent. 
+ 
+
+Figure \ref{map:eia_msha_mine_huc12s} shows the HUC12's where mine production data from EIA was able to be matched to MSHA data of mine coordinates. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{plots/data_cleaning/eia_msha_mine_huc12s.png}
+    \caption{}
+    \label{map:eia_msha_mine_huc12s}
+\end{figure}
+
+The following figures show the changes in coal production at the HUC12 level.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{plots/summary/huc12_prod_change_1983_1995.png}
+    \caption{}
+    \label{map:huc12_prod_change_1983_1995}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{plots/summary/huc12_prod_change_1995_2000.png}
+    \caption{}
+    \label{map:huc12_prod_change_1995_2000}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{plots/summary/huc12_prod_change_1983_2000.png}
+    \caption{}
+    \label{map:huc12_prod_change_1983_2000}
+\end{figure}
+
+Figure \ref{huc12_prod_over_time} shows the annual HUC12 coal production over time.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{plots/summary/huc12_prod_over_time.png}
+    \caption{}
+    \label{huc12_prod_over_time}
+\end{figure}
+
+
+\section{Econometric Specification}
+\subsection{Instrumental approach}
+
+\cite{allaire2018national} model drinking water system health violations as a function of PWS characteristics with a probit regression.
+
+First stage:
+\begin{equation}
+    HUC12coal_{ht}=\alpha_1+\alpha_1MeanCoalSulfur_{h} + \alpha_2 Post95_t + \alpha_3 MeanCoalSulfur_{ht}*Post95_t + \alpha_4X_h +T_t + H_h + \mu_{ht}
+\end{equation}
+
+HUC12 h, average coal sulfur content in HUC12, Post95 is after 1995, HUC12 characteristics $X_h$, time fixed effects T, and HUC12 fixed effects.
+
+Second stage probit:
+
+\begin{equation}
+    Pr(Violation_{pt}=1|X)=\Phi(\beta_0+\beta_1X_p+\widehat{HUC12coal}_{ht} + \rho + T_t + H_h)
+\end{equation}
+
+Where the likelihood of a violation at PWS p at time t is a function of PWS characteristics $X_p$, the estimated first stage of the coal production in the HUC12 pws P draws its water from, pws fixed effects $\rho$, time fixed effects T, and HUC12 fixed effects H.
+
+\subsection{Triple Difference in Differences}
+
+\begin{dmath}
+    Violation_{cpt}=\beta_0 + \beta_1 MineHUC12*Post95 + \beta_2 Post95*HighSulfur + \beta_3MineHUC12*Post95*HUC12sulfur + \beta_4MineHUC12*HighSulfur+ PWS + Year+ \epsilon_{cpt}
+\end{dmath}
+
+Where Violation is a binary variable for if a violation of a drinking water rule c occurred at PWS p at time t, MineHUC12 is a binary which is one if the PWS draws its water from a HUC12 where coal mining takes place - control PWS's are those that draw their water from a HUC12 which is upstream of a HUC12 where mining takes place and is not itself downstream from a HUC12 where mining takes place, Post95 is after 1995, HUC12sulfur is a binary which is one if the HUC12 which the PWS draws it's water from has low sulfur and $X_p$ is PWS characteristics.
+Expect mining in low sulfur coal beds to increase and the number of violations to increase relative to the upstream HUC12's.
+
+DDD is a difference between two difference in differences estimators when treatment is not staggered and parallel trends hold without conditioning on covariates (\cite{baker2025difference}).
+
+$\beta1$ is the effect of ARP on mining HUCs with low sulfur relative to upstream HUCs.
+$\beta_3$ is the effect of ARP on high sulfur mining HUCs relative to low sulfur mining hucs.
+In total the impact of ARP on mining HUC12's after taking into account the high sulfur effect is $\beta_1$ + $\beta_3$ (\cite{olden2022triple}).
+
+\section{DID on HUC12 coal production}
+\input{reg/coal_did_contsulf}
+
+\section{DiDiD MCL}
+\input{reg/mcl_triplediff_contsulf}
+
+\input{reg/mcl_triplediff_binsulf}
+
+\section{Robustness checks}
+
+Can try to use the instrumental DID from \cite{ye2023instrumented}.
+
+\printbibliography
+\end{document}

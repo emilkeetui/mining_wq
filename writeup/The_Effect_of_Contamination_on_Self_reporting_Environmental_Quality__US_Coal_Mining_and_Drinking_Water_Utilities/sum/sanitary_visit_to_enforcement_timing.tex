@@ -1,0 +1,37 @@
+\begin{table}[htbp]
+\caption{\label{tab:visit_to_enf_timing} Sanitary Visit Timing and Enforcement: Before vs. After MR Violation}
+\bigskip
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+\begingroup
+\centering
+\begin{tabular}{lcccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables:                  & enf\_formal\_next6   & enf\_informal\_next6   & enf\_any\_next6   & enf\_formal\_next12   & enf\_informal\_next12   & enf\_any\_next12\\    
+   Outcome: enforcement in next h months & Formal (6mo)         & Informal (6mo)         & Any (6mo)         & Formal (12mo)         & Informal (12mo)         & Any (12mo) \\   
+   Model:                                & (1)                  & (2)                    & (3)               & (4)                   & (5)                     & (6)\\  
+   \midrule
+   \emph{Variables}\\
+   Visit in 12mo before MR               & 0.0165               & 0.0007                 & 0.0347            & 0.0616$^{*}$          & 0.0362                  & 0.0291\\   
+                                         & (0.0389)             & (0.0598)               & (0.0477)          & (0.0372)              & (0.0313)                & (0.0298)\\   
+   Visit in 12mo after MR                & 0.0445               & 0.0060                 & 0.0152            & 0.1285$^{***}$        & -0.0053                 & 0.0147\\   
+                                         & (0.0448)             & (0.0519)               & (0.0425)          & (0.0440)              & (0.0376)                & (0.0306)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   PWSID                                 & Yes                  & Yes                    & Yes               & Yes                   & Yes                     & Yes\\  
+   month\_idx                            & Yes                  & Yes                    & Yes               & Yes                   & Yes                     & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                          & 1,591                & 1,591                  & 1,591             & 1,537                 & 1,537                   & 1,537\\  
+   R$^2$                                 & 0.56171              & 0.45861                & 0.47327           & 0.66414               & 0.48335                 & 0.47874\\  
+   Within R$^2$                          & 0.00278              & $1.86\times 10^{-5}$   & 0.00073           & 0.02410               & 0.00081                 & 0.00084\\  
+   \midrule \midrule
+   \multicolumn{7}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+   \multicolumn{7}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright 
+Sample: MR-violation onsets at strictly downstream CWSs (250 CWSs; N=1711 for 6mo outcomes, N=1604 for 12mo outcomes). Visit\_san\_prev12 = sanitary visit (SNSV/SNSP/SSVF) in the 12 months before the MR violation; visit\_after\_mr = sanitary visit in the 12 months after the MR violation. LPM with PWSID and calendar-month fixed effects; SEs clustered by PWSID. P-values from a Wald test of equality between the two timing coefficients, by outcome: Formal (6mo) = 0.607; Informal (6mo) = 0.948; Any (6mo) = 0.778; Formal (12mo) = 0.159; Informal (12mo) = 0.375; Any (12mo) = 0.730.
+}
+\end{table}

@@ -1,0 +1,50 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{2sls_dwnstrm_minevio_allcat_ivsum} Effect of coal mines on IOC violations (any violation category, CWSs at most one HUC12 down-stream)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccccccccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Nitrates} & \multicolumn{3}{c}{Arsenic} & \multicolumn{3}{c}{Inorganic chemicals} & \multicolumn{3}{c}{Radionuclides}\\
+         
+                                                                  & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+         
+         \midrule 
+         Upstream coal mines (sum)                                & 3.319$^{*}$   &               & 19.85$^{**}$  & 3.501$^{**}$  &               & 14.60$^{*}$   & 3.476$^{**}$  &               & 11.79         & 2.873         &               & -2.390\\   
+                                                                  & (1.810)       &               & (9.491)       & (1.701)       &               & (7.953)       & (1.751)       &               & (8.697)       & (2.295)       &               & (10.82)\\   
+         post95 $\times$ Upstream sulfur \%                       &               & -4.772$^{**}$ &               &               & -3.511$^{*}$  &               &               & -2.834        &               &               & 0.5745        &   \\   
+                                                                  &               & (2.199)       &               &               & (1.937)       &               &               & (2.121)       &               &               & (2.572)       &   \\   
+         
+         F-test (1st stage, clustered), Upstream coal mines (sum) &               &               & 27.52         &               &               & 27.52         &               &               & 27.52         &               &               & 27.52\\  
+         
+          \\
+         
+         Observations                                             & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225\\  
+         
+          \\
+         
+         CWS fixed effects                                        & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                       & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is days out of the year in violation. Instrument is post95 interacted with sum of coal sulfur content across upstream HUC12s (post95 x sulfur\_unified\_sum). All regressions include CWS and year fixed effects. Standard errors clustered at CWS level. Sample period 1985--2005.}
+   
+\end{table}
+
+

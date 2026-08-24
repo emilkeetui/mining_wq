@@ -1,0 +1,43 @@
+
+\begin{table}[htbp]
+   \caption{\label{tab:het_unified} Heterogeneous Effects of Coal Mines on Nitrate Violations}
+   \bigskip
+   \centering
+   \begin{adjustbox}{width = \textwidth, center}
+      %start:tab
+      \begin{tabular}{lc}
+         \toprule
+                                                       & nitrates\_share\_days\\    
+                                                       & (1)\\  
+         \midrule 
+         Coal mines (upstream sum)                     & 44.48\\   
+                                                       & (29.01)\\   
+           × Large system                              & -30.28\\   
+                                                       & (28.20)\\   
+           × Private ownership                         & -21.89\\   
+                                                       & (21.26)\\   
+           × Surface water source                      & 11.52\\   
+                                                       & (14.48)\\   
+         Number of facilities                          & 18.20$^{**}$\\   
+                                                       & (8.960)\\   
+          \\
+         Observations                                  & 6,225\\  
+         R$^2$                                         & 0.15887\\  
+         Within R$^2$                                  & 0.00236\\  
+         F-test (1st stage), Coal mines (upstream sum) & 86.326\\  
+         F-test (1st stage),   × Large system          & 147.92\\  
+         F-test (1st stage),   × Private ownership     & 323.85\\  
+         F-test (1st stage),   × Surface water source  & 164.76\\  
+          \\
+         PWSID fixed effects                           & $\checkmark$\\   
+         STATE\_CODE fixed effects                     & $\checkmark$\\   
+         year fixed effects                            & $\checkmark$\\   
+         \bottomrule
+      \end{tabular}
+      %end:tab
+   \end{adjustbox}
+   \par \raggedright 
+   Heterogeneity analysis (not main results). Sample: downstream CWS (same as main downstream 2SLS tables). Outcome: nitrates violation days. Large system = above-median population served. All regressions include PWSID, year, and state fixed effects. Standard errors clustered at PWSID level. Sample period 1985--2005.
+\end{table}
+
+

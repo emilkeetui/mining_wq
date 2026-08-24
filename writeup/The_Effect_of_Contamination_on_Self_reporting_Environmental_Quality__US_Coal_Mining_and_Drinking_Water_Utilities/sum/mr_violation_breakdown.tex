@@ -1,0 +1,71 @@
+% ============================================================
+% Table: IOC MR and MCL Violation Breakdown, 1985--2005 (Downstream CWSs)
+% Purpose: Three-panel table describing violation codes and rule codes for
+%          MR and MCL violations under IOC rules (nitrate 331, arsenic 332,
+%          inorganic chemicals 333).
+% Sample:  Downstream 2SLS CWS-year sample (minehuc_downstream_of_mine=1, minehuc_mine=0,
+%          1985-2005, excluding PWSID WV3303401)
+% Source:  SDWA_VIOLATIONS_ENFORCEMENT.parquet + SDWA_REF_CODE_VALUES.csv
+% N MR:    1,273 unique IOC MR violations, 1985--2005
+% N MCL:   16 unique IOC MCL violations, 1985--2005
+% ============================================================
+
+\begin{table}[htbp]
+\centering
+\caption{IOC Violations by Violation Code and Regulatory Rule, 1985--2005 (Downstream CWSs)}
+\label{tab:mr_mcl_violation_breakdown}
+\small
+\noindent\textbf{Panel A: MR violations by violation code} \\[4pt]
+\begin{tabular}{clrr}
+\hline\hline
+\textbf{Code} & \textbf{Description} & \textbf{Count} & \textbf{Share (\%)} \\
+\hline
+\addlinespace[2pt]
+\multicolumn{4}{l}{\textit{Routine and repeat monitoring failures}} \\
+\addlinespace[2pt]
+03 & Monitoring, Regular & 1,260 & 99.0 \\
+04 & Monitoring, Check/Repeat/Confirmation & 13 & 1.0 \\
+\addlinespace[2pt]
+\hline
+ & \textit{Total} & 1,273 & 100.0 \\
+\hline\hline
+\end{tabular}
+\vspace{8pt}
+
+\noindent\textbf{Panel B: MCL violations by violation code} \\[4pt]
+\begin{tabular}{clrr}
+\hline\hline
+\textbf{Code} & \textbf{Description} & \textbf{Count} & \textbf{Share (\%)} \\
+\hline
+\addlinespace[2pt]
+01 & Maximum Contaminant Level Violation, Single Sa.. & 11 & 68.8 \\
+02 & Maximum Contaminant Level Violation, Average & 5 & 31.2 \\
+\addlinespace[2pt]
+\hline
+ & \textit{Total} & 16 & 100.0 \\
+\hline\hline
+\end{tabular}
+\vspace{8pt}
+
+\noindent\textbf{Panel C: MR vs.~MCL violations by regulatory rule} \\[4pt]
+\begin{tabular}{clrrrr}
+\hline\hline
+\textbf{Rule} & \textbf{Rule name} & \multicolumn{2}{c}{\textbf{MR}} & \multicolumn{2}{c}{\textbf{MCL}} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+\textbf{code} & & \textbf{Count} & \textbf{Share (\%)} & \textbf{Count} & \textbf{Share (\%)} \\
+\hline
+\addlinespace[2pt]
+333 & Inorganic Chemicals & 871 & 68.4 & 12 & 75.0 \\
+331 & Nitrate Rule & 300 & 23.6 & 2 & 12.5 \\
+332 & Arsenic Rule & 102 & 8.0 & 2 & 12.5 \\
+\addlinespace[2pt]
+\hline
+  & \textit{Total} & 1,273 & 100.0 & 16 & 100.0 \\
+\hline\hline
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\textit{Notes:} Panel A: violation codes classify the type of monitoring-and-reporting failure; code 03 = Monitoring, Regular; 04 = Monitoring, Check/Repeat/Confirmation. Panel B: violation codes classify the type of MCL exceedance. Panel C: rule 331 = Nitrate; 332 = Arsenic; 333 = Inorganic Chemicals; MR = monitoring and reporting violation; MCL = maximum contaminant level violation; inorganic chemicals (333) encompasses nitrates and arsenic as sub-contaminants. All panels restricted to IOC rules (nitrate 331, arsenic 332, inorganic chemicals 333). Sample restricted to the downstream 2SLS CWS-year sample (minehuc\_downstream\_of\_mine\,=\,1 and minehuc\_mine\,=\,0, 1985--2005, excluding PWSID WV3303401). Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
+\end{minipage}
+\end{table}

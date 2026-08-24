@@ -1,0 +1,54 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{2sls_4step_d1_d2_mining_mcl_norad} Effect of coal mines on mining MCL composite, excl. radionuclides (D1--D2)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Mining MCL composite (excl. radionuclides)}\\
+         
+                                                           & (1)           & (2)           & (3)\\  
+         
+         \midrule 
+         num\_coal\_mines\_upstream                        & -0.0023       &               & -1.261\\   
+                                                           & (0.3860)      &               & (1.540)\\   
+         num\_facilities                                   & 0.2249        & 0.2281        & 0.2137\\   
+                                                           & (0.2200)      & (0.2230)      & (0.2184)\\   
+         post95 $\times$ sulfur\_unified                   &               & 0.2081        &   \\   
+                                                           &               & (0.2510)      &   \\   
+         
+          \\
+         
+         Observations                                      & 13,671        & 13,671        & 13,671\\  
+         R$^2$                                             & 0.12999       & 0.13005       & 0.13005\\  
+         Within R$^2$                                      & 0.00016       & 0.00023       & 0.00023\\  
+         F-test (1st stage), num\_coal\_mines\_upstream    &               &               & 475.38\\  
+         
+          \\
+         
+         PWSID fixed effects                               & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         STATE\_CODE fixed effects                         & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is the sum of MCL-only violation days across nitrates, arsenic, and inorganic chemicals (radionuclides excluded). Radionuclides are excluded because the reduced form is positive in both the main colocated sample and the downstream sample, consistent with a geology confound: high-sulfur geology correlates with natural radionuclide presence, and post-1995 EPA radionuclide rule tightening increased detection of violations independently of mine activity. Instrument is post95 interacted with mean coal sulfur content of the intake watershed (post95 x sulfur unified). All regressions include PWSID, year, and state fixed effects. Standard errors clustered at PWSID level. Sample period 1985--2005.}
+   
+\end{table}
+
+

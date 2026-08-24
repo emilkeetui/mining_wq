@@ -1,0 +1,55 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:sanitary_visit_mr_upstream_mines_ols_ioc} Effect of IOC MR Violations, Upstream Coal Mining, and IOC Formal Enforcement on Sanitary Visits (D1 Downstream Sample)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccc}
+         \toprule
+         
+          & \multicolumn{4}{c}{any\_snsv}\\
+         
+         Fixed effects             & None           & Year          & CWS           & Year + CWS \\   
+         
+                                   & (1)            & (2)           & (3)           & (4)\\  
+         
+         \midrule 
+         Constant                  & 0.1555$^{***}$ &               &               &   \\   
+                                   & (0.0107)       &               &               &   \\   
+         MR violation (IOC)        & -0.0259        & -0.0148       & -0.0326$^{*}$ & -0.0213\\   
+                                   & (0.0212)       & (0.0198)      & (0.0190)      & (0.0176)\\   
+         Upstream mines $>$ median & -0.0246$^{*}$  & -0.0252$^{*}$ & -0.0054       & -0.0055\\   
+                                   & (0.0125)       & (0.0137)      & (0.0127)      & (0.0143)\\   
+         Formal enforcement (IOC)  & -0.0626        & -0.1380$^{*}$ & -0.0104       & -0.0885\\   
+                                   & (0.0570)       & (0.0727)      & (0.0628)      & (0.0782)\\   
+         
+          \\
+         
+         Observations              & 6,232          & 6,232         & 6,225         & 6,225\\  
+         R$^2$                     & 0.00149        & 0.07258       & 0.20624       & 0.27550\\  
+         
+          \\
+         
+         year fixed effects        &                & $\checkmark$  &               & $\checkmark$\\   
+         CWS fixed effects         &                &               & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   D1 downstream sample (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0), CWS-years 1985--2005 (N\,=\,6232). Dependent variable: sanitary visit = 1 if a site visit with VISIT\_REASON\_CODE in \{SNSV, SSVF\} occurs in that calendar year (14.6\% of panel). MR violation (IOC) = 1 if a VIOLATION\_CATEGORY\_CODE = MR violation restricted to IOC rules — nitrate (331), arsenic (332), inorganic chemicals (333) — has its onset (NON\_COMPL\_PER\_BEGIN\_DATE) in that calendar year (4.7\% of panel). Upstream mines $>$ median = 1 if num\_coal\_mines\_upstream\_sum exceeds the median (0) across CWS-years in this D1 main downstream 2SLS panel. Formal enforcement (IOC) = 1 if any enforcement action with ENF\_ACTION\_CATEGORY = Formal, restricted to IOC rules (331, 332, 333), is ongoing in the calendar year (0.3\% of panel). Standard errors clustered by CWS.}
+   
+\end{table}
+
+

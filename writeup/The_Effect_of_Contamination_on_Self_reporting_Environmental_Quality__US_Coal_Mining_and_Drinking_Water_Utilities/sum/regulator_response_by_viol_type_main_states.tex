@@ -1,0 +1,101 @@
+% ============================================================
+% Tables: Regulator Response by IOC Violation Type, 1985--2005
+% Purpose: (1) Share of violations receiving each type of regulator response,
+%          conditional on violation category (MR vs MCL) for IOC rules;
+%          (2) specific enforcement action type breakdown.
+% Sample:  All CWSs in states with >=1 CWS in the main downstream 2SLS sample.
+% Source:  SDWA_VIOLATIONS_ENFORCEMENT.parquet
+% N IOC MR:  6,519 violations
+% N IOC MCL: 78 violations
+% ============================================================
+
+%------------------------------------------------------------------
+
+% Table 1: Regulator response summary
+
+%------------------------------------------------------------------
+
+\label{tab:reg_response_ioc_mainstates}
+\begin{adjustbox}{max width=\textwidth, max totalheight=\textheight, keepaspectratio, center}
+\begin{minipage}{\textwidth}
+\begin{tabular}{lrr}
+\hline\hline
+\textbf{Regulator response} & \textbf{IOC MR} & \textbf{IOC MCL} \\
+\hline
+\textit{N violations} & 6,519 & 78 \\
+\addlinespace[3pt]
+\multicolumn{3}{l}{\textit{Enforcement intensity}} \\
+\addlinespace[1pt]
+No enforcement received (\%) & 4.5 & 3.8 \\
+Any enforcement received (\%) & 95.5 & 96.2 \\
+\quad Informal (\%) & 21.7 & 20.5 \\
+\quad Resolving (\%) & 66.8 & 73.1 \\
+\quad Formal (\%) & 6.9 & 2.6 \\
+Federal enforcement (\%) & 6.7 & 3.8 \\
+Major violation (\%) & 99.3 & 0.0 \\
+\addlinespace[3pt]
+\multicolumn{3}{l}{\textit{Return to compliance}} \\
+\addlinespace[1pt]
+Status: Resolved (\%) & 71.8 & 75.6 \\
+Status: Archived (\%) & 28.2 & 24.4 \\
+Status: Open (\%) & 0.0 & 0.0 \\
+Median days to compliance & 364 & 91 \\
+Mean days to compliance & 534 & 255 \\
+\hline\hline
+\end{tabular}
+\end{minipage}
+\end{adjustbox}
+\par\smallskip{\tiny Unit of observation: violation (unique VIOLATION\_ID). Sample: all CWSs in states with at least one CWS in the main downstream 2SLS sample (minehuc\_downstream\_of\_mine\,=\,1 and minehuc\_mine\,=\,0), 1985--2005 (1,491 CWSs; states: AL, CA, CO, FL, GA, IL, KS, KY, LA, MD, NC, NJ, NY, OH, OR, PA, SC, TN, UT, VA, WA, WV). IOC rules: nitrate (331), arsenic (332), inorganic chemicals (333). Multiple enforcement actions per violation assigned the most severe (Formal $>$ Resolving $>$ Informal). Days to compliance = CALCULATED\_RTC\_DATE $-$ NON\_COMPL\_PER\_BEGIN\_DATE. Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet.}
+
+\clearpage
+
+%------------------------------------------------------------------
+
+% Table 2: Specific enforcement action types
+
+%------------------------------------------------------------------
+
+\begin{table}[htbp]
+\centering
+\caption{Specific Enforcement Actions for IOC Violations, 1985--2005 (Main States Sample)}
+\label{tab:enf_action_type_ioc_mainstates}
+\small
+\begin{tabular}{llp{6.5cm}rr}
+\hline\hline
+\textbf{Cat.} & \textbf{Code} & \textbf{Description} & \textbf{IOC MR (\%)} & \textbf{IOC MCL (\%)} \\
+ & & & \textit{(N=6,519)} & \textit{(N=78)} \\
+\hline
+\addlinespace[4pt]
+\multicolumn{5}{l}{\textit{Formal enforcement}} \\
+\addlinespace[2pt]
+Formal & SFR & State Consent Decree/Judgement & 0.9 & 0.0 \\
+ & SFK & State Bilateral Compliance Agreement signed & 0.2 & 0.9 \\
+ & SFL & State Administrative/Compliance Order without penalty issued & 0.7 & 0.0 \\
+ & EFL & Federal Final Administrative Order issued & 0.5 & 0.0 \\
+ & SFV & State Criminal Case filed & 0.2 & 0.0 \\
+ & SFO & State Administrative/Compliance Order with penalty issued & 0.1 & 0.0 \\
+ & SFM & State Administrative Penalty assessed & 0.1 & 0.0 \\
+\addlinespace[4pt]
+\multicolumn{5}{l}{\textit{Informal enforcement}} \\
+\addlinespace[2pt]
+Informal & SFJ & State Formal Notice of Violation issued & 20.2 & 11.4 \\
+ & SIA & State Violation/Reminder Notice & 12.5 & 19.6 \\
+ & SIE & State Public Notification requested & 16.2 & 19.6 \\
+ & SIF & State Public Notification received & 9.2 & 13.2 \\
+ & SIB & State Compliance Meeting conducted & 2.2 & 1.4 \\
+ & EFJ & Federal issued Formal Notice of Violation & 2.2 & 1.4 \\
+ & SIC & State Technical Assistance Visit & 0.8 & 1.4 \\
+ & --- & All other informal actions & 4.6 & 3.2 \\
+\addlinespace[4pt]
+\multicolumn{5}{l}{\textit{Resolving (compliance achieved)}} \\
+\addlinespace[2pt]
+Resolving & SOX & State Compliance achieved & 29.0 & 27.4 \\
+ & EOX & Federal Compliance achieved & 0.4 & 0.5 \\
+\hline\hline
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\textit{Notes:} Unit of observation is the enforcement action row in SDWA\_VIOLATIONS\_ENFORCEMENT.csv. Entries show the share (\%) of all enforcement actions within each column group that are of the specified type. MR = monitoring/reporting violation; MCL = maximum contaminant level violation; both restricted to IOC rules (nitrate 331, arsenic 332, inorganic chemicals 333). A violation may generate multiple enforcement actions; rows are enforcement actions, not violations. Enforcement categories follow EPA SDWIS classification: \textit{Formal} = legally binding instruments (administrative orders, consent decrees, penalties, civil/criminal referrals); \textit{Informal} = advisory actions and notices (notices of violation, public notification requests, compliance meetings, technical assistance visits); \textit{Resolving} = closure actions recording that the system returned to compliance. ``All other informal actions'' aggregates codes each below 1\% in every column. Sample: all CWSs in states with at least one CWS in the main downstream 2SLS sample (minehuc\_downstream\_of\_mine\,=\,1 and minehuc\_mine\,=\,0), 1985--2005 (1,491 CWSs; states: AL, CA, CO, FL, GA, IL, KS, KY, LA, MD, NC, NJ, NY, OH, OR, PA, SC, TN, UT, VA, WA, WV). Source: SDWA\_VIOLATIONS\_ENFORCEMENT.parquet, SDWA\_REF\_CODE\_VALUES.csv.
+\end{minipage}
+\end{table}

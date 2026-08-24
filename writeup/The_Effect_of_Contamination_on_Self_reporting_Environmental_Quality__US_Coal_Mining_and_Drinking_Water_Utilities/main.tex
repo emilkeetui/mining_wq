@@ -1,0 +1,597 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}  % match reference: standard 1in margins
+\usepackage{mathpazo}              % match reference: Palatino text + Pazo Math
+\usepackage[
+backend=biber,
+style=authoryear
+]{biblatex}
+\addbibresource{citation.bib}
+\usepackage{graphicx}             % Required for inserting images (duplicate removed)
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{tabularray}
+\usepackage{adjustbox}
+\usepackage{pdflscape}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{codehigh}
+\usepackage{breqn}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}             % ADDED: required for \singlespacing
+\usepackage{authblk}              % ADDED: required for \author[1]{} affiliation syntax
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{siunitx}
+\newcommand{\tinytableTabularrayUnderline}[1]{\underline{#1}}
+\newcommand{\tinytableTabularrayStrikeout}[1]{\sout{#1}}
+\NewTableCommand{\tinytableDefineColor}[3]{\definecolor{#1}{#2}{#3}}
+% Beamer presentation requires \usepackage{colortbl} instead of \usepackage[table,xcdraw]{xcolor}
+% Fix: PazoMath's uppercase Greek glyphs render as blank/missing boxes on this
+% install (VF->Type1 mapping does not contain them), and amssymb re-clobbers
+% mathpazo's declarations when loaded after it. Re-declared here, after all
+% package loading, using Computer Modern math italic (complete glyph coverage).
+\DeclareSymbolFont{cmletters}{OML}{cmm}{m}{it}
+\SetSymbolFont{cmletters}{bold}{OML}{cmm}{b}{it}
+\let\Gamma\undefined
+\let\Delta\undefined
+\let\Theta\undefined
+\let\Lambda\undefined
+\let\Xi\undefined
+\let\Pi\undefined
+\let\Sigma\undefined
+\let\Upsilon\undefined
+\let\Phi\undefined
+\let\Psi\undefined
+\let\Omega\undefined
+\DeclareMathSymbol{\Gamma}{\mathalpha}{cmletters}{"00}
+\DeclareMathSymbol{\Delta}{\mathalpha}{cmletters}{"01}
+\DeclareMathSymbol{\Theta}{\mathalpha}{cmletters}{"02}
+\DeclareMathSymbol{\Lambda}{\mathalpha}{cmletters}{"03}
+\DeclareMathSymbol{\Xi}{\mathalpha}{cmletters}{"04}
+\DeclareMathSymbol{\Pi}{\mathalpha}{cmletters}{"05}
+\DeclareMathSymbol{\Sigma}{\mathalpha}{cmletters}{"06}
+\DeclareMathSymbol{\Upsilon}{\mathalpha}{cmletters}{"07}
+\DeclareMathSymbol{\Phi}{\mathalpha}{cmletters}{"08}
+\DeclareMathSymbol{\Psi}{\mathalpha}{cmletters}{"09}
+\DeclareMathSymbol{\Omega}{\mathalpha}{cmletters}{"0A}
+\begin{document}
+\title{The Effect of Contamination on Contamination Limit Regulation: US Coal Mining and Drinking Water Utilities}
+\author{Emil Kee-Tui}
+	\affil{\small \emph{Charles H. Dyson School of Applied Economics and Management, Cornell University}}
+    
+\date{August 2026}
+\maketitle
+\thispagestyle{empty}
+\onehalfspacing
+
+\begin{center}\begin{abstract}
+		\noindent How do firms and regulators respond to increases in contamination under contamination control regulation that requires firms to self report compliance? Firms have an incentive to under-report to avoid the costs of self reporting and conceal violations; both incentives increase as contamination rises, undermining contamination monitoring and enforcement. I study this in the context of US drinking water utilities and regulators after exogenous increases in water contamination from coal mining between 1985 and 2005. I construct an instrumental variable for coal production upstream of utility water intakes based on the changes in coal production following the Acid Rain Program. I find that coal mining increases utility water contamination but does not lead to observable contaminant concentration violations. Upstream coal mining increases utilities under-reporting, partly due to self-reporting costs rising with contamination. Regulators do not increase enforcement on firms that are under-reporting due to contamination and fail to disincentivize it. Regulators substitute the firm's monitoring obligations by conducting more sanitary visits at firms that reduce self reporting due to contamination, although these sanitary visits do not reveal contamination violations. 
+\end{abstract}\end{center}
+	
+\newpage
+\onehalfspacing
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+Regulations as diverse as income taxes and drinking water quality require regulated entities to self-report compliance. Environmental regulation often seeks to induce firms to reduce environmental contamination and self report contamination compliance. Regulators, faced with constrained resources, favor self-reporting, which shifts the information gathering costs onto the regulated. However, self-reporters lack the incentive to disclose when the penalties for revealed non-compliance exceed the penalties for non-disclosure and when self-reporting requires costly effort. Regulators generate compliance through a combination of inspections and penalties. Successful inspections identify concealed violations, but any inspection shifts the cost of monitoring onto regulators, the efficiency of which is discussed in the literature on fiscal federalism. Successful penalties offset the firm's incentives to under-report and contaminate at levels that regulators deem unsafe. When the costs of self-reporting increase as contamination increases, for example, due to increasing self-reporting requirements, the firm's incentives to under-report also increase. Enforcement needs to keep up with the incentives to under-report. Contamination control regulations that increase self-monitoring requirements without increasing penalties for under-reporting can induce under-reporting, undermine the regulation's monitoring, and raise regulator's costs through inspections. In this paper, I identify the impact of increasing contamination of a firm's regulated output on firms and regulators in the context of US drinking water utilities exposed to an exogenous increase in water contamination from coal mining between 1985 and 2005. 
+
+I confirm that coal mining raises contaminant concentrations measured at a subset of utilities between 1997 and 2005. Comparing utilities that experienced more upstream coal mining to those that experienced less upstream coal mining, I find that every additional 10 million short tons of coal mined upstream since 1985 increases mean arsenic concentrations by 0.0023 mg/L, approximately 100 percent of the average arsenic concentration level in the sample, selenium by 69 percent, and barium by 24 percent of their respective sample means.
+
+Empirically identifying the impact of contamination on firm behavior requires separating the firm's choices over output and contamination. Separating a firm's output and contamination in most industries is challenging since firms can reduce contamination by reducing output. For example, in the U.S., the Toxic Release Inventory requires firms to report emissions, handling, and use of chemicals above a reportable quantity. Firms can avoid the reporting requirement by emitting less or producing less \parencite{zou2021unwatched, 10.1162/rest_a_01477}. The contamination of drinking water at utilities from coal mining is the ideal setting to study the effect of contamination on self-reporting firms since the main source of water contamination that utilities face arises upstream as an externality of a production process that the utility does not directly control.
+
+Identifying the causal effect of upstream coal mining on utilities is complicated by two sources of endogeneity. First, coal mines are located in areas with particular geological characteristics, such as coal seam accessibility and transportation corridors, that may also independently predict water quality and utility characteristics. Second, utilities may indirectly control coal production by successfully resisting upstream mine siting. Systems that successfully resist upstream mines may be better at maintaining compliance, generating a negative correlation between upstream mining and utility ability that understates the true contamination from mining.\footnote{For example, the EPA Source Water Protection program can designate areas where drinking water is sourced and take an inventory of pollution from human activities or natural sources that pose the greatest threat to source water quality, making it more difficult to site pollution producing activities in these areas.}
+
+I address these identification challenges by instrumenting for the number of coal mines upstream of a drinking water utility's water intakes, using the shift in the location of coal production caused by the Acid Rain Program (ARP). The ARP is federal legislation that forced coal fired power plants, the main consumers of coal, to reduce sulfur dioxide emissions by 1995. Plants complied by switching from high sulfur coal, with sulfur greater than two percent by weight, to low sulfur coal, with sulfur less than two percent by weight. The ARP created a nationally-determined shift in the demand for each mine's coal based on its sulfur content and independent of the characteristics of downstream drinking water utilities. I construct a panel of drinking water utilities downstream of coal mines from 1985 to 2005. I measure the sulfur levels of coal and the annual coal production occurring in the watershed upstream of a utility's water intakes. Utility  behavior is measured by drinking water quality violations and self-reporting violations.
+ 
+Coal mining significantly raises the incidence of under-reporting but has no detectable effect on contaminant concentration violations. In particular, coal mining reduces utility self-reporting of water contamination from inorganic chemicals (IOC), arsenic, and nitrates by seven to nine percentage points.However, upstream coal mining does raise the contamination level. Contaminant concentration readings of arsenic, nitrates, barium, and selenium for the subset of utilities represented in the SYR2 data do not exceed the MCL. Utilities that do not self-report water quality receive a self-reporting violation and not a water quality violation. Since self-reports are required to determine an MCL violation, the lack of violations does not, by itself, demonstrate that coal mining does not lead to violations.
+
+I investigate whether utilities reduce self-reporting rates following mining contamination due to the rising costs of self-reporting or to conceal an MCL violation. The literature has mainly found evidence of under-reporting being used to conceal non-compliance \parencite{wallsten2008effects, foster2019arsenic, zou2021unwatched, 10.1162/rest_a_01477}. I find that some reduction in self-reporting occurs due to the costs of self-reporting. Water utilities are required to increase self-monitoring for nitrates when nitrate concentrations exceed 50\% of the MCL. I estimate the likelihood that a utility fails to self-report nitrate water quality increases by 26 percentage points when contaminant concentrations are greater than 50\% of the MCL. These results are not causal, and the direction, rather than the magnitude, should be interpreted as suggestive evidence of under-reporting due to the costs of self-reporting.
+
+I investigate regulator enforcement against utilities that experience rising contamination by measuring regulator inspections and enforcement. Regulator enforcement does not increase as contamination and under-reporting increase. I find that an additional active coal mine reduces the likelihood that a utility receives formal enforcement, despite the likelihood of receiving an enforcement visit increasing by 4 percentage points. Enforcement visits do not always translate into enforcement, such as fines and court ordered water treatment technology installation. This does not offset utilities' incentives to under-report as contamination rises. 
+
+Under-reporting of water quality presents a health risk of unknown contamination. As contamination increases and self-reporting falls, regulators substitute utility self-reporting with sanitary visits, shifting the burden of monitoring the regulation to the regulators. An additional active coal mine upstream of a utility increases the likelihood that a utility receives a sanitary visit from a regulator by 14 percentage points. This suggests that enforcement visits do not translate into actual enforcement and that sanitary visits are not, in themselves, enough of a deterrent to maintain self-reporting. Sanitary visits would not reveal contamination violations if utilities were not violating contamination limits or inspections they were ineffective at identifying violations \parencite{mi2026technology}. I cannot distinguish these from each other. Monitoring gaps can be overcome by continuous monitoring technology that the regulator controls, making violations easier to spot and successful enforcement more likely. Literature on monitoring finds that regulated entities exploit gaps in monitoring coverage. \textcite{zou2021unwatched} shows that ambient air quality deteriorates on days when monitors are not scheduled to operate, and \textcite{mu2024s} documents strategic shutdowns of pollution monitors.
+
+
+
+%I can look at whether firms are hiding them by seeing the probability of MR violation conditional on the rain upstream for surface water utilities (more rain increases the contamination downstream, increasing the need/likelihood of underreporting)
+
+%When self-reporting becomes onerous self-reporting falls. Coal mining upstream makes utilities lives harder and the epa has to visit and everything is ok wasting everyones time. More stringent self-reporting does not always lead to more accurate results.
+
+%A closely related result is that regulated entities exploit gaps in monitoring coverage rather than the reported values themselves. \textcite{zou2021unwatched} shows that ambient air quality deteriorates on days when monitors are not scheduled to operate, and \textcite{mu2024s} document strategic shutdowns of pollution monitors. In both cases the manipulated object is the existence of an observation, not its content. The monitoring and reporting (MR) violations studied in this paper are the SDWA analogue of an unwatched interval: periods in which the regulator holds no contaminant reading at all.
+
+My paper contributes to the literature on drinking water quality, particularly US drinking water quality. US drinking water quality has improved substantially since the passage of the SDWA \parencite{keiser2019consequences}; yet notable exceptions remain, such as the crisis in Flint, Michigan \parencite{christensen2023flint}. In addition, between 9 and 34 million people per year are served by utilities in violation of health-based standards \parencite{allaire2018national}. Health-based standard violations do not include under-reported water quality and would undercount the contamination of water quality. The benefits of improving drinking water outweigh the costs due to the large health costs of contaminated drinking water \parencite{hill2017shale, keiser2019us, disalvo2024drinking, marcus2025testing}.
+
+I find that point source pollution from coal mining has an impact on drinking water quality. This is in contradiction to the literature that finds the gains from point source pollution in the modern era are often thought to be quite small. \parencite{bingham2000} finds that point source pollution is already well regulated in the US and achieving zero emissions from point sources would only improve 10 percent of U.S. rivers and streams in EPA quality ladder rankings. The benefits of surface water regulation may be undervalued due to the difficulty of measuring them. Poor data might contribute to benefit undervaluation, although this can be overcome with IV's can overcome \parencite{keiser2019missing}. I similarly use an IV to estimate water contamination.
+
+This paper contributes to work documenting the harmful impacts of coal mining. Since utilities provide drinking water to 85 percent of US households, their response to coal mining contamination is important for public health, especially as US federal energy policy under President Donald Trump has expanded mining access on federal lands and intervened to prevent planned coal-fired power plant retirements \parencite{Trump2025EO14260,Trump2025EO14261,Trump2025Proc10914,Daly2025CoalMining}. Existing work documents coal mining's effects on air quality, greenhouse gas emissions, and health \parencite{muller2011environmental,parfitt2024there}. The physical mechanism linking mining to water contamination is well established in the geochemical literature \parencite{skousen2019acid,akcil2006acid,ceto2000abandoned,rouhani2023overview,liang2017spatial,boente2020benzo}. This literature has not established whether this contamination affects utility treated water and reaches households. This paper provides the first causal estimates of coal mining's downstream effect on drinking water quality at treated utilities in the United States, identifying that coal mining pollution crosses the gap from environmental contamination to piped household water.
+
+I contribute to the literature on the economics of enforcement and monitoring of environmental regulation \parencite{shimshack2014economics}. This is the first study to identify the effect of contamination on enforcement and monitoring. The literature on monitoring and reporting has considered firms' motivations to underreport. In the literature studying water utility underreporting, it has been identified that the cause is attributed to hiding a contamination violation \parencite{bennear2009sampling, naylor5537637strategic, andarge2025quantifying}. The same motivations underlie underreporting at oil and gas firms \parencite{lee2020essays}. This is the first study to identify the cost of self reporting as one of the reasons for underreporting from drinking water utilities; the cost of self reporting has been identified as a reason for underreporting in tax regulation \parencite{tazhitdinova2018reducing}. The literature on monitoring and reporting has considered how to induce firms to self report and what constitutes efficient self reporting \parencite{innes1999remediation}. I find strong supporting evidence that low penalties and high sanitary visits lead firms to undercomply with the regulation. Low visits and high penalties are found to induce better self reporting \parencite{malik1993self}. 
+
+%Regulators can use voluntary self reporting firms to identify firms self policing themselves and take resources to other people who arent self reporting \parencite{toffel2011coming}.
+
+The literature on enforcement has found that enforcement is effective when its severity is non-linear and higher violations receive higher enforcement \parencite{harford1987self}. The literature has focused on on dynamic enforcement that increases fines when firms are repeat violators. It has been found that firm compliance improves when regulators target repeat offenders and dispense stricter enforcement to them \parencite{blundell2020escalation,blundell2020threats}. \cite{duflo2018value} find that regulators use inspections at plants selectively to target the worst polluters, and targeting enforcement increases future abatement. I show that enforcement ineffectively induces firms to comply when it does not respond by increasing enforcement at firms under-reporting while contamination is rising.
+
+%, and \parencite{helland1998enforcement, duflo2013truth, duflo2018value, naylor5537637strategic}. I document a case in which regulatory attention does not produce deterrence. I also show that sanitary visits are not necessarily effective deterrent enforcement mechanisms. The literature has found other enforcement types to be effective. \textcite{bennear2008impacts} show that public notification requirements deter drinking water violations. \textcite{shimshack2005regulator} show that regulator reputation shapes compliance beyond the directly sanctioned firm.
+
+
+%\parencite{elbakidze2021state} find that state water quality rules are significantly associated with compliance, the year a state introduces a rule violations increase but then normalize. This is literature encouraging including state fixed effects in some robustness tests more than literature I'm contributing to.
+
+% \parencite{shimshack2008enforcement} find that regulators induce over-compliance with fines because they create credible enforcement expectations - the effect also causes firms already in compliance to abate more. My work shows the opposite perhaps that low enforcement encourages low compliance - maybe not directly the most appropriate since their results are about overcompliance (complying even below the threshold required) and spillovers to other firms none of which I directly address.
+
+%I identify that variable penalties can reduce self-reporting and self-reporting can fall just from the incentive to avoid the cost of self-reporting. I identify that a portion of the avoidance comes from cost avoidance but since it is only a portion it is suggestive evidence that strategic avoidance is the reason why. I identify that not the entire the effect is cost avoidance and some of it is suggestively avoidance. And enforcement visits and sanitary visits are not sufficient to uncover violations. This can be because the contaminant increases in the system seasonally and by the time regulators visit the contaminant is gone - essentially giving the firm discretion over the time to do testing.
+
+\section{Institutional Background}
+
+\subsection{Drinking water utilities, regulators, and the Safe Drinking Water Act (SDWA)}
+
+I focus on drinking water utilities downstream of coal mines between 1985 and 2005. In particular, I focus on a class of drinking water utilities known legally as community water systems that serve at least 25 consumers through at least 15 connections throughout the year, since these are regulated by the Safe Drinking Water Act (SDWA). The Safe Drinking Water Act (SDWA) is a federal regulation that requires utilities to remove contaminants for certain chemicals and pollutants and self-report compliance to state regulators. A regulator issues a maximum contaminant level (MCL) violation to a utility that self-reports a contaminant above the MCL, triggering enforcement. MCL violations are serious threats to public health and require timely rectification. Regulators cannot issue MCL violations until a utility self-reports, creating an opportunity to substitute an MCL violation with a violation for not self-reporting, known as a monitoring and reporting (MR) violation. Since self-reporting is expensive in and of itself, requiring the hiring of technical and administrative staff and paying laboratories, utilities can incur an MR violation to avoid self-reporting costs. A utility facing rising compliance costs due to upstream pollution may reduce self-reporting either to hide an MCL or avoid self-reporting costs. Self-reporting is costly to water utilities. As costs rise, the utility's cost savings from underreporting rise.
+
+Utility self-monitoring schedules changed over the time period. The largest change to testing schedules for contaminants occurred in 1991 when it was standardized to occur in three-year compliance cycles. Systems had to re-test for contaminants every three years to demonstrate the contaminant was not present in the system. The number of tests required varied by regulator-assessed risk of that contaminant to the water supply. Water utilities that the regulator defined as having impaired water were required to take and self-report more tests than a utility with less impaired water. 
+
+Utilities found monitoring and reporting requirements to be difficult to meet due to the administrative and technical burden. Utilities needed to be administratively organized to conduct the right tests and report them on schedule. Technical staff were required to conduct separate tests for contaminants or to prepare samples to be sent to laboratories. Indiana drinking water utility managers who responded to a 1980 survey on the impact of the SDWA said that its reporting requirements had the greatest impact on their systems, while MCLs had the least \parencite{oleckno1982national}.
+
+The list of regulated contaminants has been added to over time: in 1985 there were 23 regulated contaminants and by 2005 there were 93. I focus specifically on arsenic, nitrates, barium, and selenium as they are water contaminants that can be generated by coal mining; in addition, their MCLs did not change between 1985 and 2005. Environmental pollution from coal mining can include heavy metals, radioactive elements, non-organic compound pollutants, and polycyclic aromatic hydrocarbons (PAHs) \parencite{rouhani2023overview,boente2020benzo,liang2017spatial}. Inorganic chemical pollution is commonly produced during coal mining through acid mine drainage. Acid mine drainage occurs when rocks containing sulfides are exposed to air and water, beginning the process of oxidation and decomposition \parencite{ceto2000abandoned}. The oxidized minerals form sulfuric acid, which dissolves metal ions and sulfates that can then be carried into surface or groundwater \parencite{akcil2006acid,skousen2019acid}.
+
+Coal mining can also generate pollution through coal wash slurry. Coal is washed with water and chemicals to remove impurities and improve combustability. The slurry waste is often mixed with water and stored in waste ponds. These ponds have failed and the waste has entered water ways \parencite{Sealey2000}.
+
+Part of the sulfur is integeral to the chemical structure of the coal and cannot be removed, limiting the amount of coal preperation that can be done to make high sulfur coal low sulfur coal \parencite{wheelock1984coal}.
+
+The SDWA is enforced by the states, which are responsible for bringing violating utilities into SDWA compliance and have wide discretionary powers to decide which enforcement is appropriate. With the exception of a subset of violating circumstances and mandatory notifications to consumers that utilities must provide when in violation, the SDWA gives states wide discretionary powers to tailor compliance and enforcement plans to each utility and violation; the intention is for the violation to be resolved quickly enough to reduce the health impacts of contamination.
+
+Enforcement is frequently remedial, rather than punitive, in addressing the cause of the violation. Enforcement can be informal (letters, notices of violation, compliance plans), formal (court mandated compliance plans, legal prosecution, fines), or involve visits (sanitary, sampling, technical assistance) to the utility. Non-fine enforcement is still costly: compliance plans can require installing treatment infrastructure or hiring technical personnel, and public notifications for violations have large reputational costs that deter violations \parencite{bennear2008impacts}.
+
+\section{Theoretical model}
+
+I build a theoretical model to formalize a utility's decision to self-report water quality tests to regulators. Utilities have two different incentives to self-report water quality: to avoid the direct costs of self-reporting and to hide an MCL. Regulators use penalties and investigations for not self-reporting and exceeding regulatory standards for water quality. Penalties differ if a utility fails to self-report and exceeds a regulatory standard compared to if a utility fails to self-report and does not exceed a regulatory standard. The costly compliance of the regulated is based on \textcite{mookherjee1994marginal}, who model the optimal level of enforcement a social planner regulator should expend when compliance with the regulation is costly to the regulated and the regulated's actions have harmful externalities. I base the penalty structure on \textcite{kaplow1994optimal}, who models an agent's choice to self-report where self-reporting itself is not costly. 
+
+\subsection{Setup}
+
+The utility chooses a negligence level $a \in [0, \bar{a}]$, which measures how much they avoid the requirements of drinking water quality regulations, from avoiding every requirement $\bar{a}$ to full compliance 0. Failing to self-report water quality or not installing pollution abatement technology are examples of utility negligence. Regulators do not directly observe utility choice of $a$. Utilities face a compliance cost, $\theta$, that is a random variable drawn from $\Theta$, which is a strictly increasing and continuously differentiable function $F(\cdot)$ with support $(0, \bar{\theta})$. Utilities know their draw of $\theta$, but regulators only know the distribution of $\theta$. A compliance cost is determined by both a utility's ability to manage a drinking water system, such as the skills of managerial and technical staff, and by the costs of water treatment, including the cost of filtration equipment or sterilization chemicals. Utilities receive a benefit $\theta b(a)$ from having compliance costs $\theta$ and choosing a negligence level $a$. A utility's benefits from not self-reporting a specific contaminant are the savings of wages, testing equipment, or lab fees if they outsourced testing. The opportunity cost to the utility of choosing a compliance level $a$ relative to maximum negligence $\bar{a}$ is $\theta[b\bar{a}-b(a)]$. The financial benefit of a certain level of negligence to a profit maximizing privately owned utility is obvious. Publicly owned utilities also benefit from cost savings that allow them to forgo rate increases or tax collection, which may be unpopular with residents.
+
+Utilities face $N$ required monitoring events per year. Given negligence $a$, each sampling event would reveal an MCL exceedance with probability $q(a)$, with $q(0)=0$, $q'>0$, and $q'' \ge 0$.
+
+%(The number of true exceedances is then Binomial $(N, q(a)) \approx$ Poisson with mean $Nq(a)$, so Section 1's Poisson structure is recovered with intensity $Nq(a)$ in place of $a$.) For the empirically relevant range, $q(a)$ is small: mining degrades source water \emph{within} the MCL for most systems.
+
+Self-reporting costs $c$ are utility-specific and depend on upstream contamination $m$ so that $c \sim G(\cdot\,;m)$, with $m$ shifting the distribution rightward (first-order stochastic dominance). Degraded source water triggers additional required sampling even when contamination remains below the MCL.
+
+
+Utilities receive sanction $r$ if they are above the MCL and they self-report. Regulators investigate utilities that do not report with probability $p$ and those utilities they investigate receive a sanction $t$. Utilities receive penalty $s$ if they are investigated and are above the MCL, $s>r$.
+
+%the sanctions $(r,s,t)$ and enforcement intensity $p$ do not depend on $m$.
+
+For each required self-reporting event the utility chooses to self-report (cost $c$) or not (an MR violation). Per-event expected penalties:
+\begin{align*}
+\text{report:} \quad & c + q(a)\,r \\
+\text{skip:} \quad & p\left[t + q(a)\,s\right]
+\end{align*}
+Taking $r > ps$ throughout, the utility self-reports iff
+\begin{equation}\label{eq:chat}
+c \le \hat{c}(a) \equiv pt - (r - ps)\,q(a).
+\end{equation}
+Even a system with no MCL violations, $q(a) = 0$, stops self-reporting once $c > pt$, the self-reporting costs more than the expected sanction for skipping it, and no exceedance exists to hide. The self-reporting threshold is decreasing in $q(a)$, so systems closer to (or above) the MCL abandon self-reporting at lower cost thresholds. The expected penalty is
+\begin{equation}\label{eq:endog_penalty}
+e(a) = N \min\left\{\, c + r\,q(a),\;\; pt + ps\,q(a) \,\right\},
+\end{equation}
+which is increasing in $a$.
+
+\subsection{Optimal negligence}
+
+The utility maximizes $-\theta[b(\bar{a}) - b(a)] - e(a)$. The first-order condition is piecewise:
+\begin{align}
+\theta b'(a) &= N r\, q'(a) & \text{(testing region, } c \le \hat{c}(a)) \\
+\theta b'(a) &= N ps\, q'(a) & \text{(MR region, } c > \hat{c}(a))
+\end{align}
+Because $ps < r$, the marginal penalty is lower when the utility is in the MR region than when it is self-reporting. When $c$ increases exogenously, the region of MR increases. Suppose costs increase such that $c_1 =\hat{c}(a_1) < c_2$. The increase in $c$ pushes a system from self-reporting into the MR region, its marginal penalty falls from $Nr\,q'(a)$ to $Nps\,q'(a)$ and since $b'(a)<0$, its negligence rate increases.
+
+\subsection{The propositions}
+
+The model predicts that when water quality deteriorates due to increased contamination, self-reporting rates fall.
+
+\textbf{Proposition 1:} $\partial a/\partial\theta = b'(a) / [\,-\theta b''(a) + N\rho\, q''(a)\,] > 0$ within each region (where $\rho \in \{r, ps\}$ is the region's sanction), with an upward jump at $\hat{\theta}$. Negligence is globally increasing in $\theta$.
+
+\textbf{Proposition 2}: Contamination from mining creates ambiguous effects on MR violation rates, $\partial MR/\partial m$.
+Mining contamination acts on self-reporting through the cost of self-reporting and the penalties for exceeding the MCL. On the cost side, $c$ is drawn from $G(\cdot;m)$ with $m$ shifting the distribution rightward (first-order stochastic dominance), so that each self-reporting cost draw is higher. The area of the MR violation in the first order condition increases. If self-reporting costs increase by a large enough amount, this can result in MR violations from self-reporting costs outweighing penalties, even for systems with no MCL violation, $q(0)$.
+Direct contamination from mining inducing an MCL has an ambiguous effect on self-reporting. From Equation \ref{eq:chat}, contamination will increase MR violations if the expected penalty from being in violation and not reporting ($psq(a)$) outweighs the penalty from being in MCL violation and self-reporting ($rq(a)$). If investigations are unlikely or ineffective in discovering MCL violations, then utilities have an incentive not to self-report when contamination rises.
+
+The identifying content of the cost channel is that $G$ is the distribution of the cost of executing and reporting a compliant test, $c$, which is a different object from the contaminant concentration that drives $q(a)$ (the probability a sample exceeds an MCL). Mining can shift $G$ rightward while leaving $q$ unchanged. The concentration stays below the MCL so $q$, and hence recorded MCL violations, do not move, yet running a compliant monitoring program becomes more expensive due to more contaminants to sample and more tests to conduct. Source water downstream of coal mining carries elevated contaminants that may be high enough to require additional self-reporting. Detecting below an MCL can push a system into a higher monitoring frequency or additional source-water points, raising $N$ and hence total testing cost $N\cdot c$.
+
+\textbf{Proposition 3:} scaling $(r,s,t) \to \lambda(r,s,t)$ scales $e'(a)$ by $\lambda$ in both regions, so $a$ falls; and $\hat{c}(a) = \lambda\left[pt - (r-ps)q(a)\right]$ scales up by $\lambda$ while $c$ does not, so the testing region expands. Higher penalties reduce negligence and increase self-reporting.
+
+\section{Data}
+
+I construct a panel dataset from 1985 to 2005 of drinking water utilities downstream of at least one active coal mine, their self-reporting compliance, MCL compliance, contaminant concentrations, and the enforcement the utilities received. This data allows me to measure self-reporting rates following an increase in contamination from coal mining.
+
+\subsection{Utility characteristic, regulator, and violation data}
+
+The EPA's Safe Drinking Water Information System (SDWIS) Enforcement and Compliance History Online (ECHO) is a quarterly updated dataset containing utility characteristics, facilities, enforcement actions, and violations. Utility characteristics are updated during each quarterly update unless the system was deactivated, in which case characteristics represent those present at deactivation. I form a yearly panel of utilities that were active continuously between 1985 and 2005, had water intakes with data on sulfur as a percentage of coal weight, and had no water intakes in a watershed with a coal mine that was active at any time between 1985 and 2005. As I explain later in the data section, this rule for utility water intakes ensures that I identify utilities with impaired water intakes. My sample contains 340 unique utilities. 
+
+Time-varying utility characteristic data are not available for all utilities during this time period. The only time-varying characteristic I use is the number of active facilities such as water intakes and treatment plants run by a utility, which I create by taking the annual count of the number of active facilities owned by a utility. 
+
+I use SDWIS ECHO data to construct outcome variables for MR and MCL violations for a general IOC contaminant rule, the arsenic rule, and the nitrate rule. To avoid double counting, I exclude any IOC violations that occur at the same time and at the same utility as an arsenic or nitrate violation. SDWA uniquely identifies utility violations with information on the start and end dates of the violation, the type of SDWA rule violated, and the contaminant. Arsenic and nitrate MCLs did not change during this period, and both are contaminants that may be related to coal mining. The IOC rule contains all IOCs during this period, some of which are subject to changing MCLs. Nitrate and arsenic MR requirements changed during this period; however, they changed nationally as part of the three-year compliance reporting schedule. Year fixed effects in empirical models are used to address the concerns that changes in MR violations would be the result of changing MR requirements. 
+
+The primary outcome variable for utility violations is a binary variable equal to one if the utility experienced a violation of that type anytime during the year. This variable measures the likelihood of a utility not self-reporting water quality or exceeding an MCL. The dates of the violation in the SDWIS data do not necessarily reflect the time a utility was continuously violating. Violations are often triggered when utilities fail to meet testing schedules and then continue for a set period of time after they are issued. Figure \ref{img:mineviolengthhist_downstream} plots histograms of the lengths of arsenic, IOC, and nitrate violations. There is a tendency for the length of time of violations to align with quarters of the year. As a robustness test, I measure violations as the days out of a year in violation rather than as a binary measure of whether the violation took place during any part of the year.
+
+Table \ref{tab:ioc_days_dwnstrm} presents means and standard deviations of the number of days out of a year that a utility spends with an IOC MR and MCL violation. On average, a utility spends between 10 and 15 days out of a year with an MR violation and less than a day with an MCL violation. This reflects that MCL violations are health dangers and are resolved as quickly as possible, as well as the rarity of MCL violations, where, in a given year, most utilities do not receive an MCL violation. The large standard deviation of 56 to 67 days reflects the multi-modal distribution that characterizes the number of days a utility is in violation: many utilities do not receive an MR violation in a year, and those that do tend to experience it for multiple quarters of the year. 
+
+%Panel A in table \ref{tab:mr_mcl_violation_breakdown} reports the share of MR violations that occur due to missing the regular self-reporting schedule versus those that occur to confirm a test. MR violations are primarily for regularly scheduled violations as opposed to missing confirmation schedules (what is check/repeat/confirmation?)
+
+Table \ref{tab:mr_mcl_incidence_summary} presents summary data of the MR and MCL violations that occurred at the 340 utilities in the main sample between 1985 and 2005. There are only 26 MCL violations related to arsenic, nitrate, and IOC. There are similar rates of nitrate, arsenic, and IOC MR violations.
+
+The violation data accurately records violations but does not contain every violation ever issued due to state regulators underreporting to SDWIS. A survey of 1,800 utilities in 2000 found that 10 percent of MR violations and 50 percent of MCL violations were in SDWIS but that 95 percent of violations in SDWIS were accurately reported \parencite{epaviolationreliability}.
+
+The SDWIS data contains enforcement actions that the regulator took against a utility in response to an SDWA violation. This data allows me to test the theoretical model's prediction that low penalties do not discourage underreporting. I create a binary variable for enforcement types equal to one in every year a utility experienced an enforcement type for arsenic, nitrates, and IOC MCL or MR violations. Enforcement is divided into formal and informal. It does not contain the dollar amount of the penalty issued; however, penalties are only issued in 1.4\% of MR violations. Non-penalty enforcement can still be costly. Consent decrees and compliance agreements can be costly even if they do not include penalties. A consent decree may require a utility to install new treatment technology. For an example of how expensive a treatment system can be for a small system, an EPA best available technology project to replace existing treatment with an arsenic coagulation/filtration system at a utility with baseline arsenic levels of 0.029 mg/L, serving 250 people in Pennsylvania in 2011, cost \$191,970, including \$136,744 for equipment, \$21,726 for site engineering, and \$33,500 for installation. In addition, it cost an average of \$60 a day in chemical, electricity, and labor costs \parencite{epaarsenicbat}.
+%Table \ref{tab:enf_action_type_ioc_dwnstrm} summarizes the share of IOC violations that received formal, informal, or resolving enforcement. It does not contain the dollar amount of the penalty issued; however, a penalty is only issued to 1.4 percent of the MR violations.%
+
+Informal enforcement actions are the dominant type of enforcement. They include public notification requests, reminders to the utilities, notifications to the utility that a violation has occurred, and technical assistance. Informal enforcement includes more direct assistance to the utility than formal enforcement. The state is the main regulator in the sample. The federal regulator only intervenes to issue informal enforcement in 2.6 percent of the IOC MR cases, and the intervention is to issue a notice of violation.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.54]{plots/mineviolengthhist_downstream.png}
+    \label{img:mineviolengthhist_downstream}
+\end{figure}
+
+\input{sum/ioc_days_dwnstrm}
+
+%\input{sum/mr_violation_breakdown}
+
+\input{sum/visit_type_summary}
+
+\input{sum/mr_mcl_incidence_summary}
+
+SDWIS contains information on visits conducted by the regulator to the utility. Table \ref{tab:visit_type_summary} contains the share of sample utility-years where a regulator visited a utility. Sanitary visits are the most common type of visits, occurring during 12.5 percent of utility-years. Most visits are slightly more likely to occur in the 12 months before or after an MR violation. The sanitary visit cannot be further broken down by reason for the sanitary visit or findings from the visit because it is incomplete; over half of the sanitary visit data lacks a reason for the visit or a finding. 
+
+\subsection{Utility Contaminant Measurement Data}
+
+I measure contaminant concentrations at utilities with annual mean contaminant concentrations of arsenic, nitrates, barium, and selenium in raw and treated utility water using the second Six-Year Review data (SYR2, sample years 1998-2005). This data covers a subset of utilities and years. This data allows me to test whether coal mining raises water contamination at downstream utilities.
+
+Starting in 1991, the USEPA began conducting reviews of all National Primary Drinking Water Regulations every six years to determine whether the rules needed revisions. The first SYR1 has not been made publicly available. The SYR2 was the second round of the six-year review covering 1998 to 2005. The SYR2 data contained contaminant data for 89 percent of the total population served by a drinking water system. EPA collected SYR2 data by requesting states to submit their utility SDWA compliance data. Unrelated to the SYR and to ensure compliance with the SDWA, states were required to collect compliance monitoring data from utilities but were not required to submit that data to the USEPA alongside the SDWA violation reports. Pennsylvania, Mississippi, Kansas, and Louisiana were not included in the SYR2 partly due to a lack of a national database that received and stored the occurrence of contaminants at utilities at the time.
+
+I retain records from utilities and drop transient and non-transient non-community systems. This removes roughly 23 percent of raw monitoring records. I clean the SYR2 data following the procedure of \textcite{ravalli2022sociodemographic} for cleaning chemical test data that includes records where the contaminant could not be detected. For each contaminant, I compute the national share of records above the maximum laboratory detectable level (MDL), the threshold that a contaminant must be present in a sample to be detected at a laboratory, and retain only contaminants detected in more than 10 percent of records. I replace the observations below the MDL of any contaminant with the MDL/$\sqrt{2}$. Records reporting a concentration greater than 100 times the contaminant's MCL are dropped as data-entry errors. Among the IOCs that can be produced during coal mining, this keeps arsenic, nitrate, barium, and selenium. All mass-concentration readings are converted to mg/L.
+
+After cleaning, sample-level records are collapsed to the utility\,$\times$\,contaminant\,$\times$\,year level. The annual concentration of a particular contaminant is the mean of that year's samples at a particular utility.
+
+Table \ref{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005} includes the summary statistics of the contaminants I include in my analysis. The maximum value of all contaminant readings is below their MCL. The maximum arsenic reading of 0.0110 mg/L would exceed the stricter arsenic MCL of 0.01 mg/L that became regulation in 2006 but would not exceed the pre-2006 MCL of 0.05 mg/L. That mean concentrations do not exceed the MCL is consistent with the low rates of MCL violations at utilities. Conditional on testing, the water contaminants appear to be within the regulatory limits. However, the majority of MR violations are for not conducting testing on schedule. These summary statistics do not provide information on the contaminant concentrations that would be measured when a test was required by regulation but was not conducted by the utility.
+
+\input{sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005}
+
+The SYR2 results represent the testing behavior of the more negligent utilities. Utilities that appear in the SYR2 data are more likely to violate SDWA than those utilities that never appear in the data. Table \ref{tab:syr2_mr_comparison} reports a two-sample t-test to compare the shares of utilities that appear in the SYR2 that violate to the share of utilities that never appear in the SYR2 data that ever violate. Utilities that appear in the SYR2 data are 18 to 22 percent more likely to ever experience an MR violation than those utilities that never appear in the SYR2 data. The lack of SYR2 observations does not mean the utility was not self-reporting since utilities can be compliant with MR rules and not have any SYR2 observations. The utilities that are more likely to self-report data are also more likely to have contaminant concentration observations in SYR2. 
+
+Utilities in the SYR2 are between 1.3 percent and 3.7 percent more likely to ever experience an MCL violation than those utilities that never appear in the SYR2 data. SYR2 does not contain all test results submitted to regulators, but it is more likely to contain the test results of utilities that, at some point during my sample, fail to self-report their water quality and receive an MR violation.
+
+\input{sum/syr2_mr_comparison}
+
+\subsection{River and stream connectivity data}
+
+Drinking water utilities are exposed to water pollution from coal mining when the locations where they source their water are downstream of coal mines. The exposure is strongest when a utility draws from surface water. Groundwater sources downstream of coal mining are also exposed to upstream pollution since groundwater is also recharged by water flow from above. In order to measure which utilities are downstream of coal mining, I identify which watersheds utilities source water from using the NHDplus hydrological connectivity dataset that identifies the boundaries of watersheds across the US and an EPA dataset on the watershed-level location of utility water intakes. The watershed dataset is a connected graph that identifies which watersheds flow into one another, allowing me to identify utilities' water source watersheds and any upstream watersheds that flow into a source water watershed. The NHDplus identifies watersheds as geographical boundaries where water that falls within that boundary would drain into the same stream segment. The NHDplus assigns watersheds a unique 2-12 digit code known as a HUC (hydrological unit code). The number of digits corresponds to the size of the area, with the geographical area decreasing with the number of digits; for example, the lower 48 US states are divided into 18 HUC02s and over 87,000 HUC12s (see Figure \ref{img:WBD_Base_HUStructure_small}). I use HUC12 watersheds to identify utility water intakes. HUC12 watersheds are the smallest mapped watersheds available for the entire continental US and are small enough that coal mining activities may impact the water in the HUC12 directly downstream. However, HUC12s are also large enough that a utility water intake located upstream of a coal mine but within the same HUC12 may not be affected. To ensure a utility is downstream of a coal mine, I exclude those utilities with an intake located in the same HUC12 as a coal mine and limit my sample to utilities with at least one water intake in a HUC12 directly downstream from a HUC12 with a coal mine.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/WBD_Base_HUStructure_small.png}
+    \caption{}
+    \label{img:WBD_Base_HUStructure_small}
+\end{figure}
+
+\subsection{Coal mine and coal sulfur data}
+
+Individual coal mine production data are obtained from the Energy Information Administration (EIA). It includes the tons of coal produced by each mine in each year from 1985 to 2005. EIA coal mines are matched to mine latitude and longitude coordinates from the Mine Safety and Health Administration (MSHA). Figure \ref{map:eia_msha_mine_huc12s} shows the HUC12s where mine production data from the EIA were matched to MSHA data of mine coordinates. I measure coal production in a given year as the total number of active coal mines and the total tons of coal mined within a HUC12.
+
+%\begin{figure}[h]
+%    \centering
+%    \includegraphics[width=\textwidth]{plots/data_cleaning/eia_msha_mine_huc12s.png}
+%    \caption{}
+%    \label{map:eia_msha_mine_huc12s}
+%\end{figure} 
+
+I measure coal sulfur as a percentage of coal weight at the HUC12 level to match the upstream coal quality to utility water intakes and the HUC12 level coal production data. I use the USGS COALQUAL dataset to measure the percent of sulfur by weight in a coal bed. The USGS COALQUAL dataset consists of geospatially explicit drilled coal core samples from coal beds across the US, measured for characteristics including the percent of sulfur by coal weight. I match a HUC12 to all USGS COALQUAL samples within 30 km of the HUC12 boundary and assign the mean sulfur percent of matched samples to each HUC12. This approximates coal quality into watersheds that may not have coal production during the sample time period but are likely to contain coal deposits. HUC12s are geographically small areas that, on average, have low variation in measured coal sulfur levels. This reduces the mismeasurement that would occur if coal sulfur has extreme variation within HUC12s, where some high-sulfur coal HUC12s may actually host low-sulfur coal.
+
+Figure \ref{hist:sulfurhuc12} plots a histogram of the sulfur percentage of the coal bed within the HUC12s where a utility water intake and coal production are co-located. The sulfur content of HUC12 coal beds ranges from zero to 4.5 percent, with most of the HUC12 watersheds below 1.5 percent. Slightly more than half of the HUC12s are low sulfur coal beds.
+
+HUC12s are only included in my dataset if I am able to match COALQUAL samples. Map \ref{map:map_huc12_main_sample} shows the location of HUC12s in the sample that have utility intakes and COALQUAL samples.
+
+%\begin{figure}[h]
+%    \centering
+%    \includegraphics[scale=0.5]%{plots/map_huc12_main_sample.png}
+%\label{map:map_huc12_main_sample}
+%\end{figure}
+
+\input{sum/upstream_coal_summary}
+
+\section{Identification Strategy}
+
+The locations of utility water intakes and coal mines are non-randomly located with respect to each other. For example, coal mines are sited where they can pass environmental reviews, and a utility downstream of a coal mine will increase the chances of failing an environmental review. A utility with political power may be able to influence regulators to prevent polluting industries from siting upstream, and those systems are also more capable of avoiding violations, leading to a positive correlation between utility SDWA violations and upstream coal mining and omitted variable bias in an OLS estimate of the impact of coal mines on utility drinking water quality violations. This would create a positive bias on the coefficient of the number of mines in a regression on utility violations since an increase in the number of mines is associated with less capable utilities that have more violations.
+
+To estimate the effect of contamination on self-reporting, I construct an instrumental variable for the number of coal mines upstream of a drinking water utility using the percentage of sulfur present in an upstream coal bed and the shift in demand for high sulfur coal after the ARP. The IV is independent of the utility's ability to meet the water quality self-reporting requirements of the regulation. The instrument predicts the location and amount of coal mining occurring upstream of a utility using the amount of sulfur in the coal bed and the shift in coal demand preferences for the percentage of sulfur in coal that occurred after the ARP.
+
+\subsection{The Acid Rain Program (ARP) and Coal Mining}
+
+The ARP was signed on November 15, 1990, as an amendment to the Clean Air Act with the intention of reducing acid rain by limiting emissions of acid rain precursors, sulfur dioxide (SO2), and nitrogen oxides (NOx) from coal-fired power plants. The regulation capped total national SO2 and NOx emissions. Power plants were given emission allowances, for which they were fined if they exceeded the limit. Allowances could be traded on a market, allowing emission efficient plants to sell their allowances and emission inefficient plants to buy allowances. Although compliance could be achieved with SO2 and NOx scrubbers, fuel switching to low sulfur coal was a primary abatement response. The ARP achieved 100 percent compliance and had the intended effect of reducing acid rain \parencite{lattanzio2022clean}. 
+
+Emissions were capped in two phases. In phase I, the EPA issued emission permits and allowances to 110 high polluting, mostly coal-fired electricity generating facilities. Facilities targeted under phase I were required to achieve compliance with SO2 emission reductions by 1995. Phase II included smaller power generating units that used oil, coal, and gas. The deadline for compliance with phase II was January 1, 2000. I focus on the phase I deadline because it targeted the largest coal-fired power plants.
+
+Fuel switching to low sulfur coal was a primary method by which electricity generators met the ARP requirements. Since the electric power industry accounted for 90 percent of coal demand in 2000 \parencite{freme2000us}, the ARP increased the demand for low sulfur coal and reduced the demand for high sulfur coal \parencite{epaarpcoalemp,stratford2015coalprod}. Coal's sulfur content varies across mines within and between coal regions. The amount of sulfur present within a coal mine affected its production after 1995.
+
+\subsection{The impact of the Acid Rain Program (ARP) on utility exposure to coal production}
+
+I use descriptive and summary data to show that the reduction in high sulfur coal production induced by the ARP also reduced the size of the population reliant on a utility exposed to coal production. These results do not reflect the actual population served by utilities affected by coal mines during 1985 to 2005 because I rely on the population served by a utility using the SDWIS snapshot from the third quarter of 2024.
+
+I find that between 1983 and 2005, tons of coal mined from low sulfur HUC12s increased, while production from high sulfur coal decreased. I consider a HUC12 watershed and all the mines within that watershed to have high sulfur coal if sulfur is greater than or equal to 2 percent \footnote{Following the USGS literature, low sulfur coal is 1 percent or less sulfur by weight, medium sulfur coal is 1 to 3 percent sulfur by weight, and high sulfur coal is greater than 3 percent sulfur by weight \parencite{schweinfurth2009introduction}.}. Figure \ref{plot:coal_summary_plot} plots the average trend in HUC12 level coal production by high and low sulfur coal HUC12s from 1983 to 2005. The HUC12 watersheds where coal increased had fewer utility water intakes downstream than the places where coal production fell. Map \ref{map:proportionatecircleprod_diff_allminehuc12_1985_2005} plots changes in HUC12 coal production for all HUC12s with at least one active coal mine between 1985 and 2005. The red circles represent proportionate increases in total short tons of coal produced and the blue circles represent proportionate decreases. Coal increased and decreased in both the western and eastern coal fields. Coal production mostly decreased in Pennsylvania and mostly increased in West Virginia. Other states' coal production saw both increases and decreases.
+
+The increases in coal production largely did not occur upstream of utility water intakes. Map \ref{map:proportionatecircle_upstream_mines_huc12_1985_2005} plots coal mining HUC12s upstream of utility water intakes with circles proportionate to the size of the population that obtains their drinking water from a directly downstream HUC12 utility. HUC12s where coal production fell are plotted blue and where coal production increased are plotted red. HUC12s with no utility water intake directly downstream are not plotted. The size of the population downstream of HUC12s where coal production fell was larger than the population downstream of HUC12s where coal production increased.
+
+\begin{figure}
+ \centering
+\includegraphics[scale=0.67]{plots/coal_summary_plot.png}
+\label{plot:coal_summary_plot}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{plots/sulfur_histogram_downstream2sls.png}
+\label{hist:sulfurhuc12}
+\end{figure}
+
+\begin{figure}[h]
+    \centering    \includegraphics[scale=0.37]{plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png}
+\label{map:proportionatecircleprod_diff_allminehuc12_1985_2005}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.37]{plots/proportionatecircle_upstream_mines_huc12_1985_2005.png}
+\label{map:proportionatecircle_upstream_mines_huc12_1985_2005}
+\end{figure}
+
+\subsection{Research Design} 
+
+The theoretical model predicts an ambiguous effect of coal mining on self-reporting rates. Coal mining acts on the incentive to self-report by raising the cost of self-reporting and raising the contamination above the MCL. Coal mining raises self-reporting if it raises contamination above the MCL and the expected penalty from being in violation and not self-reporting is outweighed by the expected penalty from being in violation and self-reporting. Coal mining can lower self-reporting even if it does not raise contamination above the MCL, but it raises self-reporting costs.
+
+I measure the effect of upstream coal mining on utility self-reporting rates using an instrumental variable regression of SDWA violations on the number of active coal mines upstream of the utility water intake. The number of active coal mines in the HUC12 upstream of a utility water intake is instrumented by interacting a binary variable equal to one during the time period after 1995 and zero otherwise, the compliance date for stage I of the ARP, with the percent of sulfur by weight in the coal deposits within the HUC12 directly upstream of the utility intake. Production in low sulfur coal areas increased to meet the shifting national demand. The instrument exploits the shift in coal-fired power plants' demand for coal with lower sulfur after 1995 in order to meet the sulfur dioxide emission standards of the ARP to identify variation in the location and size of coal production that is exogenous to unobserved utility characteristics affecting violations.
+
+The first stage specification of my instrumental variable regression of the effect of upstream coal mining on utility drinking water violations is
+
+\begin{equation}\label{1ststage2sls}
+\begin{split}
+\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{NumIntakes}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + Y_t + C_c + \nu_{ct}
+\end{split}
+\end{equation}
+
+The number of mines that are one HUC12 upstream of utility c in year t is $NumMines_{ct}$. The exogenous covariates are the number of utility intake facilities, $NumIntakes_{ct}$, year fixed effects, $Y_t$, and utility fixed effects, $C_c$. The instrumental variable is the interaction between the average sulfur as a percentage of weight in the HUC12s directly upstream of all utility c's water intakes, $UpstreamCoalSulfur\%_c$, and a dummy variable equal to 1 for the years after the deadline to implement stage I of the ARP, 1995, and 0 at other times, $Post95_t$. During the pre-1995 period, all observations of $UpstreamCoalSulfur\%_c \cdot Post95_t$ are 0, and after 1995, the observations are the percent of sulfur in upstream coal. Standard errors are clustered at the utility level. 
+
+The second stage of the regression is
+
+\begin{equation}\label{2ndstage2sls}
+\begin{split}
+\text{Days in Violation}_{vct} &= \beta_0 + \beta_1\text{NumIntakes}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} \\
+&\quad + Y_t + C_c + \epsilon_{ct}
+\end{split}
+\end{equation}
+
+In the second stage, the dependent variable is the number of days in a year that utility c experienced violation v in year t, $\text{Days in Violation}_{vct}$. 
+
+Acid mine drainage is more common when the minerals contain high levels of sulfur, making the incidence of acid mine drainage increase with coal sulfur levels \parencite{schweinfurth2009introduction}. The endogeneity of upstream sulfur is controlled for with utility fixed effects since sulfur levels do not change over time.
+
+\subsection{Instrument validity}
+
+The instrument is independent if the relationship between utility characteristics important for water quality and the siting of upstream coal mines is independent of the upstream coal sulfur content in 1995, so that $f(UpstreamCoalSulfur\%_c \cdot Post95_t, \text{utility characteristic})=f(UpstreamCoalSulfur\%_c \cdot Post95_t)f(\text{utility characteristic})$. Conditional on the control variables, $UpstreamCoalSulfur\%\times Post95$ is independent of the omitted variables in $\epsilon_{ct}$ that determine utility drinking water quality violations. The ARP and the timing of the first phase were both exogenous to utility drinking water quality and utility characteristics. The ARP was a national clean air policy that was not written or enacted to address water quality issues. The effects of the ARP on coal production were determined by national and international energy markets that local utilities or local utility water quality did not affect. Local utility characteristics regarding water quality or local power over source protection did not affect the scope of the ARP, nor how stringent the ARP law was, nor the degree to which low sulfur coal should be part of the abatement technology, nor the date of phase I of the ARP. The timing of the ARP did not coincide with major drinking water regulations. 
+
+The instrument would violate independence if the unobserved utility characteristics that affect drinking water quality violations and the siting of coal mines changed after 1995 for utilities with different amounts of sulfur as a percentage of coal weight. Knowing about sulfur as a percentage of coal weight upstream of a utility after 1995 tells us nothing about how much political power a local utility has over mine siting. Thus, $Cov(\text{political power of utility}_c, UpstreamCoalSulfur\%_c \cdot Post95_t)=0$. 
+
+The instrument only affects utilities through its effect on the number of coal mines. A threat to this would be if utility SDWA regulation changed after 1995 and had a differential impact on utilities downstream of high sulfur coal before and after 1995 compared to utilities downstream of low sulfur coal before and after 1995. Changes in SDWA rules that affected all utilities the same way are controlled for with time fixed effects. For example, in 1991, the monitoring and reporting schedule changed for all utilities and is controlled for with time fixed effects. Any change to an MCL would apply to all utilities and be controlled for with time fixed effects. The SDWA amendments that were passed in 1996 increased the use of consumer confidence reports as an enforcement tool when a utility violated a drinking water regulation. Utilities downstream of high sulfur coal will experience less upstream coal mining after 1995 compared to before 1995, and therefore less upstream water contamination, whereas utilities downstream of low sulfur coal will experience more upstream coal mining after 1995 compared to before 1995. Utilities downstream of high sulfur coal may experience fewer SDWA violations from upstream pollution compared to before 1995, meaning the burden of a consumer confidence report is smaller than it would have been before 1995, whereas utilities downstream of low sulfur coal will experience more upstream pollution after 1995 compared to before, meaning the burden of the consumer confidence report is higher than it would have been before 1995. This difference is likely small since all utilities in the sample are downstream of coal mining and have more similar pollution exposure and burden from consumer confidence reports compared to the average utility in the country.
+
+%I can check this by looking at the relationships between ARPxpost95 and utility characteristics not associated with the number of upstream mines.
+
+The instrument does predict the location and size of coal production. Figure \ref{fig:scatterhuccoalsulfur} is a scatter plot of the number of coal mines and the coal sulfur percent in the HUC12s upstream of utilities before and after 1995, with plotted linear lines of best fit for each period. The change in production away from high sulfur coal production after the ARP is strongly demonstrated by the line of best fit flattening after 1995, indicating that while there was more coal production in higher sulfur coal areas before 1995, there was a large shift to areas with low sulfur coal after 1995. The number of coal mines in a HUC12 increased with the percent of sulfur as the weight of coal in the HUC12 before 1995. The time-contingent switch in coal production based on sulfur content supports the structure of the variable $UpstreamCoalSulfur\%_c \cdot Post95_t$.
+
+The strength of the instrument is still evident after controlling for covariates. Figure \ref{fig:first_stage_scatter_dwnstrm} is a scatter plot of the residualized number of upstream coal mines and the residualized instrumental variable. There is a negative relationship between the residualized number of upstream coal mines and $UpstreamCoalSulfur\%_c \cdot Post95_t$.
+
+\begin{figure}\label{fig:scatterhuccoalsulfur}
+\includegraphics[scale=0.6]{plots/scatterhuccoalsulfur_pooled.png}
+\end{figure}
+
+\begin{figure}\label{fig:first_stage_scatter_dwnstrm}
+\includegraphics[scale=0.6]{plots/first_stage_scatter_dwnstrm.png}
+\end{figure}    
+
+\input{reg/fs_dwnstrm_minevio_ivsum.tex}
+
+\subsubsection{Assessing monotonicity}
+
+The instrument requires monotonicity and for there to be no defiers to recover the local average treatment effect (LATE) estimate of the instrument. A defier in this context is a utility that is upstream of a high-sulfur coal watershed where coal production increased after 1995 but would have decreased production after 1995 if it had instead been a low-sulfur coal watershed. An example of a never-taker is a high-HUC12 that maintains production after 1995 because its customers are electricity generators that install scrubbers. As long as scrubber adoption is not positively correlated with sulfur in a way that causes production to increase post-ARP in high-sulfur areas, this is not a violation of monotonicity and only reduces first-stage power. To be a defier with scrubber installation requires a power plant to expand production after installing scrubbers and increase electricity market share. Power plants that rely on high sulfur coal and scrubbers are more likely to lose market share and reduce production since scrubbers are expensive to install, increase operating costs, and require higher electricity rates to retain profits. If some high-sulfur regions had a comparative advantage in low-cost production that offset the ARP cost increase, such as very low labor costs or transportation advantages, they might expand production even as ARP made their coal relatively more expensive. Unless this expansion would not have occurred if the low-cost high-sulfur regions had been low-sulfur coal regions, this would not create defiers and would instead create never-takers.
+
+In this setting, the instrument is $Z_i = \text{post95}_t \times \text{sulfur}_h$, which equals zero before 1995 and $\text{sulfur}_h$ after. For a given sulfur level $w$, monotonicity requires either $\text{num_mines}_i(0) \leq \text{num_mines}_i(w)$ for all $i$, or $\text{num_mines}_i(0) \geq \text{num_mines}_i(w)$ for all $i$.\footnote{Stating monotonicity more formally and following \textcite{angrist1994identification}, let $\Psi$ be the support of the instrument $Z_i$, and for each $z \in \Psi$ define a random variable $D_i(z)$. The monotonicity assumption requires that for all $z, w \in \Psi$, either $D_i(z) \leq D_i(w)$ for all $i$, or $D_i(z) \geq D_i(w)$ for all $i$. This condition applies pairwise to elements of $\Psi$ and imposes no restriction on the ordering of $z$ and $w$.} This permits the direction of the response to vary with sulfur content. For example, at $\text{sulfur} = 1$ (low sulfur), mines may expand after 1995, so monotonicity requires $\text{num_mines}_i(0) \leq \text{num_mines}_i(1)$ for all $i$. At $\text{sulfur} = 4$ (high sulfur), mines likely contract after 1995, so monotonicity requires $\text{num_mines}_i(0) \geq \text{num_mines}_i(4)$ for all $i$. These two conditions are compatible: monotonicity is satisfied so long as each pairwise comparison is uniform across units, even when low- and high-sulfur areas respond in opposite directions.
+
+\section{The impact of coal mining on utility self-reporting}
+
+Table \ref{2sls_dwnstrm_minevio_allcat_ivsum_binvio} reports the results of Equation \ref{2ndstage2sls} estimating the impact of the number of active upstream coal mines on the likelihood that in a year a utility receives either an MCL or MR violation for nitrates, arsenic, and inorganic chemicals using OLS, reduced form, and two stage least squares regressions. 
+
+An additional active coal mine upstream increases the likelihood of nitrate, arsenic, and IOC SDWA violations by roughly 2 percentage points out of the year when using OLS.
+
+Coal production fell most acutely in high sulfur coal areas after 1995, and a positive relationship between coal production and SDWA violations predicts that IOC violations would fall with increasing upstream sulfur after 1995 relative to before 1995. The reduced form effect of the instrument measures how much more (or less) a one-percentage-point increase in upstream sulfur affects the likelihood of violations after ARP Phase I relative to before. An additional percent of coal sulfur upstream leads to a 2.4 percentage point reduction in the likelihood a utility experiences a nitrate, arsenic, or inorganic chemical violation of any kind after 1995 compared to before 1995. This suggests that in areas where the number of coal mines is more likely to decrease, the likelihood of violation in a year falls.
+
+The instrumental variable estimate of an additional active coal mine upstream on nitrates and arsenic violations is an additional 10 and 7.5 percentage point increases, respectively. The instrument has a relatively strong first stage with an F statistic of 27.5. The OLS results underestimate the effect of coal mines on violations relative to the IV results. In general, the OLS impact of coal mines is five times smaller than the IV coefficient, suggesting that the omitted variable bias is negative. A negative omitted variable bias is consistent with utilities that are able to influence the siting of upstream mines being better at avoiding violations.
+
+The entire increase in violations from upstream mining is driven by MR violations rather than MCL violations. The regressions presented in Table \ref{2sls_dwnstrm_minevio_mr_ivsum_binvio} estimate Equation \ref{2ndstage2sls} on MR arsenic, nitrate, and IOC violations. An additional coal mine upstream of a utility leads to 9, 7, and 7 percentage point increases in the likelihood of an MR violation in a year for nitrates, arsenic, and general IOC contaminants, respectively, comprising the entire effect observed when the dependent variable combines MR violations with MCL violations. IOC violations are statistically significant at the 10 percent level when violations are limited to MR violations and statistically insignificant when the violations refer to the share of the year spent in either MCL or MR violations. Violations are more than twice as likely to occur relative to the average rate of MR violations after an additional mine operates upstream. Table \ref{tab:mr_mcl_incidence_summary} reports the mean summary rates of arsenic, nitrate, and inorganic chemical violations at 4 percent, 6 percent, and 4.6 percent.
+
+The impact of coal mining on downstream utility MCL violations for nitrates, arsenic, and general IOC contaminants is presented in Table \ref{2sls_dwnstrm_minevio_mcl_ivsum_binvio}. The IV regression of the effect of the number of coal mines upstream estimates statistically and economically insignificant changes in the likelihood a utility experiences an arsenic or nitrate MCL violation. The point estimate for the effect of an additional mine on the likelihood a utility spends a year in a nitrate MCL violation is $-0.02$ percentage points, and for an inorganic chemical MCL it is $-0.7$ percentage points. None of these effects are statistically significant due to the extreme rarity of MCLs in the sample.
+
+Despite all the significant effects of coal mining being concentrated in MR violations and not in MCL violations, I cannot conclude that coal mining does not impact actual contaminant levels. Coal mining can increase contaminant levels, but they can remain below an MCL. A maximum contaminant level violation is only issued by the regulator when they receive the results of a test that a utility conducted. Consistently failing to conduct tests or report the results of tests and incurring an MR violation prevents an MCL from being issued, even if contaminant concentration legitimately exceeds the MCL. The SDWA ECHO violation dataset is, for that reason, unable to measure drinking water contamination when systems do not monitor and report tests. 
+
+The theoretical model predicts that lapses in self-reporting can occur without contaminant concentration violations occurring when contamination increases following mining and testing costs rise or utilities seek to avoid MCL penalties by hiding MCL violations in MR violations, or if penalties fall. I next test whether contamination rises with mining.
+
+\begin{landscape}
+\input{reg/2sls_dwnstrm_minevio_allcat_ivsum_binvio}
+\end{landscape}
+
+\input{reg/2sls_dwnstrm_minevio_mr_ivsum_binvio}
+
+\input{reg/2sls_dwnstrm_minevio_mcl_ivsum_binvio}
+
+\section{The impact of coal mining on downstream utility contamination}
+
+\subsection{Empirical Framework}
+
+I estimate the effect of coal mining on IOC water contaminant concentrations at utilities. This tests whether mining induced under-reporting due to rising self-reporting costs. Upstream mining increases the costs of compliance by raising the level of pollution and the effort that needs to be expended to stay in compliance. As the costs of compliance rise, the cost savings and, therefore, the benefits of non-compliance rise too. I limit the estimation to arsenic, nitrates, barium, and selenium, as the MCL for these IOC contaminants did not change between 1985 and 2005 and these were the IOC contaminants that were kept after cleaning the SYR2 data.
+
+I estimate the impact of coal mining on the mean concentration of contaminants within downstream utilities using the equation
+
+\begin{equation}\label{eq:huc02reg}
+    \textit{Concen}_{cht}= \beta\cdot\sum_{\tau=1985}^t\text{upstream coal prod}_{c\tau}  + \rho_c + HUC02_h\cdot\tau_t + \epsilon_{cht}
+\end{equation}
+
+$\textit{Concen}_{cht}$ is the mean concentration of a contaminant measured at utility c in HUC02 h in year t using SYR2 data from 1998 to 2005. $\sum_{\tau=1985}^t\text{upstream coal prod}_{c\tau}$ is the cumulative tons of coal mined in all HUC12s directly upstream of all utility c intakes from 1985 until year t. $\beta$ is the effect of an additional 10,000 tons of coal mined upstream of utility c. Utility fixed effects are included as $\rho_c$. To control for annual large watershed industrial contamination trends, I include HUC02 fixed effects interacted with time fixed effects $HUC02_h\cdot\tau_t$. Standard errors are clustered at the utility level.
+
+Equation \ref{eq:huc02reg} is a continuous differences-in-differences regression with no pure control observations. The identifying assumption requires strong parallel trends: the pollution concentrations at utilities that experience a large decline in coal production would have trended the same as the pollution concentrations at utilities with a small decline \parencite{callaway2024difference}.
+
+%\subsection{Validity tests}
+
+%Table \ref{tab:pt_balance_6yr} reports the results balance of utility covariates in 1997, population, and number of intakes, and contemporaneously. I find that cws characteristics do not significantly predict the cumulative tonnes of coal mined upstream when huc02 fixed effects are included. This is the intensive margin that my main concentration regression uses. However, any mining is statistically significantly correlated with cws characterisitics.
+
+%\input{reg/pt_balance_6yr}
+
+%\input{reg/pt_eventstudy_violations}
+
+\subsection{Results}
+
+\input{reg/6yr_huc02fe_inorg_ravalli_2005}
+
+Table \ref{tab:6yr_huc02fe_inorg_ravalli_2005} contains the results of regression \ref{eq:huc02reg} on IOC contaminant concentration tests throughout utility water processing stages. An additional 10 million cumulative short tons of coal mined upstream since 1985 increases mean concentrations of IOC contaminants at utilities. The effect is significant for all IOC contaminants except for nitrates, which I lack the power to identify at a statistically significant level.
+
+Arsenic increases by 0.0023 mg/L after an additional 10 million short tons of coal mined upstream. This is economically significant, equivalent to almost a 100 percent increase over the mean arsenic concentration of 0.0029 mg/L, and is statistically significant at the 1\% level. The effect represents 23 percent of the EPA arsenic MCL of 0.010 mg/L after 2005 and 4.6 percent of the MCL before 2006, which is 0.050 mg/L.
+
+An additional 10 million cumulative short tons of coal increases selenium and barium levels by 0.0033 mg/L and 0.0171 mg/L, respectively. The effects are statistically significant at the 5\% level for selenium and the 10\% level for barium and are large relative to the mean contaminant levels, representing increases of 50 percent, 69 percent, and 24 percent, respectively.
+
+An additional 10 million short tons of coal increases nitrate concentrations by 0.05 mg/L; however, the effect is not statistically significant. The effect represents a 5 percent increase in concentration levels relative to the mean contaminant concentration of 0.75 mg/L. This small increase could explain why the coefficient lacks significance. Assuming the contaminant concentrations increase linearly with each additional 10 million short tons of coal mined, an increase in coal production upstream of utility from zero to 100 million short tons would result in the nitrate contaminant concentration exceeding 50 percent of the nitrate MCL. The maximum short tons of coal produced upstream of a utility during this time period is 10 million short tons. 
+
+These results suggest mining increases mean IOC contaminant concentrations (by 20--100 percent
+of mean concentrations). Mining thus raises utility costs to completely remove contaminants and utilities downstream of mines face costlier SDWA compliance. Despite the economic and statistically significant result that upstream coal mining raises IOC contaminant concentrations at utilities, there are no observations in the SYR2 data that exceed the MCL of any IOCs (see Table \ref{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005}). This does not confirm that water contamination never exceeded the MCL. Most MR violations were issued for failure to test water quality. The SYR2 necessarily reflects the results from water tests and does not account for tests not undertaken that were subsequently punished with an MR violation.
+
+I estimate the effect of SYR2 contaminant concentrations of nitrates on the likelihood of nitrate self-reporting violations. After 1991, the cost of self-reporting rose with contaminant concentrations. Nitrate self-reporting requirements required increased monitoring if nitrate concentrations were detected at 50 percent of the nitrate MCL.
+
+Table \ref{tab:mr_concentration_lag} reports regressions of linear probability models of the likelihood of a utility failing to monitor and report their water for nitrate levels within 6 months and a year of a contaminant reading. I find that when nitrate contaminant readings are greater than 50 percent of the nitrate MCL, a utility is 0.5 percentage points more likely to fail to self-report water tests for nitrates in the following year and 0.2 percentage points more likely to fail to monitor and report nitrate water tests within six months. The failures after a nitrate reading has exceeded 50 percent occur during a time of enhanced nitrate monitoring at the utility since these results are from 1997 to 2005. This suggests that utilities are more likely to fail to keep up with marginal increases in monitoring and reporting schedules. Enforcement does not increase. 
+
+\input{reg/mr_concentration_lag}
+
+\input{reg/mr_concentration_lag_national_downstream_states}
+
+\section{Regulator responses to increased utility self-reporting violations}
+
+The theoretical model predicts that utilities' self-reporting depends on the expected penalties from regulator enforcement. To investigate the penalties and disincentives for missing self-reporting requirements, I estimate the impact of coal mining on the likelihood that a utility receives enforcement and regulatory visits. This measures the enforcement received by the utilities which underreport due to coal mining contamination.
+
+\input{sum/sanitary_visit_timing_formal_enforcement_rate}
+
+Formal enforcement is a large cost burden to utilities. It involves fines, court orders, and prosecution. To summarize the likelihood of receiving formal enforcement, table \ref{tab:sanitary_visit_timing_formal_enforcement_rate} calculates the rate of formal enforcement at utilities downstream of coal mines. Rates are calculated across the utility-year panel. Formal enforcement is more likely to be used when a utility fails to self-report, and formal enforcement is even more likely to be used when a utility fails to self-report and receives a sanitary visit. However, receiving a sanitary visit and being downstream of more coal mines, which induces more self-reporting violations, does not induce any more likelihood of receiving formal enforcement. Increases in self-reporting failures are not penalized any more harshly than standard rates of self-reporting non-compliance.
+
+\subsection{Instrumental variable}
+
+I have established that coal mining increases utilities' violations of the SDWA. Violations increase as contaminant concentrations rise, which I have also established occurs when mining increases. The theoretical model predicts that violations will rise when enforcement or penalties for underreporting are relatively low. I estimate whether regulatory enforcement action is less costly as coal mining increases upstream of utilities. 
+
+Coal mine siting and production could be endogenous to regulator enforcement of SDWA at utilities. For example, utilities that are able to protect their water sources from upstream mining would, on average, be better able to reduce the cost of regulatory enforcement they would face from SDWA violations. I construct an instrument as in equation \ref{1ststage2sls} to address the endogeneity of mine siting and regulator action at utilities. I estimate the effect of upstream coal mining on the likelihood of formal and informal enforcement using this IV for upstream coal mining. Formal enforcement is more severe and costlier than informal enforcement since it can involve legal cases against the utility.
+
+Part of any effect that I find of coal mining on regulator enforcement of the SDWA at utilities is the effect of water pollution from coal mining on regulator enforcement. Regulators are more likely to be responding to pollution caused by upstream coal mining rather than to upstream coal mining itself, since utility water quality is regulated by state and federal authorities, and mine safety is regulated by the federal MSHA. It is possible that state environmental regulators are aware of coal mining pollution through their primacy to enforce point source pollution in the Clean Water Act.
+
+The first stage is
+\begin{equation}\label{1ststage2slsreg}
+\begin{split}
+\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{NumIntakes}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + Y_t + C_c + \nu_{ct}
+\end{split}
+\end{equation}
+
+And the second stage is
+\begin{equation}\label{2ndstage2slsreg}
+\begin{split}
+\text{Regulatory Action}_{ct} &= \beta_0 + \beta_1\text{NumIntakes}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} \\
+&\quad + Y_t + C_c + \epsilon_{ct}
+\end{split}
+\end{equation}
+
+The number of mines that are one HUC12 upstream of a utility c water intake in year t, $NumMines_{ct}$, is predicted by a function of the number of utility intake facilities, $NumIntakes_{ct}$, the average coal sulfur percentage in upstream HUC12s where coal sulfur can be calculated, $UpstreamCoalSulfur\%_c$, interacted with a dummy indicator for the years after 1995, stage I of the ARP, $Post95_t$, year fixed effects, $Y_t$, utility fixed effects, $C_c$, and an error term, $\nu_{ct}$. Standard errors are clustered at the utility level.
+
+The utility fixed effects control for the effect that upstream sulfur is associated with a higher baseline of AMD which could increase pollution and therefore enforcement action outside of the effect of the instrument on coal mines.
+
+The exclusion restriction fails when the instrument affects regulator behavior through another path outside of its effect on coal mining. The exclusion restriction would be threatened if the ARP Phase I directly changed state EPA enforcement practices in a way that affected utilities differently according to the percent of sulfur by weight in upstream coal. However, states were not primarily responsible for enforcing the ARP; it was a federally regulated program that, by itself, would not have affected state primacy enforcement of the SDWA.
+
+Any national regulatory changes to the SDWA that affected all utilities are controlled for with time fixed effects. The threat to the exogeneity of the instrument would occur if regulatory enforcement in low sulfur regions before and after 1995 changed differently from the change in regulatory enforcement in high sulfur regions before and after 1995.
+
+Table \ref{tab:h3_inf_formal_d12} presents the coefficients from estimating Equation \ref{2ndstage2slsreg} on the likelihood of formal and informal enforcement. Upstream coal mining leads to a five percentage point reduction in formal enforcement at the 1\% level of statistical significance and a reduction in informal enforcement close to zero, which is not statistically significant.
+
+The OLS regression measures a 1.69 percentage point fall in any formal enforcement occurring at a utility in the year when an additional mine operates upstream. Given that the IV estimates a larger reduction in the likelihood of formal enforcement, this implies the omitted variable bias is positive and is consistent with the bias from omitting utility ability to protect upstream water sources and influence SDWA regulatory enforcement. 
+
+The coefficient of $UpstreamCoalSulfur\%_c \times Post95_t$ in the reduced form regression compares the enforcement at utilities with higher sulfur levels after 1995 to those with lower sulfur levels. A one-percentage point increase in $UpstreamCoalSulfur\%_c$ is associated with a 1.45 percentage point increase in formal enforcement after 1995, compared to before 1995. Mining declines with sulfur after 1995; this means that places that likely experienced declines in mining after 1995 also experienced increases in formal enforcement compared to places that experienced mining increases; formal enforcement is less likely to be used as upstream mining increases. This is not counterintuitive when considering that formal enforcement such as legal action is hard to conduct without evidence of an MCL or strong evidence of wrongdoing, and previous results show that utilities downstream of mining increases underreport, thus providing less evidence for regulator formal enforcement.
+
+Regulators increase the likelihood of conducting enforcement visits when the number of upstream coal mines increases. Table \ref{tab:h2_snsv_d12} presents the coefficients from estimating equation \ref{2ndstage2slsreg} on enforcement visits. Enforcement visits, however, do not translate into formal enforcement.
+
+The regulator necessarily lacks information about the quality of water at a utility incurring an MR violation. If the actual contaminant concentration is above the MCL, then the violation requires urgent action to protect public health. However, if the actual contaminant concentration is below the MCL, then the violation does not require urgent action to protect public health. The regulator can use sanitary inspections of utilities to determine the risk to public health and determine the type of action that must be taken to enforce compliance.
+
+Table \ref{tab:h2_snsv_d12} presents the coefficients from estimating equation \ref{2ndstage2slsreg} on the likelihood of a regulator conducting a sanitary visit to a utility following an increase in upstream coal mining. Coal mining leads to a 14 percentage point increase in sanitary visits by the regulator to the utility. This is statistically significant at the 1 percent level. The absence of an increase in formal enforcement rates at the utilities where sanitary visits take place suggests that regulators do not uncover hidden MCLs.
+
+\input{reg/h3_inf_formal_d12}
+
+\input{reg/h2_snsv_d12}
+
+\section{Discussion}
+
+Coal mining reduces utility self-reporting of water quality while it increases the contaminant concentration of inorganic chemicals in the water. The theoretical model predicts that utilities reduce self-reporting when contamination rises to reduce onerous self-reporting costs and to hide MCL violations. 
+
+The evidence suggests that utilities are underreporting to avoid onerous self-reporting costs and not to hide MCLs. Coal mining contamination does not raise contaminant concentrations above MCLs in the limited SYR2 data. However, this result is limited to a subset of utilities and a subset of the time period.
+
+Regulators conduct sanitary and enforcement visits at utilities that are underreporting while not bringing formal enforcement action against those utilities. Hidden MCLs would likely attract formal enforcement. This is additional evidence that utilities are underreporting to avoid onerous self-reporting costs rather than being used to hide MCL violations.
+
+There is suggestive evidence that nitrate violations are more likely to occur when contaminant tests exceed 50\% of the MCL, requiring more self-reporting, than when contaminant levels are below 50\% of the MCL. This suggests that underreporting occurs as a way to avoid more onerous self-reporting requirements.
+
+The behavior of the utilities in response to penalties and enforcement suggests that the penalties for utilities not self-reporting are too low to deter the reduction in self-reporting that occurs from self-reporting cost increases. The result is that regulators are required to increase sanitary visits to utilities to determine the health risk of an underreporting utility. The welfare effects of this are not a priori clear. The regulators may be able to monitor with economies of scale that are lower than the utilities' cost of self-reporting. However, the economies of scale would have to overcome the large amount of resources the regulator would have to devote to monitoring all utilities in a timely manner.
+
+I do not address the efficiency of shifting monitoring onto the regulators. Water quality is generally perceived as a local issue with limited externalities \parencite{olmstead2010economics}. Without externalities, it may be inefficient for a state regulator to expend resources to monitor a local utility. However, regulators may be able to conduct monitoring at a lower marginal cost than small utilities. Small utilities find the burden of water quality management particularly heavy. I would need to take into account the regulators' preferences in order to say something about efficiency. Regulator preferences affect enforcement and not only violation severity alone \parencite{kang2021understanding}.
+
+\section{Conclusion}
+
+I present evidence that under a self-reporting regulatory framework designed to monitor a quality target, self-reporting falls if contamination increases even if that quality does not fall below regulatory standards. I show this in the context of coal mining and utilities: utility SDWA self-reporting of water quality falls as water quality exogenously deteriorates. Utility SDWA self-reporting becomes costlier as coal mining increases, since an increase in coal mining leads to increases in inorganic chemical water contamination at utilities, which increases the cost of self-monitoring. I do not detect mean contaminant levels increasing above maximum contaminant levels and cannot conclude that upstream coal mining is increasing pollution to the extent that utilities need to install improved abatement technology to meet SDWA maximum contaminant level compliance. 
+
+I find that penalties for not self-reporting are not high enough to induce utilities to self-report as self-reporting costs rise. The regulator can use sanitary visits to assess the threat posed to public health by an MR violation and can implement a less costly type of enforcement when the threat is discovered to be low. However, without punishing non-self-reporting at high levels, regulators will have to conduct more sanitary visits to ensure that contaminant concentration levels do not exceed health limits.
+
+The findings here suggest that the regulatory design of the SDWA, which relies on utility self-monitoring and assigns substantially lower penalties to non-monitoring than to detected contamination, creates systematic incentives to underreport. Strengthening the monitoring schedule or increasing penalties for non-monitoring in high-pollution areas may be a more effective lever for improving drinking water outcomes than increases in MCL stringency alone.
+
+\newpage
+
+%\section{Appendices}
+
+%\subsection{Type of enforcement following type of visit}
+
+%\input{reg/mr_to_sanitary_visit}
+
+%\input{sum/visit_type_onset_summary}
+
+%\input{reg/sanitary_visit_event_study}
+
+%\input{sum/sanitary_visit_to_enforcement}
+
+%\input{reg/sanitary_visit_enforcement_iterative}
+
+%\subsection{Alternative Specification of Number of Upstream Coal Mines}
+
+%\input{reg/2sls_dwnstrm_minevio_allcat}
+
+%%input{reg/2sls_dwnstrm_minevio_mr}
+
+%\input{reg/2sls_dwnstrm_minevio_mcl}
+
+%\subsection{Binary coded SDWA violations}
+
+%\subsection{Regulator action, violation sequencing, SDWA rule enactment dates}
+
+%\input{sum/viol_concurrent_following_mr}
+
+%\input{sum/viol_sequence_after_mr}
+
+%\input{sum/sdwa_regulator_data_inventory}
+
+%\input{sum/sdwa_rule_enactment_dates}
+
+%\input{sum/npdwr_changes}
+
+\printbibliography
+\end{document}

@@ -1,0 +1,244 @@
+\documentclass{beamer}
+\usetheme{Boadilla}
+\usepackage{tabularray}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{codehigh}
+\usepackage[normalem]{ulem}
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{siunitx}
+\newcommand{\tinytableTabularrayUnderline}[1]{\underline{#1}}
+\newcommand{\tinytableTabularrayStrikeout}[1]{\sout{#1}}
+\NewTableCommand{\tinytableDefineColor}[3]{\definecolor{#1}{#2}{#3}}
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=bwl-FU
+]{biblatex}
+\addbibresource{citation.bib}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\title{The Impact of Coal Mining on Drinking Water Quality}
+\author{Emil R. Kee-Tui}
+\institute{Cornell University}
+\date{\today}
+
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Outline}
+\tableofcontents
+\end{frame}
+
+\begin{frame}{Coal mining on water quality}
+\begin{figure}
+\includegraphics[scale=0.65]{img/Olena Hasii and Grygorii Gasii 2024.png}\caption{Olena Hasii and Grygorii Gasii 2024 IOP Conf. Ser.: Earth Environ. Sci. 1348012017}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Acid rain program}
+    \begin{itemize}
+        \item Passed in 1990, the first 
+        \item Reduce acid rain through reductions in sulfur dioxide and nitrogen oxides below 1980 levels.
+        \item Targeted mostly coal burning electric utility plants in eastern and Midwestern states.
+        \item Used cap and trade and technology incentives.
+        \item Phase I (began in 1995), Affected 263 units
+        \item Phase II (began in 2000) Added more units, affected over 2,000 units in all. 
+    \end{itemize}
+\end{frame}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.065]{img/president_clean_coal.PNG}
+        \caption{Williams, R \& Nelson, M. (1/18/2023). It's Time To Let Coal Die. YouTube. \url{https://www.youtube.com/watch?v=BwP2mSZpe0Q}}
+\end{figure}
+
+\begin{frame}{Research question}
+    \begin{itemize}
+        \item What impact did the acid rain program have on the level and distribution of coal mining around the US?
+        \item What impact does coal mining have on public water system safe drinking water act (SDWA) violations?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Data}
+    \begin{itemize}
+        \item Public water system characteristics, violations, and violation enforcement (ECHO: SDWA, EPA PWS water intake).
+        \item Coal mine production (EIA).
+        \item Coal mine locations (MSHA).
+        \item Coal bed characteristics (USGS).
+    \end{itemize}
+\end{frame}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{plots/data_cleaning/cws_updownstream_huc12s.png}
+        \caption{}
+    \label{map:cws_intake_hucs_updwn_stream_mine}
+\end{figure}
+
+\begin{frame}{}
+    \input{sum/balance_sum_pws}
+\end{frame}
+
+\begin{frame}{}
+    \input{sum/balance_sum_pwssource}
+\end{frame}
+
+\section{Summary Table Violation and Enforcement}
+\begin{frame}{}
+    \input{sum/balance_sum_genviol}
+\end{frame}
+
+\begin{frame}{}
+    \input{sum/balance_sum_genenf}
+\end{frame}
+
+\begin{frame}{}
+    \input{sum/balance_sum_specificviol}
+\end{frame}
+
+\section{Differences between upstream and downstream violations over time}
+
+\begin{frame}{}
+\begin{figure}
+\includegraphics[scale=0.7]{plots/dd_gen_viol.png}
+\end{figure}    
+\end{frame}
+
+\begin{frame}{}
+\input{reg/dd_genviol}  
+\end{frame}
+
+
+\section{ARP on HUC12 level Coal Production}
+
+\begin{frame}{}
+    \input{sum/balance_sum_hucfeatures}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\includegraphics[scale=0.5]{plots/summary/coal_summary_plot.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{}
+    \input{reg/coal_did_sulf}
+\end{frame}
+
+\section{Differences in Differences}
+
+\begin{frame}
+\begin{figure}
+\includegraphics[scale=0.5]{plots/dd_gen_viol.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/dd_genviol}
+\end{frame}
+
+\section{Raw Violations Across Upstream and Downstream and Low and High Sulfur over Time}
+
+\begin{frame}
+\begin{figure}
+\includegraphics[scale=0.5]{plots/sulfur_histogram.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\includegraphics[scale=0.7]{plots/mcl_viol_line.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\includegraphics[scale=0.7]{plots/mr_viol_line.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\includegraphics[scale=0.7]{plots/tt_viol_line.png}
+\end{figure}
+\end{frame}
+
+\section{Triple difference regression general violations}
+
+\begin{frame}{Triple difference regression general violations}
+    
+\begin{equation}
+    Violation_{cpt}=\beta_0 + \beta_3MineHUC12_{p}*Post95_t*HUC12sulfur_p + PWS_p + \epsilon_{cpt}
+\end{equation}
+
+\begin{itemize}
+    \item Violation is a binary variable for if a violation of a drinking water rule c occurred at PWS p at time t.
+    \item MineHUC12 is a binary which is one if the PWS draws its water from a HUC12 where coal mining takes place - control PWS's are those that draw their water from a HUC12 which is upstream of a HUC12 where mining takes place and is not itself downstream from a HUC12 where mining takes place.
+    \item Post95 is after 1995, HUC12sulfur is a binary which is one if the HUC12 which the PWS draws it's water from has low sulfur.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{}
+\input{reg/triple_diff_genviol_discretesulf}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/triple_diff_famviol_discretesulf}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\includegraphics[scale=0.7]{plots/specific_viol_ratio_raw_line1983to99.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\includegraphics[scale=0.7]{plots/specific_viol_ratio_raw_line1990to99.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{}
+\input{reg/triple_diff_specificviol_discretesulf}
+\end{frame}
+
+\begin{frame}{How do regulators and cws's interact}
+
+\begin{itemize}
+    \item $wq_0$ intake water quality
+    \item $wq_1$ cws output water quality
+\end{itemize}
+
+\begin{equation}
+    wq_1 = h(regulator,cws)
+\end{equation}
+
+\begin{equation}
+    regulator = f(X,cws)
+\end{equation}
+
+\begin{equation}
+    cws = g(Y, wq_0(Z, mining),regulator)
+\end{equation}
+
+\end{frame}
+
+\end{document}

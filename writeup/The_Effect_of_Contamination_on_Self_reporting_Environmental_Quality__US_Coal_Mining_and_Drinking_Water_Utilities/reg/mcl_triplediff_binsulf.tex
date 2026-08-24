@@ -1,0 +1,20 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Triple difference violation (binary sulfur)},
+note{}={+ p < 0.1, * p < 0.05, ** p < 0.01, *** p < 0.001},
+note{ }={Note: Includes PWSID FE and SE clustered at HUC12.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]},
+column{1-4}={}{halign=c,},
+}                     %% tabularray inner close
+\toprule
+part & term & statistic & (1) \\ \midrule %% TinyTableHeader
+estimates & post95 × minehuc_mineTRUE × high_sulfur & estimate & 0.004+ \\
+estimates &  & conf.int & [-0.001, 0.008] \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}

@@ -1,0 +1,274 @@
+\documentclass{article}
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=bwl-FU
+]{biblatex}
+\addbibresource{citation.bib}
+\usepackage{graphicx}             % Required for inserting images (duplicate removed)
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{tabularray}
+\usepackage{adjustbox}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{codehigh}
+\usepackage{breqn}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}             % ADDED: required for \doublespacing
+\usepackage{authblk}              % ADDED: required for \author[1]{} affiliation syntax
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{siunitx}
+\newcommand{\tinytableTabularrayUnderline}[1]{\underline{#1}}
+\newcommand{\tinytableTabularrayStrikeout}[1]{\sout{#1}}
+\NewTableCommand{\tinytableDefineColor}[3]{\definecolor{#1}{#2}{#3}}
+% Beamer presentation requires \usepackage{colortbl} instead of \usepackage[table,xcdraw]{xcolor}
+\begin{document}
+\title{The Effect of Pollution on Environmental Contamination Self-Reporting: US Coal Mining and Drinking Water Utilities}
+\author{Emil Kee-Tui}
+	\affil{\small \emph{Charles H. Dyson School of Applied Economics and Management, Cornell University}}
+    
+\date{July 2026}
+\maketitle
+\thispagestyle{empty}
+\doublespacing
+	
+\newpage
+\doublespacing
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Theoretical Framework}
+
+\section{Theoretical Framework}
+
+We model the effect of coal mining pollution on a utility's decision to comply with the Safe Drinking Water Act under regulatory enforcement by adapting a static model of environmental compliance from \cite{kang2021understanding}, which is an adaptation of \cite{mookherjee1994marginal}. Utilities choose a negligence level $a \in [0,\bar{a}]$, which measures how much they avoid the requirements of drinking water quality regulations, from maximum negligence $\bar{a}$ to full compliance 0. Failing to conduct or submit tests to the regulator or not installing pollution abatement technology are examples of CWS negligence. Regulators do not directly observe CWSs choice of $a$. CWSs face a compliance cost, $\theta$, that is a random variable drawn from $\Theta$, which is a strictly increasing and continuously differentiable function $F(\cdot)$ with support $(0,\bar{\theta})$. CWSs know their draw of $\theta$, but regulators only know the distribution of $\Theta$. A compliance cost is determined by both a CWS's ability to manage a drinking water system, such as the skills of managerial and technical staff, and by the costs of water treatment, including the cost of filtration equipment or sterilization chemicals.
+
+CWSs receive a benefit $\theta b(a)$ from having compliance costs $\theta$ and choosing a negligence level $a$. A CWS's benefits from not conducting a test for a specific contaminant are the wages and lab fees for sampling that it saved. The opportunity cost to the CWS of choosing a compliance level $a$ relative to maximum negligence $\bar{a}$ is $\theta [b(\bar{a})-b(a)]$. The financial benefit of a certain level of negligence to a profit maximizing privately owned CWS is obvious. Publicly owned CWSs also benefit from cost savings that allow them to forgo rate or tax increases, which may be unpopular with residents.
+
+The number of violations a CWS incurs is a random variable $K$ that follows a Poisson distribution with mean $a$. Given the negligence level $a$, observed violations follow a Poisson process:
+
+\[Pr(K = k | a) = e^{-a}  \frac{a^k}{k!}\]
+
+The penalty schedule that the CWS faces for incurring $k$ violations is given by $\epsilon(k)$, which is non-decreasing and continuously differentiable. The penalty schedule is a function that includes the likelihood of the regulator enforcing the penalty at each violation and the cost of the violation. The regulator can only base the penalty on $k$ because it cannot observe negligence or the cost of compliance. Assuming the CWS is risk neutral, the expected penalty for a risk neutral CWS is 
+
+\begin{equation}
+    e(a)\equiv exp(-a)\sum^\infty_{k=0}\frac{\epsilon(k)}{k!}a^k.
+\end{equation}
+
+The expected payoff to the CWS from negligence level $a$ is
+\begin{equation}\label{eq:cws_benefitcost}
+    -\theta(m)[b(\bar{a})-b(a)]-e(a).
+\end{equation}
+
+A negligence schedule, $a(\cdot)$, is implemented by a penalty schedule, $e(\cdot)$, if $a(\theta)$ maximizes equation \ref{eq:cws_benefitcost} for all $\theta \in \Theta$. Combining the first order condition with the $a(\cdot)$ implemented by $e(\cdot)$ gives
+\begin{equation}\label{cws_foc}
+    \theta b'[a(\theta)]=e'[a(\theta)]
+\end{equation}
+whenever $a(\theta)>0$.
+
+Proposition 1: CWSs choose higher negligence levels as compliance costs increase, $\partial a/ \partial \theta>0$.
+
+Assuming $b(a)$ is a strictly increasing function, $b''(a)$ is decreasing, $e''(a)$ is increasing, and the F.O.C. in equation \ref{cws_foc} solves the CWS maximization,
+\[\frac{\partial a}{\partial \theta}=-\frac{b'(a)}{\theta b''(a)-e''(a)}>0\]
+
+CWS's with higher compliance costs, for example, those with a highly polluted water source requiring high levels of treatment, find the marginal benefit of an additional unit of negligence $\theta·b'(a)$ is larger relative to the marginal expected penalty $e'(a)$. They optimally reduce compliance, and for a CWS this can be an increase in the number of monitoring and reporting violations.
+
+Proposition 2: Suppose mining raises the concentration of pollutants at a CWS water intake, then compliance costs depend on the amount of upstream coal mining such that $\theta (m)$ is continuously differentiable and non-decreasing in m. More upstream mining raises negligence, $\partial a/\partial m >0$.
+\[\frac{\partial a}{\partial m}=-\frac{\theta'(m)b'(a)}{\theta(m) b''(a)-e''(a)}>0\]
+
+Mining raises water pollution levels, which requires increasing the costs of water treatment. As compliance costs increase, the optimal negligence level increases, testing and reporting decrease, and the number of monitoring and reporting violations increases. 
+
+The increase in negligence and violations following an increase in coal mining can be offset by regulators increasing the enforcement of penalties for CWS violations.
+
+Proposition 3: Higher penalties for violations increase compliance and reduce the number of monitoring and reporting violations. Assume higher penalties at every $k$ increase the penalty schedule $\epsilon(k)$ by a fixed amount $\lambda>1$, such that $\lambda\epsilon(k)$, then $\partial a/\partial \lambda<0$.
+
+\[\frac{\partial a}{\partial \lambda}=\frac{e'(a)}{\theta b''(a)-\lambda e''(a)}<0\]
+
+Alternatively, a reduction in the enforcement of penalties for CWS violations would increase non-compliance.
+
+\section{Different penalty based on reporting and MCL}
+
+This is my modification of Kaplow, Louis, and Steven Shavell. "Optimal law enforcement with self-reporting of behavior." Journal of Political Economy 102.3 (1994): 583-606.
+
+Each cws has a type $\theta$. Whether you are above or below MCL depends on your effort $\theta(a)$.
+
+MCL = 1 if $\theta(a)<\theta(\bar{a})$
+MCL = 0 if $\theta(a)>\theta(\bar{a})$.
+
+The CWS can decide to test and report or not test and report. Reporting costs c.
+
+If test and are above MCL you receive sanction r. 
+
+If you do not test and you are above MCL you are investigated with probability p and you pay p(s+t), s>r.
+
+If you do not test and are MCL = 0 you pay p(t).
+
+If mcl = 0 you do not report if c+a>p(t).
+
+if mcl = 1 you do not report if c+r+a>p(s+t).
+
+suppose you choose mcl then if mcl = 1, a = 0 since a is costly and the penalty is discrete and not based on how extreme you exceed the MCL then dont report if c+r>p(s+t)
+
+if mcl = 0, $a=\bar{a}$. Do not report if $c+\bar{a}>p(t)$.
+
+\section{Solution of the reporting--MCL model}
+
+\subsection{Formalization}
+
+Two clarifications are needed before solving. First, as the sketch already notes, the sanction depends only on the binary MCL status and not on the severity of the exceedance, so any interior effort $a \in (0,\bar{a})$ is strictly dominated: it incurs cost without changing MCL status. The effective choice set is $a \in \{0, \bar{a}\}$. Second, the sketch's payoffs do not involve the type $\theta$, so every CWS would make the same choice and the model would have no cross-sectional content. I therefore let effort cost be $\theta a$, with $\theta \sim F$ on $(0,\bar{\theta})$ as in Section 1, so that $\theta$ again scales the cost of compliance. (Note the sign convention: here $a$ is treatment \emph{effort}, the opposite of Section 1's negligence. Also, effort is sunk at the reporting stage, so the reporting comparisons below do not contain $a$; in the sketch's line ``do not report if $c+a>p(t)$'' the $a$ appears on only one side and should cancel.)
+
+The CWS chooses $(a, \text{report})$ to minimize expected cost:
+\begin{center}
+\begin{tabular}{ll}
+(comply, report): & $\theta\bar{a} + c$ \\
+(comply, no report): & $\theta\bar{a} + pt$ \\
+(violate, report): & $c + r$ \\
+(violate, no report): & $p(s+t)$ \\
+\end{tabular}
+\end{center}
+where $r$ is the sanction on a self-reported exceedance, $s>r$ the sanction on an exceedance found by investigation, $t$ the sanction for failure to monitor, and $p$ the investigation probability.
+
+\subsection{Optimal reporting and compliance}
+
+Conditional on compliance status, reporting is a simple cost comparison (independent of $\theta$):
+\begin{itemize}
+\item A compliant CWS reports iff $c \le pt$.
+\item A violating CWS reports iff $c + r \le p(s+t)$, i.e.\ $c \le p(s+t) - r$.
+\end{itemize}
+Define $m_C \equiv \min(c, pt)$ (the compliance overhead) and $m_V \equiv \min(c+r,\, p(s+t))$ (the violation penalty under optimal reporting). Since $m_C < m_V$ always, the compliance rule is a cutoff:
+\begin{equation}\label{eq:cutoff}
+\text{comply} \iff \theta \le \theta^* \equiv \frac{m_V - m_C}{\bar{a}} > 0.
+\end{equation}
+
+Four reporting regimes exist, determined by where $c$ falls relative to $pt$ and $p(s+t)-r$:
+\begin{center}
+\begin{tabular}{llll}
+Regime & Condition & Who reports & $\theta^*\bar{a}$ \\
+\hline
+A (full reporting) & $c \le \min\{pt,\, p(s+t)-r\}$ & everyone & $r$ \\
+B (no reporting) & $c > \max\{pt,\, p(s+t)-r\}$ & no one & $ps$ \\
+C (strategic MR) & $p(s+t)-r < c \le pt$ & compliers only & $p(s+t) - c$ \\
+D (Kaplow--Shavell) & $pt < c \le p(s+t)-r$ & violators only & $c + r - pt$ \\
+\end{tabular}
+\end{center}
+Regime C is non-empty iff $r > ps$: the certain self-report sanction exceeds the \emph{expected} investigative sanction, so violators hide behind MR violations. Regime D is non-empty iff $r < ps$: the self-reporting discount is effective and violators confess, the classic Kaplow--Shavell case.
+
+The empirically relevant margin in this project, however, is not the hiding motive but the cost of testing itself. A \emph{compliant} CWS tests only while $c \le pt$. Suppose mining raises the cost of testing, $c = c(m)$ with $c'(m) > 0$ (degraded source water raises per-sample handling and lab costs and adds required samples), while contamination stays below the MCL and the monitoring sanction $t$ is unchanged. Then rising $m$ pushes compliant systems across $c(m) = pt$ out of the reporting regimes: they rationally stop testing and incur MR violations with $\text{MCL} = 0$. Nothing is being hidden --- the test is simply no longer worth its cost. The hiding motive of regime C survives as a secondary channel, and the model ranks the two: a violator stops testing at the lower threshold $c > p(s+t) - r$, a complier at $c > pt$ (with $r > ps$ the former is strictly lower), so as $c(m)$ rises the few systems in exceedance drop out of testing first (hiding), followed by the mass of compliant systems (pure cost). Comparative statics of $\theta^*$ in regime C: increasing in $p$, $s$, $t$; \emph{decreasing} in $c$ (compliers pay $c$ while hiders do not).
+
+\subsection{Can Propositions 1--3 be derived here?}
+
+Not in their original (smooth, interior) form --- the discrete penalty eliminates the intensive margin, so there is no first-order condition and no violation-count response. What survives is the extensive-margin analogue of each:
+
+\textbf{Proposition 1} ($\partial a/\partial\theta > 0$): holds only as a step function. Negligence is $0$ for $\theta \le \theta^*$ and maximal for $\theta > \theta^*$ --- weakly increasing in $\theta$, but never strictly, and with no interior response.
+
+\textbf{Proposition 2} ($\partial a/\partial m > 0$): the negligence version holds in population form if $\theta(m)$ is nondecreasing, but the empirically relevant version of this proposition runs through $c(m)$, not $\theta(m)$: with CWS-specific testing costs $c_i = c(m) + \eta_i$ ($\eta_i$ an idiosyncratic cost shifter), the share of compliant systems with $c_i > pt$ rises with $m$, so MR violations increase in mining \emph{with no change in any system's MCL status}. This matches the data pattern (MR responds, MCL does not) without requiring any exceedance to exist, let alone be hidden.
+
+\textbf{Proposition 3} ($\partial a/\partial\lambda < 0$): holds in regimes A, B, C but \emph{can fail in regime D}. Scaling all sanctions $(r,s,t) \to \lambda(r,s,t)$ gives $\partial(\theta^*\bar{a})/\partial\lambda = r$, $ps$, $p(s+t) > 0$ in A, B, C respectively, but $r - pt$ in D, which is negative when $pt > r$ (the complier's cost of not reporting rises faster than the violator's self-report sanction). A further caveat: in regime A, $\theta^* = r/\bar{a}$ does not depend on $p$ at all --- investigation probability deters only where someone is not reporting.
+
+\section{A unified model: continuous negligence with an endogenous reporting penalty}
+
+The two models can be combined by keeping Section 1's continuous-negligence technology and preferences and replacing the black-box penalty schedule $\epsilon(k)$ with the expected penalty \emph{derived} from the reporting game. This replaces $\epsilon(k)$ with enforcement primitives $(c, r, s, t, p)$ that map directly to observables.
+
+\subsection{Setup}
+
+The CWS chooses negligence $a \in [0,\bar{a}]$ with forgone benefit $\theta[b(\bar{a}) - b(a)]$ as in Section 1. It faces $N$ required monitoring events per year. Given negligence $a$, each sampling event would reveal an MCL exceedance with probability $q(a)$, with $q(0)=0$, $q'>0$, $q'' \ge 0$. (The number of true exceedances is then Binomial$(N, q(a)) \approx$ Poisson with mean $Nq(a)$, so Section 1's Poisson structure is recovered with intensity $Nq(a)$ in place of $a$.) For the empirically relevant range, $q(a)$ is small: mining degrades source water \emph{within} the MCL for most systems.
+
+Testing costs are CWS-specific and depend on mining: $c \sim G(\cdot\,;m)$, with $m$ shifting the distribution rightward (first-order stochastic dominance). Degraded source water raises per-sample handling and lab costs and triggers additional required sampling even when contamination remains below the MCL; the sanctions $(r,s,t)$ and enforcement intensity $p$ do not depend on $m$.
+
+For each event the CWS chooses to test and report (cost $c$) or to skip the test (an MR violation). Per-event expected penalties:
+\begin{align*}
+\text{report:} \quad & c + q(a)\,r \\
+\text{skip:} \quad & p\left[t + q(a)\,s\right]
+\end{align*}
+Taking $r > ps$ throughout, the CWS tests iff
+\begin{equation}\label{eq:chat}
+c \le \hat{c}(a) \equiv pt - (r - ps)\,q(a).
+\end{equation}
+Equation \ref{eq:chat} contains both MR motives, and ranks them. The \emph{primary} motive is cost: even a fully clean system ($q(a) = 0$) stops testing once $c > pt$ --- the test costs more than the expected sanction for skipping it, and no exceedance exists to hide. The \emph{secondary} motive is hiding: $\hat{c}(a)$ is decreasing in $q(a)$, so systems closer to (or above) the MCL abandon testing at lower cost thresholds. The endogenous expected penalty is the lower envelope
+\begin{equation}\label{eq:endog_penalty}
+e(a) = N \min\left\{\, c + r\,q(a),\;\; pt + ps\,q(a) \,\right\},
+\end{equation}
+which is increasing in $a$, convex within each region (given $q'' \ge 0$), with a concave kink where $c = \hat{c}(a)$.
+
+\subsection{Optimal negligence}
+
+The CWS maximizes $-\theta[b(\bar{a}) - b(a)] - e(a)$ exactly as in equation \ref{eq:cws_benefitcost}, now with $e(a)$ from \ref{eq:endog_penalty}. The first-order condition \ref{cws_foc} becomes piecewise:
+\begin{align}
+\theta b'(a) &= N r\, q'(a) & \text{(testing region, } c \le \hat{c}(a)) \\
+\theta b'(a) &= N ps\, q'(a) & \text{(MR region, } c > \hat{c}(a))
+\end{align}
+Because $ps < r$, marginal deterrence \emph{drops} when the CWS crosses into the MR region: for a given $c$, $a(\theta)$ is increasing within each region and jumps \emph{up} at the type $\hat{\theta}(c)$ indifferent between the two regimes. (The kink makes the objective potentially bimodal; the optimum is the better of the two regional optima, which is what generates the jump.) Note the direction of causality this creates for the cost channel: when rising $c$ pushes a system from testing into the MR region, its marginal penalty falls from $Nr\,q'(a)$ to $Nps\,q'(a)$ and its negligence drifts up. Cost-driven MR violations therefore \emph{precede} any deterioration in behavior --- a mild hiding motive can emerge endogenously after the system has already stopped testing for cost reasons, not the other way around.
+
+\subsection{The propositions in the unified model}
+
+\textbf{Proposition 1$'$:} $\partial a/\partial\theta = b'(a) / [\,-\theta b''(a) + N\rho\, q''(a)\,] > 0$ within each region (where $\rho \in \{r, ps\}$ is the region's effective sanction), with an upward jump at $\hat{\theta}$. Negligence is globally increasing in $\theta$. Recovered.
+
+\textbf{Proposition 2$'$} (restated for the cost mechanism). A CWS of type $\theta$ chooses optimal negligence $a(\theta)$ and tests each event iff its cost draw satisfies $c \le \hat{c}(a(\theta))$. With costs drawn from $G(\cdot\,;m)$, the probability that type $\theta$ tests is $G(\hat{c}(a(\theta))\,;m)$, so the probability it skips (MR violates) is $1 - G(\hat{c}(a(\theta))\,;m)$. Averaging over types, the share of CWSs in MR violation is
+\begin{equation}\label{eq:mr_share}
+\text{MR}(m) = \mathbb{E}_\theta\!\left[\, 1 - G\!\big(\hat{c}(a(\theta))\,;m\big) \,\right].
+\end{equation}
+The claim is $\partial \text{MR}/\partial m > 0$. Mining enters equation \ref{eq:mr_share} in two places --- directly through the cost distribution $G$, and through contamination $q$ inside the threshold $\hat{c}$. Separating the two,
+\begin{equation}\label{eq:mr_deriv}
+\frac{\partial \text{MR}}{\partial m} = \underbrace{-\,\mathbb{E}_\theta\!\left[\left.\frac{\partial G(\hat{c}\,;m)}{\partial m}\right|_{\hat{c}\ \text{fixed}}\right]}_{\text{(i) cost channel}\ \ge 0} \;+\; \underbrace{(r-ps)\,\mathbb{E}_\theta\!\left[\, g(\hat{c}\,;m)\,\frac{\partial q}{\partial m}\right]}_{\text{(ii) hiding channel}\ \ge 0},
+\end{equation}
+where $g = \partial G/\partial c \ge 0$ is the cost density and I have used $\hat{c}'(a) = -(r-ps)\,q'(a)$ to write the second term. Both terms are non-negative, so $\partial \text{MR}/\partial m > 0$.
+
+\emph{Cost channel (primary).} Hold contamination fixed, so $q$ and $\hat{c}$ do not move. First-order stochastic dominance of $G(\cdot\,;m)$ in $m$ means that at every fixed threshold $x$, $\partial G(x\,;m)/\partial m \le 0$ --- probability mass moves toward higher costs, so the CDF evaluated at any fixed point falls. Hence $-\partial G/\partial m \ge 0$ and term (i) is non-negative. Concretely, for a clean system $q(a)=0$ the threshold is simply $\hat{c}=pt$, and its skip probability $1 - G(pt\,;m)$ rises in $m$ purely because the cost distribution shifted right past the fixed cutoff $pt$. No exceedance is involved: $\beta_{MR}>0$ while every system's MCL status is unchanged, delivering $\beta_{MCL}\approx 0$.
+
+\emph{Hiding channel (secondary).} If mining also raises contamination pressure, $\partial q/\partial m > 0$ (still below the MCL for most systems), then $\hat{c}$ falls by $(r-ps)\,\partial q/\partial m$ per unit of $m$, so the systems nearest the MCL are the first to abandon testing. Term (ii) is non-negative but is an amplifier at the top of the contamination distribution; it is not needed to sign the result. Measured MCL violations stay flat both because exceedances are rare ($q$ small) and because the few systems in exceedance have the lowest thresholds $\hat{c}$ and exit reporting first, so their exceedances are never recorded.
+
+\emph{Derivation of the hiding channel.} The inner object $G(\hat{c}(a(\theta))\,;m)$ depends on $m$ through two paths: $m$ enters $G$ directly as its second argument (the cost shift), and $m$ enters through $q$ inside $\hat{c}$ (the contamination shift). The hiding channel is the second path. Holding the direct-$G$ path aside and differentiating only through $\hat{c}$:
+\begin{enumerate}
+\item \emph{Chain rule through the threshold.} For one type $\theta$, the part of $\mathrm{d}/\mathrm{d}m$ that flows through $\hat{c}$ is
+\[ \left.\frac{\mathrm{d}}{\mathrm{d}m}\big[\,1 - G(\hat{c}\,;m)\,\big]\right|_{\text{via }\hat{c}} = -\,g(\hat{c}\,;m)\,\frac{\mathrm{d}\hat{c}}{\mathrm{d}m}, \]
+where $g = \partial G/\partial c \ge 0$ is the cost density; the minus sign comes from the ``$1-G$''.
+\item \emph{Differentiate the threshold.} From $\hat{c}(a) = pt - (r-ps)\,q(a)$, holding $a$ fixed (the pure contamination effect on the cutoff),
+\[ \frac{\mathrm{d}\hat{c}}{\mathrm{d}m} = -(r-ps)\,\frac{\partial q}{\partial m}, \]
+so a rise in contamination lowers the cutoff when $r>ps$.
+\item \emph{Substitute.} The two minus signs cancel, leaving a positive term:
+\[ -\,g(\hat{c})\,\frac{\mathrm{d}\hat{c}}{\mathrm{d}m} = -\,g(\hat{c})\left[-(r-ps)\,\frac{\partial q}{\partial m}\right] = (r-ps)\,g(\hat{c})\,\frac{\partial q}{\partial m}. \]
+\item \emph{Average over types.} Taking expectations over $\theta$ gives the hiding channel of equation \ref{eq:mr_deriv},
+\[ (r-ps)\,\mathbb{E}_\theta\!\left[\,g(\hat{c}\,;m)\,\frac{\partial q}{\partial m}\right]. \]
+\end{enumerate}
+Every factor is non-negative under the maintained assumptions: $g \ge 0$ (a density), $\partial q/\partial m \ge 0$ (mining weakly raises contamination), and $r-ps>0$. So the hiding channel is $\ge 0$ and pushes the MR share up.
+
+\emph{Reading it.} $g(\hat{c})$ is the mass of CWSs sitting right at the testing cutoff --- the marginal systems. The factor $(r-ps)\,\partial q/\partial m$ is how far mining pushes that cutoff down per unit of $m$. Their product is how many marginal systems get tipped from ``test'' to ``skip'' because contamination rose enough to make hiding attractive. If mining raises no contamination ($\partial q/\partial m = 0$), the whole term vanishes and only the cost channel remains --- which is the point of Proposition 2$'$.
+
+\subsubsection*{How mining shifts $G$ without raising contamination}
+
+The identifying content of the cost channel is that $G$ is the distribution of the \emph{cost of executing and reporting a compliant test}, $c$, which is a different object from the \emph{contaminant concentration} that drives $q(a)$ (the probability a sample exceeds an MCL). Mining can shift $G$ rightward while leaving $q$ essentially unchanged. The concentration stays below every MCL --- so $q$, and hence recorded MCL violations, do not move --- yet running a compliant monitoring program becomes more expensive:
+\begin{itemize}
+\item \textbf{More constituents to sample.} Mining-adjacent source water carries elevated iron, manganese, sulfate, total dissolved solids, and metals, often at sub-MCL levels but high enough that labs must run more analytes, perform dilutions, and re-run flagged samples. More lab line-items raise $c$ at the \emph{same} sub-MCL concentration.
+\item \textbf{Harder sample handling.} Turbid or mineral-laden water requires more filtration, careful preservation, shorter hold times, and sometimes duplicate draws to obtain a valid reading --- process cost, not a higher reading.
+\item \textbf{More required sampling events.} Detecting any elevation, even below an MCL, can push a system into a higher monitoring frequency or additional source-water points, raising $N$ and hence total testing cost $N\cdot c$.
+\item \textbf{Operational disruption.} Source switching, intake relocation, or added pre-treatment near active mining raises the fixed cost of maintaining the sampling schedule.
+\end{itemize}
+In the model's terms, contamination is the random variable behind $q(a)$ while $c$ is the resource cost of \emph{carrying out} a test. Mining shifts $G$ right ($\partial G/\partial m \le 0$ pointwise) through the mechanisms above while $q$ is left unchanged --- exactly the separation the identifying assumption relies on. A mining-induced increase in contamination would appear as $\partial q/\partial m > 0$, i.e.\ the secondary hiding term (ii); the point of Proposition 2$'$ is that it is not required --- the cost shift alone signs $\partial \text{MR}/\partial m > 0$ with MCL flat.
+
+\textbf{Proposition 3$'$:} scaling $(r,s,t) \to \lambda(r,s,t)$ scales $e'(a)$ by $\lambda$ in both regions, so $a$ falls; and $\hat{c}(a) = \lambda\left[pt - (r-ps)q(a)\right]$ scales up by $\lambda$ while $c$ does not, so the testing region expands. Higher penalties reduce negligence \emph{and} convert MR violations back into testing. Recovered on both margins --- and the regime-D failure of the discrete model disappears, because regime D cannot arise under $r > ps$. In particular, raising the monitoring sanction $t$ alone shifts $\hat{c}$ up by $p$ per unit and directly counteracts the cost channel: it is the policy lever that offsets mining-induced testing-cost increases.
+
+An additional testable implication: the investigation probability $p$ (sanitary visits) raises the testing threshold ($\partial\hat{c}/\partial p = t + s\,q(a) > 0$) and raises marginal deterrence in the MR region, so enforcement visits both induce testing and reduce negligence among non-testers --- consistent with the enforcement-substitution results. Because the sanctions and $p$ are held fixed as $m$ rises, the model attributes the observed MR increase entirely to the cost side, which is the identifying assumption to defend empirically (mining does not change state enforcement primitives).
+
+\subsection{Mapping to observables}
+
+\begin{center}
+\begin{tabular}{ll}
+Model object & Data counterpart \\
+\hline
+skip decision ($c > \hat{c}(a)$) & MR violation \\
+report $\times$ exceedance ($N q(a)$, testers only) & observed MCL violation \\
+$p$ & sanitary-visit / inspection rate \\
+$r, s, t$ & formal enforcement actions and penalties \\
+$c \sim G(\cdot\,;m)$ & sampling and lab costs, rising with mining \\
+\end{tabular}
+\end{center}
+
+The cost channel also delivers a clean auxiliary prediction: because cost-driven MR violators are compliant systems, their MR violations should be purely administrative (regular monitoring, non--health-based) and should not be followed by MCL violations --- both of which hold in the data (100\% non--health-based MR; regular MR after a clean period does not predict subsequent MCL).
+
+One limitation: with a common $c$ and $q(a)$ across the $N$ events, the skip decision is all-or-nothing within a CWS, so its MR violations jump from $0$ to $N$. Across CWSs the aggregate is already smooth through $G$; adding an i.i.d.\ per-event component to $c$ smooths the within-CWS count as well without changing any comparative static.
+
+\end{document}

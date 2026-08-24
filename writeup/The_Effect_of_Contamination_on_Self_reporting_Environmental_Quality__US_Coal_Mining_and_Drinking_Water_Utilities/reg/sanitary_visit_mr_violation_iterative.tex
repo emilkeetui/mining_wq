@@ -1,0 +1,58 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:sanitary_visit_mr_violation_iterative} Sanitary and Enforcement Visit Timing and MR Violation Onset}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccccc}
+         \toprule
+         
+          & \multicolumn{6}{c}{MR violation onset in month t}\\
+         
+                                               & (1)            & (2)           & (3)           & (4)            & (5)           & (6)\\  
+         
+         \midrule 
+         Sanitary visit lead (1, 6) months     & 0.0046         & 0.0045        & -0.0027       &                &               &   \\   
+                                               & (0.0031)       & (0.0033)      & (0.0050)      &                &               &   \\   
+         Sanitary visit lag (-6, -1) months    & 0.0076$^{*}$   & 0.0074        & -0.0017       &                &               &   \\   
+                                               & (0.0043)       & (0.0050)      & (0.0076)      &                &               &   \\   
+         Enforcement visit lead (1, 6) months  &                &               &               & 0.0101         & 0.0083        & -0.0169$^{**}$\\   
+                                               &                &               &               & (0.0092)       & (0.0095)      & (0.0073)\\   
+         Enforcement visit lag (-6, -1) months &                &               &               & -0.0083        & -0.0097$^{*}$ & 0.0018\\   
+                                               &                &               &               & (0.0058)       & (0.0055)      & (0.0295)\\   
+         N prior violations                    &                &               & 0.0005$^{*}$  &                &               & 0.0005$^{*}$\\   
+                                               &                &               & (0.0003)      &                &               & (0.0003)\\   
+         Last max conc. (\% of MCL)            &                &               & -0.0140       &                &               & -0.0143\\   
+                                               &                &               & (0.0304)      &                &               & (0.0312)\\   
+         Constant                              & 0.0195$^{***}$ &               &               & 0.0203$^{***}$ &               &   \\   
+                                               & (0.0015)       &               &               & (0.0015)       &               &   \\   
+         
+          \\
+         
+         Observations                          & 87,948         & 87,948        & 6,743         & 87,948         & 87,948        & 6,743\\  
+         
+          \\
+         
+         CWS fixed effects                     &                & $\checkmark$  & $\checkmark$  &                & $\checkmark$  & $\checkmark$\\   
+         Year-month fixed effects              &                & $\checkmark$  & $\checkmark$  &                & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   Sample: strictly downstream CWSs (349), CWS-months 1985-01 to 2005-12 in columns (1), (2), (4), (5). Outcome = 1 if an MR violation onset occurs in that CWS-month. before6 = 1 if the CWS-month falls in the 6 calendar months preceding any visit of that type; after6 = 1 if it falls in the 6 months following one; both are 0 outside any such window. Sanitary visits = SNSV/SNSP/SSVF; enforcement visits = FENF/INVG/EMRG. N\_prior\_violations = cumulative count of prior violation onsets (any category) at that CWS. Last max conc. (\% of MCL) = running-max SYR2 contaminant concentration as a share of the MCL. Columns (2), (3), (5), (6) include CWS and year-month fixed effects; columns (1) and (4) have no fixed effects. Columns (3) and (6) add the prior-violation and concentration controls and are restricted to CWSs with >=1 SYR2 measurement and CWS-months within the SYR2 window (1998-2005), N=6743. Columns (1), (2), (4), (5) use the full panel, N=87948. SEs clustered at the CWS (PWSID) level in all columns.}
+   
+\end{table}
+
+

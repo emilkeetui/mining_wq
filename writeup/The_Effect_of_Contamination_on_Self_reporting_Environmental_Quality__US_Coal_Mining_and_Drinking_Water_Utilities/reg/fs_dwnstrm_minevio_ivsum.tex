@@ -1,0 +1,48 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:fs_dwnstrm_minevio_ivsum} First stage: effect of the Acid Rain Program on the number of upstream coal mines (summed across upstream watersheds, CWSs at most one HUC12 down-stream)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = 0.45\textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lc}
+         \toprule
+         
+                                              & Upstream coal mines (sum)\\  
+         
+                                              & (1)\\  
+         
+         \midrule 
+         post95 $\times$ Upstream sulfur \%   & -0.2404$^{***}$\\   
+                                              & (0.0458)\\   
+         
+         F-test (1st stage, clustered)        & 27.52\\  
+         
+          \\
+         
+         Observations                         & 6,225\\  
+         
+          \\
+         
+         CWS fixed effects                    & $\checkmark$\\   
+         year fixed effects                   & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   \textit{Notes:} The dependent variable is the number of coal mines in watersheds upstream of the community water system's intake, summed across upstream watersheds. The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content across upstream watersheds. The sample is community water systems at most one watershed downstream of a coal mine. Standard errors clustered at the CWS level. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   
+\end{table}
+
+

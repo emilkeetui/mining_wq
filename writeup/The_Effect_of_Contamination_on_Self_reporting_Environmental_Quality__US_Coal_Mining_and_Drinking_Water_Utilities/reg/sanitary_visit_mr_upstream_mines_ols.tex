@@ -1,0 +1,55 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:sanitary_visit_mr_upstream_mines_ols} Effect of MR Violations, Upstream Coal Mining, and Formal Enforcement on Sanitary Visits (D1 Downstream Sample)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lcccc}
+         \toprule
+         
+          & \multicolumn{4}{c}{any\_snsv}\\
+         
+         Fixed effects             & None           & Year          & CWS            & Year + CWS \\   
+         
+                                   & (1)            & (2)           & (3)            & (4)\\  
+         
+         \midrule 
+         Constant                  & 0.1505$^{***}$ &               &                &   \\   
+                                   & (0.0112)       &               &                &   \\   
+         MR violation              & 0.0012         & 0.0059        & 0.0026         & 0.0044\\   
+                                   & (0.0146)       & (0.0143)      & (0.0133)       & (0.0127)\\   
+         Upstream mines $>$ median & -0.0237$^{*}$  & -0.0253$^{*}$ & 0.0012         & -0.0059\\   
+                                   & (0.0127)       & (0.0136)      & (0.0131)       & (0.0142)\\   
+         Formal enforcement        & 0.0891$^{***}$ & -0.0442       & 0.1308$^{***}$ & -0.0070\\   
+                                   & (0.0316)       & (0.0324)      & (0.0290)       & (0.0280)\\   
+         
+          \\
+         
+         Observations              & 6,232          & 6,232         & 6,225          & 6,225\\  
+         R$^2$                     & 0.00331        & 0.07247       & 0.21019        & 0.27518\\  
+         
+          \\
+         
+         year fixed effects        &                & $\checkmark$  &                & $\checkmark$\\   
+         CWS fixed effects         &                &               & $\checkmark$   & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   D1 downstream sample (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0), CWS-years 1985--2005 (N\,=\,6232). Dependent variable: sanitary visit = 1 if a site visit with VISIT\_REASON\_CODE in \{SNSV, SSVF\} occurs in that calendar year (14.6\% of panel). MR violation = 1 if a VIOLATION\_CATEGORY\_CODE = MR violation (any contaminant) has its onset (NON\_COMPL\_PER\_BEGIN\_DATE) in that calendar year (16.3\% of panel). Upstream mines $>$ median = 1 if num\_coal\_mines\_upstream\_sum exceeds the median (0) across CWS-years in this D1 main downstream 2SLS panel. Formal enforcement = 1 if any enforcement action with ENF\_ACTION\_CATEGORY = Formal is ongoing in the calendar year (3.5\% of panel). Standard errors clustered by CWS.}
+   
+\end{table}
+
+

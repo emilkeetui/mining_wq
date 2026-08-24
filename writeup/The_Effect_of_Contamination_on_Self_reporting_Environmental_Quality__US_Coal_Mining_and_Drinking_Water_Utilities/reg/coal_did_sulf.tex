@@ -1,0 +1,28 @@
+\begin{table}
+\centering
+\caption{Effect of ARP Phase I on HUC12 coal production, 1985--2005}
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{tblr}{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]},
+column{2-5}={}{halign=c,},
+column{1}={}{halign=l,},
+}                     %% tabularray inner close
+\toprule
+& Coal tons & Active mines & Coal tons  & Active mines  \\ \midrule %% TinyTableHeader
+Post-1995 $\times$ High sulfur ($>$2\%) & -206755.329*** & -0.213 &  &  \\
+& [-345139.868, -68370.790] & [-0.563, 0.137] &  &  \\
+Post-1995 $\times$ Sulfur (\%) &  &  & -76011.608** & 0.027 \\
+&  &  & [-140932.887, -11090.329] & [-0.104, 0.158] \\
+\bottomrule
+\end{tblr}
+}
+\par\vspace{0.4em}
+\begin{minipage}{\linewidth}
+\footnotesize
+* p $<$ 0.1, ** p $<$ 0.05, *** p $<$ 0.01. 95\% confidence intervals in brackets. \\
+Sample: mine HUC12s co-located with or upstream of a matched CWS, 1985--2005. \\
+Cols (1)--(2): High sulfur $= 1$ if avg coal seam sulfur $>$ 2\% in HUC12. \\
+Cols (3)--(4): Sulfur entered as continuous avg coal seam sulfur percentage. \\
+All estimates include HUC12 and year fixed effects. Standard errors clustered at HUC12 level.
+\end{minipage}
+\end{table}

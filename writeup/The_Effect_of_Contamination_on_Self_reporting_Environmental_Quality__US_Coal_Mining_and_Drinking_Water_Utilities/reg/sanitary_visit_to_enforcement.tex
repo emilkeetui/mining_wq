@@ -1,0 +1,65 @@
+\begin{table}[htbp]
+\caption{\label{tab:visit_to_enf} Sanitary Visits and Subsequent Enforcement (Downstream CWSs, 1985--2005)}
+\bigskip
+\centering
+\textbf{Panel A: Sanitary Visit (\texttt{visit\_san})}\\[4pt]
+\begin{adjustbox}{width = \textwidth, center}
+\begingroup
+\centering
+\begin{tabular}{lcccccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables:                  & enf\_informal\_next6   & enf\_resolving\_next6   & enf\_formal\_next6    & enf\_any\_next6       & enf\_informal\_next12   & enf\_resolving\_next12   & enf\_formal\_next12   & enf\_any\_next12\\    
+   Outcome: enforcement in next h months & Informal (6mo)         & Resolving (6mo)         & Formal (6mo)          & Any (6mo)             & Informal (12mo)         & Resolving (12mo)         & Formal (12mo)         & Any (12mo) \\   
+   Model:                                & (1)                    & (2)                     & (3)                   & (4)                   & (5)                     & (6)                      & (7)                   & (8)\\  
+   \midrule
+   \emph{Variables}\\
+   Sanitary visit (t)                    & 0.0246$^{**}$          & 0.0057                  & 0.0026                & 0.0230$^{**}$         & 0.0138                  & -0.0043                  & -0.0035               & 0.0108\\   
+                                         & (0.0108)               & (0.0073)                & (0.0038)              & (0.0112)              & (0.0129)                & (0.0101)                 & (0.0038)              & (0.0132)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   PWSID                                 & Yes                    & Yes                     & Yes                   & Yes                   & Yes                     & Yes                      & Yes                   & Yes\\  
+   month\_idx                            & Yes                    & Yes                     & Yes                   & Yes                   & Yes                     & Yes                      & Yes                   & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                          & 85,854                 & 85,854                  & 85,854                & 85,854                & 83,760                  & 83,760                   & 83,760                & 83,760\\  
+   R$^2$                                 & 0.15104                & 0.15407                 & 0.10841               & 0.17977               & 0.21997                 & 0.23587                  & 0.15345               & 0.25302\\  
+   Within R$^2$                          & $8.31\times 10^{-5}$   & $6.36\times 10^{-6}$    & $6.95\times 10^{-6}$  & $6.32\times 10^{-5}$  & $1.81\times 10^{-5}$    & $2.45\times 10^{-6}$     & $7.79\times 10^{-6}$  & $1.02\times 10^{-5}$\\   
+   \midrule \midrule
+   \multicolumn{9}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+   \multicolumn{9}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+\end{adjustbox}
+\vspace{8pt}
+\textbf{Panel B: Any Non-Enforcement Visit (\texttt{visit\_any})}\\[4pt]
+\begin{adjustbox}{width = \textwidth, center}
+\begingroup
+\centering
+\begin{tabular}{lcccccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables:                  & enf\_informal\_next6   & enf\_resolving\_next6   & enf\_formal\_next6    & enf\_any\_next6       & enf\_informal\_next12   & enf\_resolving\_next12   & enf\_formal\_next12    & enf\_any\_next12\\    
+   Outcome: enforcement in next h months & Informal (6mo)         & Resolving (6mo)         & Formal (6mo)          & Any (6mo)             & Informal (12mo)         & Resolving (12mo)         & Formal (12mo)          & Any (12mo) \\   
+   Model:                                & (1)                    & (2)                     & (3)                   & (4)                   & (5)                     & (6)                      & (7)                    & (8)\\  
+   \midrule
+   \emph{Variables}\\
+   Any non-enforcement visit (t)         & 0.0183                 & -0.0027                 & 0.0029                & 0.0172$^{*}$          & 0.0157                  & -0.0046                  & $-8.36\times 10^{-6}$  & 0.0140\\   
+                                         & (0.0113)               & (0.0064)                & (0.0023)              & (0.0103)              & (0.0120)                & (0.0075)                 & (0.0025)               & (0.0116)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   PWSID                                 & Yes                    & Yes                     & Yes                   & Yes                   & Yes                     & Yes                      & Yes                    & Yes\\  
+   month\_idx                            & Yes                    & Yes                     & Yes                   & Yes                   & Yes                     & Yes                      & Yes                    & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                          & 85,854                 & 85,854                  & 85,854                & 85,854                & 83,760                  & 83,760                   & 83,760                 & 83,760\\  
+   R$^2$                                 & 0.15104                & 0.15406                 & 0.10842               & 0.17977               & 0.21999                 & 0.23587                  & 0.15344                & 0.25304\\  
+   Within R$^2$                          & $7.84\times 10^{-5}$   & $2.39\times 10^{-6}$    & $1.48\times 10^{-5}$  & $6.01\times 10^{-5}$  & $4.01\times 10^{-5}$    & $4.69\times 10^{-6}$     & $7.76\times 10^{-11}$  & $2.98\times 10^{-5}$\\   
+   \midrule \midrule
+   \multicolumn{9}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
+   \multicolumn{9}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright 
+Sample: strictly downstream CWSs (349), PWSID-months 1985-01 to 2005-12. Panel A regressor is visit\_san (sanitary survey: SNSV/SNSP/SSVF); Panel B regressor is visit\_any (any visit reason except FENF/IENF). Base rates (\%) of the next-h-month outcome: Informal (6mo) = 9.87; Resolving (6mo) = 6.7; Formal (6mo) = 1.17; Any (6mo) = 12.04; Informal (12mo) = 16.06; Resolving (12mo) = 11.31; Formal (12mo) = 1.87; Any (12mo) = 18.75. LPM with PWSID and calendar-month fixed effects; SEs clustered by PWSID.
+}
+\end{table}

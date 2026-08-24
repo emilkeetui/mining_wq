@@ -1,0 +1,44 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={CWS HUC12 source summary statistics},
+note{}={All CWS's are downstream of coal production and have no co-located coal production in intake HUC.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]Q[]},
+cell{1}{1}={}{halign=l, halign=c,},
+cell{1}{2}={c=2,}{halign=r, halign=c, halign=c,},
+cell{1}{3}={}{halign=r, halign=c,},
+cell{1}{4}={c=2,}{halign=r, halign=c, halign=c,},
+cell{1}{5}={}{halign=r, halign=c,},
+cell{1}{6}={}{halign=r, halign=c,},
+cell{1}{7}={}{halign=r, halign=c,},
+cell{2,4,6}{1}={}{halign=l,},
+cell{2,4,6}{2}={}{halign=r,},
+cell{2,4,6}{3}={}{halign=r,},
+cell{2,4,6}{4}={}{halign=r,},
+cell{2,4,6}{5}={}{halign=r,},
+cell{2,4,6}{6}={}{halign=r,},
+cell{2,4,6}{7}={}{halign=r,},
+cell{3,5}{1}={}{halign=l, bg=cededed,},
+cell{3,5}{2}={}{halign=r, bg=cededed,},
+cell{3,5}{3}={}{halign=r, bg=cededed,},
+cell{3,5}{4}={}{halign=r, bg=cededed,},
+cell{3,5}{5}={}{halign=r, bg=cededed,},
+cell{3,5}{6}={}{halign=r, bg=cededed,},
+cell{3,5}{7}={}{halign=r, bg=cededed,},
+row{even}={bg=black!5!white},
+}                     %% tabularray inner close
+\tinytableDefineColor{cededed}{HTML}{ededed}
+\toprule
+& High sulfur downstream (N=10147) &  & Low sulfur downstream (N=4025) &  &  &  \\ \cmidrule[lr]{2-3}\cmidrule[lr]{4-5}
+& Mean & Std. Dev. & Mean & Std. Dev. & Diff. in Means & Std. Error \\ \midrule %% TinyTableHeader
+HUC12 N coal mine upstream & 0.1 & 0.3 & 0.3 & 0.6 & 0.2 & 0.0 \\
+HUC12 coal tons upstream & 14408.4 & 84133.8 & 82928.2 & 365964.3 & 68519.8 & 5828.6 \\
+HUC12 avg coal BTU upstream & 5508.7 & 6054.2 & 6698.1 & 5810.3 & 1189.5 & 109.5 \\
+HUC12 avg coal sulfur upstream & 1.1 & 1.4 & 0.5 & 0.5 & -0.6 & 0.0 \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}
