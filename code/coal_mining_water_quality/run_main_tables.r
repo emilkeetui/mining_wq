@@ -476,3 +476,53 @@ for (sp in bin_sample_specs) {
   }
 }
 cat("\nDone (binary violation tables).\n")
+
+# ── Surface-water subsample: binary violation tables (dwnstrm + _ivsum spec only) ──
+# Re-estimates the three binary-violation tables above on the subsample of CWSs
+# whose primary water source is surface water, to test whether the main results
+# are driven by surface-water or groundwater systems.
+has_variation <- function(dset, y) {
+  v <- dset[[y]]
+  v <- v[!is.na(v)]
+  length(v) > 0L && length(unique(v)) > 1L
+}
+
+std_note_ivsum_bin_sw <- paste0(
+  "\\textit{Notes:} Columns show OLS, reduced form, and 2SLS estimates. ",
+  "Dependent variable is an indicator equal to 1 if the CWS had any violation of that type during the year, 0 otherwise. ",
+  "The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content ",
+  "across upstream watersheds. ",
+  "Sample further restricted to community water systems whose primary water source is surface water. ",
+  "Standard errors clustered at the CWS level. ",
+  "Sample period 1985--2005. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+
+sw_codes <- c("SW", "SWP")
+dset_sw  <- full[(full$minehuc_downstream_of_mine == 1) &
+                 (full$minehuc_mine == 0) &
+                 (full$PRIMARY_SOURCE_CODE %in% sw_codes), ]
+cat("\nSurface-water D1 subsample:", nrow(dset_sw), "CWS-years,",
+    length(unique(dset_sw$PWSID)), "CWSs\n")
+
+for (cp in cat_specs) {
+  vp        <- vio_specs_bin[[1]]
+  varlist   <- vp[[cp$varkey]]
+  keep      <- vapply(varlist, function(y) has_variation(dset_sw, y), logical(1))
+  for (y in varlist[!keep]) cat("  Dropping", y, "- no variation in surface-water subsample\n")
+  varlist   <- varlist[keep]
+  if (length(varlist) == 0) { cat("  No estimable outcomes for", cp$name, "- skipping table\n"); next }
+
+  fname     <- paste0("2sls_dwnstrm_minevio_", cp$name, "_ivsum_binvio_surfacewater")
+  tab_title <- paste0("Effect of coal mines on ", vp$titlevio, " (", cp$titlecat,
+                      ", CWSs at most one HUC12 down-stream, surface water systems)")
+  cat("\nRunning:", fname, "\n")
+  tsls_reg_output_main(dset = dset_sw, varlist = varlist,
+                       coalvar   = "num_coal_mines_upstream_sum",
+                       regoutname = fname, title = tab_title, label = fname,
+                       instr_str = "post95:sulfur_unified_sum",
+                       dict = vio_dict_bin, notes = std_note_ivsum_bin_sw,
+                       storage_list_name = NULL, subheader = NULL,
+                       fitstat = ~ n)
+}
+cat("\nDone (surface-water binary violation tables).\n")

@@ -1,0 +1,50 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:h3_inf_formal_d12_surfacewater} Effect of Coal Mining on Enforcement Actions by Type (D1 Downstream Sample, Surface Water Systems)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccccccccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Any informal enf} & \multicolumn{3}{c}{Any formal enf} & \multicolumn{3}{c}{No enforcement}\\
+         
+                                                                  & OLS           & RF            & 2SLS          & OLS            & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+         
+         \midrule 
+         Upstream coal mines (sum)                                & 0.0264$^{**}$ &               & -0.0230       & -0.0106$^{**}$ &               & -0.1199       & -0.0257$^{*}$ &               & -0.0112\\   
+                                                                  & (0.0118)      &               & (0.1666)      & (0.0050)       &               & (0.0993)      & (0.0137)      &               & (0.1663)\\   
+         post95 $\times$ Upstream sulfur \%                       &               & 0.0029        &               &                & 0.0150$^{*}$  &               &               & 0.0014        &   \\   
+                                                                  &               & (0.0201)      &               &                & (0.0085)      &               &               & (0.0211)      &   \\   
+         
+         F-test (1st stage, clustered), Upstream coal mines (sum) &               &               & 1.58          &                &               & 1.58          &               &               & 1.58\\  
+         
+          \\
+         
+         Observations                                             & 1,829         & 1,829         & 1,829         & 1,829          & 1,829         & 1,829         & 1,829         & 1,829         & 1,829\\  
+         
+          \\
+         
+         CWS fixed effects                                        & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                       & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   \textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine. Sample further restricted to community water systems whose primary water source is surface water. Cols 1-3: informal enforcement action (19.5\% of panel). Cols 4-6: formal enforcement action (3.0\% of panel). Cols 7-9: no enforcement (78.5\% of panel). The instrument interacts an indicator for the post-1995 period with mean upstream coal sulfur content. SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   
+\end{table}
+
+

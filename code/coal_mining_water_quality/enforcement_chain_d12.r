@@ -18,7 +18,7 @@
 # Author: EK  Date: 2026-04-28
 # ============================================================
 
-.libPaths("Z:/ek559/RPackages")
+.libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
 library(arrow)
 library(data.table)
 library(fixest)
@@ -87,6 +87,18 @@ cat("\nVisits per year (D1-D2) — check for 1993-1994 anomaly:\n")
 yr_sv <- sv[, .N, by = year][order(year)]
 print(as.data.frame(yr_sv))
 
+# ── Cache visit aggregates so future subsample work can skip the 355 MB read ──
+cache_dir <- file.path(ROOT, "clean_data", "cws_data")
+dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
+
+sv_cache <- file.path(cache_dir, "sdwa_visit_agg_d12.parquet")
+if (file.exists(sv_cache)) cat("NOTE: overwriting existing cache:", sv_cache, "\n")
+sv_out <- as.data.frame(sv_agg)
+sv_out$PWSID <- as.character(sv_out$PWSID)
+sv_out$year  <- as.integer(sv_out$year)
+arrow::write_parquet(sv_out, sv_cache)
+cat("Cached visit aggregates:", nrow(sv_out), "rows ->", sv_cache, "\n")
+
 rm(sv); gc()
 
 # ── Step 3: Violations/enforcement (3.7 GB — column select) ──────────────────
@@ -144,6 +156,15 @@ cat(sprintf("PWSID-years with formal action:    %d (%.1f%%)\n",
 cat(sprintf("Unique PWSIDs with formal action: %d (%.1f%%)\n",
     length(unique(formal_d12$PWSID)),
     100 * length(unique(formal_d12$PWSID)) / length(ids_d12)))
+
+# ── Cache enforcement aggregates so future subsample work can skip the 3.9 GB read ──
+enf_cache <- file.path(cache_dir, "sdwa_enf_agg_d12.parquet")
+if (file.exists(enf_cache)) cat("NOTE: overwriting existing cache:", enf_cache, "\n")
+enf_out <- as.data.frame(enf_agg)
+enf_out$PWSID <- as.character(enf_out$PWSID)
+enf_out$year  <- as.integer(enf_out$year)
+arrow::write_parquet(enf_out, enf_cache)
+cat("Cached enforcement aggregates:", nrow(enf_out), "rows ->", enf_cache, "\n")
 
 cat("\nEnforcement records per year (D1-D2) — check 1993-1994 spike:\n")
 yr_enf <- enf[, .N, by = year][order(year)]
@@ -255,6 +276,26 @@ cat(sprintf("any_informal = 1 in %d (%.1f%%)\n",
     sum(panel_d1$any_informal), 100 * mean(panel_d1$any_informal)))
 cat(sprintf("any_formal   = 1 in %d (%.1f%%)\n",
     sum(panel_d1$any_formal),   100 * mean(panel_d1$any_formal)))
+
+# ── Surface-water subsample: D1 panel restricted to CWSs whose primary water
+# source is surface water, to test whether the enforcement-chain results are
+# driven by surface-water or groundwater systems. ────────────────────────────
+sw_codes    <- c("SW", "SWP")
+stopifnot("PRIMARY_SOURCE_CODE" %in% names(panel_d1))
+panel_d1_sw <- panel_d1[panel_d1$PRIMARY_SOURCE_CODE %in% sw_codes, ]
+cat(sprintf("\nD1 surface-water panel: %d CWS-years, %d CWSs\n",
+            nrow(panel_d1_sw), length(unique(panel_d1_sw$PWSID))))
+for (oc in c("any_snsv","any_tech","any_enfvisit","any_smpl","any_insp",
+             "any_informal","any_formal","no_enf")) {
+  cat(sprintf("  %-14s = 1 in %d (%.1f%%)\n", oc,
+              sum(panel_d1_sw[[oc]]), 100 * mean(panel_d1_sw[[oc]])))
+}
+
+has_variation <- function(dset, y) {
+  v <- dset[[y]]
+  v <- v[!is.na(v)]
+  length(v) > 0L && length(unique(v)) > 1L
+}
 
 # ── Step 5: H2 regression ────────────────────────────────────────────────────
 cat("\n=== H2: Regulator site visits ~ mining (D1-D2) ===\n")
@@ -628,6 +669,74 @@ if (file.exists(out_tex_b) && file.info(out_tex_b)$size > 0) {
   stop("Output file missing or empty — check etable() call.")
 }
 
+# ── Surface-water subsample: H2b table (visit-type LPM), panel_d1_sw ─────────
+cat("\n=== H2b (surface water): Any visit by type (binary, LPM) ~ mining (D1 SW panel) ===\n")
+
+models_b_sw   <- list()
+outcomes_kept <- character(0)
+for (oc in names(visit_outcomes)) {
+  if (!has_variation(panel_d1_sw, oc)) {
+    cat("  Dropping", oc, "- no variation in surface-water subsample\n"); next
+  }
+  fml_ols_oc <- as.formula(paste0(oc, " ~ num_coal_mines_upstream_sum + num_facilities | PWSID + year"))
+  fml_rf_oc  <- as.formula(paste0(oc, " ~ post95:sulfur_unified_mean + num_facilities | PWSID + year"))
+  fml_iv_oc  <- as.formula(paste0(oc, " ~ num_facilities | PWSID + year | num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean"))
+  models_b_sw[[paste0(oc, "_ols")]] <- feols(fml_ols_oc, data = panel_d1_sw, cluster = ~PWSID)
+  models_b_sw[[paste0(oc, "_rf")]]  <- feols(fml_rf_oc,  data = panel_d1_sw, cluster = ~PWSID)
+  models_b_sw[[paste0(oc, "_iv")]]  <- feols(fml_iv_oc,  data = panel_d1_sw, cluster = ~PWSID)
+  outcomes_kept <- c(outcomes_kept, oc)
+}
+
+f_fs_b_sw <- feols(num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean + num_facilities |
+                   PWSID + year, data = panel_d1_sw, cluster = ~PWSID)
+f_cl_b_sw <- round((coef(f_fs_b_sw)["post95:sulfur_unified_mean"] /
+                    se(f_fs_b_sw)["post95:sulfur_unified_mean"])^2, 2)
+cat(sprintf("Clustered first-stage F-stat (H2b, D1 surface water): %.2f\n", f_cl_b_sw))
+
+out_tex_b_sw <- file.path(ROOT, "output/reg/h2_snsv_d12_surfacewater.tex")
+el_b_sw        <- list(rep(c("", "", format(f_cl_b_sw, nsmall = 2)), length(outcomes_kept)))
+names(el_b_sw) <- f_label_b
+
+visit_note_sentences <- c(
+  any_snsv     = "Sanitary visits are sanitary surveys and follow-up sanitary surveys. ",
+  any_tech     = paste0("Technical assistance includes technical assistance, engineering ",
+                        "determination/advice/plan review, and operation and maintenance visits. "),
+  any_enfvisit = paste0("Enforcement visits include formal enforcement, investigation, and emergency ",
+                        "assistance visits. "),
+  any_smpl     = "Sample collection is sample collection visits. ",
+  any_insp     = paste0("Inspection includes site inspections, regularly scheduled visits, and informal ",
+                        "system inspections. ")
+)
+visit_note_block_sw <- paste(visit_note_sentences[outcomes_kept], collapse = "")
+
+etable(models_b_sw,
+       title          = "Effect of Coal Mining on Regulator Visit Probability by Visit Type (D1 Downstream Sample, LPM, Surface Water Systems)",
+       label          = "tab:h2_snsv_d12_surfacewater",
+       dict           = dict_b,
+       drop           = "num_facilities",
+       extralines     = el_b_sw,
+       fitstat        = ~n,
+       notes          = paste0("\\textit{Notes:} Sample restricted to community water systems strictly downstream ",
+                               "of a coal mine. ",
+                               "Sample further restricted to community water systems whose primary water source is surface water. ",
+                               "N = ", nrow(panel_d1_sw), " CWS-years. Each panel of 3 columns (OLS, RF, 2SLS) ",
+                               "reports a separate binary outcome: any visit of that type in a CWS-year. ",
+                               visit_note_block_sw,
+                               "The instrument interacts an indicator for the post-1995 period with mean ",
+                               "upstream coal sulfur content. SEs clustered at the CWS level. ",
+                               "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."),
+       style.tex      = style.tex("aer", adjustbox = TRUE),
+       tex            = TRUE,
+       postprocess.tex = postprocess_table,
+       file           = out_tex_b_sw,
+       replace        = TRUE)
+cat(sprintf("\nTable saved to: %s\n", out_tex_b_sw))
+if (file.exists(out_tex_b_sw) && file.info(out_tex_b_sw)$size > 0) {
+  cat("Output verified: file exists and is non-zero.\n")
+} else {
+  stop("Output file missing or empty — check etable() call.")
+}
+
 # H3 table: any_enf and any_formal side by side (OLS / RF / 2SLS for each)
 out_tex_h3 <- file.path(ROOT, "output/reg/h3_enf_d12.tex")
 etable(ols_e, rf_e, iv_e, ols_f, rf_f, iv_f,
@@ -702,6 +811,88 @@ if (file.exists(out_tex_h3_inf) && file.info(out_tex_h3_inf)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")
 } else {
   stop("Output file missing or empty — check etable() call.")
+}
+
+# ── Surface-water subsample: H3 informal/formal/no-enforcement table, panel_d1_sw ──
+cat("\n=== H3 (D1 surface water): Informal/formal enforcement ~ mining ===\n")
+
+h3_dep_sw <- c(any_informal = "any_informal", any_formal = "any_formal", no_enf = "no_enf")
+
+models_h3_sw <- list()
+h3_kept_sw   <- character(0)
+for (oc in h3_dep_sw) {
+  if (!has_variation(panel_d1_sw, oc)) {
+    cat("  Dropping", oc, "- no variation in surface-water subsample\n"); next
+  }
+  fml_ols_oc <- as.formula(paste0(oc, " ~ num_coal_mines_upstream_sum + num_facilities | PWSID + year"))
+  fml_rf_oc  <- as.formula(paste0(oc, " ~ post95:sulfur_unified_mean + num_facilities | PWSID + year"))
+  fml_iv_oc  <- as.formula(paste0(oc, " ~ num_facilities | PWSID + year | num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean"))
+  models_h3_sw[[paste0(oc, "_ols")]] <- feols(fml_ols_oc, data = panel_d1_sw, cluster = ~PWSID)
+  models_h3_sw[[paste0(oc, "_rf")]]  <- feols(fml_rf_oc,  data = panel_d1_sw, cluster = ~PWSID)
+  models_h3_sw[[paste0(oc, "_iv")]]  <- feols(fml_iv_oc,  data = panel_d1_sw, cluster = ~PWSID)
+  h3_kept_sw <- c(h3_kept_sw, oc)
+}
+
+if (length(h3_kept_sw) == 0) {
+  cat("  No estimable H3 outcomes in surface-water subsample - skipping table\n")
+} else {
+  f_fs_d1_sw <- feols(num_coal_mines_upstream_sum ~ post95:sulfur_unified_mean + num_facilities |
+                      PWSID + year, data = panel_d1_sw, cluster = ~PWSID)
+  t_cl_d1_sw <- coef(f_fs_d1_sw)["post95:sulfur_unified_mean"] /
+                se(f_fs_d1_sw)["post95:sulfur_unified_mean"]
+  f_cl_d1_sw <- round(t_cl_d1_sw^2, 2)
+  cat(sprintf("Clustered first-stage F-stat (D1 surface water): %.2f\n", f_cl_d1_sw))
+
+  inf_d1_pct_sw <- 100 * mean(panel_d1_sw$any_informal)
+  frm_d1_pct_sw <- 100 * mean(panel_d1_sw$any_formal)
+  ned1_pct_sw   <- 100 * mean(panel_d1_sw$no_enf)
+
+  out_tex_h3_inf_sw <- file.path(ROOT, "output/reg/h3_inf_formal_d12_surfacewater.tex")
+  f_vec_d1_sw     <- rep(c("", "", format(round(f_cl_d1_sw, 2), nsmall = 2)), length(h3_kept_sw))
+  el_d1_sw        <- list(f_vec_d1_sw)
+  names(el_d1_sw) <- f_label_d1
+
+  h3_note_sentences_sw <- c(
+    any_informal = paste0("informal enforcement action (", sprintf("%.1f", inf_d1_pct_sw), "% of panel). "),
+    any_formal   = paste0("formal enforcement action (", sprintf("%.1f", frm_d1_pct_sw), "% of panel). "),
+    no_enf       = paste0("no enforcement (", sprintf("%.1f", ned1_pct_sw), "% of panel). ")
+  )
+  col_desc_sw <- character(0)
+  for (i in seq_along(h3_kept_sw)) {
+    oc        <- h3_kept_sw[i]
+    start_col <- (i - 1) * 3 + 1
+    end_col   <- i * 3
+    col_desc_sw <- c(col_desc_sw,
+      paste0("Cols ", start_col, "-", end_col, ": ", h3_note_sentences_sw[[oc]]))
+  }
+  col_desc_sw <- paste(col_desc_sw, collapse = "")
+
+  do.call(etable, c(models_h3_sw, list(
+    title          = "Effect of Coal Mining on Enforcement Actions by Type (D1 Downstream Sample, Surface Water Systems)",
+    label          = "tab:h3_inf_formal_d12_surfacewater",
+    dict           = dict_enf,
+    drop           = "num_facilities",
+    extralines     = el_d1_sw,
+    fitstat        = ~n,
+    notes          = paste0("\\textit{Notes:} Sample restricted to community water systems strictly ",
+                            "downstream of a coal mine. ",
+                            "Sample further restricted to community water systems whose primary water source is surface water. ",
+                            col_desc_sw,
+                            "The instrument interacts an indicator for the post-1995 period with mean ",
+                            "upstream coal sulfur content. SEs clustered at the CWS level. ",
+                            "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."),
+    style.tex      = style.tex("aer", adjustbox = TRUE),
+    tex            = TRUE,
+    postprocess.tex = postprocess_table,
+    file           = out_tex_h3_inf_sw,
+    replace        = TRUE
+  )))
+  cat(sprintf("\nTable saved to: %s\n", out_tex_h3_inf_sw))
+  if (file.exists(out_tex_h3_inf_sw) && file.info(out_tex_h3_inf_sw)$size > 0) {
+    cat("Output verified: file exists and is non-zero.\n")
+  } else {
+    stop("Output file missing or empty — check etable() call.")
+  }
 }
 
 # H3c RTC table

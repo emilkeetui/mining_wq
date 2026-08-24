@@ -266,8 +266,10 @@ nice_chem <- function(x) {
 #   title_sfx — appended to table title
 # ---------------------------------------------------------------------------
 run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_main_std,
-                             detect_for = character(0), exclude_chems = character(0)) {
+                             detect_for = character(0), exclude_chems = character(0),
+                             only_groups = NULL) {
   for (grp in chem_groups) {
+    if (!is.null(only_groups) && !(grp$file_label %in% only_groups)) next
     cat("\n--- Group:", grp$group_label, file_sfx, "---\n")
 
     if (length(grp$chems) == 0) {
@@ -835,6 +837,36 @@ cat("Rows (1998-2005):", nrow(df6r_2005),
 run_group_tables(df6r_2005, note_2005_rav, file_sfx = "_ravalli_2005",
                  title_sfx = ", Ravalli et al.~(2022) cleaning, robustness 1998--2005",
                  note_tc = note_tc_main_rav, exclude_chems = "chromium")
+
+# ---------------------------------------------------------------------------
+# Surface-water subsample: re-estimate the inorganic-chemicals 1998-2005
+# robustness table on CWSs whose primary water source is surface water, to
+# test whether the main results are driven by surface-water or groundwater
+# systems.
+# ---------------------------------------------------------------------------
+note_base_rav_sw <- paste0(
+  "Within each chemical, columns show (1) mean measured concentration and ",
+  "(2) share of annual samples exceeding the MCL, both from the EPA 6-Year Review. ",
+  "Non-detect values replaced by MDL$/\\sqrt{2}$ following Ravalli et al.~(2022). ",
+  "Explanatory variable is cumulative coal production since 1985 ",
+  "(in 10 million short tons) one watershed upstream of the CWS intake. ",
+  "Sample: community water systems strictly downstream of a coal mine. ",
+  "Sample further restricted to community water systems whose primary water source is surface water. ",
+  "Standard errors clustered at the CWS level. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+note_2005_rav_sw <- paste0("\\textit{Notes:} Sample period 1998--2005. ", note_base_rav_sw)
+
+cat("\n=== ROBUSTNESS: 1998-2005, SURFACE WATER SYSTEMS ===\n")
+stopifnot("PRIMARY_SOURCE_CODE" %in% names(df6r_2005))
+df6r_2005_sw <- df6r_2005[df6r_2005$PRIMARY_SOURCE_CODE %in% c("SW", "SWP"), ]
+cat("Rows (1998-2005, surface water):", nrow(df6r_2005_sw),
+    "| CWSs:", length(unique(df6r_2005_sw$PWSID)), "\n")
+run_group_tables(df6r_2005_sw, note_2005_rav_sw,
+                 file_sfx  = "_ravalli_2005_surfacewater",
+                 title_sfx = ", Ravalli et al.~(2022) cleaning, robustness 1998--2005, surface water systems",
+                 note_tc = note_tc_main_rav, exclude_chems = "chromium",
+                 only_groups = "inorg")
 
 cat("\n=== COUNT TABLES: MAIN SAMPLE 1998-2011 ===\n")
 run_count_tables(df6r, note_cnt_main_rav, file_sfx = "_ravalli",

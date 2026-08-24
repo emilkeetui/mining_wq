@@ -1,0 +1,50 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{2sls_dwnstrm_minevio_mr_ivsum_binvio_surfacewater} Effect of coal mines on IOC violations (MR violations only, CWSs at most one HUC12 down-stream, surface water systems)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccccccccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Nitrates (MR)} & \multicolumn{3}{c}{Arsenic (MR)} & \multicolumn{3}{c}{Inorganic chemicals (MR)}\\
+         
+                                                                  & OLS           & RF             & 2SLS          & OLS           & RF             & 2SLS          & OLS           & RF            & 2SLS\\  
+         
+         \midrule 
+         Upstream coal mines (sum)                                & 0.0246$^{**}$ &                & 0.2963        & 0.0187$^{**}$ &                & 0.2255        & 0.0202$^{**}$ &               & 0.2387\\   
+                                                                  & (0.0096)      &                & (0.2430)      & (0.0092)      &                & (0.1791)      & (0.0094)      &               & (0.2022)\\   
+         post95 $\times$ Upstream sulfur \%                       &               & -0.0365$^{**}$ &               &               & -0.0278$^{**}$ &               &               & -0.0294$^{*}$ &   \\   
+                                                                  &               & (0.0143)       &               &               & (0.0124)       &               &               & (0.0151)      &   \\   
+         
+         F-test (1st stage, clustered), Upstream coal mines (sum) &               &                & 1.49          &               &                & 1.49          &               &               & 1.49\\  
+         
+          \\
+         
+         Observations                                             & 1,829         & 1,829          & 1,829         & 1,829         & 1,829          & 1,829         & 1,829         & 1,829         & 1,829\\  
+         
+          \\
+         
+         CWS fixed effects                                        & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                       & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   \textit{Notes:} Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is an indicator equal to 1 if the CWS had any violation of that type during the year, 0 otherwise. The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content across upstream watersheds. Sample further restricted to community water systems whose primary water source is surface water. Standard errors clustered at the CWS level. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   
+\end{table}
+
+

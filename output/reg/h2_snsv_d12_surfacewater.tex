@@ -1,0 +1,50 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:h2_snsv_d12_surfacewater} Effect of Coal Mining on Regulator Visit Probability by Visit Type (D1 Downstream Sample, LPM, Surface Water Systems)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccccccccccccccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Sanitary visits} & \multicolumn{3}{c}{Technical assistance} & \multicolumn{3}{c}{Enforcement visits} & \multicolumn{3}{c}{Sample collection} & \multicolumn{3}{c}{Inspection}\\
+         
+                                                                  & OLS                   & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS            & RF              & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+         
+         \midrule 
+         Upstream coal mines (sum)                                & $3.37\times 10^{-5}$  &               & -0.0009       & -0.0120       &               & 0.1907        & -0.0166$^{**}$ &                 & 0.2342        & -0.0037       &               & 0.1092        & -0.0072       &               & 0.1158\\   
+                                                                  & (0.0113)              &               & (0.2205)      & (0.0095)      &               & (0.2109)      & (0.0064)       &                 & (0.2280)      & (0.0027)      &               & (0.1285)      & (0.0105)      &               & (0.1561)\\   
+         post95 $\times$ Upstream sulfur \%                       &                       & 0.0001        &               &               & -0.0239$^{*}$ &               &                & -0.0293$^{***}$ &               &               & -0.0137       &               &               & -0.0145       &   \\   
+                                                                  &                       & (0.0276)      &               &               & (0.0140)      &               &                & (0.0107)        &               &               & (0.0100)      &               &               & (0.0151)      &   \\   
+         
+         F-test (1st stage, clustered), Upstream coal mines (sum) &                       &               & 1.58          &               &               & 1.58          &                &                 & 1.58          &               &               & 1.58          &               &               & 1.58\\  
+         
+          \\
+         
+         Observations                                             & 1,829                 & 1,829         & 1,829         & 1,829         & 1,829         & 1,829         & 1,829          & 1,829           & 1,829         & 1,829         & 1,829         & 1,829         & 1,829         & 1,829         & 1,829\\  
+         
+          \\
+         
+         CWS fixed effects                                        & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$    & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                       & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$    & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   \textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine. Sample further restricted to community water systems whose primary water source is surface water. N = 1829 CWS-years. Each panel of 3 columns (OLS, RF, 2SLS) reports a separate binary outcome: any visit of that type in a CWS-year. Sanitary visits are sanitary surveys and follow-up sanitary surveys. Technical assistance includes technical assistance, engineering determination/advice/plan review, and operation and maintenance visits. Enforcement visits include formal enforcement, investigation, and emergency assistance visits. Sample collection is sample collection visits. Inspection includes site inspections, regularly scheduled visits, and informal system inspections. The instrument interacts an indicator for the post-1995 period with mean upstream coal sulfur content. SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   
+\end{table}
+
+
