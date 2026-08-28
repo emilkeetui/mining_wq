@@ -28,3 +28,12 @@ output/sum/lib*/
 # OS
 .DS_Store
 Thumbs.db
+
+# Nested independent repo (own remote and history)
+my-project/
+
+# Redundant zip export of the writeup folder (contents tracked file-by-file)
+writeup/*.zip
+
+# Machine-specific Claude Code permission allowlist
+.claude/settings.local.json
