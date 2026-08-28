@@ -1,0 +1,639 @@
+% ============================================================
+% Document: main.tex
+% Purpose:  Standalone writeup for the CWS population-backcasting exercise:
+%           research questions, institutional background, data, methods,
+%           results, and validation for reconstructing the population served
+%           by community water systems downstream of coal mining, 1990-2024.
+%           Merges the methods-only note (formerly cws_exposure_backcasting.tex)
+%           with the results/validation writeup (formerly population_backcasting.tex,
+%           deleted from the JMP paper 2026-08-07, commit 865a1b4) into one
+%           self-contained paper, independent of both active papers in
+%           writeup/ (the JMP 2SLS paper and the self-reporting paper).
+% Inputs:   sum/backcast_anchors.tex, sum/backcast_ratio.tex,
+%           sum/backcast_reported_exposure.tex, sum/backcast_recovery.tex,
+%           sum/backcast_popsum.tex, sum/backcast_change_9005.tex,
+%           sum/backcast_exposure_series.tex, sum/backcast_loao.tex,
+%           sum/backcast_lodo.tex
+%           (from code/coal_mining_water_quality/backcast_results_tables.py,
+%           backcast_step3_tables.py, backcast_validation_tables.py)
+% Outputs:  main.pdf
+% Author:   EK   Date: 2026-08-28
+% ============================================================
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\newcommand{\PWSID}{\texttt{PWSID}}
+
+\title{Measuring the Population Served by Community Water Systems\\
+Downstream of Coal Mining, 1990--2024:\\
+\large Research Question, Data, Methods, and Results}
+\author{Emil Kee-Tui}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+This note sets out and executes a measurement exercise: count the number of
+people whose drinking water comes from a community water system (CWS) located
+downstream of an active coal mine, track how that count evolved from 1990 to
+the present, and validate the reconstruction against held-out data. The
+central obstacle is that system-level population data do not exist in usable
+form before the mid-2000s. We therefore \emph{reconstruct} pre-2005 population
+using a transparent ratio-scaling procedure that combines (i) the boundaries
+of each system's service area, (ii) decennial Census population counts inside
+those boundaries, and (iii) the years when a system's reported population
+\emph{is} observed, used to calibrate the reconstruction. Applied to the 367
+community water systems ever one HUC12 directly downstream of an active coal
+mine, the procedure recovers a complete 1990--2024 population series for 366
+of them (99.7\%). Two validation exercises --- leave-one-anchor-out and
+leave-one-decade-out --- discipline the two layers of the estimator
+independently and show that aggregate exposure totals are accurate even where
+individual systems are noisy. The document is written for readers who know
+applied microeconomics but not the institutional details of U.S. drinking
+water or the ``backcasting'' literature; both are introduced from scratch.
+\end{abstract}
+
+\tableofcontents
+
+\section{Research questions}
+\label{sec:questions}
+
+Let a \emph{community water system} (CWS) be ``downstream of coal'' in year
+$t$ if at least one active coal mine lies upstream of the system's water
+intake in the hydrological network (Section~\ref{sec:background} makes this
+precise). Write $\mathcal{D}_t$ for the set of such systems in year $t$, and
+let $S_{i,t}$ be the number of people served by system $i$ in year $t$. The
+exercise answers four questions.
+
+\begin{description}[leftmargin=2em,style=nextline]
+  \item[Q1. Pre-period change (1990--2005).] How did total exposed population
+    $\sum_{i\in\mathcal{D}_t}S_{i,t}$ change between 1990 and 2005? This is
+    the period for which $S_{i,t}$ must be reconstructed. \textbf{Answered
+    below, Section~\ref{sec:results}.}
+  \item[Q2. Recent change (2005--present).] How did the same total change
+    between 2005 and the present, where system-level population is largely
+    observed? \textbf{Partially answered}: the reported-served series in
+    Section~\ref{sec:results} runs through the anchored period; extending it
+    to the present with the current SDWIS snapshot is future work
+    (Section~\ref{sec:threats}).
+  \item[Q3. No-coal counterfactual.] If all coal mining were removed from the
+    network, how many people would \emph{no longer} be downstream of coal?
+    This is a descriptive accounting counterfactual, not a causal
+    water-quality claim. \textbf{Not yet run} --- set out in
+    Section~\ref{sec:counterfactual} as the design for future work.
+  \item[Q4. Environmental justice.] Among the exposed population, what is the
+    demographic composition (race/ethnicity, income, age), and how does it
+    compare to the non-exposed population? \textbf{Not yet run} --- set out
+    in Section~\ref{sec:ej} as the design for future work.
+\end{description}
+
+The output of the exercise is a set of \emph{counts and distributions}, not a
+regression coefficient. This matters methodologically: an aggregate headcount
+is far more forgiving of system-level measurement error than a regression
+control would be, because idiosyncratic errors across systems tend to cancel
+in the sum --- a claim the validation exercises of Section~\ref{sec:validation}
+test directly rather than assume.
+
+\section{Institutional background}
+\label{sec:background}
+
+\paragraph{Community water systems and \PWSID.}
+A community water system is a utility that supplies drinking water to the same
+resident population year-round (a municipal utility, a rural water district, a
+mobile-home park, etc.). Every public water system in the United States
+carries a unique identifier, the \PWSID, assigned in the Safe Drinking Water
+Information System (SDWIS), the federal regulatory database maintained by the
+Environmental Protection Agency (EPA). A key administrative field,
+\texttt{POPULATION\_SERVED\_COUNT}, records the estimated resident population
+the system serves. Two features of this field drive the entire methodology:
+\begin{enumerate}[leftmargin=2em]
+  \item It is a \emph{snapshot}, not a time series. EPA overwrites the value
+    as systems file updates, so a single download yields one number per
+    system, dated to the download, with no history.
+  \item It is a \emph{reported} quantity (the population the utility claims to
+    serve), which need not equal the residential population living inside the
+    system's service-area boundary --- some residents use private wells, and
+    some systems serve transient or commercial demand. The gap between the
+    two is central below.
+\end{enumerate}
+
+\paragraph{Watersheds and the ``downstream-of-mine'' classification.}
+Surface-water flow is organized by the U.S. Geological Survey into nested
+watershed units; the finest standard unit used here is the twelve-digit
+hydrologic unit code (HUC12), a sub-watershed averaging roughly $100$\,km$^2$.
+Each HUC12 records the identity of the single HUC12 it drains into (its
+\texttt{tohuc}), so the HUC12 layer forms a directed flow network. A CWS is
+matched to the HUC12 containing its intake. Using mine locations (from the
+Mine Safety and Health Administration, MSHA) placed on the same network, a
+HUC12 --- and the systems drawing from it --- is classified as \emph{downstream
+of a mine} in year $t$ if an active mine sits in any HUC12 that flows into it.
+The target set for this exercise is narrower than that general classification:
+systems that are \emph{ever}, over 1983--2024, one HUC12 \emph{directly}
+downstream of an active mine, with no intake in a mining HUC12 itself. This is
+the same \texttt{minehuc\_downstream\_of\_mine} classification used elsewhere
+in the coal-mining/drinking-water project, so the population weights built
+here attach to exactly the sample the project's instrumental-variables
+analysis is estimated on. The annual roster $\mathcal{D}_t$ for this set is an
+\emph{input} to the present exercise, not something it constructs.
+
+\paragraph{Why this is hard.}
+The roster $\mathcal{D}_t$ is known annually, but the quantity we wish to sum
+over it --- $S_{i,t}$ --- is observed only at a handful of recent dates
+(Section~\ref{sec:data}). The methodological core (Section~\ref{sec:methods})
+is a procedure to fill $S_{i,t}$ backward to 1990.
+
+\section{Data}
+\label{sec:data}
+
+\subsection{Inputs}
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Downstream roster $\mathcal{D}_t$, 1983--2024}, annual, at the
+    \PWSID\ level, derived from MSHA mine activity and the HUC12 flow network.
+    Includes system existence (entry/exit) by year. 367 systems are ever in
+    the roster.
+  \item \textbf{Service-area polygons} for CWS: the EPA Community Water System
+    service-area boundary layer (SABS), the linchpin that lets us move from
+    coarse county proxies to system-specific population
+    (Section~\ref{sec:apportion}).
+  \item \textbf{Census geography and demography}: tract/block boundary
+    polygons and 100\% population counts at the decennial censuses 1990,
+    2000, 2010, 2020 (nationwide digital boundary files begin with the 1990
+    TIGER/Line release, which is why the study window opens in 1990), and the
+    Census Bureau's Population Estimates Program (PEP) annual \emph{county}
+    population, used to give the system-level series an annual cadence
+    between decennial points (Section~\ref{sec:cadence}).
+\end{itemize}
+
+\subsection{Reported population-served anchors}
+An \emph{anchor} is a year in which a system's reported population served is
+directly observed and linkable to its \PWSID. Table~\ref{tab:backcast_anchors}
+inventories the sources used: the SYR2 occurrence databases (1998--2005), the
+2006 Community Water System Survey frame, and the SDWIS 2010 and 2011 freezes.
+Two features of this set constrain everything downstream. First, each source
+supplies \emph{one} inventory value per system, not an annual series --- the
+SYR2 databases carry a single \texttt{POPULATION} field stamped on every
+sample record, so SYR2 yields one anchor per system, dated to its first sample
+year, not an eight-year panel. Second, no anchor of any kind exists before
+1998: the 1995 and 2000 Community Water System Surveys are de-identified
+stratified samples that cannot be attached to a \PWSID, and the 2005 SDWIS
+``freeze'' is an 87-row summary pivot with no system records. The 1990--1997
+window is therefore anchored only by extrapolation, and this is flagged
+throughout. The modern SDWIS snapshot is deliberately excluded from the anchor
+set: its \texttt{POPULATION\_SERVED\_COUNT} is a single current-day value
+broadcast across all years, the exact artifact this exercise exists to
+remove.
+
+\input{sum/backcast_anchors}
+
+\section{Methods}
+\label{sec:methods}
+
+\subsection{The estimand and the identity behind the reconstruction}
+\label{sec:identity}
+
+For a system $i$ with exposure polygon $A_i$, define two distinct population
+concepts:
+\begin{align}
+G_{i,t} &= \text{residential population living inside } A_i \text{ in year } t,
+  &&\text{(from Census)} \label{eq:G-def}\\
+S_{i,t} &= \text{population the system reports serving in year } t.
+  &&\text{(from SDWIS/anchors)} \label{eq:S-def}
+\end{align}
+They are linked by a system-specific \emph{capture ratio}
+$r_{i,t}\equiv S_{i,t}/G_{i,t}$, which absorbs everything that makes reported
+service differ from polygon residence: private-well penetration, transient and
+commercial demand, and imprecise boundaries. The object recovered directly is
+$G_{i,t}$, the residential backbone, which the areal apportionment identifies
+without any anchoring in reported figures, and which is arguably the right
+notion of exposure in its own right: it counts the people living in the
+territory the system draws water for, whether or not the utility books them as
+customers.
+
+We report \emph{both}. Steps 1--2 (Sections~\ref{sec:apportion}--\ref{sec:cadence})
+build the residential backbone $G_{i,t}$ for every system and year; Step 3
+(Section~\ref{sec:backcast-step3}) calibrates $r_{i,t}$ against observed
+reported population at the anchor years and forms
+$\hat S_{i,t}=\hat r_{i,t}\hat G_{i,t}$; Step 4 (Section~\ref{sec:exposure})
+aggregates over the year-specific roster. The two measures bracket the truth
+and, as Section~\ref{sec:results} shows, tell materially different stories
+about the 1990--2005 period --- a divergence that is itself one of the more
+useful outputs of the exercise, because it isolates how much of the apparent
+change in exposure is an artifact of the coarser geography used for some
+systems.
+
+For readers new to this style of estimate: the logic mirrors how demographers
+``backcast'' missing population. A slowly moving, mechanically determined
+quantity (residents inside a fixed boundary, $G$) serves as a deterministic
+backbone, and the comparatively small, system-specific deviation from it
+($r$) is the only thing that must be modeled.
+
+\subsection{Scope: which systems, and which polygon}
+\label{sec:scope}
+
+Each of the 367 target systems needs a polygon into which Census population
+can be apportioned. Polygons are assigned in two tiers, in order of
+preference:
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Service-area polygon.} The EPA SABS layer gives the actual
+    territory the utility serves. 239 systems match.
+  \item \textbf{County polygon.} For systems with no SABS boundary, the county
+    reported in \texttt{SDWA\allowbreak\_GEOGRAPHIC\allowbreak\_AREAS} is used
+    as the exposure geography. 127 systems fall into this tier, spanning 57
+    distinct counties.
+\end{enumerate}
+One system matches neither and is dropped (Table~\ref{tab:backcast_recovery}).
+The tiers are not interchangeable and are kept separate in every table below:
+a county polygon is far larger than the service area nested inside it, so
+county-tier systems mechanically carry a much larger population than they
+truly serve. They are informative about \emph{trends}, since a county's growth
+rate is a reasonable proxy for its utilities' growth rate, but their
+\emph{levels} are upper bounds.
+
+\subsection{Step 1: apportioning Census population into the polygons}
+\label{sec:apportion}
+
+A Census block rarely coincides with a service-area boundary, so population is
+moved into $A_i$ by \emph{population-weighted areal interpolation}. For each
+decennial vintage $t\in\{1990,2000,2010,2020\}$, intersect $A_i$ with that
+vintage's block layer and sum block population weighted by the share of each
+block's area falling inside the polygon:
+\begin{equation}
+G_{i,t} \;=\; \sum_{b} \texttt{pop}_{b,t}\, w_{b,i,t},
+\qquad
+w_{b,i,t} \;=\;
+  \frac{\operatorname{area}\!\left(b \cap A_i\right)}{\operatorname{area}(b)} .
+\label{eq:apportion}
+\end{equation}
+Blocks are the finest Census unit and carry 100\% counts at each decennial,
+which keeps $w_{b,i,t}$ accurate. All geometry is handled in EPSG:5070 (Albers
+equal area) so that the areas in \eqref{eq:apportion} are undistorted.
+
+Because the target polygon $A_i$ is held fixed while the block layer is
+re-intersected at each vintage, the usual obstacle to long-run Census
+work --- boundary redefinition every decade --- does not arise: no
+tract-to-tract or block-to-block crosswalk is ever needed. The same overlay
+also yields the share of each system's population drawn from each county,
+$\theta_{i,c,t_0} = G_{i,t_0}^{(c)} / G_{i,t_0}$, which feeds Step 2. Just
+under a quarter of service areas (57 of 239) straddle a county line, so this
+blend is not a formality.
+
+\subsection{Step 2: from four decennial snapshots to an annual series}
+\label{sec:cadence}
+
+Equation~\eqref{eq:apportion} delivers population only in Census years. To
+reach annual frequency, each system's polygon population rides its county's
+observed annual trajectory, taken from PEP. Let
+$P_{c(i),t}=\sum_c \theta_{i,c,t_0} P_{c,t}$ be the population-weighted blend
+of the counties the system overlaps. Starting from the most recent decennial
+anchor $t_0$, the annual value is defined recursively by applying the
+county's gross growth factor:
+\begin{equation}
+\hat G_{i,t} \;=\; \hat G_{i,t-1}\cdot\frac{P_{c(i),t}}{P_{c(i),t-1}},
+\qquad
+\hat G_{i,t_0} \;=\; G_{i,t_0} .
+\label{eq:chain}
+\end{equation}
+The recursion telescopes, since the cumulative product of annual growth
+factors collapses to the ratio of county populations at the endpoints:
+\begin{equation}
+\hat G_{i,t} \;=\; G_{i,t_0}\cdot\frac{P_{c(i),t}}{P_{c(i),t_0}}
+  \;=\; \kappa_{i,t_0}\,P_{c(i),t},
+\qquad
+\kappa_{i,t_0} \equiv \frac{G_{i,t_0}}{P_{c(i),t_0}} .
+\label{eq:chain-closed}
+\end{equation}
+Written this way, the content of the rule is transparent: it holds the
+system's \emph{coverage ratio} $\kappa$ --- the share of its county's
+population that lives inside the service area --- fixed at the opening
+decennial value, and lets the level follow the county thereafter. The single
+substantive assumption is that $\kappa$ is constant within a decade. At each
+decennial the level is reset to the freshly observed apportionment and
+chaining resumes, so the assumption is only ever imposed over a ten-year span,
+never over the full window; the reset introduces a small discontinuity at
+decade boundaries equal to the decade's realized drift in $\kappa$, which is
+the honest price of not benchmarking to the closing decennial. This is exactly
+the degenerate case of a full two-endpoint benchmarking rule in which the
+closing-decennial coverage ratio happens to equal the opening one; here it is
+imposed rather than estimated, and Section~\ref{sec:validation} tests the cost
+of that choice directly (leave-one-decade-out).
+
+The 1990 floor is binding and cannot be pushed back: nationwide digital block
+boundaries begin with the 1990 TIGER/Line release. 1980 tract polygons exist
+only for already-tracted metropolitan areas and would introduce exactly the
+urban selection this exercise is trying to avoid. The roster extends back to
+1983, so 1983--1989 is left unrecovered rather than extrapolated.
+
+\subsection{Step 3: the reported layer, calibrating $r$}
+\label{sec:backcast-step3}
+
+The backbone above counts residents. To recover what utilities actually
+report serving, the capture ratio $r_{i,t}=S_{i,t}/G_{i,t}$ must be calibrated
+wherever $S$ is observed and carried elsewhere.
+
+\paragraph{The ratio is only meaningful for one tier.}
+Table~\ref{tab:backcast_ratio} reports the ratio's distribution, and the split
+by geography tier is decisive. For service-area systems $r$ behaves exactly as
+the framework assumes: it centers at $1.53$, slightly above one, consistent
+with utilities serving some demand beyond their resident population, and the
+median system's ratio moves only $1.15\times$ between its earliest and latest
+anchor. That drift statistic is the direct test of the constant- and
+interpolated-$r$ assumptions, and it passes. For county-tier systems it does
+not: the denominator $G$ is an entire county's population, so
+$r\approx 0.001$ measures the utility's share of its county rather than any
+capture rate. Multiplying such a ratio back by $G$ would merely return the
+reported number while discarding the backbone entirely --- a circular
+operation. The two tiers are therefore treated differently: service-area
+systems carry the ratio, $\hat S_{i,t}=\hat r_{i,t}\hat G_{i,t}$, while
+county-tier systems take their reported population as the \emph{level} and
+the county's growth factor as the \emph{trend},
+$\hat S_{i,t}=S_{i,a}\bigl(\hat G_{i,t}/\hat G_{i,a}\bigr)$. Within the
+anchored range $r$ is interpolated linearly between anchors and held flat
+outside it; the five systems with no anchor at all take the same-tier median
+and are flagged as least reliable.
+
+\input{sum/backcast_ratio}
+
+\paragraph{Wholesale de-duplication.}
+A system that sells water to another reports a population its buyer also
+reports, so summing both double-counts those residents. Applying the 2010
+Buyers/Sellers crosswalk identifies 39 buyer--seller pairs in which both sides
+are downstream, implicating 27 sellers, which are removed from $E^S_t$ before
+aggregation.
+
+\subsection{Step 4: aggregating over the year-specific roster}
+\label{sec:exposure}
+
+The downstream set $\mathcal{D}_t$ is known annually and changes as mines open
+and close. Total exposed population under each concept is
+\begin{align}
+\text{Residential exposure:}\quad & E^{G}_t \;=\; \sum_{i\in\mathcal{D}_t} \hat G_{i,t}, \\
+\text{Reported-served exposure:}\quad & E^{S}_t \;=\; \sum_{i\in\mathcal{D}_t} \hat r_{i,t}\,\hat G_{i,t}.
+\end{align}
+Summing over the year-specific roster rather than a fixed set matters: it lets
+the measure capture systems entering and leaving the downstream set --- the
+extensive margin --- and not only changes in population per system.
+
+\section{Results}
+\label{sec:results}
+
+\paragraph{Coverage.}
+Table~\ref{tab:backcast_recovery} reports what was recovered. Of the 367
+systems ever one HUC12 directly downstream of coal mining, 366 (99.7\%)
+receive a complete population series --- 239 through their own service-area
+polygon and 127 through a county fallback, spanning 18 states. Only one
+system is lost for want of any usable geography. Each recovered system has an
+uninterrupted annual observation for every year from 1990 to 2024, giving a
+balanced panel of 12,810 system-years with no missing values.
+
+\input{sum/backcast_recovery}
+
+\paragraph{Distribution of population.}
+Table~\ref{tab:backcast_popsum} summarizes the recovered population. The
+pooled distribution is strongly right-skewed, with a mean of 53,947 against a
+median of 3,993, and bimodal --- an artifact of the two-tier geography rather
+than a feature of the data. Read separately, the tiers are coherent:
+service-area systems have a median of 480 residents against a mean of 10,234,
+consistent with the many small rural systems that dominate the downstream
+sample, while county-tier systems have a mean of 136,209, reflecting that they
+carry an entire county. The service-area figures are the ones to take at face
+value. The cross-sections in Panel B, which hold the set of systems fixed at
+all 366, show how little the underlying population moved: the median
+recovered system had 3,815 residents in 1990 and 4,019 in 2005.
+
+\input{sum/backcast_popsum}
+
+\paragraph{Change from 1990 to 2005.}
+Table~\ref{tab:backcast_change} reports the change from the earliest recovered
+year to 2005, and the split between panels is the substantive result. Holding
+the set of systems fixed (Panel A), residential population downstream of
+mining is essentially flat: 19.32 million in 1990 against 19.61 million in
+2005, a rise of 1.47\% over fifteen years. The median system grew 0.48\%, and
+47.3\% of systems shrank --- close to an even split. The mean percentage
+change should be disregarded as a measure of central tendency: it is driven by
+a handful of very small systems growing from a near-zero base. Panel B, which
+sums over the year-specific roster $\mathcal{D}_t$, shows a much larger
+decline (residential exposure falls by more than half) because the roster
+itself contracts from 340 systems in 1990 to 278 in 2005.
+
+\input{sum/backcast_change_9005}
+
+\paragraph{Result: the two exposure measures diverge sharply.}
+Table~\ref{tab:backcast_reported_exposure} sets $E^{S}_t$ against $E^{G}_t$,
+and the contrast is the most consequential finding of the whole exercise.
+Reported exposure falls from 2.28 million in 1990 to 2.12 million in 2005, a
+decline of $7.3$\%. Residential exposure over the same roster falls by more
+than half. The ratio $E^{S}_t/E^{G}_t$ climbs steadily from $0.159$ to
+$0.321$, the signature of a compositional shift rather than a population
+change.
+
+The decomposition explains it. Of the 62 systems that leave the downstream
+roster between 1990 and 2005, 61 are county-tier and only one is a service
+area, and their median reported population is 60 people: small rural
+utilities that happened to lack a service-area boundary and so were assigned
+their whole county's population in the residential measure. They contribute
+7.92 million residents to $E^{G}_{1990}$ but only 50,436 reported customers.
+The steep fall in $E^{G}_t$ is thus substantially an artifact of the county
+fallback geography, not evidence that millions of people ceased to be
+exposed. This does not overturn the direction of the result --- exposure
+still declines on both measures, and the roster still contracts from 340
+systems to 278 --- but it changes the magnitude by an order of magnitude and
+reassigns its interpretation. $E^{S}_t$ is the more credible measure of how
+the exposed customer base actually evolved: the number of \emph{systems}
+downstream of active mining fell sharply while the number of \emph{people}
+they served fell modestly, because the systems that dropped out were small.
+
+\input{sum/backcast_reported_exposure}
+
+\input{sum/backcast_exposure_series}
+
+\section{Validation}
+\label{sec:validation}
+
+Six checks discipline the pipeline, all run against live data.
+
+First, an \textbf{external check on the overlay itself}. For the 127
+county-tier systems the apportionment target is a whole county, so
+\eqref{eq:apportion} should reproduce that county's independently measured
+population. Across all 508 county-tier system-years the ratio of apportioned
+to PEP county population lies in $[0.987,1.036]$ with mean $0.9997$: the areal
+machinery is not introducing meaningful bias.
+
+Second, \textbf{internal consistency}: the county shares $\theta$ sum to one
+for all 1,464 system-vintage rows; the areal weights $w$ lie in $[0,1]$ with
+no missing values; and the annual panel is exactly balanced at
+$366\times 35=12{,}810$ rows with no nulls or zeros.
+
+Third, a \textbf{plausibility check on movement}. Within decades the series
+moves smoothly, with level resets only at decennial boundaries, as
+\eqref{eq:chain-closed} implies. Eight system-years show polygon population
+exceeding a single county's population; all are service areas spanning
+several counties, where summing across counties legitimately exceeds any one
+of them.
+
+Fourth, the \textbf{ratio-drift diagnostic} in Table~\ref{tab:backcast_ratio}:
+for the 235 service-area systems with more than one anchor, the median
+system's capture ratio moves $1.15\times$ between its lowest and highest
+anchor, and the 90th percentile moves $2.19\times$. This measures directly how
+much the constant- and interpolated-$r$ assumptions strain, rather than
+assuming the question away.
+
+Fifth, \textbf{leave-one-decade-out} on the $G_{i,t}$ backbone
+(Table~\ref{tab:backcast_lodo}): each of the two interior decennials, 2000 and
+2010, is predicted from each of its two neighbors by PEP-scaling
+\eqref{eq:chain-closed} and compared to the true block apportionment, with no
+reported figure anywhere in the loop. For the service-area tier --- the
+substantive test of the $\kappa$-constant assumption, since the county tier
+moves with the county PEP series by construction --- aggregate error across
+the four target$\times$direction combinations is small, $-1.0\%$ to $+1.9\%$,
+while median per-system absolute error is $7$--$12\%$ and $70$--$78\%$ of
+systems land within $25\%$. A decade of $\kappa$ drift is enough to move
+individual systems but not enough to bias the sum, because drift is not
+one-signed across systems.
+
+\input{sum/backcast_lodo}
+
+Sixth, \textbf{leave-one-anchor-out} on the reported-served layer $\hat
+S_{i,t}$ (Table~\ref{tab:backcast_loao}): each of three eras of reported
+anchors --- 2010--2011, 2006, and the SYR2 era (1998--2005) --- is withheld in
+turn and re-predicted from the remaining eras using the production estimator
+of Section~\ref{sec:backcast-step3}, with folds built as whole eras rather
+than individual anchors because 2010 and 2011 are near-duplicates
+(correlation $0.998$; $90.8\%$ of systems report an identical value in both
+years) and a per-anchor leave-one-out would trivially predict one from the
+other. Service-area aggregate error ranges $-21.5\%$ to $+7.3\%$ across the
+three folds, with median per-system absolute error $12.5$--$14.8\%$; the
+hardest fold, predicting the 1998--2005 anchors from only 2006 and
+2010--2011 (a gap of up to 12 years), has the largest error, as expected.
+County-tier aggregate error is larger in magnitude ($-26.1\%$ to $+22.6\%$)
+but its median per-system error is smaller ($1.8$--$6.1\%$), consistent with
+the level-and-county-growth carry being accurate for most systems but
+occasionally missing a large one. As with LODO, aggregate accuracy exceeds
+per-system accuracy throughout --- the reading the exercise was designed to
+support rather than assume.
+
+\input{sum/backcast_loao}
+
+\section{Q3: the no-coal counterfactual (not yet run)}
+\label{sec:counterfactual}
+
+``If all coal disappeared'' can be operationalized mechanically. Let
+$\mathcal{D}_t$ be the factual downstream set (mines active as observed) and
+$\mathcal{D}^{0}_t$ the set recomputed after \emph{emptying the mine layer}
+from the flow network. With no active mines, no system is downstream of a
+mine, so $\mathcal{D}^{0}_t=\varnothing$ and the relieved population is simply
+$R_t = \sum_{i\in\mathcal{D}_t}\hat S_{i,t} = E^S_t$, already computed in
+Section~\ref{sec:results}. Two refinements would make this more informative
+than a single number, and are the design for future work:
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Intensity weighting.} Rather than a binary downstream
+    indicator, characterize exposure by the number of upstream mines,
+    upstream production, or upstream coal sulfur content, and report the
+    relieved population by intensity tier.
+  \item \textbf{Active vs.\ legacy coal.} Removing only \emph{active} mines
+    differs from removing all coal influence, since abandoned mine lands can
+    continue to affect water; the legacy variant would be reported as a
+    bound.
+\end{enumerate}
+This is descriptive accounting --- a count of who is currently downstream ---
+and is explicitly \emph{not} a claim that water quality would improve by a
+measured amount.
+
+\section{Q4: environmental-justice analysis (not yet run)}
+\label{sec:ej}
+
+For each downstream system, the same polygon weights $w_{b,i,t}$ used for
+population (Section~\ref{sec:apportion}) can be applied to Census tract
+demographic shares (race/ethnicity, median household income, age, and poverty
+status) to obtain the demographic composition of the population served. The
+planned analysis would then: (i) compare the exposed population's composition
+to that of the non-exposed CWS population at each Census year, testing whether
+disadvantaged groups are over-represented downstream of coal; (ii) track these
+gaps over 1990--2020 to see whether the burden's demographic profile shifted;
+and (iii) summarize disproportionality with standard EJ measures
+(population-weighted exposure shares by group; optionally a
+concentration/dissimilarity index). Because demographic \emph{composition} is
+far more stable and better measured than the population \emph{level}, this is
+expected to be the most robust output of the exercise once run, depending
+least on the backcasting assumptions validated in Section~\ref{sec:validation}.
+
+\section{Optional machine-learning robustness (future work)}
+\label{sec:ml}
+
+The procedure above is deliberately transparent and, for aggregate headcounts,
+the validation in Section~\ref{sec:validation} suggests it is adequate. As a
+robustness check, the simple $r$ rule and PEP-shape interpolation could be
+replaced with a supervised-learning predictor (e.g.\ a neural network or
+gradient-boosted trees) trained on the anchor years to map exogenous features
+(Census county/place population, demographics, system type, source water) to
+population served, in the spirit of the demographic backcasting literature.
+Any such model should deliberately \emph{exclude} SDWA violation and
+enforcement variables from the feature set, so that the exposure measure is
+not mechanically a function of the regulatory outcomes studied elsewhere in
+the project. Given that the deterministic backbone already explains the bulk
+of the variation (Section~\ref{sec:validation}), a machine-learning layer is
+expected to refine rather than redefine the estimates, and would be reported
+as a sensitivity, not the headline.
+
+\section{Threats to validity and limitations}
+\label{sec:threats}
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Pre-1998 extrapolation.} No system-level anchor exists before
+    SYR2, so 1990--1997 exposure is a Census-residential extrapolation with
+    $r$ held flat at its earliest observed value. This is reported as such
+    and the better-anchored 1998--2005 segment is leaned on for Q1.
+  \item \textbf{1990 polygon floor.} Nationwide tract/block polygons start in
+    1990; the study cannot extend earlier without metro-only, lower-quality
+    1980 geography, and the roster's 1983--1989 years are left unrecovered.
+  \item \textbf{Service-polygon accuracy.} If a polygon poorly delineates the
+    true service area, $G$ is mismeasured; the $r$ calibration partly
+    corrects this, and the ratio-drift diagnostic (Section~\ref{sec:validation})
+    flags the worst cases.
+  \item \textbf{Capture-ratio non-stationarity.} Holding/interpolating $r$
+    assumes a roughly stable captured share; annexation and consolidation
+    violate this. Measured drift bounds the error.
+  \item \textbf{County-tier levels are upper bounds.} 127 of 366 recovered
+    systems carry their entire county's population rather than a
+    system-specific footprint, which mechanically inflates $E^G_t$ relative
+    to $E^S_t$ (Section~\ref{sec:results}) and is why the reported-served
+    series is preferred for levels.
+  \item \textbf{Reporting comparability.} ``Population served'' is defined
+    slightly differently across SYR2, CWSS, and the SDWIS freezes;
+    definitional drift can masquerade as real change and is checked at
+    overlapping years.
+  \item \textbf{Aggregation cuts both ways.} Headcounts are robust because
+    errors cancel (Section~\ref{sec:validation} confirms this directly); any
+    \emph{system-level} statement is far less reliable than the totals.
+  \item \textbf{Q2, Q3, Q4 are not yet executed}, only designed
+    (Sections~\ref{sec:questions}, \ref{sec:counterfactual}, \ref{sec:ej}).
+\end{enumerate}
+
+\section*{Summary}
+\addcontentsline{toc}{section}{Summary}
+
+The known annual roster of systems downstream of coal mining ($\mathcal{D}_t$)
+is combined with service-area polygons and Census data to reconstruct, system
+by system, the population each serves, via the identity $S=r\cdot G$: Census
+apportionment supplies the residential backbone $G$ for every year back to
+1990, and the recent reported anchors (SYR2, CWSS 2006, and the 2010/2011
+freezes) calibrate the capture ratio $r$. Applied to the 367 systems ever
+downstream of coal mining, the procedure recovers 366 complete population
+series and shows that residential and reported-served exposure diverge
+sharply --- a divergence traced to the county-fallback tier rather than a
+mining effect. Two independent leave-one-out validations, on the $\kappa$-constant
+chaining assumption and on the capture-ratio calibration, both show that
+aggregate exposure totals are accurate even where individual systems are
+noisy. The design's honest weak points are the unanchored 1990--1997 window
+and the upper-bound nature of county-tier levels; its most robust output,
+once run, would be the demographic composition underlying Q4, which barely
+depends on the backcasting assumptions at all.
+
+\end{document}

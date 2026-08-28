@@ -9,10 +9,10 @@
 #          clean_data/cws_data/cws_reported_exposure_annual.parquet
 #          clean_data/cws_data/cws_geopop_annual.parquet
 #          clean_data/cws_data/prod_vio_sulfur.parquet
-# Outputs: writeup/Mining_and_Water_Quality (1)/sum/backcast_anchors.tex
-#          writeup/Mining_and_Water_Quality (1)/sum/backcast_ratio.tex
-#          writeup/Mining_and_Water_Quality (1)/sum/backcast_reported_exposure.tex
-# Author: EK  Date: 2026-07-27
+# Outputs: writeup/population_backcasting/sum/backcast_anchors.tex
+#          writeup/population_backcasting/sum/backcast_ratio.tex
+#          writeup/population_backcasting/sum/backcast_reported_exposure.tex
+# Author: EK  Date: 2026-07-27 (repointed to standalone writeup 2026-08-28)
 # ============================================================
 
 from pathlib import Path
@@ -22,7 +22,7 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CLEAN_CWS = PROJECT_ROOT / "clean_data" / "cws_data"
-SUM_DIR = PROJECT_ROOT / "writeup" / "Mining_and_Water_Quality (1)" / "sum"
+SUM_DIR = PROJECT_ROOT / "writeup" / "population_backcasting" / "sum"
 
 ANCHORS = CLEAN_CWS / "cws_pop_anchors.parquet"
 RATIO = CLEAN_CWS / "cws_capture_ratio_annual.parquet"
@@ -88,7 +88,7 @@ def table_anchors(anchors, tier):
         r"\bottomrule",
         r"\end{tabular}",
         r"\end{adjustbox}",
-        r"\begin{minipage}{\textwidth}\footnotesize",
+        r"\begin{minipage}{\textwidth}\footnotesize\raggedright",
         r"\vspace{0.5em}",
         r"\textit{Notes:} An anchor is a year in which a system's \emph{reported} population served "
         r"is directly observed and linkable to its \texttt{PWSID}. Each source supplies one "
@@ -135,12 +135,12 @@ def table_ratio(anchors, grid, tier):
         r"\midrule",
         r"\multicolumn{7}{l}{\textit{Ratio drift: within-system $\max r / \min r$ across anchors "
         r"(service-area tier)}} \\",
-        rf"Systems with $>1$ anchor & {len(rel)} & {q(rel, .1):.2f} & {q(rel, .25):.2f} & "
-        rf"{q(rel, .5):.2f} & {q(rel, .75):.2f} & {q(rel, .9):.2f} \\",
+        rf"Systems with $>1$ anchor & {len(rel)} & {q(rel, .1):.3f} & {q(rel, .25):.3f} & "
+        rf"{q(rel, .5):.3f} & {q(rel, .75):.3f} & {q(rel, .9):.3f} \\",
         r"\bottomrule",
         r"\end{tabular}",
         r"\end{adjustbox}",
-        r"\begin{minipage}{\textwidth}\footnotesize",
+        r"\begin{minipage}{\textwidth}\footnotesize\raggedright",
         r"\vspace{0.5em}",
         r"\textit{Notes:} $S$ is reported population served, $G$ the residential population inside "
         r"the system's exposure polygon. For the service-area tier the ratio is interpretable and "
@@ -205,7 +205,7 @@ def table_reported_exposure(exposure, grid, ann, roster):
         r"\bottomrule",
         r"\end{tabular}",
         r"\end{adjustbox}",
-        r"\begin{minipage}{\textwidth}\footnotesize",
+        r"\begin{minipage}{\textwidth}\footnotesize\raggedright",
         r"\vspace{0.5em}",
         r"\textit{Notes:} $E^{S}_t$ sums estimated reported population served over the systems "
         r"downstream of an active mine in year $t$, after removing 27 wholesale sellers whose "
