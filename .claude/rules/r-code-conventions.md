@@ -46,6 +46,9 @@ writer before proceeding.
 - Line-length exceptions for regression formulas — long formulas do not need line breaks
 - SEs clustered at PWSID level: `cluster = ~ PWSID`
 - Always use `fixest::feols()`; never `lm()` for panel regressions
+- When the dependent variable is a 0/1 indicator, scale displayed
+  coefficients and SEs by 100 (percentage-point units) before rendering —
+  see `table-figure-formatting.md` Rule 6
 
 ## Output
 
@@ -56,5 +59,11 @@ writer before proceeding.
 - Table notes for any table `\input{}`'d into `main.tex`'s body must follow
   `table-notes-conventions.md` (starts with `\textit{Notes:}`, no variable
   names, no cross-references, no file paths, no individual sample IDs, stars
-  legend on regressions, no FE discussion, no sample-cleaning narration, no
-  robustness-check labeling)
+  legend on regressions, no FE discussion when FE rows are shown, no
+  sample-cleaning narration, no robustness-check labeling)
+- All tables and figures must follow `table-figure-formatting.md`:
+  left-justified notes/captions, no scientific notation, consistent
+  significant figures within a table, decimal-aligned numeric columns,
+  capitalized display labels (not raw snake_case variable names), ×100
+  scaling for binary-outcome coefficients, and no FE checkmark row when FEs
+  are uniform across all columns

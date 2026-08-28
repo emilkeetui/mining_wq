@@ -46,6 +46,11 @@
 - No `\undefined` or `??` references
 - Coefficient cells are non-trivially non-zero
 - Notes begin with `\textit{Notes:}` (see `table-notes-conventions.md`)
+- No scientific notation anywhere in the table
+- Notes/captions are left-justified, not centered or fully justified
+- Display labels (row/column headers) are capitalized, not raw snake_case
+  variable names
+- Binary-outcome coefficients and SEs are scaled ×100 (percentage points)
 
 **90 (peer-review ready):**
 - All of the above, plus:
@@ -54,5 +59,12 @@
   regression table's notes, per `table-notes-conventions.md`
 - Table compiles without errors or overfull hboxes
 - Notes contain no variable names, cross-references, file paths, individual
-  sample IDs, fixed-effects discussion, sample-cleaning narration, or
-  robustness-check labeling — full checklist in `table-notes-conventions.md`
+  sample IDs, sample-cleaning narration, or robustness-check labeling — full
+  checklist in `table-notes-conventions.md`
+- Fixed-effects discussion in notes only when FE checkmark rows are omitted
+  because FEs are uniform across all columns; checkmark rows kept (and notes
+  silent on FEs) when FEs differ across columns — see
+  `table-notes-conventions.md` Rule 7 / `table-figure-formatting.md` Rule 7
+- Significant figures are consistent across all numeric entries in the table
+- Numeric columns with decimals are decimal-aligned (`dcolumn`/`siunitx` or
+  equivalent) — full checklist in `table-figure-formatting.md`

@@ -30,6 +30,11 @@
 1. Visually inspect the `.tex` file — confirm column headers match the intended sample cut
 2. Confirm sample size N in the footnote is plausible
 3. If the table is embedded in a paper: compile the paper and confirm no `??` references
+4. Confirm formatting matches `table-figure-formatting.md`: left-justified notes,
+   no scientific notation, consistent significant figures, decimal-aligned
+   numeric columns, capitalized display labels, ×100 scaling on binary-outcome
+   coefficients, and FE checkmark row omitted (with FEs stated in notes) only
+   when every column shares the same fixed effects
 
 ## Hard Gates (block completion if any fail)
 

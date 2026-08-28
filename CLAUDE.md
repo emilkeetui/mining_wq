@@ -120,7 +120,16 @@ Beamer-compatible tables — after every etable() write, call wrap_for_beamer(pa
 - Correct nesting is always float-outside, box-inside: `\begin{table} → \caption → \centering → \begin{adjustbox} → tabular → \end{adjustbox} → notes → \end{table}` — never the reverse.
 - For hand-assembled multi-panel tables (stacked tabulars), put `adjustbox` inside the table float around each panel's tabular individually, not around the whole `\begin{table}...\end{table}` block.
 
-**Table notes content rules** — see `.claude/rules/table-notes-conventions.md` for the full checklist (starts with `\textit{Notes:}`, no variable names, no cross-references to other tables, no file paths, no individual PWSID/CWS names, stars legend required on every regression table, no fixed-effects discussion, no sample-cleaning narration, no robustness-check labeling). Applies to every table `\input{}`'d into the body of `main.tex`; appendix tables are exempt.
+**Table notes content rules** — see `.claude/rules/table-notes-conventions.md` for the full checklist (starts with `\textit{Notes:}`, no variable names, no cross-references to other tables, no file paths, no individual PWSID/CWS names, stars legend required on every regression table, no fixed-effects discussion when FE checkmark rows are shown, no sample-cleaning narration, no robustness-check labeling). Applies to every table `\input{}`'d into the body of `main.tex`; appendix tables are exempt.
+
+**Table & figure formatting rules** — see `.claude/rules/table-figure-formatting.md` for the full checklist. Applies to every table and figure produced by the pipeline:
+- Notes and captions are left-justified (never centered or fully justified)
+- No scientific notation anywhere — fixed-point decimals only
+- Significant figures/decimal places are consistent for every number within a given table or figure
+- Numeric table columns with decimals are decimal-aligned (align on the period)
+- Display labels (row/column headers, axis labels, legends) are capitalized, never the raw snake_case variable name — use a label/`dict` mapping
+- When the outcome is a binary 0/1 indicator, coefficients and SEs are scaled ×100 so units are percentage points, stated in the notes
+- If every column in a regression table shares the same fixed effects, omit the FE checkmark row(s) and state the fixed effects in the notes instead; if FEs differ across columns, keep the checkmark rows and say nothing about FEs in the notes
 
 ### Python environment
 When using python use this path to the project virtualenv:

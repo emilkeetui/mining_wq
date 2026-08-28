@@ -6,6 +6,11 @@ copies in `writeup/Mining_and_Water_Quality (1)/sum/` and `.../reg/`). Appendix
 tables (anything under a commented-out or `\subsection{Appendix...}`-style block)
 are exempt.
 
+This file covers notes *content*. For numeric/layout formatting (left-justified
+notes, no scientific notation, consistent significant figures, decimal
+alignment, capitalized display labels, binary-outcome ×100 scaling), see
+`table-figure-formatting.md`.
+
 ## The Rules
 
 1. **Notes must begin with `\textit{Notes:}`** — every table's footer text starts
@@ -25,10 +30,15 @@ are exempt.
 6. **Every regression table must include the significance-stars legend**
    (`*** p<0.01, ** p<0.05, * p<0.1`) in its notes, even if the table itself
    never produces a starred coefficient.
-7. **No discussion of fixed effects in the notes text.** Checkmark rows for
-   fixed effects inside the table body (e.g. a "CWS fixed effects" row with
-   `\checkmark` cells) are fine — that's table structure, not notes prose. The
-   notes paragraph itself must not describe which fixed effects are included.
+7. **Fixed effects: row only when columns differ.** If every column in the
+   table includes the *same* set of fixed effects, do not add fixed-effects
+   checkmark rows to the table body at all — state which fixed effects are
+   included in the notes text instead, in plain language (e.g. "All
+   specifications include watershed, year, and state fixed effects."). If
+   fixed effects differ across columns, keep the checkmark rows in the table
+   body (e.g. a "CWS fixed effects" row with `\checkmark` cells) and do
+   **not** discuss fixed effects in the notes paragraph in that case — see
+   `table-figure-formatting.md` Rule 7 for the full formatting rule.
 8. **No description of how the sample was cleaned.** Don't narrate cleaning
    steps (imputation choices, drop thresholds, filters applied) in the notes —
    describe only the resulting sample in plain terms (e.g. "community water

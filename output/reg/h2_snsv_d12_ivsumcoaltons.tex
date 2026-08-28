@@ -1,0 +1,50 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:h2_snsv_d12_ivsumcoaltons} Effect of Coal Production on Regulator Visit Probability by Visit Type (D1 Downstream Sample, LPM)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccccccccccccccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Sanitary visits} & \multicolumn{3}{c}{Technical assistance} & \multicolumn{3}{c}{Enforcement visits} & \multicolumn{3}{c}{Sample collection} & \multicolumn{3}{c}{Inspection}\\
+         
+                                                                                   & OLS           & RF              & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF             & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+         
+         \midrule 
+         Upstream coal production (mil. short tons)                                & 0.0366$^{**}$ &                 & 0.4609$^{**}$ & 0.0104        &               & 0.0460        & -0.0023       &                & 0.1202$^{*}$  & -0.0023       &               & 0.0441        & -0.0025       &               & -0.0616\\   
+                                                                                   & (0.0160)      &                 & (0.1807)      & (0.0064)      &               & (0.0633)      & (0.0064)      &                & (0.0637)      & (0.0016)      &               & (0.0387)      & (0.0075)      &               & (0.0795)\\   
+         post95 $\times$ Upstream sulfur \%                                        &               & -0.0360$^{***}$ &               &               & -0.0036       &               &               & -0.0094$^{**}$ &               &               & -0.0034       &               &               & 0.0048        &   \\   
+                                                                                   &               & (0.0103)        &               &               & (0.0048)      &               &               & (0.0040)       &               &               & (0.0027)      &               &               & (0.0060)      &   \\   
+         
+         F-test (1st stage, clustered), Upstream coal production (mil. short tons) &               &                 & 11.66         &               &               & 11.66         &               &                & 11.66         &               &               & 11.66         &               &               & 11.66\\  
+         
+          \\
+         
+         Observations                                                              & 6,225         & 6,225           & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225          & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225\\  
+         
+          \\
+         
+         CWS fixed effects                                                         & $\checkmark$  & $\checkmark$    & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                                        & $\checkmark$  & $\checkmark$    & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   \textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine. N = 6232 CWS-years. Each panel of 3 columns (OLS, RF, 2SLS) reports a separate binary outcome: any visit of that type in a CWS-year. Sanitary visits are sanitary surveys and follow-up sanitary surveys. Technical assistance includes technical assistance, engineering determination/advice/plan review, and operation and maintenance visits. Enforcement visits include formal enforcement, investigation, and emergency assistance visits. Sample collection is sample collection visits. Inspection includes site inspections, regularly scheduled visits, and informal system inspections. The endogenous regressor is coal production, in millions of short tons, summed across the watersheds directly upstream of the CWS intake. The instrument interacts an indicator for the post-1995 period with mean upstream coal sulfur content. SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   
+\end{table}
+
+

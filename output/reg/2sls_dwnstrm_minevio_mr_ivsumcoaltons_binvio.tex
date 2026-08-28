@@ -1,0 +1,50 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{2sls_dwnstrm_minevio_mr_ivsumcoaltons_binvio} Effect of coal production on IOC violations (MR violations only, CWSs at most one HUC12 down-stream)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = \textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lccccccccc}
+         \toprule
+         
+          & \multicolumn{3}{c}{Nitrates (MR)} & \multicolumn{3}{c}{Arsenic (MR)} & \multicolumn{3}{c}{Inorganic chemicals (MR)}\\
+         
+                                                                                   & OLS           & RF              & 2SLS          & OLS           & RF             & 2SLS          & OLS           & RF             & 2SLS\\  
+         
+         \midrule 
+         Upstream coal production (mil. short tons)                                & 0.0180        &                 & 0.2692$^{**}$ & 0.0160        &                & 0.2014$^{**}$ & 0.0194        &                & 0.1916$^{*}$\\   
+                                                                                   & (0.0113)      &                 & (0.1160)      & (0.0107)      &                & (0.0977)      & (0.0126)      &                & (0.0994)\\   
+         post95 $\times$ Upstream sulfur \%                                        &               & -0.0239$^{***}$ &               &               & -0.0179$^{**}$ &               &               & -0.0170$^{**}$ &   \\   
+                                                                                   &               & (0.0084)        &               &               & (0.0073)       &               &               & (0.0077)       &   \\   
+         
+         F-test (1st stage, clustered), Upstream coal production (mil. short tons) &               &                 & 14.41         &               &                & 14.41         &               &                & 14.41\\  
+         
+          \\
+         
+         Observations                                                              & 6,225         & 6,225           & 6,225         & 6,225         & 6,225          & 6,225         & 6,225         & 6,225          & 6,225\\  
+         
+          \\
+         
+         CWS fixed effects                                                         & $\checkmark$  & $\checkmark$    & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$\\   
+         year fixed effects                                                        & $\checkmark$  & $\checkmark$    & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   \textit{Notes:} Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is an indicator equal to 1 if the CWS had any violation of that type during the year, 0 otherwise. The endogenous regressor is coal production, in millions of short tons, summed across the watersheds directly upstream of the CWS intake. The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content across upstream watersheds. Standard errors clustered at the CWS level. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   
+\end{table}
+
+

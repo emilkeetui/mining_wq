@@ -1,0 +1,48 @@
+
+\begin{table}[htbp]
+   
+   \caption{\label{tab:fs_dwnstrm_minevio_ivsumcoaltons} First stage: effect of the Acid Rain Program on upstream coal production (summed across upstream watersheds, CWSs at most one HUC12 down-stream)}
+   \bigskip
+   
+   \centering
+   
+   \begin{adjustbox}{width = 0.45\textwidth, center}
+      
+      %start:tab
+      
+      \begin{tabular}{lc}
+         \toprule
+         
+                                              & Upstream coal production (mil. short tons)\\  
+         
+                                              & (1)\\  
+         
+         \midrule 
+         post95 $\times$ Upstream sulfur \%   & -0.0887$^{***}$\\   
+                                              & (0.0234)\\   
+         
+         F-test (1st stage, clustered)        & 14.41\\  
+         
+          \\
+         
+         Observations                         & 6,225\\  
+         
+          \\
+         
+         CWS fixed effects                    & $\checkmark$\\   
+         year fixed effects                   & $\checkmark$\\   
+         
+         \bottomrule
+         
+      \end{tabular}
+      
+      %end:tab
+      
+      
+   \end{adjustbox}
+      {\tiny\linespread{1}\selectfont \par \raggedright 
+   \textit{Notes:} The dependent variable is coal production, in millions of short tons, summed across the watersheds directly upstream of the community water system's intake. The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content across upstream watersheds. The sample is community water systems at most one watershed downstream of a coal mine. Standard errors clustered at the CWS level. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   
+\end{table}
+
+
