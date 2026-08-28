@@ -1,0 +1,159 @@
+\documentclass{article}
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=bwl-FU
+]{biblatex}
+\addbibresource{citation.bib}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+
+\begin{document}
+	
+	\section{Theoretical model (non-separable exceedance risk)}
+	
+	\section{Theoretical model}
+	
+	\subsection{Setup}
+	
+	I build a theoretical model to formalize a utility's decisions to comply with water contamination regulation under rising contamination.
+    
+	Utilities are required to meet contamination requirements and self report their compliance. I follow \textcite{mookherjee1994marginal} and assume that utilities find contamination regulation costly to comply with. A compliance cost is determined by both a utility's ability to manage a drinking water system, such as the skills of its managerial and technical staff, and the costs of water treatment, including the cost of filtration equipment and sterilization chemicals. Utility compliance cost, $\theta$, is a random variable drawn from $F(\cdot\,;m)$, a strictly increasing and continuously differentiable cumulative distribution function with support $(0, \bar{\theta})$, density $f(\cdot\,;m)$, and contamination $m$. Increasing $m$ weakly lowers the probability that a utility's compliance cost falls at or below any given level so that $\partial F(\theta;m)/\partial m \le 0$ for every $\theta$. Utilities know their draw of $\theta$, but regulators only know the distribution of $\theta$. 
+
+    Utilities receive a benefit from neglecting their contamination control requirements. The utility chooses a negligence level $a \in [0, \bar{a}]$, which measures how much it avoids the requirements of drinking water quality regulations, from avoiding every requirement $\bar{a}$ to full compliance 0. Regulators do not directly observe a utility's choice of $a$. A utility receives a benefit $\theta b(a)$ from having compliance costs $\theta$ and choosing a negligence level $a$, where $b'(a)>0$ and $b''(a)<0$. A utility's benefits from negligent contamination control are the savings on wages and chemicals. The opportunity cost to the utility of choosing a compliance level $a$ relative to maximum negligence $\bar{a}$ is $\theta[b\bar{a}-b(a)]$. The financial benefit of a certain level of negligence to a profit maximizing privately owned utility is obvious. Publicly owned utilities also benefit from cost savings that allow them to forgo rate increases or tax collection, which may be unpopular with residents.
+	
+	Utilities face $N$ required self-reporting events per year. Given negligence $a$, each self-reporting event would reveal an MCL exceedance with a probability $q(a)$, with $q(0)=0$, $q'>0$, and $q'' \ge 0$. I modify the penalty structure from \textcite{kaplow1994optimal} by assuming that self-reporting is costly. A utility's self-reporting costs $c \sim G(\cdot\,;m)$ are drawn from a strictly increasing and continuously differentiable cumulative distribution function with density $g(\cdot\,;m)$. Regulators require utilities to increase sampling with rising contamination so that the distribution $G()$ depends on upstream contamination $m$ where $\partial G(c;m)/\partial m \le 0$ for every $c$. Raising $m$ weakly lowers the probability that a utility's self-reporting cost is at or below any given level. 
+	
+	Regulators perfectly observe under reporting. Unlike \textcite{mookherjee1994marginal}, I assume regulators do not observe MCL violations unless utilities self report water quality or the regulator conducts an inspection. Regulators use penalties and investigations for under-reporting and for exceeding regulatory standards for water quality. Utilities receive a sanction $r$ if they self-report a contamination level above the MCL and a penalty $t$ for an MR violation. Regulators investigate under-reporting utilities with a probability $p$ and issue a sanction $s$ for a discovered MCL violation, where $s>r$.
+	
+	%(The number of true exceedances is then Binomial $(N, q(a)) \approx$ Poisson with mean $Nq(a)$, so Section 1's Poisson structure is recovered with intensity $Nq(a)$ in place of $a$.) For the empirically relevant range, $q(a)$ is small: mining degrades source water \emph{within} the MCL for most systems.
+	%the sanctions $(r,s,t)$ and enforcement intensity $p$ do not depend on $m$.
+	
+	For each required self-reporting event, the utility chooses to self-report at a cost $c$ or not report and receive an MR violation. Per-event expected penalties are
+	\begin{align*}
+		\text{self-report:} \quad & c + q(a)\,r \\
+		\text{do not self-report (MR):} \quad & t + p\left[q(a)\,s\right]
+	\end{align*}
+	%Taking $r > ps$ throughout, 
+	The utility self-reports if and only if
+	\begin{equation}\label{eq:chat}
+		c \le \hat{c}(a) \equiv t - (r - ps)\,q(a).
+	\end{equation}
+	Even a system with no MCL violations, $q(a) = 0$, stops self-reporting once $c > t$ when self-reporting is more expensive than the expected sanction for skipping it, and there is no MCL violation to conceal. The self-reporting threshold is decreasing in $q(a)$, so systems with a higher probability of exceeding the MCL reduce self-reporting at lower cost thresholds. The expected penalty is
+	\begin{equation}\label{eq:endog_penalty}
+		e(a) = N \min\left\{\, c + q(a)r,\;\; t + ps\,q(a) \,\right\},
+	\end{equation}
+	which is increasing in $a$.
+	
+	\subsection{Optimal negligence}
+	
+	The utility maximizes $-\theta[b(\bar{a}) - b(a)] - e(a)$ with respect to $a$. The first-order condition is piecewise:
+	\begin{align}
+		\theta b'(a) &= N r\, q'(a) & \text{(self-reporting region, } c \le \hat{c}(a)) \\
+		\theta b'(a) &= N ps\, q'(a) & \text{(MR region, } c > \hat{c}(a))
+	\end{align}
+	Assuming $r > ps$, the marginal penalty is lower when the utility is in the MR region than when it is in the self-reporting region. An exogenous decrease in $\hat{c}(a)$ increases the size of the MR region. Utilities that draw a higher self-reporting cost c are more likely to fall in the MR region. An increase in the population's cost distribution raises the share of utilities in that region without moving the boundary $\hat{c}(a)$ itself.
+	
+	\subsection{The propositions}
+	
+	The model predicts that when water quality deteriorates due to increased contamination, self-reporting rates fall.
+	
+	\textbf{Proposition 1:} Negligence is globally increasing in compliance costs, $\partial a/\partial\theta = b'(a) / [\,-\theta b''(a) + N\rho\, q''(a)\,] > 0$ within each region, where $\rho \in \{r, ps\}$ is the region's sanction.
+	
+	\textbf{Proposition 2:} The share of under-reporting utilities increases as contamination increases $\partial MR/\partial m>0$
+
+    Utilities in self-reporting move into the under-reporting region after contamiation. Contamination moves utilities from the self-reporting region to the under-reporting region by changing the testing and compliance costs.
+    
+    Begin with self-reporting utilities' cost threshold. For a given compliance-cost type $\theta$, the negligence choice $a_{SR}(\theta)$ in the self-reporting region solves $\theta b'(a) = Nr\,q'(a)$, independently of $m$ (as in Proposition 1). This pins down the type-specific switching cost
+	\begin{equation}\label{eq:cstar}
+		c^*(\theta) \equiv \hat{c}(a_{SR}(\theta)) = t - (r-ps)\,q(a_{SR}(\theta)),
+	\end{equation}
+	which likewise does not depend on $m$: $m$ enters the model only through the two primitive distributions $F(\cdot\,;m)$ and $G(\cdot\,;m)$, not through the first-order condition itself.
+	
+	A type-$\theta$ utility receives an MR violation if and only if its cost draw exceeds this cutoff, $c > c^*(\theta)$, so the aggregate MR violation rate is
+	\begin{equation}\label{eq:MRm}
+		MR(m) = \int_0^{\bar\theta} \big[\,1 - G(c^*(\theta);m)\,\big]\, f(\theta;m)\, d\theta \;\equiv\; \int_0^{\bar\theta} h(\theta,m)\, f(\theta;m)\, d\theta.
+	\end{equation}
+	
+	Because $m$ enters both the integrand $h$ and the weighting density $f$, differentiating \eqref{eq:MRm} splits into two channels:
+	\begin{equation}\label{eq:split}
+		\frac{\partial MR}{\partial m} = \underbrace{\int_0^{\bar\theta} \frac{\partial h(\theta,m)}{\partial m}\, f(\theta;m)\, d\theta}_{\text{Channel A: cost-distribution shift}} \;+\; \underbrace{\int_0^{\bar\theta} h(\theta,m)\, \frac{\partial f(\theta;m)}{\partial m}\, d\theta}_{\text{Channel B: type-distribution shift}}.
+	\end{equation}
+	
+	\textit{Channel A.} Since $c^*(\theta)$ does not depend on $m$,
+	\[
+	\frac{\partial h(\theta,m)}{\partial m} = -\frac{\partial G(c^*(\theta);m)}{\partial m} \ge 0 \quad \text{for every } \theta,
+	\]
+	since $\partial G(\cdot\,;m)/\partial m \le 0$ pointwise. Hence Channel A $\ge 0$: holding the type composition fixed, a rightward shift in the self-report cost distribution pushes more mass of $c$ above each type's unchanged cutoff.
+	
+	\textit{Channel B.} The maintained assumption signs $\partial F(\theta;m)/\partial m \le 0$, but Channel B is written in terms of the \emph{density} derivative $\partial f(\theta;m)/\partial m$, which has no assumed sign — a rightward shift in a cdf can raise the density in one part of the support and lower it in another. To use the assumption we actually have, rewrite Channel B in terms of $F$ instead of $f$ via integration by parts.
+	
+	Define $\varphi(\theta;m) \equiv \partial F(\theta;m)/\partial m$. Since $f(\theta;m) = \partial F(\theta;m)/\partial\theta$, swapping the order of the two partial derivatives gives $\partial f(\theta;m)/\partial m = \partial \varphi(\theta;m)/\partial\theta \equiv \varphi'(\theta;m)$, so Channel B is
+	\[
+	\int_0^{\bar\theta} h(\theta,m)\,\varphi'(\theta;m)\, d\theta.
+	\]
+	Integrating by parts (treating $\varphi'(\theta;m)\,d\theta$ as $d\varphi$),
+	\[
+	\int_0^{\bar\theta} h(\theta,m)\,\varphi'(\theta;m)\, d\theta = \Big[\,h(\theta,m)\,\varphi(\theta;m)\,\Big]_0^{\bar\theta} - \int_0^{\bar\theta} h'(\theta)\,\varphi(\theta;m)\, d\theta.
+	\]
+	The boundary term vanishes: $\varphi(0;m) = \partial F(0;m)/\partial m = 0$ and $\varphi(\bar\theta;m) = \partial F(\bar\theta;m)/\partial m = 0$, since $F(0;m)=0$ and $F(\bar\theta;m)=1$ for every $m$ (the cdf is pinned at the endpoints of its support regardless of $m$). Substituting $\varphi(\theta;m) = \partial F(\theta;m)/\partial m$ back in,
+	\begin{equation}\label{eq:channelB}
+		\int_0^{\bar\theta} h(\theta,m)\,\frac{\partial f(\theta;m)}{\partial m}\, d\theta = -\int_0^{\bar\theta} h'(\theta)\,\frac{\partial F(\theta;m)}{\partial m}\, d\theta.
+	\end{equation}
+	Integration by parts has moved the derivative off of $f$ (unsigned) and onto $h$ (now $h'(\theta)$, which can be signed) — this is what makes the assumption $\partial F/\partial m \le 0$ usable at all. Signing \eqref{eq:channelB} therefore requires the slope of $h$ in $\theta$. Differentiating \eqref{eq:cstar},
+	\[
+	c^{*\prime}(\theta) = -(r-ps)\,q'(a_{SR}(\theta))\,a_{SR}'(\theta) < 0,
+	\]
+	since $a_{SR}'(\theta) > 0$ by Proposition 1, $q' > 0$, and $r > ps$. Then
+	\[
+	h'(\theta) = -g(c^*(\theta);m)\,c^{*\prime}(\theta) \ge 0,
+	\]
+	so $h$ is non-decreasing in $\theta$: higher-cost types choose more negligence, which lowers their own switching cutoff and makes them structurally more likely to fall in the MR region. Combining this with $\partial F(\theta;m)/\partial m \le 0$ in \eqref{eq:channelB} signs Channel B:
+	\[
+	\text{Channel B} = -\int_0^{\bar\theta} \underbrace{h'(\theta)}_{\ge 0}\,\underbrace{\frac{\partial F(\theta;m)}{\partial m}}_{\le 0}\, d\theta \;\ge\; 0.
+	\]
+	
+	\textbf{Proposition 2:} $\partial MR/\partial m = \text{Channel A} + \text{Channel B} \ge 0$, strictly positive wherever either of $\partial F/\partial m$, $\partial G/\partial m$ is strictly negative on a positive-measure set of types. The two channels reinforce rather than offset: contamination from mining raises MR violations both by directly raising self-report costs relative to each type's fixed cutoff, and by shifting the population toward higher-cost types who were already structurally closer to their own cutoff.
+	
+	\textbf{Proposition 3: enforcement scale, negligence, and self-reporting.}
+	
+	Consider scaling every sanction by a common factor $\lambda>0$: $(r,s,t) \to \lambda(r,s,t)$, holding $q(\cdot)$, $b(\cdot)$, $N$, $p$, and the cost draws $\theta,c$ fixed. Per-event penalties become
+	\[
+	\text{self-report:} \quad c + \lambda r\,q(a), \qquad \text{do not self-report:} \quad \lambda t + p\,\lambda s\,q(a) = \lambda\big[\,t+ps\,q(a)\,\big].
+	\]
+	
+	\textit{Step 1: the marginal penalty scales by $\lambda$ in both regions.} Since $c$ is additive in $a$, it drops out of $e'(a)$ regardless of whether it scales. Differentiating within each region,
+	\begin{align*}
+		e_\lambda'(a) &= N\lambda r\,q'(a) = \lambda\, e'(a) & \text{(self-reporting region)} \\
+		e_\lambda'(a) &= N\lambda ps\,q'(a) = \lambda\, e'(a) & \text{(MR region)}
+	\end{align*}
+	
+	\textit{Step 2: negligence falls in $\lambda$.} The first-order condition becomes $\theta b'(a) = \lambda N\rho\,q'(a)$, $\rho\in\{r,ps\}$ — identical in structure to Proposition 1's, with $\lambda$ entering where the implicit factor of $1$ stood before. Implicit differentiation gives
+	\[
+	\frac{\partial a}{\partial \lambda} = \frac{N\rho\,q'(a)}{\theta b''(a) - \lambda N\rho\, q''(a)}.
+	\]
+	The same second-order condition invoked in Proposition 1 — $\lambda N\rho\,q''(a) - \theta b''(a) \ge 0$, required for $a$ to be a maximum — makes the denominator non-positive, so $\partial a/\partial\lambda \le 0$: negligence is (weakly) decreasing in the enforcement scale, within each region.
+	
+	\textit{Step 3: the self-report cutoff scales by $\lambda$.} Redoing the self-report condition with the scaled penalties, $c + \lambda r\,q(a) \le \lambda\big[t+ps\,q(a)\big]$ rearranges to
+	\begin{equation}\label{eq:chat_lambda}
+		c \le \hat{c}_\lambda(a) \equiv \lambda\big[\,t - (r-ps)\,q(a)\,\big] = \lambda\,\hat{c}(a).
+	\end{equation}
+	Unlike $\hat{c}(a)$ itself, the self-report \emph{cost} $c$ does not scale with $\lambda$ — it is a technology/labor cost, not a legal penalty — so scaling $\lambda$ up moves the threshold $\hat{c}_\lambda(a)$ relative to a fixed distribution of $c$.
+	
+	\textit{Step 4: signing the effect on the threshold requires $\hat{c}(a)\ge 0$.} Because $\hat{c}_\lambda(a) = \lambda\,\hat{c}(a)$, raising $\lambda$ raises the threshold only where $\hat{c}(a) \ge 0$; where $\hat{c}(a) < 0$ (possible for large $a$, since $q(a)$ can grow enough that $(r-ps)q(a) > t$), scaling up $\lambda$ makes the threshold \emph{more} negative and shrinks the self-report region instead. Since $\hat{c}(0) = t > 0$, this holds automatically near full compliance; for the conclusion to hold on the whole domain, add the regularity assumption below (positive threshold): sanctions are calibrated so that some positive self-report cost is tolerated even at maximum negligence.
+	\[
+	\hat{c}(a) \ge 0 \ \text{ for all } a \in [0,\bar a], \qquad \text{i.e.} \qquad t \ge (r-ps)\,q(\bar a).
+	\]
+	
+	\textit{Step 5: the equilibrium threshold rises in $\lambda$.} Evaluating at the equilibrium negligence $a_\lambda$ from Step 2, the equilibrium threshold is $C^*(\lambda) \equiv \hat{c}_\lambda(a_\lambda) = \lambda\,\hat{c}(a_\lambda)$. Its total derivative is
+	\[
+	\frac{dC^*}{d\lambda} = \hat{c}(a_\lambda) + \lambda\,\hat{c}'(a_\lambda)\,\frac{da_\lambda}{d\lambda}.
+	\]
+	The first term is $\ge 0$ by the Assumption above. The second term is also $\ge 0$: $\hat{c}'(a) = -(r-ps)q'(a) < 0$ and $da_\lambda/d\lambda \le 0$ from Step 2, so their product is non-negative, and $\lambda>0$. Both channels push the same way, so $dC^*/d\lambda \ge 0$: raising the enforcement scale raises the equilibrium self-report threshold, holding the population's cost draws fixed, which (by the same logic as Proposition 2) raises the share of utilities with $c \le C^*(\lambda)$ — the self-reporting region expands.
+	
+	\textbf{Proposition 3:} Under the Assumption above and the Proposition 1 second-order condition, scaling all sanctions $(r,s,t)\to\lambda(r,s,t)$ by $\lambda>0$ (i) scales the marginal penalty $e'(a)$ by $\lambda$ in both regions and (weakly) reduces equilibrium negligence, $\partial a/\partial\lambda \le 0$; and (ii) scales the self-report cutoff by $\lambda$ and, because self-report costs $c$ do not scale, (weakly) expands the self-reporting region, $dC^*/d\lambda \ge 0$. Higher enforcement intensity reduces negligence and increases self-reporting.
+	
+	\printbibliography
+	
+\end{document}

@@ -1,0 +1,57 @@
+\section{Theoretical model}
+
+\subsection{Setup}
+
+I build a theoretical model to formalize a utility's decisions to comply with water contamination regulation under rising contamination. Utilities have two different incentives to underreport water quality: to avoid the direct costs of self-reporting and to hide an MCL. Regulators use penalties and investigations for under-reporting and for exceeding regulatory standards for water quality. Penalties can involve fines or the menu of enforcement options described in the institutional background. I assume utilities are able to assign a dollar cost to non-financial penalties and compare the dollar amount of all penalties. Penalties differ if a utility fails to self-report and exceeds an MCL compared to if a utility fails to self-report and does not exceed an MCL. 
+
+I follow \textcite{mookherjee1994marginal} and assume that utilities find contamination regulation costly to comply with. In \textcite{mookherjee1994marginal}, compliance is costly, non-compliance has harmful externalities, and regulators observe violations perfectly. I modify the penalty structure from \textcite{kaplow1994optimal} by assuming self-reporting is costly. In \textcite{kaplow1994optimal}, self-reporting itself is not costly. 
+
+The utility chooses a negligence level $a \in [0, \bar{a}]$, which measures how much it avoids the requirements of drinking water quality regulations, from avoiding every requirement $\bar{a}$ to full compliance 0. Failing to self-report water quality, not installing pollution abatement technology, and exceeding an MCL are examples of utility negligence. Regulators do not directly observe a utility's choice of $a$. Utilities face a compliance cost, $\theta$, that is a random variable drawn from $\Theta (\cdot\,;m)$, which is a strictly increasing and continuously differentiable function $F(\cdot)$ with support $(0, \bar{\theta})$. Utilities know their draw of $\theta$, but regulators only know the distribution of $\theta$. A compliance cost is determined by both a utility's ability to manage a drinking water system, such as the skills of its managerial and technical staff, and the costs of water treatment, including the cost of filtration equipment and sterilization chemicals. Utilities receive a benefit $\theta b(a)$ from having compliance costs $\theta$ and choosing a negligence level $a$. A utility's benefits from under-reporting a specific contaminant are the savings on wages, testing equipment, and lab fees. The opportunity cost to the utility of choosing a compliance level $a$ relative to maximum negligence $\bar{a}$ is $\theta[b\bar{a}-b(a)]$. The financial benefit of a certain level of negligence to a profit maximizing privately owned utility is obvious. Publicly owned utilities also benefit from cost savings that allow them to forgo rate increases or tax collection, which may be unpopular with residents.
+
+Utilities face $N$ required self-reporting events per year. Given negligence $a$, each self-reporting event would reveal an MCL exceedance with a probability $q(a)$, with $q(0)=0$, $q'>0$, and $q'' \ge 0$.
+
+%(The number of true exceedances is then Binomial $(N, q(a)) \approx$ Poisson with mean $Nq(a)$, so Section 1's Poisson structure is recovered with intensity $Nq(a)$ in place of $a$.) For the empirically relevant range, $q(a)$ is small: mining degrades source water \emph{within} the MCL for most systems.
+
+Self-reporting costs $c$ are utility-specific and depend on upstream contamination $m$ so that $c \sim G(\cdot\,;m)$, with $m$ shifting the distribution rightward (first-order stochastic dominance). Degraded source water triggers additional required sampling even when contamination remains below the MCL.
+
+Utilities receive a sanction $r$ if they self-report a contamination level above the MCL. Utilities receive penalty $t$ for an MR violation. Regulators investigate utilities that do not report with a probability $p$ and issue a sanction $s$ for an MCL violation, where $s>r$.
+
+%the sanctions $(r,s,t)$ and enforcement intensity $p$ do not depend on $m$.
+
+For each required self-reporting event, the utility chooses to self-report at a cost $c$ or not and receive an MR violation. Regulators observe a self-reporting violation when a utility fails to self-report on schedule; regulators perfectly observe self-reporting violations. Per-event expected penalties are
+\begin{align*}
+\text{self-report:} \quad & c + q(a)\,r \\
+\text{do not self-report:} \quad & t + p\left[q(a)\,s\right]
+\end{align*}
+Taking $r > ps$ throughout, the utility self-reports if and only if
+\begin{equation}\label{eq:chat}
+c \le \hat{c}(a) \equiv t - (r - ps)\,q(a).
+\end{equation}
+Even a system with no MCL violations, $q(a) = 0$, stops self-reporting once $c > t$, when self-reporting is more expensive than the expected sanction for skipping it, and there is no MCL violation to conceal. The self-reporting threshold is decreasing in $q(a)$, so systems closer to or above the MCL abandon self-reporting at lower cost thresholds. The expected penalty is
+\begin{equation}\label{eq:endog_penalty}
+e(a) = N \min\left\{\, c + q(a)r,\;\; t + ps\,q(a) \,\right\},
+\end{equation}
+which is increasing in $a$.
+
+\subsection{Optimal negligence}
+
+The utility maximizes $-\theta[b(\bar{a}) - b(a)] - e(a)$ with respect to $a$. The first-order condition is piecewise:
+\begin{align}
+\theta b'(a) &= N r\, q'(a) & \text{(self-reporting region, } c \le \hat{c}(a)) \\
+\theta b'(a) &= N ps\, q'(a) & \text{(MR region, } c > \hat{c}(a))
+\end{align}
+Because $r > ps$, the marginal penalty is lower when the utility is in the MR region than when it is in the self-reporting region. When $c$ increases exogenously, the region of MR increases. Suppose costs increase such that $c_1 =\hat{c}(a_1) < c_2$. The increase in $c$ pushes a system from self-reporting into the MR region, its marginal penalty falls from $Nr\,q'(a)$ to $Nps\,q'(a)$ and since $b'(a)<0$, its negligence rate increases.
+
+\subsection{The propositions}
+
+The model predicts that when water quality deteriorates due to increased contamination, self-reporting rates fall.
+
+\textbf{Proposition 1:} $\partial a/\partial\theta = b'(a) / [\,-\theta b''(a) + N\rho\, q''(a)\,] > 0$ within each region (where $\rho \in \{r, ps\}$ is the region's sanction). Negligence is globally increasing in $\theta$.
+
+\textbf{Proposition 2}: Contamination from mining creates ambiguous effects on MR violation rates, $\partial MR/\partial m$.
+Mining contamination acts on self-reporting through the cost of self-reporting and the penalties for exceeding the MCL. On the cost side, $c$ is drawn from $G(\cdot;m)$ with $m$ shifting the distribution rightward (first-order stochastic dominance), so that each self-reporting cost draw is higher. The area of the MR violation in the first order condition increases. If self-reporting costs increase by a large enough amount, this can result in MR violations from self-reporting costs outweighing penalties, even for systems with no MCL violation, $q(0)$.
+Direct contamination from mining inducing an MCL has an ambiguous effect on self-reporting. From Equation \ref{eq:chat}, contamination will increase MR violations if the expected penalty from being in violation and not reporting ($psq(a)$) outweighs the penalty from being in MCL violation and self-reporting ($rq(a)$). If investigations are unlikely or ineffective in discovering MCL violations, then utilities have an incentive not to self-report when contamination rises.
+
+The identifying content of the cost channel is that $G$ is the distribution of the cost of executing and reporting a compliant test, $c$, which is a different object from the contaminant concentration that drives $q(a)$ (the probability a sample exceeds an MCL). Mining can shift $G$ rightward while leaving $q$ unchanged. The concentration stays below the MCL so $q$, and hence recorded MCL violations, do not move, yet running a compliant monitoring program becomes more expensive due to more contaminants to sample and more tests to conduct. Source water downstream of coal mining carries elevated contaminants that may be high enough to require additional self-reporting. Detecting below an MCL can push a system into a higher monitoring frequency or additional source-water points, raising $N$ and hence total testing cost $N\cdot c$.
+
+\textbf{Proposition 3:} scaling $(r,s,t) \to \lambda(r,s,t)$ scales $e'(a)$ by $\lambda$ in both regions, so $a$ falls; and $\hat{c}(a) = \lambda\left[pt - (r-ps)q(a)\right]$ scales up by $\lambda$ while $c$ does not, so the testing region expands. Higher penalties reduce negligence and increase self-reporting.
