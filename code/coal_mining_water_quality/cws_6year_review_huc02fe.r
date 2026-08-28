@@ -152,10 +152,35 @@ note_base_rav <- paste0(
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 
+# The 1998--2011 tables report both a mean-concentration and a share-above-MCL
+# column for arsenic; the 1998--2005 tables report mean concentration only, so
+# they take a one-part description of the columns.
+note_base_std_2005 <- paste0(
+  "Within each chemical, columns show mean measured concentration ",
+  "from the EPA 6-Year Review. ",
+  "Non-detect values are not imputed. ",
+  "Explanatory variable is cumulative coal production since 1985 ",
+  "(in 10 million short tons) one watershed upstream of the CWS intake. ",
+  "Sample: community water systems strictly downstream of a coal mine. ",
+  "Standard errors clustered at the CWS level. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+
+note_base_rav_2005 <- paste0(
+  "Within each chemical, columns show mean measured concentration ",
+  "from the EPA 6-Year Review. ",
+  "Non-detect values replaced by MDL$/\\sqrt{2}$ following Ravalli et al.~(2022). ",
+  "Explanatory variable is cumulative coal production since 1985 ",
+  "(in 10 million short tons) one watershed upstream of the CWS intake. ",
+  "Sample: community water systems strictly downstream of a coal mine. ",
+  "Standard errors clustered at the CWS level. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+
 note_main_std  <- paste0("\\textit{Notes:} Sample period 1998--2011. ", note_base_std)
-note_2005_std  <- paste0("\\textit{Notes:} Sample period 1998--2005. ", note_base_std)
+note_2005_std  <- paste0("\\textit{Notes:} Sample period 1998--2005. ", note_base_std_2005)
 note_main_rav  <- paste0("\\textit{Notes:} Sample period 1998--2011. ", note_base_rav)
-note_2005_rav  <- paste0("\\textit{Notes:} Sample period 1998--2005. ", note_base_rav)
+note_2005_rav  <- paste0("\\textit{Notes:} Sample period 1998--2005. ", note_base_rav_2005)
 
 note_tc_main_std <- paste0(
   "\\textit{Notes:} Sample period 2006--2008 (EPA Six-Year Review 3; TCR data not included in SYR2). ",
@@ -845,8 +870,8 @@ run_group_tables(df6r_2005, note_2005_rav, file_sfx = "_ravalli_2005",
 # systems.
 # ---------------------------------------------------------------------------
 note_base_rav_sw <- paste0(
-  "Within each chemical, columns show (1) mean measured concentration and ",
-  "(2) share of annual samples exceeding the MCL, both from the EPA 6-Year Review. ",
+  "Within each chemical, columns show mean measured concentration ",
+  "from the EPA 6-Year Review. ",
   "Non-detect values replaced by MDL$/\\sqrt{2}$ following Ravalli et al.~(2022). ",
   "Explanatory variable is cumulative coal production since 1985 ",
   "(in 10 million short tons) one watershed upstream of the CWS intake. ",
