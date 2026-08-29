@@ -85,6 +85,28 @@ style=authoryear
 \define@adjboxkey{width}{\@maxsizebox\height{\linewidth}{0.92\textheight}}
 \makeatother
 
+% ============================================================
+% Project output directory
+% ------------------------------------------------------------
+% Tables and figures are pulled straight from the analysis
+% pipeline's output folder (mining_wq/output) instead of from
+% copies kept inside this writeup folder, so re-running the
+% pipeline updates the paper with no file copying. The path is
+% relative to this file:
+%     writeup/<paper folder>/main.tex  ->  ../../output/
+%
+% Use these for every new exhibit:
+%     \outsum{table_name}             -> output/sum/table_name.tex
+%     \outreg{table_name}             -> output/reg/table_name.tex
+%     \outfig{figure_name.png}        -> output/fig/figure_name.png
+%     \outfig[0.8\linewidth]{fig.png} -> same, explicit width
+% Exhibits that are not pipeline products (e.g. the schematic in
+% img/) keep their local path.
+% ============================================================
+\newcommand{\outputdir}{../../output}
+\newcommand{\outsum}[1]{\input{\outputdir/sum/#1}}
+\newcommand{\outreg}[1]{\input{\outputdir/reg/#1}}
+\newcommand{\outfig}[2][\linewidth]{\includegraphics[width=#1]{\outputdir/fig/#2}}
 \begin{document}
 \title{The Effect of Contamination on Contamination Limit Regulation: US Coal Mining and Drinking Water Utilities}
 \author{Emil Kee-Tui}
@@ -124,7 +146,7 @@ I investigate whether utilities reduce self-reporting rates following mining con
 
 I investigate regulator enforcement against utilities that experience rising contamination by measuring regulator inspections and enforcement. Regulator enforcement does not increase as contamination and under-reporting increase. I find that an additional active coal mine reduces the likelihood that a utility receives formal enforcement, despite the likelihood of receiving an enforcement visit increasing by 4 percentage points. Enforcement visits do not always translate into enforcement, such as fines and court ordered water treatment technology installation. This does not offset utilities' incentives to under-report as contamination rises. 
 
-Under-reporting of water quality presents a health risk of unknown contamination. As contamination increases and self-reporting falls, regulators substitute utility self-reporting with sanitary visits, shifting the burden of monitoring the regulation to the regulators. An additional active coal mine upstream of a utility increases the likelihood that a utility receives a sanitary visit from a regulator by 14 percentage points. This suggests that enforcement visits do not translate into actual enforcement and that sanitary visits are not, in themselves, enough of a deterrent to maintain self-reporting. Sanitary visits would not reveal contamination violations if utilities were not violating contamination limits or inspections they were ineffective at identifying violations \parencite{mi2026technology}. I cannot distinguish these from each other. Monitoring gaps can be overcome by continuous monitoring technology that the regulator controls, making violations easier to spot and successful enforcement more likely. Literature on monitoring finds that regulated entities exploit gaps in monitoring coverage. \textcite{zou2021unwatched} shows that ambient air quality deteriorates on days when monitors are not scheduled to operate, and \textcite{mu2024s} documents strategic shutdowns of pollution monitors.
+Under-reporting of water quality presents a health risk of unknown contamination. As contamination increases and self-reporting falls, regulators substitute utility self-reporting with sanitary visits, shifting the burden of monitoring the regulation to the regulators. An additional active coal mine upstream of a utility increases the likelihood that a utility receives a sanitary visit from a regulator by 14 percentage points. This suggests that enforcement visits do not translate into actual enforcement and that sanitary visits are not, in themselves, enough of a deterrent to maintain self-reporting. Sanitary visits would not reveal contamination violations if utilities were not violating contamination limits or inspections they were ineffective at identifying violations \parencite{mi2026technology}. I cannot distinguish these from each other. Monitoring gaps can be overcome by continuous monitoring technology that the regulator controls, making violations easier to spot and successful enforcement more likely. Literature on monitoring finds that regulated entities exploit gaps in monitoring coverage. \textcite{zou2021unwatched} shows that ambient air quality deteriorates on days when monitors are not scheduled to operate, and \textcite{10.1162/rest_a_01477} documents strategic shutdowns of pollution monitors.
 
 
 
@@ -132,7 +154,7 @@ Under-reporting of water quality presents a health risk of unknown contamination
 
 %When self-reporting becomes onerous self-reporting falls. Coal mining upstream makes utilities lives harder and the epa has to visit and everything is ok wasting everyones time. More stringent self-reporting does not always lead to more accurate results.
 
-%A closely related result is that regulated entities exploit gaps in monitoring coverage rather than the reported values themselves. \textcite{zou2021unwatched} shows that ambient air quality deteriorates on days when monitors are not scheduled to operate, and \textcite{mu2024s} document strategic shutdowns of pollution monitors. In both cases the manipulated object is the existence of an observation, not its content. The monitoring and reporting (MR) violations studied in this paper are the SDWA analogue of an unwatched interval: periods in which the regulator holds no contaminant reading at all.
+%A closely related result is that regulated entities exploit gaps in monitoring coverage rather than the reported values themselves. \textcite{zou2021unwatched} shows that ambient air quality deteriorates on days when monitors are not scheduled to operate, and \textcite{10.1162/rest_a_01477} document strategic shutdowns of pollution monitors. In both cases the manipulated object is the existence of an observation, not its content. The monitoring and reporting (MR) violations studied in this paper are the SDWA analogue of an unwatched interval: periods in which the regulator holds no contaminant reading at all.
 
 My paper contributes to the literature on drinking water quality, particularly US drinking water quality. US drinking water quality has improved substantially since the passage of the SDWA \parencite{keiser2019consequences}; yet notable exceptions remain, such as the crisis in Flint, Michigan \parencite{christensen2023flint}. In addition, between 9 and 34 million people per year are served by utilities in violation of health-based standards \parencite{allaire2018national}. Health-based standard violations do not include under-reported water quality and would undercount the contamination of water quality. The benefits of improving drinking water outweigh the costs due to the large health costs of contaminated drinking water \parencite{hill2017shale, keiser2019us, disalvo2024drinking, marcus2025testing}.
 
@@ -254,7 +276,7 @@ The SDWIS data contains enforcement actions that the regulator took against a ut
 
 Informal enforcement actions are the dominant type of enforcement. They include public notification requests, reminders to the utilities, notifications to the utility that a violation has occurred, and technical assistance. Informal enforcement includes more direct assistance to the utility than formal enforcement. The state is the main regulator in the sample. The federal regulator only intervenes to issue informal enforcement in 2.6 percent of the IOC MR cases, and the intervention is to issue a notice of violation.
 
-%\input{sum/mr_violation_breakdown}
+%\outsum{mr_violation_breakdown}
 
 SDWIS contains information on visits conducted by the regulator to the utility. Table \ref{tab:visit_type_summary} contains the share of sample utility-years where a regulator visited a utility. Sanitary visits are the most common type of visits, occurring during 12.5 percent of utility-years. Most visits are slightly more likely to occur in the 12 months before or after an MR violation. The sanitary visit cannot be further broken down by reason for the sanitary visit or findings from the visit because it is incomplete; over half of the sanitary visit data lacks a reason for the visit or a finding. 
 
@@ -368,10 +390,10 @@ Table \ref{2sls_dwnstrm_minevio_allcat_ivsum_binvio} reports the results of Equa
 
 The first-stage $F$-statistic, computed as the squared clustered $t$-statistic on
 the excluded instrument, is numerically equivalent to the effective
-$F$-statistic of \citet{montielolea2013robust} in this just-identified setting.
+$F$-statistic of \textcite{montielolea2013robust} in this just-identified setting.
 It exceeds their critical value of 23.1 for a 5\%-level test against 10\%
 worst-case bias, well above the conventional rule-of-thumb threshold of 10
-proposed by \citet{staigerstock1997instrumental}.
+proposed by \textcite{staigerstock1997instrumental}.
 An additional active coal mine upstream increases the likelihood of nitrate, arsenic, and IOC SDWA violations by roughly 2 percentage points out of the year when using OLS.
 
 Coal production fell most acutely in high sulfur coal areas after 1995, and a positive relationship between coal production and SDWA violations predicts that IOC violations would fall with increasing upstream sulfur after 1995 relative to before 1995. The reduced form effect of the instrument measures how much more (or less) a one-percentage-point increase in upstream sulfur affects the likelihood of violations after ARP Phase I relative to before. An additional percent of coal sulfur upstream leads to a 2.4 percentage point reduction in the likelihood a utility experiences a nitrate, arsenic, or inorganic chemical violation of any kind after 1995 compared to before 1995. This suggests that in areas where the number of coal mines is more likely to decrease, the likelihood of violation in a year falls.
@@ -406,9 +428,9 @@ Equation \ref{eq:huc02reg} is a continuous differences-in-differences regression
 
 %Table \ref{tab:pt_balance_6yr} reports the results balance of utility covariates in 1997, population, and number of intakes, and contemporaneously. I find that cws characteristics do not significantly predict the cumulative tonnes of coal mined upstream when huc02 fixed effects are included. This is the intensive margin that my main concentration regression uses. However, any mining is statistically significantly correlated with cws characterisitics.
 
-%\input{reg/pt_balance_6yr}
+%\outreg{pt_balance_6yr}
 
-%\input{reg/pt_eventstudy_violations}
+%\outreg{pt_eventstudy_violations}
 
 \subsection{Results}
 
@@ -505,37 +527,41 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 
 %\subsection{Type of enforcement following type of visit}
 
-%\input{reg/mr_to_sanitary_visit}
+%\outreg{mr_to_sanitary_visit}
 
-%\input{sum/visit_type_onset_summary}
+%\outsum{visit_type_onset_summary}
 
-%\input{reg/sanitary_visit_event_study}
+%\outreg{sanitary_visit_event_study}
 
-%\input{sum/sanitary_visit_to_enforcement}
+%\outsum{sanitary_visit_to_enforcement}
 
-%\input{reg/sanitary_visit_enforcement_iterative}
+%\outreg{sanitary_visit_enforcement_iterative}
 
 %\subsection{Alternative Specification of Number of Upstream Coal Mines}
 
+% Local copy: differs from the pipeline version in output/reg/ (hand-edited
+% caption and row labels). Re-point to \outreg once the pipeline matches.
 %\input{reg/2sls_dwnstrm_minevio_allcat}
 
 %%input{reg/2sls_dwnstrm_minevio_mr}
 
+% Local copy: differs from the pipeline version in output/reg/ (hand-edited
+% caption and row labels). Re-point to \outreg once the pipeline matches.
 %\input{reg/2sls_dwnstrm_minevio_mcl}
 
 %\subsection{Binary coded SDWA violations}
 
 %\subsection{Regulator action, violation sequencing, SDWA rule enactment dates}
 
-%\input{sum/viol_concurrent_following_mr}
+%\outsum{viol_concurrent_following_mr}
 
-%\input{sum/viol_sequence_after_mr}
+%\outsum{viol_sequence_after_mr}
 
-%\input{sum/sdwa_regulator_data_inventory}
+%\outsum{sdwa_regulator_data_inventory}
 
-%\input{sum/sdwa_rule_enactment_dates}
+%\outsum{sdwa_rule_enactment_dates}
 
-%\input{sum/npdwr_changes}
+%\outsum{npdwr_changes}
 
 \printbibliography
 
@@ -554,44 +580,46 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 \let\small\normalsize
 
 % ---------- Tables ----------
-\input{sum/ioc_days_dwnstrm}\clearpage
-\input{sum/visit_type_summary}\clearpage
-\input{sum/mr_mcl_incidence_summary}\clearpage
-\input{sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005}\clearpage
-\input{sum/syr2_mr_comparison}\clearpage
-\input{sum/upstream_coal_summary}\clearpage
-\input{reg/fs_dwnstrm_minevio_ivsum.tex}\clearpage
+\outsum{ioc_days_dwnstrm}\clearpage
+\outsum{visit_type_summary}\clearpage
+\outsum{mr_mcl_incidence_summary}\clearpage
+\outsum{6yr_huc02fe_inorg_val_sumstats_ravalli_2005}\clearpage
+\outsum{syr2_mr_comparison}\clearpage
+\outsum{upstream_coal_summary}\clearpage
+\outreg{fs_dwnstrm_minevio_ivsum}\clearpage
 
 \begin{landscape}\null\vfill
-\input{reg/2sls_dwnstrm_minevio_allcat_ivsum_binvio}
+\outreg{2sls_dwnstrm_minevio_allcat_ivsum_binvio}
 \vfill\null\end{landscape}
 
 \begin{landscape}\null\vfill
-\input{reg/2sls_dwnstrm_minevio_mr_ivsum_binvio}
+\outreg{2sls_dwnstrm_minevio_mr_ivsum_binvio}
 \vfill\null\end{landscape}
 
 \begin{landscape}\null\vfill
-\input{reg/2sls_dwnstrm_minevio_mcl_ivsum_binvio}
+\outreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio}
 \vfill\null\end{landscape}
 
+% Local copy: notes text differs from the pipeline version in output/reg/.
+% Re-point to \outreg once the pipeline regenerates matching notes.
 \input{reg/6yr_huc02fe_inorg_ravalli_2005}\clearpage
-\input{reg/mr_concentration_lag}\clearpage
-\input{reg/mr_concentration_lag_national_downstream_states}\clearpage
-\input{sum/sanitary_visit_timing_formal_enforcement_rate}\clearpage
+\outreg{mr_concentration_lag}\clearpage
+\outreg{mr_concentration_lag_national_downstream_states}\clearpage
+\outsum{sanitary_visit_timing_formal_enforcement_rate}\clearpage
 
 \begin{landscape}\null\vfill
-\input{reg/h3_inf_formal_d12}
+\outreg{h3_inf_formal_d12}
 \vfill\null\end{landscape}
 
 \begin{landscape}\null\vfill
-\input{reg/h2_snsv_d12}
+\outreg{h2_snsv_d12}
 \vfill\null\end{landscape}
 
 % ---------- Figures ----------
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{plots/mineviolengthhist_downstream.png}
+\outfig{mineviolengthhist_downstream.png}
 \caption{Distribution of violation lengths, by contaminant}
 \label{img:mineviolengthhist_downstream}
 {\footnotesize\linespread{1}\selectfont\par\raggedright
@@ -611,6 +639,7 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 
 \begin{figure}
 \centering
+% Local copy: this figure has no counterpart in output/fig/.
 \includegraphics[width=\linewidth]{plots/data_cleaning/eia_msha_mine_huc12s.png}
 \caption{Watersheds matched to coal mine location and production data}
 \label{map:eia_msha_mine_huc12s}
@@ -621,7 +650,7 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{plots/map_huc12_main_sample.png}
+\outfig{map_huc12_main_sample.png}
 \caption{Watersheds with a coal mine in the main analysis sample}
 \label{map:map_huc12_main_sample}
 {\footnotesize\linespread{1}\selectfont\par\raggedright
@@ -631,6 +660,7 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 
 \begin{figure}
 \centering
+% Local copy: differs from the pipeline version in output/fig/.
 \includegraphics[width=0.8\linewidth]{plots/coal_summary_plot.png}
 \caption{Coal production trends by watershed sulfur content, 1983 to 2005}
 \label{plot:coal_summary_plot}
@@ -641,7 +671,7 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{plots/sulfur_histogram_downstream2sls.png}
+\outfig{sulfur_histogram_downstream2sls.png}
 \caption{Distribution of coal sulfur content across watersheds}
 \label{hist:sulfurhuc12}
 {\footnotesize\linespread{1}\selectfont\par\raggedright
@@ -652,7 +682,7 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 \begin{landscape}\null\vfill
 \begin{figure}
 \centering
-\includegraphics[width=0.85\linewidth]{plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png}
+\outfig[0.85\linewidth]{proportionatecircleprod_diff_allminehuc12_1985_2005.png}
 \caption{Change in coal production by watershed, 1985 to 2005}
 \label{map:proportionatecircleprod_diff_allminehuc12_1985_2005}
 {\footnotesize\linespread{1}\selectfont\par\raggedright
@@ -663,7 +693,7 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 \begin{landscape}\null\vfill
 \begin{figure}
 \centering
-\includegraphics[width=0.85\linewidth]{plots/proportionatecircle_upstream_mines_huc12_1985_2005.png}
+\outfig[0.85\linewidth]{proportionatecircle_upstream_mines_huc12_1985_2005.png}
 \caption{Change in upstream coal production weighted by downstream population}
 \label{map:proportionatecircle_upstream_mines_huc12_1985_2005}
 {\footnotesize\linespread{1}\selectfont\par\raggedright
@@ -673,7 +703,7 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{plots/scatterhuccoalsulfur_pooled.png}
+\outfig{scatterhuccoalsulfur_pooled.png}
 \caption{Coal mines and coal sulfur content, before and after 1995}
 \label{fig:scatterhuccoalsulfur}
 {\footnotesize\linespread{1}\selectfont\par\raggedright
@@ -683,7 +713,7 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{plots/first_stage_scatter_dwnstrm.png}
+\outfig{first_stage_scatter_dwnstrm.png}
 \caption{Residualized first-stage relationship}
 \label{fig:first_stage_scatter_dwnstrm}
 {\footnotesize\linespread{1}\selectfont\par\raggedright
