@@ -29,7 +29,7 @@
 # Author: EK  Date: 2026-07-13
 # ============================================================
 
-.libPaths("Z:/ek559/RPackages")
+.libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
 library(arrow)
 library(data.table)
 
@@ -303,7 +303,7 @@ lines_5row_tex <- c(
   "\\bigskip",
   "\\centering",
   "\\begin{adjustbox}{width = \\textwidth, center}",
-  "\\begin{tabular}{lcc}",
+  "\\begin{tabular}{lrr}",
   "\\toprule",
   "Sample & N (CWS-years) & Formal enforcement rate \\\\",
   "\\midrule",

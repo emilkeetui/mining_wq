@@ -13,7 +13,7 @@
 # Author: EK  Date: 2026-07-15
 # ============================================================
 
-.libPaths("Z:/ek559/RPackages")
+.libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
 library(arrow)
 
 # ── 1. Load downstream 2SLS CWS-year sample ──────────────────────────────────
@@ -59,7 +59,7 @@ print(stats)
 
 # ── 4. LaTeX helpers ──────────────────────────────────────────────────────────
 fn <- function(x) format(as.integer(x), big.mark = ",")
-fr <- function(x) sprintf("%.3f", x)
+fr <- function(x) sprintf("%.2f", 100 * x)
 
 make_row <- function(i) {
   paste0(stats$label[i], " & ", fr(stats$rate[i]), " & ",
@@ -74,7 +74,7 @@ table_lines <- c(
   "\\small",
   "\\begin{tabular}{lrrr}",
   "\\hline\\hline",
-  "\\textbf{Violation} & \\textbf{Rate} & \\textbf{Count} & \\textbf{N} \\\\",
+  "\\textbf{Violation} & \\textbf{Rate (\\%)} & \\textbf{Count} & \\textbf{N} \\\\",
   "\\hline",
   sapply(seq_len(nrow(stats)), make_row),
   "\\hline\\hline",
@@ -82,11 +82,12 @@ table_lines <- c(
   "\\begin{minipage}{\\linewidth}",
   "\\vspace{4pt}",
   "\\footnotesize",
+  "\\raggedright",
   paste0(
     "\\textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine, ",
     "years 1985--2005. ",
     "Rate is the share of CWS-year observations with a nonzero violation share for that ",
-    "category. ",
+    "category, in percent. ",
     "MR = monitoring and reporting violation; MCL = maximum contaminant level violation. ",
     "Inorganic chemicals encompasses nitrates and arsenic as sub-contaminants."
   ),

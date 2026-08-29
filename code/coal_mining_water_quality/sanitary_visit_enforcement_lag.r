@@ -17,7 +17,7 @@
 # Author: EK  Date: 2026-06-24
 # ============================================================
 
-.libPaths("Z:/ek559/RPackages")
+.libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
 library(arrow)
 library(data.table)
 library(fixest)
@@ -631,7 +631,7 @@ lines_summary <- c(
   "\\bigskip",
   "\\centering",
   "\\begin{adjustbox}{width = \\textwidth, center}",
-  "\\begin{tabular}{llcccc}",
+  "\\begin{tabular}{llrrr}",
   "\\toprule",
   "Group & Visit type & Unconditional probability (\\%) & Visit in 12mo before MR onset (\\%) & Visit in 12mo after MR onset (\\%) \\\\",
   "\\midrule",

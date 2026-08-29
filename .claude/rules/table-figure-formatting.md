@@ -41,15 +41,29 @@ content rules specifically.
    the figure's `labs()`/`scale_*_discrete()` call) rather than relabeling by
    hand at each call site.
 
-6. **Binary-outcome coefficients are scaled to percentage points.** When the
+6. **Binary-outcome coefficients are scaled to percentage points — and
+   displayed as plain numbers, never with a `%` symbol appended.** When the
    dependent variable is a 0/1 indicator, multiply the displayed coefficient
-   and its SE by 100 so the table communicates percentage-point change units,
-   not a fraction of one. Apply the scaling consistently to every column in
-   the table that shares that binary outcome, and do not silently rescale a
-   `_share` outcome that is a continuous share rather than a strict 0/1 —
-   only true binary outcomes get the ×100 treatment. State the units in the
-   table notes (e.g. "Coefficients are in percentage points.") per
-   `table-notes-conventions.md`.
+   and its SE by 100 so the table communicates percentage-point change
+   units, not a fraction of one. Apply the scaling consistently to every
+   column in the table that shares that binary outcome, and do not silently
+   rescale a `_share` outcome that is a continuous share rather than a
+   strict 0/1 — only true binary outcomes get the ×100 treatment.
+
+   **Do not append `\%` to the scaled value.** A coefficient (or a scaled
+   rate that represents a *change*, not a level) on a binary outcome
+   measures a percentage-*point* shift on the probability scale — an
+   absolute change — which is a different quantity from a
+   percentage/percent-*change*. Writing `7.2\%` on such a cell invites the
+   reader to misread it as the latter. Render it as a plain number (`7.2`)
+   and state the unit once, in the table notes (e.g. "Coefficients are in
+   percentage points.") per `table-notes-conventions.md`, or in a column
+   header (e.g. "(percentage points)") — never per cell.
+
+   This does not apply to a genuine descriptive share/level statistic (e.g.
+   "12.5% of utility-years had a sanitary visit") — a level, not a change,
+   may legitimately carry an inline `%` if that is the table's existing
+   convention.
 
 7. **No fixed-effects row when fixed effects are uniform across columns.**
    If every column in a regression table includes the same set of fixed

@@ -15,7 +15,7 @@
 # Author: EK  Date: 2026-04-15
 # ============================================================
 
-.libPaths("Z:/ek559/RPackages")
+.libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
 library(arrow)
 library(data.table)
 
@@ -344,6 +344,7 @@ t_days_lines <- c(
   "\\begin{minipage}{\\linewidth}",
   "\\vspace{4pt}",
   "\\footnotesize",
+  "\\raggedright",
   paste0("\\textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine, ",
          "years 1985--2005. ",
          "MR = monitoring and reporting violation; MCL = maximum contaminant level violation. ",

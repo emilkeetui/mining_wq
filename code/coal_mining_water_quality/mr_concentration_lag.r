@@ -20,7 +20,7 @@
 # Author: EK  Date: 2026-06-23  Updated: 2026-07-01
 # ============================================================
 
-.libPaths("Z:/ek559/RPackages")
+.libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
 library(arrow)
 library(fixest)
 
@@ -36,6 +36,14 @@ cat(sprintf("\nRows: %d | unique PWSID: %d | years %d-%d\n",
             nrow(df), length(unique(df$PWSID)), min(df$YEAR), max(df$YEAR)))
 cat("Chemicals present:\n")
 print(table(df$CHEMID_name))
+
+# Coded 0/100 rather than 0/1 so that every coefficient/SE on these binary
+# outcomes is already in percentage-point units (a linear rescaling of the
+# dependent variable rescales coefficients/SEs identically and leaves
+# F-stats, R^2, and t-stats unchanged).
+mr_bin_vars <- c("mr_same_fwd", "mr_same_fwd6mon", "mr_anyioc_fwd", "mr_anyioc_fwd6mon",
+                  "mr_same_past", "mr_same_past6mon", "mr_anyioc_past", "mr_anyioc_past6mon")
+for (v in mr_bin_vars) df[[v]] <- as.numeric(df[[v]]) * 100
 
 ars_df  <- df[df$contaminant_code == "1005", ]
 nit_df  <- df[df$contaminant_code == "1040", ]
@@ -195,6 +203,8 @@ rename_tex <- function(path) {
     # fixed-effect labels
     c("PWSID fixed-effects",   "CWS fixed-effects"),
     c("PWSID fixed effects",   "CWS fixed effects"),
+    c("YEAR fixed-effects",    "Year fixed-effects"),
+    c("YEAR fixed effects",    "Year fixed effects"),
     c("contaminant\\_code fixed-effects", "Contaminant fixed-effects"),
     c("contaminant\\_code fixed effects", "Contaminant fixed effects"),
     # SE footer
@@ -242,6 +252,19 @@ reformat_notes_tiny <- function(path) {
   writeLines(new_lines, path)
 }
 
+# Right-align the model-coefficient columns of the tabular preamble (fixest's
+# default is centered, which does not decimal-align numbers of differing
+# digit-width) while leaving the leading row-label column ('l') untouched.
+right_align_tabular <- function(path) {
+  lines <- readLines(path)
+  txt   <- paste(lines, collapse = "\n")
+  m     <- regmatches(txt, regexpr("\\\\begin\\{tabular\\}\\{l+c+\\}", txt))
+  if (length(m) == 1 && nzchar(m)) {
+    txt <- sub(m, gsub("c", "r", m), txt, fixed = TRUE)
+    writeLines(strsplit(txt, "\n")[[1]], path)
+  }
+}
+
 main_models  <- if (have_ars) list(ars, ars_6mon, nit, nit_6mon, pool, pool_6mon) else list(nit, nit_6mon, pool, pool_6mon)
 main_headers <- if (have_ars) {
   c("Arsenic MR (1-yr)", "Arsenic MR (6-mon)", "Nitrate MR (1-yr)", "Nitrate MR (6-mon)",
@@ -252,7 +275,8 @@ main_headers <- if (have_ars) {
 
 note_main <- paste0(
   "\\textit{Notes:} SYR2 only (1998--2005). Outcome: same-contaminant MR violation within the year following ",
-  "the contaminant reading or the 6 months following the contaminant reading. ",
+  "the contaminant reading or the 6 months following the contaminant reading, equal to 100 if a violation ",
+  "occurred and 0 otherwise; coefficients and standard errors are in percentage points. ",
   "Pooled IOC MR violations exclude arsenic and nitrate, which have their own rule codes. ",
   "Mean concentration z-scored within chemical. ",
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level."
@@ -266,6 +290,7 @@ if (have_ars) {
          headers   = main_headers,
          notes     = note_main,
          fitstat   = ~n,
+         digits    = "r4",
          style.tex = style.tex("aer", adjustbox = TRUE),
          file      = out_tex,
          replace   = TRUE)
@@ -274,11 +299,13 @@ if (have_ars) {
          headers   = main_headers,
          notes     = note_main,
          fitstat   = ~n,
+         digits    = "r4",
          style.tex = style.tex("aer", adjustbox = TRUE),
          file      = out_tex,
          replace   = TRUE)
 }
 rename_tex(out_tex)
+right_align_tabular(out_tex)
 wrap_table_float(out_tex,
   "Monitoring and Reporting (MR) violations following contaminant concentration readings",
   label = "tab:mr_concentration_lag")
@@ -288,7 +315,8 @@ cat(sprintf("\nTable saved to: %s\n", out_tex))
 note_placebo <- paste0(
   "Past-window placebo: same specifications as the forward-window table but outcome is ",
   "an MR violation occurring BEFORE the sample date (1--365 days before for 1-yr columns; ",
-  "1--182 days before for 6-mon columns). ",
+  "1--182 days before for 6-mon columns), equal to 100 if a violation occurred and 0 otherwise; ",
+  "coefficients and standard errors are in percentage points. ",
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level."
 )
 out_tex_placebo <- file.path(ROOT, "output/reg/mr_concentration_lag_placebo.tex")
@@ -297,6 +325,7 @@ if (have_ars) {
          headers   = main_headers,
          notes     = note_placebo,
          fitstat   = ~n,
+         digits    = "r4",
          style.tex = style.tex("aer", adjustbox = TRUE),
          file      = out_tex_placebo,
          replace   = TRUE)
@@ -305,11 +334,13 @@ if (have_ars) {
          headers   = main_headers,
          notes     = note_placebo,
          fitstat   = ~n,
+         digits    = "r4",
          style.tex = style.tex("aer", adjustbox = TRUE),
          file      = out_tex_placebo,
          replace   = TRUE)
 }
 rename_tex(out_tex_placebo)
+right_align_tabular(out_tex_placebo)
 wrap_table_float(out_tex_placebo,
   "Placebo: MR Violations Preceding High Contaminant Concentration (Past Window)",
   label = "tab:mr_concentration_lag_placebo")

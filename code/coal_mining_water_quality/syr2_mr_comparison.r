@@ -162,7 +162,7 @@ rows <- list(
   list(label = "Ever MCL violation, 1985--2005",
        g1 = fmt_pct(g1_row$ever_mcl_8505), g2 = fmt_pct(g2_row$ever_mcl_8505),
        diff = fmt_pct(diffs["ever_mcl_8505"]), p = pvals$ever_mcl_8505),
-  list(label = "Mean annual violations, 1997--2005",
+  list(label = "Mean annual violations (count, 0--6), 1997--2005",
        g1 = fmt_mean(g1_row$mean_num_vio), g2 = fmt_mean(g2_row$mean_num_vio),
        diff = fmt_mean(diffs["mean_num_vio"]), p = pvals$mean_num_vio)
 )
@@ -174,7 +174,7 @@ build_table <- function(rows, n1, n2) {
     "\\caption{MR and MCL violation rates by SYR2 contaminant reporting status}\n",
     "\\label{tab:syr2_mr_comparison}\n",
     "\\begin{adjustbox}{max width=\\textwidth}\n",
-    "\\begin{tabular}{lcccc}\n",
+    "\\begin{tabular}{lrrrr}\n",
     "\\hline\\hline\n",
     " & \\multicolumn{1}{c}{(1)} & \\multicolumn{1}{c}{(2)} & \\multicolumn{1}{c}{Diff.} & \\multicolumn{1}{c}{$p$-value} \\\\\n",
     " & Has SYR2 reading & No SYR2 reading & (1)$-$(2) & \\\\\n",
@@ -182,8 +182,11 @@ build_table <- function(rows, n1, n2) {
   )
 
   body <- ""
-  for (r in rows) {
-    diff_cell <- paste0(r$diff, "$", star_str(r$p), "$")
+  for (i in seq_along(rows)) {
+    r <- rows[[i]]
+    stars <- star_str(r$p)
+    diff_cell <- if (nzchar(stars)) paste0(r$diff, "$", stars, "$") else r$diff
+    if (i == length(rows)) body <- paste0(body, "\\hline\n")
     body <- paste0(
       body,
       r$label, " & ", r$g1, " & ", r$g2, " & ", diff_cell,
@@ -198,6 +201,7 @@ build_table <- function(rows, n1, n2) {
     "\\begin{minipage}{\\linewidth}\n",
     "\\vspace{4pt}\n",
     "\\footnotesize\n",
+    "\\raggedright\n",
     "\\textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine. ",
     "\\textit{Has SYR2 reading}: at least one Six-Year Review contaminant reading ",
     "for arsenic, nitrate, selenium, chromium, or barium. ",
