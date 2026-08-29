@@ -128,7 +128,7 @@ Beamer-compatible tables — after every etable() write, call wrap_for_beamer(pa
 - Significant figures/decimal places are consistent for every number within a given table or figure
 - Numeric table columns with decimals are decimal-aligned (align on the period)
 - Display labels (row/column headers, axis labels, legends) are capitalized, never the raw snake_case variable name — use a label/`dict` mapping
-- When the outcome is a binary 0/1 indicator, coefficients and SEs are scaled ×100 so units are percentage points, stated in the notes
+- When the outcome is a binary 0/1 indicator, coefficients and SEs are scaled ×100 so units are percentage points — displayed as a plain number with no `%` symbol appended (a percentage-point change is not a percent change), with the unit stated once in the notes or a header, never per cell
 - If every column in a regression table shares the same fixed effects, omit the FE checkmark row(s) and state the fixed effects in the notes instead; if FEs differ across columns, keep the checkmark rows and say nothing about FEs in the notes
 
 ### Python environment

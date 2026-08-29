@@ -277,6 +277,15 @@ cat(sprintf("any_informal = 1 in %d (%.1f%%)\n",
 cat(sprintf("any_formal   = 1 in %d (%.1f%%)\n",
     sum(panel_d1$any_formal),   100 * mean(panel_d1$any_formal)))
 
+# Coded 0/100 rather than 0/1 so that every coefficient/SE estimated on these
+# binary outcomes is already in percentage-point units (a linear rescaling of
+# the dependent variable rescales coefficients/SEs identically and leaves
+# F-stats, R^2, and t-stats unchanged). Done after the 0/1-based diagnostic
+# cat()s above so those printouts stay in their original units.
+d1_bin_outcomes <- c("any_snsv", "any_tech", "any_enfvisit", "any_smpl", "any_insp",
+                      "any_informal", "any_formal", "no_enf")
+for (oc in d1_bin_outcomes) panel_d1[[oc]] <- panel_d1[[oc]] * 100L
+
 # ── Surface-water subsample: D1 panel restricted to CWSs whose primary water
 # source is surface water, to test whether the enforcement-chain results are
 # driven by surface-water or groundwater systems. ────────────────────────────
@@ -285,10 +294,9 @@ stopifnot("PRIMARY_SOURCE_CODE" %in% names(panel_d1))
 panel_d1_sw <- panel_d1[panel_d1$PRIMARY_SOURCE_CODE %in% sw_codes, ]
 cat(sprintf("\nD1 surface-water panel: %d CWS-years, %d CWSs\n",
             nrow(panel_d1_sw), length(unique(panel_d1_sw$PWSID))))
-for (oc in c("any_snsv","any_tech","any_enfvisit","any_smpl","any_insp",
-             "any_informal","any_formal","no_enf")) {
+for (oc in d1_bin_outcomes) {
   cat(sprintf("  %-14s = 1 in %d (%.1f%%)\n", oc,
-              sum(panel_d1_sw[[oc]]), 100 * mean(panel_d1_sw[[oc]])))
+              sum(panel_d1_sw[[oc]] > 0), mean(panel_d1_sw[[oc]])))
 }
 
 has_variation <- function(dset, y) {
@@ -594,7 +602,19 @@ rename_col_numbers_to_labels <- function(x) {
   paste(lines, collapse = "\n")
 }
 
-postprocess_table <- function(x) rename_col_numbers_to_labels(move_notes_below_adjustbox(x))
+# Right-align the model-coefficient columns of the tabular preamble (fixest's
+# default is centered, which does not decimal-align numbers of differing
+# digit-width) while leaving the leading row-label column ('l') untouched.
+right_align_tabular <- function(x) {
+  x <- paste(x, collapse = "\n")
+  m <- regmatches(x, regexpr("\\\\begin\\{tabular\\}\\{l+c+\\}", x))
+  if (length(m) == 1 && nzchar(m)) {
+    x <- sub(m, gsub("c", "r", m), x, fixed = TRUE)
+  }
+  x
+}
+
+postprocess_table <- function(x) right_align_tabular(rename_col_numbers_to_labels(move_notes_below_adjustbox(x)))
 
 dir.create(file.path(ROOT, "output/reg"), showWarnings = FALSE, recursive = TRUE)
 out_tex <- file.path(ROOT, "output/reg/h2_visits_d12.tex")
@@ -641,12 +661,16 @@ etable(models_b,
        label          = "tab:h2_snsv_d12",
        dict           = dict_b,
        drop           = "num_facilities",
+       drop.section   = "fixef",
        extralines     = el_b,
        fitstat        = ~n,
+       digits         = "r4",
        notes          = paste0("\\textit{Notes:} Sample restricted to community water systems strictly downstream ",
                                "of a coal mine. ",
                                "N = ", nrow(panel_d1), " CWS-years. Each panel of 3 columns (OLS, RF, 2SLS) ",
-                               "reports a separate binary outcome: any visit of that type in a CWS-year. ",
+                               "reports a separate binary outcome, equal to 100 if any visit of that type occurred ",
+                               "in the CWS-year and 0 otherwise; coefficients and standard errors are in ",
+                               "percentage points. ",
                                "Sanitary visits are sanitary surveys and follow-up sanitary surveys. ",
                                "Technical assistance includes technical assistance, engineering ",
                                "determination/advice/plan review, and operation and maintenance visits. ",
@@ -655,7 +679,8 @@ etable(models_b,
                                "includes site inspections, regularly scheduled visits, and informal system ",
                                "inspections. ",
                                "The instrument interacts an indicator for the post-1995 period with mean ",
-                               "upstream coal sulfur content. SEs clustered at the CWS level. ",
+                               "upstream coal sulfur content. All specifications include CWS and year fixed ",
+                               "effects. SEs clustered at the CWS level. ",
                                "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."),
        style.tex      = style.tex("aer", adjustbox = TRUE),
        tex            = TRUE,
@@ -763,9 +788,9 @@ if (file.exists(out_tex_h3) && file.info(out_tex_h3)$size > 0) {
 
 # H3 table: informal vs formal, D1 main sample (one step downstream, same as didhet.r)
 out_tex_h3_inf <- file.path(ROOT, "output/reg/h3_inf_formal_d12.tex")
-inf_d1_pct <- 100 * mean(panel_d1$any_informal)
-frm_d1_pct <- 100 * mean(panel_d1$any_formal)
-ned1_pct   <- 100 * mean(panel_d1$no_enf)
+inf_d1_pct <- mean(panel_d1$any_informal)
+frm_d1_pct <- mean(panel_d1$any_formal)
+ned1_pct   <- mean(panel_d1$no_enf)
 f_label_d1 <- "F-test (1st stage, clustered), Upstream coal mines (sum)"
 f_vec_d1   <- c("", "", format(round(f_cl_d1, 2), nsmall = 2),
                 "", "", format(round(f_cl_d1, 2), nsmall = 2),
@@ -788,10 +813,14 @@ etable(ols_id1, rf_id1, iv_id1, ols_fd1, rf_fd1, iv_fd1, ols_ned1, rf_ned1, iv_n
        label          = "tab:h3_inf_formal_d12",
        dict           = dict_enf,
        drop           = "num_facilities",
+       drop.section   = "fixef",
        extralines     = el_d1,
        fitstat        = ~n,
+       digits         = "r4",
        notes          = paste0("\\textit{Notes:} Sample restricted to community water systems strictly ",
-                               "downstream of a coal mine. ",
+                               "downstream of a coal mine. Each outcome is equal to 100 if the enforcement ",
+                               "event occurred in the CWS-year and 0 otherwise; coefficients and standard ",
+                               "errors are in percentage points. ",
                                "Cols 1-3: informal enforcement action (",
                                sprintf("%.1f", inf_d1_pct), "% of panel). ",
                                "Cols 4-6: formal enforcement action (",
@@ -799,7 +828,8 @@ etable(ols_id1, rf_id1, iv_id1, ols_fd1, rf_fd1, iv_fd1, ols_ned1, rf_ned1, iv_n
                                "Cols 7-9: no enforcement (",
                                sprintf("%.1f", ned1_pct), "% of panel). ",
                                "The instrument interacts an indicator for the post-1995 period with mean ",
-                               "upstream coal sulfur content. SEs clustered at the CWS level. ",
+                               "upstream coal sulfur content. All specifications include CWS and year fixed ",
+                               "effects. SEs clustered at the CWS level. ",
                                "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."),
        style.tex      = style.tex("aer", adjustbox = TRUE),
        tex            = TRUE,
@@ -843,9 +873,9 @@ if (length(h3_kept_sw) == 0) {
   f_cl_d1_sw <- round(t_cl_d1_sw^2, 2)
   cat(sprintf("Clustered first-stage F-stat (D1 surface water): %.2f\n", f_cl_d1_sw))
 
-  inf_d1_pct_sw <- 100 * mean(panel_d1_sw$any_informal)
-  frm_d1_pct_sw <- 100 * mean(panel_d1_sw$any_formal)
-  ned1_pct_sw   <- 100 * mean(panel_d1_sw$no_enf)
+  inf_d1_pct_sw <- mean(panel_d1_sw$any_informal)
+  frm_d1_pct_sw <- mean(panel_d1_sw$any_formal)
+  ned1_pct_sw   <- mean(panel_d1_sw$no_enf)
 
   out_tex_h3_inf_sw <- file.path(ROOT, "output/reg/h3_inf_formal_d12_surfacewater.tex")
   f_vec_d1_sw     <- rep(c("", "", format(round(f_cl_d1_sw, 2), nsmall = 2)), length(h3_kept_sw))

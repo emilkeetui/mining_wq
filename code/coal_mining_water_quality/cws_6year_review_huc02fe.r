@@ -701,12 +701,7 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
 
   fmt_num <- function(x) {
     if (is.na(x)) return("---")
-    a <- abs(x)
-    if (a == 0)   return("0.0000")
-    if (a < 1e-4) return(sprintf("%.2e", x))
-    if (a < 1)    return(sprintf("%.4f", x))
-    if (a < 100)  return(sprintf("%.3f", x))
-    return(sprintf("%.2f", x))
+    sprintf("%.4f", x)
   }
   fmt_n <- function(x) formatC(x, format = "d", big.mark = ",")
   fmt_pct <- function(x) if (is.na(x)) "---" else sprintf("%.1f\\%%", 100 * x)
@@ -731,7 +726,7 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
     "   \\bigskip",
     "   \\centering",
     "   \\begin{adjustbox}{width = 0.9\\textwidth, center}",
-    "      \\begin{tabular}{lp{3.8cm}ccccc}",
+    "      \\begin{tabular}{lp{3.8cm}rrrrr}",
     "         \\toprule",
     "         Variable & MCL & Mean & Max & Std.\\ Dev. & $N$ & Near MCL \\\\",
     "         \\midrule"

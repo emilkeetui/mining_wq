@@ -101,7 +101,21 @@ rename_col_numbers_to_labels <- function(x) {
   paste(lines, collapse = "\n")
 }
 
-postprocess_table <- function(x) rename_col_numbers_to_labels(move_notes_below_adjustbox(x))
+# Right-align the model-coefficient columns of the generated tabular preamble
+# (fixest's default is centered, which does not decimal-align numbers of
+# differing digit-width) while leaving the leading row-label column ('l')
+# untouched. Operates only on the exact matched preamble substring so it
+# cannot touch \multicolumn{n}{c}{...} header spanning cells elsewhere.
+right_align_tabular <- function(x) {
+  x <- paste(x, collapse = "\n")
+  m <- regmatches(x, regexpr("\\\\begin\\{tabular\\}\\{l+c+\\}", x))
+  if (length(m) == 1 && nzchar(m)) {
+    x <- sub(m, gsub("c", "r", m), x, fixed = TRUE)
+  }
+  x
+}
+
+postprocess_table <- function(x) right_align_tabular(rename_col_numbers_to_labels(move_notes_below_adjustbox(x)))
 
 tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, label,
                                   instr_str, dict = NULL, notes = NULL,
@@ -189,7 +203,9 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
       fitstat         = fitstat,
       style.tex       = style.tex("aer", adjustbox = TRUE),
       tex             = TRUE,
+      digits          = "r4",
       drop            = drop_controls_exact,
+      drop.section    = "fixef",
       title           = title,
       label           = label,
       postprocess.tex = postprocess_table,
@@ -256,7 +272,7 @@ first_stage_table <- function(storage_list_name, outfile, title = NULL,
 
   box_width <- if (length(model_list) <= 2) 0.45 else 1
   post_fun  <- function(x) {
-    x <- move_notes_below_adjustbox(x)
+    x <- right_align_tabular(move_notes_below_adjustbox(x))
     if (box_width < 1) x <- set_adjustbox_width(x, box_width)
     x
   }
@@ -265,7 +281,9 @@ first_stage_table <- function(storage_list_name, outfile, title = NULL,
     fitstat         = fitstat,
     style.tex       = style.tex("aer", adjustbox = TRUE),
     tex             = TRUE,
+    digits          = "r4",
     drop            = drop,
+    drop.section    = "fixef",
     title           = title,
     label           = label,
     extralines      = el,
@@ -331,6 +349,7 @@ fs_note <- function(is_sum, notesamp) {
     "of the community water system's intake, ", dep, ". ",
     "The instrument interacts an indicator for the post-1995 period with the ", agg, ". ",
     "The sample is ", notesamp, ". ",
+    "All specifications include CWS and year fixed effects. ",
     "Standard errors clustered at the CWS level. ",
     "Sample period 1985--2005. ",
     "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
@@ -397,10 +416,14 @@ bin_src_vars <- c(
   "nitrates_MR_share_days", "arsenic_MR_share_days",
   "inorganic_chemicals_MR_share_days", "radionuclides_MR_share_days"
 )
+# Coded 0/100 rather than 0/1 so that every OLS/RF/2SLS coefficient and SE
+# estimated on these outcomes is already in percentage-point units (a linear
+# rescaling of the dependent variable rescales coefficients/SEs identically
+# and leaves F-stats, R^2, and t-stats unchanged).
 for (v in bin_src_vars) {
   bv <- sub("_share_days$", "_bin", v)
-  full[[bv]]          <- ifelse(is.na(full[[v]]),          NA_integer_, as.integer(full[[v]] > 0))
-  full_expanded[[bv]] <- ifelse(is.na(full_expanded[[v]]), NA_integer_, as.integer(full_expanded[[v]] > 0))
+  full[[bv]]          <- ifelse(is.na(full[[v]]),          NA_integer_, as.integer(full[[v]] > 0) * 100L)
+  full_expanded[[bv]] <- ifelse(is.na(full_expanded[[v]]), NA_integer_, as.integer(full_expanded[[v]] > 0) * 100L)
 }
 
 vio_dict_bin <- c(
@@ -421,9 +444,11 @@ vio_dict_bin <- c(
 
 std_note_ivsum_bin <- paste0(
   "\\textit{Notes:} Columns show OLS, reduced form, and 2SLS estimates. ",
-  "Dependent variable is an indicator equal to 1 if the CWS had any violation of that type during the year, 0 otherwise. ",
+  "Dependent variable equals 100 if the CWS had any violation of that type during the year, 0 otherwise; ",
+  "coefficients and standard errors are in percentage points. ",
   "The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content ",
   "across upstream watersheds. ",
+  "All specifications include CWS and year fixed effects. ",
   "Standard errors clustered at the CWS level. ",
   "Sample period 1985--2005. ",
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
@@ -489,10 +514,12 @@ has_variation <- function(dset, y) {
 
 std_note_ivsum_bin_sw <- paste0(
   "\\textit{Notes:} Columns show OLS, reduced form, and 2SLS estimates. ",
-  "Dependent variable is an indicator equal to 1 if the CWS had any violation of that type during the year, 0 otherwise. ",
+  "Dependent variable equals 100 if the CWS had any violation of that type during the year, 0 otherwise; ",
+  "coefficients and standard errors are in percentage points. ",
   "The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content ",
   "across upstream watersheds. ",
   "Sample further restricted to community water systems whose primary water source is surface water. ",
+  "All specifications include CWS and year fixed effects. ",
   "Standard errors clustered at the CWS level. ",
   "Sample period 1985--2005. ",
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."

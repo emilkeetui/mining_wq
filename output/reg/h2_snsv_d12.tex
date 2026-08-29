@@ -10,29 +10,24 @@
       
       %start:tab
       
-      \begin{tabular}{lccccccccccccccc}
+      \begin{tabular}{lrrrrrrrrrrrrrrr}
          \toprule
          
           & \multicolumn{3}{c}{Sanitary visits} & \multicolumn{3}{c}{Technical assistance} & \multicolumn{3}{c}{Enforcement visits} & \multicolumn{3}{c}{Sample collection} & \multicolumn{3}{c}{Inspection}\\
          
-                                                                  & OLS           & RF              & 2SLS           & OLS           & RF            & 2SLS          & OLS            & RF             & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+                                                                  & OLS      & RF              & 2SLS            & OLS      & RF       & 2SLS     & OLS            & RF             & 2SLS         & OLS      & RF       & 2SLS     & OLS      & RF       & 2SLS\\  
          
          \midrule 
-         Upstream coal mines (sum)                                & 0.0106        &                 & 0.1406$^{***}$ & -0.0038       &               & 0.0140        & -0.0071$^{**}$ &                & 0.0367$^{*}$  & -0.0019       &               & 0.0134        & -0.0033       &               & -0.0188\\   
-                                                                  & (0.0067)      &                 & (0.0487)       & (0.0042)      &               & (0.0196)      & (0.0032)       &                & (0.0188)      & (0.0012)      &               & (0.0115)      & (0.0047)      &               & (0.0241)\\   
-         post95 $\times$ Upstream sulfur \%                       &               & -0.0360$^{***}$ &                &               & -0.0036       &               &                & -0.0094$^{**}$ &               &               & -0.0034       &               &               & 0.0048        &   \\   
-                                                                  &               & (0.0103)        &                &               & (0.0048)      &               &                & (0.0040)       &               &               & (0.0027)      &               &               & (0.0060)      &   \\   
+         Upstream coal mines (sum)                                & 1.0564   &                 & 14.0639$^{***}$ & -0.3799  &          & 1.4050   & -0.7127$^{**}$ &                & 3.6679$^{*}$ & -0.1948  &          & 1.3454   & -0.3347  &          & -1.8786\\   
+                                                                  & (0.6652) &                 & (4.8709)        & (0.4194) &          & (1.9557) & (0.3185)       &                & (1.8822)     & (0.1233) &          & (1.1505) & (0.4668) &          & (2.4087)\\   
+         post95 $\times$ Upstream sulfur \%                       &          & -3.6042$^{***}$ &                 &          & -0.3601  &          &                & -0.9400$^{**}$ &              &          & -0.3448  &          &          & 0.4814   &   \\   
+                                                                  &          & (1.0307)        &                 &          & (0.4835) &          &                & (0.3973)       &              &          & (0.2718) &          &          & (0.6044) &   \\   
          
-         F-test (1st stage, clustered), Upstream coal mines (sum) &               &                 & 27.94          &               &               & 27.94         &                &                & 27.94         &               &               & 27.94         &               &               & 27.94\\  
-         
-          \\
-         
-         Observations                                             & 6,225         & 6,225           & 6,225          & 6,225         & 6,225         & 6,225         & 6,225          & 6,225          & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225\\  
+         F-test (1st stage, clustered), Upstream coal mines (sum) &          &                 & 27.94           &          &          & 27.94    &                &                & 27.94        &          &          & 27.94    &          &          & 27.94\\  
          
           \\
          
-         CWS fixed effects                                        & $\checkmark$  & $\checkmark$    & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                       & $\checkmark$  & $\checkmark$    & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         Observations                                             & 6,225    & 6,225           & 6,225           & 6,225    & 6,225    & 6,225    & 6,225          & 6,225          & 6,225        & 6,225    & 6,225    & 6,225    & 6,225    & 6,225    & 6,225\\  
          
          \bottomrule
          
@@ -43,7 +38,7 @@
       
    \end{adjustbox}
       {\tiny\linespread{1}\selectfont \par \raggedright 
-   \textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine. N = 6232 CWS-years. Each panel of 3 columns (OLS, RF, 2SLS) reports a separate binary outcome: any visit of that type in a CWS-year. Sanitary visits are sanitary surveys and follow-up sanitary surveys. Technical assistance includes technical assistance, engineering determination/advice/plan review, and operation and maintenance visits. Enforcement visits include formal enforcement, investigation, and emergency assistance visits. Sample collection is sample collection visits. Inspection includes site inspections, regularly scheduled visits, and informal system inspections. The instrument interacts an indicator for the post-1995 period with mean upstream coal sulfur content. SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   \textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine. N = 6232 CWS-years. Each panel of 3 columns (OLS, RF, 2SLS) reports a separate binary outcome, equal to 100 if any visit of that type occurred in the CWS-year and 0 otherwise; coefficients and standard errors are in percentage points. Sanitary visits are sanitary surveys and follow-up sanitary surveys. Technical assistance includes technical assistance, engineering determination/advice/plan review, and operation and maintenance visits. Enforcement visits include formal enforcement, investigation, and emergency assistance visits. Sample collection is sample collection visits. Inspection includes site inspections, regularly scheduled visits, and informal system inspections. The instrument interacts an indicator for the post-1995 period with mean upstream coal sulfur content. All specifications include CWS and year fixed effects. SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
    
 \end{table}
 

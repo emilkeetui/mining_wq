@@ -10,7 +10,7 @@
 # Author: EK  Date: 2026-07-15
 # ============================================================
 
-.libPaths("Z:/ek559/RPackages")
+.libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
 library(arrow)
 library(dplyr)
 
@@ -84,6 +84,7 @@ table_lines <- c(
   "\\begin{minipage}{\\linewidth}",
   "\\vspace{4pt}",
   "\\footnotesize",
+  "\\raggedright",
   paste0(
     "\\textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine, ",
     "years 1985--2005. Coal produced per active upstream mine is restricted to CWS-years with at ",

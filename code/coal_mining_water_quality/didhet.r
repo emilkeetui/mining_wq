@@ -140,7 +140,8 @@ p_after_pooled <- huccoal %>%
 (p_before_pooled + p_after_pooled) +
   plot_annotation(
     title   = "HUC12 sulfur (%) vs. number of coal mines",
-    caption = "Sample: mine HUC12s (D1) upstream of downstream-only 2SLS CWS intakes, >= 1 active mine year 1985-2005."
+    caption = "Sample: mine HUC12s (D1) upstream of downstream-only 2SLS CWS intakes, >= 1 active mine year 1985-2005.",
+    theme   = theme(plot.caption = element_text(hjust = 0))
   )
 
 ggsave("Z:/ek559/mining_wq/output/fig/scatterhuccoalsulfur_pooled.png", width = 8, height = 5, dpi = 500)

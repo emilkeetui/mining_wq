@@ -17,7 +17,7 @@
 # Author: EK  Date: 2026-07-14
 # ============================================================
 
-.libPaths("Z:/ek559/RPackages")
+.libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
 library(arrow)
 library(fixest)
 
@@ -65,12 +65,22 @@ cat("\n--- Raw means: mr_same_fwd6mon by near_mcl ---\n")
 print(tapply(df$mr_same_fwd6mon, df$near_mcl, mean, na.rm = TRUE))
 
 # ── Step 2: Named formulas ─────────────────────────────────────────────────────
+# The LPM columns are fit on a 0/100-coded copy of the outcome (df_lpm) so
+# coefficients/SEs are already in percentage-point units; the logit columns
+# keep fitting the genuine 0/1 outcome on the original df (required by the
+# binomial family). Both variants reuse the same dependent-variable name so
+# fixest's "Dependent Variables:" row still pairs columns 1&3 / 2&4 as one
+# variable each, matching the table's pre-existing column layout.
+df_lpm <- df
+df_lpm$mr_same_fwd     <- as.numeric(df$mr_same_fwd)     * 100
+df_lpm$mr_same_fwd6mon <- as.numeric(df$mr_same_fwd6mon) * 100
+
 fml_fwd       <- mr_same_fwd      ~ near_mcl + mean_conc_z | PWSID + YEAR
 fml_fwd6mon   <- mr_same_fwd6mon  ~ near_mcl + mean_conc_z | PWSID + YEAR
 
 # ── Step 3: Regressions ────────────────────────────────────────────────────────
-fwd      <- feols(fml_fwd,      data = df, cluster = ~PWSID)
-fwd6mon  <- feols(fml_fwd6mon,  data = df, cluster = ~PWSID)
+fwd      <- feols(fml_fwd,      data = df_lpm, cluster = ~PWSID)
+fwd6mon  <- feols(fml_fwd6mon,  data = df_lpm, cluster = ~PWSID)
 
 fwd_logit      <- feglm(fml_fwd,     data = df, cluster = ~PWSID, family = binomial)
 fwd6mon_logit  <- feglm(fml_fwd6mon, data = df, cluster = ~PWSID, family = binomial)
@@ -142,6 +152,19 @@ rename_tex <- function(path) {
   writeLines(strsplit(txt, "\n")[[1]], path)
 }
 
+# Right-align the model-coefficient columns of the tabular preamble (fixest's
+# default is centered, which does not decimal-align numbers of differing
+# digit-width) while leaving the leading row-label column ('l') untouched.
+right_align_tabular <- function(path) {
+  lines <- readLines(path)
+  txt   <- paste(lines, collapse = "\n")
+  m     <- regmatches(txt, regexpr("\\\\begin\\{tabular\\}\\{l+c+\\}", txt))
+  if (length(m) == 1 && nzchar(m)) {
+    txt <- sub(m, gsub("c", "r", m), txt, fixed = TRUE)
+    writeLines(strsplit(txt, "\n")[[1]], path)
+  }
+}
+
 reformat_notes_tiny <- function(path) {
   lines <- readLines(path)
   adj_end   <- grep("^\\s*\\\\end\\{adjustbox\\}\\s*$", lines)
@@ -173,20 +196,25 @@ note_main <- paste0(
   sprintf("States retained: %d. Unique CWSs: %d. ", n_states_kept, n_pwsid),
   sprintf("N of readings with concentration above 50 percent of the MCL: %d. ", n_near_mcl),
   "Mean concentration = CWS-year mean reading, z-scored across the sample. ",
-  "Cols 1--2 are linear probability models; cols 3--4 are logit models. ",
+  "Cols 1--2 are linear probability models, coefficients and standard errors in percentage points; ",
+  "cols 3--4 are logit models on the underlying 0/1 outcome. ",
+  "All specifications include CWS and year fixed effects. ",
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level."
 )
 
 out_tex <- file.path(ROOT, "output/reg/mr_concentration_lag_national_downstream_states.tex")
 etable(fwd, fwd6mon, fwd_logit, fwd6mon_logit,
-       headers   = c("Nitrate MR (1-yr)", "Nitrate MR (6-mon)",
-                      "Nitrate MR (1-yr) Logit", "Nitrate MR (6-mon) Logit"),
-       notes     = note_main,
-       fitstat   = ~n,
-       style.tex = style.tex("aer", adjustbox = TRUE),
-       file      = out_tex,
-       replace   = TRUE)
+       headers      = c("Nitrate MR (1-yr)", "Nitrate MR (6-mon)",
+                         "Nitrate MR (1-yr) Logit", "Nitrate MR (6-mon) Logit"),
+       notes        = note_main,
+       fitstat      = ~n,
+       digits       = "r4",
+       drop.section = "fixef",
+       style.tex    = style.tex("aer", adjustbox = TRUE),
+       file         = out_tex,
+       replace      = TRUE)
 rename_tex(out_tex)
+right_align_tabular(out_tex)
 wrap_table_float(out_tex,
   "Nitrate MR violations following a reading above 50\\% of the MCL (national sample, downstream-2SLS-sample states)",
   label = "tab:mr_concentration_lag_national_downstream_states")

@@ -10,29 +10,24 @@
       
       %start:tab
       
-      \begin{tabular}{lccccccccc}
+      \begin{tabular}{lrrrrrrrrr}
          \toprule
          
           & \multicolumn{3}{c}{Any informal enf} & \multicolumn{3}{c}{Any formal enf} & \multicolumn{3}{c}{No enforcement}\\
          
-                                                                  & OLS           & RF            & 2SLS          & OLS             & RF             & 2SLS            & OLS           & RF            & 2SLS\\  
+                                                                  & OLS      & RF       & 2SLS     & OLS             & RF             & 2SLS            & OLS      & RF       & 2SLS\\  
          
          \midrule 
-         Upstream coal mines (sum)                                & 0.0084        &               & -0.0056       & -0.0169$^{***}$ &                & -0.0565$^{***}$ & -0.0078       &               & -0.0010\\   
-                                                                  & (0.0079)      &               & (0.0400)      & (0.0045)        &                & (0.0204)        & (0.0086)      &               & (0.0423)\\   
-         post95 $\times$ Upstream sulfur \%                       &               & 0.0014        &               &                 & 0.0145$^{***}$ &                 &               & 0.0003        &   \\   
-                                                                  &               & (0.0102)      &               &                 & (0.0052)       &                 &               & (0.0108)      &   \\   
+         Upstream coal mines (sum)                                & 0.8412   &          & -0.5587  & -1.6856$^{***}$ &                & -5.6480$^{***}$ & -0.7772  &          & -0.1031\\   
+                                                                  & (0.7922) &          & (4.0034) & (0.4466)        &                & (2.0454)        & (0.8631) &          & (4.2254)\\   
+         post95 $\times$ Upstream sulfur \%                       &          & 0.1432   &          &                 & 1.4474$^{***}$ &                 &          & 0.0264   &   \\   
+                                                                  &          & (1.0234) &          &                 & (0.5221)       &                 &          & (1.0830) &   \\   
          
-         F-test (1st stage, clustered), Upstream coal mines (sum) &               &               & 27.94         &                 &                & 27.94           &               &               & 27.94\\  
-         
-          \\
-         
-         Observations                                             & 6,225         & 6,225         & 6,225         & 6,225           & 6,225          & 6,225           & 6,225         & 6,225         & 6,225\\  
+         F-test (1st stage, clustered), Upstream coal mines (sum) &          &          & 27.94    &                 &                & 27.94           &          &          & 27.94\\  
          
           \\
          
-         CWS fixed effects                                        & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$    & $\checkmark$   & $\checkmark$    & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                       & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$    & $\checkmark$   & $\checkmark$    & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         Observations                                             & 6,225    & 6,225    & 6,225    & 6,225           & 6,225          & 6,225           & 6,225    & 6,225    & 6,225\\  
          
          \bottomrule
          
@@ -43,7 +38,7 @@
       
    \end{adjustbox}
       {\tiny\linespread{1}\selectfont \par \raggedright 
-   \textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine. Cols 1-3: informal enforcement action (19.0\% of panel). Cols 4-6: formal enforcement action (3.5\% of panel). Cols 7-9: no enforcement (78.7\% of panel). The instrument interacts an indicator for the post-1995 period with mean upstream coal sulfur content. SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   \textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine. Each outcome is equal to 100 if the enforcement event occurred in the CWS-year and 0 otherwise; coefficients and standard errors are in percentage points. Cols 1-3: informal enforcement action (19.0\% of panel). Cols 4-6: formal enforcement action (3.5\% of panel). Cols 7-9: no enforcement (78.7\% of panel). The instrument interacts an indicator for the post-1995 period with mean upstream coal sulfur content. All specifications include CWS and year fixed effects. SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
    
 \end{table}
 
