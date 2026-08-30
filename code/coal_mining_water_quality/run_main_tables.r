@@ -120,7 +120,7 @@ postprocess_table <- function(x) right_align_tabular(rename_col_numbers_to_label
 tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, label,
                                   instr_str, dict = NULL, notes = NULL,
                                   storage_list_name = NULL, subheader = NULL,
-                                  fitstat = ~ .) {
+                                  fitstat = ~ ., panel_style = FALSE) {
   controls            <- c("num_facilities")
   drop_controls_exact <- paste0("^(", paste(controls, collapse = "|"), ")$")
   fe_str              <- "PWSID + year"
@@ -182,6 +182,13 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
       }
     }
     assign(storage_list_name, fs_list, envir = .GlobalEnv)
+  }
+
+  if (panel_style) {
+    render_panel_binary_table(result = result, dict = dict, coalvar = coalvar,
+                               instr_str = instr_str, title = title, label = label,
+                               outfile = regoutname)
+    return(invisible(NULL))
   }
 
   model_list <- unlist(
@@ -294,6 +301,179 @@ first_stage_table <- function(storage_list_name, outfile, title = NULL,
   if (!is.null(dict))        etable_args$dict    <- dict
   if (!is.null(notes))       etable_args$notes   <- notes
   do.call(etable, c(model_list, etable_args))
+}
+
+# ── Panel-style table for a binary-violation MR/2SLS table ──────────────────
+# Stacks OLS / reduced form / 2SLS as three vertically-stacked panels (one
+# tabular per panel) instead of side-by-side columns, so each panel shows
+# only the coefficient that model actually estimates (RF loads on the
+# instrument, OLS/2SLS load on the endogenous coal-mine count). Coefficient
+# and SE cells are phantom-padded to a common integer-digit width and a
+# common 3-star slot so the decimal points of the coefficient and its SE
+# line up vertically within a column. Follows the same multipanel rules as
+# violation_binary_days_panels.r: \hline\hline only at the very top of the
+# first panel and the very bottom of the last panel; single \hline for every
+# other internal rule, so the three tabulars read as one table.
+fmt_pair <- function(est, se, pval, digits = 2) {
+  num    <- sprintf(paste0("%.", digits, "f"), est)
+  se_num <- sprintf(paste0("%.", digits, "f"), se)
+  int_w  <- function(s) nchar(sub("\\..*$", "", sub("^-", "", s)))
+  w      <- max(int_w(num), int_w(se_num))
+  pad_to <- function(s) {
+    cur <- int_w(s)
+    if (cur < w) paste0(strrep("\\phantom{0}", w - cur), s) else s
+  }
+  num    <- pad_to(num)
+  se_num <- pad_to(se_num)
+  stars_n <- if (is.na(pval)) 0L else if (pval < 0.01) 3L else if (pval < 0.05) 2L else if (pval < 0.1) 1L else 0L
+  stars_render <- paste0(vapply(1:3, function(i) if (i <= stars_n) "*" else "\\phantom{*}", character(1)), collapse = "")
+  list(
+    coef = paste0("\\phantom{(}", num, "$^{", stars_render, "}$"),
+    se   = paste0("(", se_num, ")\\phantom{$^{***}$}")
+  )
+}
+
+fmt_single <- function(x, digits = 2) sprintf(paste0("%.", digits, "f"), x)
+
+get_term <- function(model, term) {
+  ct <- fixest::coeftable(model)
+  # fixest's 2SLS models report the endogenous regressor's coefficient under
+  # a "fit_<var>" row name rather than the bare variable name.
+  row <- if (term %in% rownames(ct)) term else paste0("fit_", term)
+  if (row %in% rownames(ct)) {
+    list(est = ct[row, "Estimate"], se = ct[row, "Std. Error"], pval = ct[row, "Pr(>|t|)"])
+  } else {
+    list(est = NA_real_, se = NA_real_, pval = NA_real_)
+  }
+}
+
+render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile) {
+  y_vec    <- names(result)
+  n_y      <- length(y_vec)
+  y_labels <- sapply(y_vec, function(v) if (!is.null(dict) && v %in% names(dict)) dict[[v]] else v)
+  coal_lab <- if (!is.null(dict) && coalvar %in% names(dict)) dict[[coalvar]] else coalvar
+
+  instr_parts     <- strsplit(instr_str, ":")[[1]]
+  instr_lab_parts <- sapply(instr_parts, function(p) if (!is.null(dict) && p %in% names(dict)) dict[[p]] else p)
+  instr_lab       <- paste(instr_lab_parts, collapse = " $\\times$ ")
+
+  # Fixed-width columns (rather than content-driven "l"/"r") so the same
+  # outcome lands at the same horizontal position in every panel, even
+  # though each panel's tabular is a separate environment with its own
+  # row-label text ("Upstream coal mines (sum)" vs. the longer instrument
+  # interaction label).
+  label_w    <- "5.5cm"
+  data_w     <- "5.2cm"
+  col_spec   <- paste0("p{", label_w, "}",
+                        paste(rep(paste0(">{\\raggedleft\\arraybackslash}p{", data_w, "}"), n_y), collapse = ""))
+  header_row <- paste0(" & ", paste0(y_labels, collapse = " & "), " \\\\")
+
+  ols_terms <- lapply(y_vec, function(y) get_term(result[[y]]$OLS, coalvar))
+  rf_terms  <- lapply(y_vec, function(y) get_term(result[[y]]$RF,  instr_str))
+  iv_terms  <- lapply(y_vec, function(y) get_term(result[[y]]$IV,  coalvar))
+  f_vals    <- sapply(y_vec, function(y) result[[y]]$f_clustered)
+
+  ols_cells <- lapply(ols_terms, function(t) fmt_pair(t$est, t$se, t$pval))
+  rf_cells  <- lapply(rf_terms,  function(t) fmt_pair(t$est, t$se, t$pval))
+  iv_cells  <- lapply(iv_terms,  function(t) fmt_pair(t$est, t$se, t$pval))
+
+  coef_line <- function(cells, row_label) {
+    paste0(row_label, " & ", paste(sapply(cells, `[[`, "coef"), collapse = " & "), " \\\\")
+  }
+  se_line <- function(cells) {
+    paste0(" & ", paste(sapply(cells, `[[`, "se"), collapse = " & "), " \\\\")
+  }
+
+  # Rule under the outcome-name header spans only the data columns (not the
+  # blank cell above the row-label column).
+  sub_rule <- paste0("\\cline{2-", n_y + 1, "}")
+
+  panel_a <- c(
+    paste0("\\begin{tabular}{", col_spec, "}"),
+    "\\hline\\hline",
+    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel A: OLS} \\\\"),
+    "\\hline",
+    header_row,
+    sub_rule,
+    coef_line(ols_cells, coal_lab),
+    se_line(ols_cells),
+    "\\end{tabular}"
+  )
+
+  panel_b <- c(
+    paste0("\\begin{tabular}{", col_spec, "}"),
+    "\\hline",
+    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel B: Reduced Form} \\\\"),
+    "\\hline",
+    header_row,
+    sub_rule,
+    coef_line(rf_cells, instr_lab),
+    se_line(rf_cells),
+    "\\end{tabular}"
+  )
+
+  panel_c <- c(
+    paste0("\\begin{tabular}{", col_spec, "}"),
+    "\\hline",
+    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel C: 2SLS} \\\\"),
+    "\\hline",
+    header_row,
+    sub_rule,
+    coef_line(iv_cells, coal_lab),
+    se_line(iv_cells),
+    "\\hline\\hline",
+    "\\end{tabular}"
+  )
+
+  n_obs  <- unique(sapply(y_vec, function(y) nobs(result[[y]]$IV)))
+  n_note <- if (length(n_obs) == 1) {
+    paste0("Number of observations = ", format(n_obs, big.mark = ","), ".")
+  } else {
+    paste0("Number of observations ranges from ", format(min(n_obs), big.mark = ","),
+           " to ", format(max(n_obs), big.mark = ","), " across outcomes.")
+  }
+
+  f_unique <- unique(round(f_vals, 2))
+  f_note   <- if (length(f_unique) == 1) {
+    paste0("The first-stage F-statistic (clustered at the utility level) for the instrumented ",
+           "variable, ", coal_lab, ", is ", fmt_single(f_unique), ".")
+  } else {
+    paste0("The first-stage F-statistic (clustered at the utility level) for the instrumented ",
+           "variable, ", coal_lab, ", ranges from ", fmt_single(min(f_vals)),
+           " to ", fmt_single(max(f_vals)), " across outcomes.")
+  }
+
+  note_text <- paste0(
+    "\\textit{Notes:} Dependent variable equals 1 if the utility had any violation of that type ",
+    "during the year, 0 otherwise; coefficients and standard errors multiplied by 100 to show ",
+    "percentage point change. The instrument interacts an indicator for the post-1995 period with ",
+    "the sum of coal sulfur content across upstream watersheds. All specifications include ",
+    "utilities and year fixed effects. Standard errors clustered at the utilities level. ",
+    f_note, " ",
+    "Sample period 1985--2005. ", n_note, " ",
+    "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+  )
+
+  table_lines <- c(
+    "\\begin{table}[htbp]",
+    "\\raggedright",
+    paste0("\\caption{\\label{", label, "} ", title, "}"),
+    "\\small",
+    panel_a,
+    panel_b,
+    panel_c,
+    "\\begin{minipage}{\\linewidth}",
+    "\\vspace{4pt}",
+    "\\footnotesize",
+    "\\raggedright",
+    note_text,
+    "\\end{minipage}",
+    "\\end{table}"
+  )
+
+  out_path <- paste0("Z:/ek559/mining_wq/output/reg/", outfile, ".tex")
+  writeLines(table_lines, out_path)
+  cat("  Panel table written to:", out_path, "\n")
 }
 
 std_note <- paste0(
@@ -473,8 +653,13 @@ for (sp in bin_sample_specs) {
   for (vp in vio_specs_bin) {
     fs_store_name <- paste0("fs_store_", sp$sample, sp$suffix, "_", vp$name, "_bin")
     for (cp in cat_specs) {
-      fname     <- paste0("2sls_", sp$sample, "_", vp$name, "_", cp$name, sp$suffix, "_binvio")
-      tab_title <- paste0("Effect of coal mines on ", vp$titlevio, " (", cp$titlecat, ", ", sp$titlesamp, ")")
+      fname           <- paste0("2sls_", sp$sample, "_", vp$name, "_", cp$name, sp$suffix, "_binvio")
+      is_panel_target <- identical(fname, "2sls_dwnstrm_minevio_mr_ivsum_binvio")
+      tab_title       <- if (is_panel_target) {
+        "Effect of coal mines on inorganic chemical monitoring and reporting violations at utilities"
+      } else {
+        paste0("Effect of coal mines on ", vp$titlevio, " (", cp$titlecat, ", ", sp$titlesamp, ")")
+      }
       varlist   <- vp[[cp$varkey]]
       cat("\nRunning:", fname, "\n")
       tsls_reg_output_main(dset=sp$dset, varlist=varlist, coalvar=sp$coalvar,
@@ -482,7 +667,8 @@ for (sp in bin_sample_specs) {
                            instr_str=sp$instr, dict=vio_dict_bin, notes=std_note_ivsum_bin,
                            storage_list_name=fs_store_name,
                            subheader=cp$titlecat,
-                           fitstat=~ n)
+                           fitstat=~ n,
+                           panel_style=is_panel_target)
     }
     fs_outfile <- paste0("fs_", sp$sample, "_", vp$name, sp$suffix, "_binvio")
     fs_title   <- paste0("First stage: effect of the Acid Rain Program on the number of upstream coal mines (",
