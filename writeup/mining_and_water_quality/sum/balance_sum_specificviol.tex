@@ -1,0 +1,49 @@
+\begin{table}
+\centering
+\resizebox{\ifdim\width>\linewidth 1\linewidth\else\width\fi}{!}{
+\begin{talltblr}[         %% tabularray outer open
+caption={Specific Violation Categories},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]},
+cell{1}{1}={}{halign=l, halign=c,},
+cell{1}{2}={}{halign=l, halign=c,},
+cell{1}{3}={c=2,}{halign=r, halign=c, halign=c,},
+cell{1}{4}={}{halign=r, halign=c,},
+cell{1}{5}={c=2,}{halign=r, halign=c, halign=c,},
+cell{1}{6}={}{halign=r, halign=c,},
+cell{2,4,6,8,10,12,14}{1}={}{halign=l,},
+cell{2,4,6,8,10,12,14}{2}={}{halign=l,},
+cell{2,4,6,8,10,12,14}{3}={}{halign=r,},
+cell{2,4,6,8,10,12,14}{4}={}{halign=r,},
+cell{2,4,6,8,10,12,14}{5}={}{halign=r,},
+cell{2,4,6,8,10,12,14}{6}={}{halign=r,},
+cell{3,5,7,9,11,13,15}{1}={}{halign=l, bg=cededed,},
+cell{3,5,7,9,11,13,15}{2}={}{halign=l, bg=cededed,},
+cell{3,5,7,9,11,13,15}{3}={}{halign=r, bg=cededed,},
+cell{3,5,7,9,11,13,15}{4}={}{halign=r, bg=cededed,},
+cell{3,5,7,9,11,13,15}{5}={}{halign=r, bg=cededed,},
+cell{3,5,7,9,11,13,15}{6}={}{halign=r, bg=cededed,},
+row{even}={bg=black!5!white},
+}                     %% tabularray inner close
+\tinytableDefineColor{cededed}{HTML}{ededed}
+\toprule
+&  & Mine (N=12028) &  & Upstream (N=7281) &  \\ \cmidrule[lr]{3-4}\cmidrule[lr]{5-6}
+&    & N & Pct. & N & Pct. \\ \midrule %% TinyTableHeader
+Rule\_Code & Arsenic & 5 & 0.0 & 0 & 0.0 \\
+& Consumer Confidence Rule & 68 & 0.6 & 34 & 0.5 \\
+& Inorganic Chemicals & 588 & 4.9 & 384 & 5.3 \\
+& Lead and Copper Rule & 635 & 5.3 & 332 & 4.6 \\
+& Miscellaneous & 20 & 0.2 & 6 & 0.1 \\
+& Nitrates & 129 & 1.1 & 93 & 1.3 \\
+& No violation & 8878 & 73.8 & 5241 & 72.0 \\
+& Radionuclides & 680 & 5.7 & 560 & 7.7 \\
+& Surface Water Treatment Rule & 260 & 2.2 & 97 & 1.3 \\
+& Synthetic Organic Chemicals & 264 & 2.2 & 188 & 2.6 \\
+& Total Coliform & 375 & 3.1 & 257 & 3.5 \\
+& Total Trihalomethanes & 11 & 0.1 & 6 & 0.1 \\
+& Volatile Organic Chemicals & 115 & 1.0 & 83 & 1.1 \\
+\bottomrule
+\end{talltblr}
+}
+\end{table}
