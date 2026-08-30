@@ -2382,7 +2382,7 @@
     <bcf:citekey order="2" intorder="4">10.1162/rest_a_01477</bcf:citekey>
     <bcf:citekey order="3" intorder="1">mi2026technology</bcf:citekey>
     <bcf:citekey order="4" intorder="1">zou2021unwatched</bcf:citekey>
-    <bcf:citekey order="5" intorder="1">mu2024s</bcf:citekey>
+    <bcf:citekey order="5" intorder="1">10.1162/rest_a_01477</bcf:citekey>
     <bcf:citekey order="6" intorder="1">keiser2019consequences</bcf:citekey>
     <bcf:citekey order="7" intorder="1">christensen2023flint</bcf:citekey>
     <bcf:citekey order="8" intorder="1">allaire2018national</bcf:citekey>
@@ -2417,30 +2417,34 @@
     <bcf:citekey order="22" intorder="2">blundell2020threats</bcf:citekey>
     <bcf:citekey order="23" intorder="1">duflo2018value</bcf:citekey>
     <bcf:citekey order="24" intorder="1">oleckno1982national</bcf:citekey>
-    <bcf:citekey order="25" intorder="1">rouhani2023overview</bcf:citekey>
-    <bcf:citekey order="25" intorder="2">boente2020benzo</bcf:citekey>
-    <bcf:citekey order="25" intorder="3">liang2017spatial</bcf:citekey>
-    <bcf:citekey order="26" intorder="1">ceto2000abandoned</bcf:citekey>
-    <bcf:citekey order="27" intorder="1">akcil2006acid</bcf:citekey>
-    <bcf:citekey order="27" intorder="2">skousen2019acid</bcf:citekey>
-    <bcf:citekey order="28" intorder="1">Sealey2000</bcf:citekey>
-    <bcf:citekey order="29" intorder="1">wheelock1984coal</bcf:citekey>
-    <bcf:citekey order="30" intorder="1">bennear2008impacts</bcf:citekey>
+    <bcf:citekey order="25" intorder="1">bennear2008impacts</bcf:citekey>
+    <bcf:citekey order="26" intorder="1">liang2017spatial</bcf:citekey>
+    <bcf:citekey order="26" intorder="2">boente2020benzo</bcf:citekey>
+    <bcf:citekey order="26" intorder="3">rouhani2023overview</bcf:citekey>
+    <bcf:citekey order="27" intorder="1">ceto2000abandoned</bcf:citekey>
+    <bcf:citekey order="28" intorder="1">akcil2006acid</bcf:citekey>
+    <bcf:citekey order="28" intorder="2">skousen2019acid</bcf:citekey>
+    <bcf:citekey order="29" intorder="1">Sealey2000</bcf:citekey>
+    <bcf:citekey order="30" intorder="1">mookherjee1994marginal</bcf:citekey>
     <bcf:citekey order="31" intorder="1">mookherjee1994marginal</bcf:citekey>
     <bcf:citekey order="32" intorder="1">kaplow1994optimal</bcf:citekey>
-    <bcf:citekey order="33" intorder="1">epaviolationreliability</bcf:citekey>
-    <bcf:citekey order="34" intorder="1">epaarsenicbat</bcf:citekey>
-    <bcf:citekey order="35" intorder="1">ravalli2022sociodemographic</bcf:citekey>
-    <bcf:citekey order="36" intorder="1">lattanzio2022clean</bcf:citekey>
-    <bcf:citekey order="37" intorder="1">freme2000us</bcf:citekey>
-    <bcf:citekey order="38" intorder="1">epaarpcoalemp</bcf:citekey>
-    <bcf:citekey order="38" intorder="2">stratford2015coalprod</bcf:citekey>
-    <bcf:citekey order="39" intorder="1">schweinfurth2009introduction</bcf:citekey>
-    <bcf:citekey order="40" intorder="1">schweinfurth2009introduction</bcf:citekey>
-    <bcf:citekey order="41" intorder="1">angrist1994identification</bcf:citekey>
-    <bcf:citekey order="42" intorder="1">callaway2024difference</bcf:citekey>
-    <bcf:citekey order="43" intorder="1">olmstead2010economics</bcf:citekey>
-    <bcf:citekey order="44" intorder="1">kang2021understanding</bcf:citekey>
+    <bcf:citekey order="33" intorder="1">kaplow1994optimal</bcf:citekey>
+    <bcf:citekey order="34" intorder="1">epaviolationreliability</bcf:citekey>
+    <bcf:citekey order="35" intorder="1">epaarsenicbat</bcf:citekey>
+    <bcf:citekey order="36" intorder="1">ravalli2022sociodemographic</bcf:citekey>
+    <bcf:citekey order="37" intorder="1">lattanzio2022clean</bcf:citekey>
+    <bcf:citekey order="38" intorder="1">freme2000us</bcf:citekey>
+    <bcf:citekey order="39" intorder="1">epaarpcoalemp</bcf:citekey>
+    <bcf:citekey order="39" intorder="2">stratford2015coalprod</bcf:citekey>
+    <bcf:citekey order="40" intorder="1">wheelock1984coal</bcf:citekey>
+    <bcf:citekey order="41" intorder="1">schweinfurth2009introduction</bcf:citekey>
+    <bcf:citekey order="42" intorder="1">schweinfurth2009introduction</bcf:citekey>
+    <bcf:citekey order="43" intorder="1">angrist1994identification</bcf:citekey>
+    <bcf:citekey order="44" intorder="1">montielolea2013robust</bcf:citekey>
+    <bcf:citekey order="45" intorder="1">staigerstock1997instrumental</bcf:citekey>
+    <bcf:citekey order="46" intorder="1">callaway2024difference</bcf:citekey>
+    <bcf:citekey order="47" intorder="1">olmstead2010economics</bcf:citekey>
+    <bcf:citekey order="48" intorder="1">kang2021understanding</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nyt">

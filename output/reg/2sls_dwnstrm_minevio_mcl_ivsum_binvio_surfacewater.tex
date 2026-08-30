@@ -10,29 +10,24 @@
       
       %start:tab
       
-      \begin{tabular}{lccc}
+      \begin{tabular}{lrrr}
          \toprule
          
           & \multicolumn{3}{c}{Inorganic chemicals (MCL)}\\
          
-                                                                  & OLS           & RF            & 2SLS\\  
+                                                                  & OLS      & RF       & 2SLS\\  
          
          \midrule 
-         Upstream coal mines (sum)                                & 0.0002        &               & -0.0294\\   
-                                                                  & (0.0024)      &               & (0.0435)\\   
-         post95 $\times$ Upstream sulfur \%                       &               & 0.0036        &   \\   
-                                                                  &               & (0.0042)      &   \\   
+         Upstream coal mines (sum)                                & 0.0203   &          & -2.9359\\   
+                                                                  & (0.2409) &          & (4.3491)\\   
+         post95 $\times$ Upstream sulfur \%                       &          & 0.3620   &   \\   
+                                                                  &          & (0.4216) &   \\   
          
-         F-test (1st stage, clustered), Upstream coal mines (sum) &               &               & 1.49\\  
-         
-          \\
-         
-         Observations                                             & 1,829         & 1,829         & 1,829\\  
+         F-test (1st stage, clustered), Upstream coal mines (sum) &          &          & 1.49\\  
          
           \\
          
-         CWS fixed effects                                        & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                       & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         Observations                                             & 1,829    & 1,829    & 1,829\\  
          
          \bottomrule
          
@@ -43,7 +38,7 @@
       
    \end{adjustbox}
       {\tiny\linespread{1}\selectfont \par \raggedright 
-   \textit{Notes:} Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is an indicator equal to 1 if the CWS had any violation of that type during the year, 0 otherwise. The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content across upstream watersheds. Sample further restricted to community water systems whose primary water source is surface water. Standard errors clustered at the CWS level. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   \textit{Notes:} Columns show OLS, reduced form, and 2SLS estimates. Dependent variable equals 100 if the CWS had any violation of that type during the year, 0 otherwise; coefficients and standard errors are in percentage points. The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content across upstream watersheds. Sample further restricted to community water systems whose primary water source is surface water. All specifications include CWS and year fixed effects. Standard errors clustered at the CWS level. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
    
 \end{table}
 

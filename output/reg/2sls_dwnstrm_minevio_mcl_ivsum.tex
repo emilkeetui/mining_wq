@@ -10,29 +10,24 @@
       
       %start:tab
       
-      \begin{tabular}{lcccccccccccc}
+      \begin{tabular}{lrrrrrrrrrrrr}
          \toprule
          
           & \multicolumn{3}{c}{Nitrates (MCL)} & \multicolumn{3}{c}{Arsenic (MCL)} & \multicolumn{3}{c}{Inorganic chemicals (MCL)} & \multicolumn{3}{c}{Radionuclides (MCL)}\\
          
-                                                                  & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+                                                                  & OLS      & RF       & 2SLS     & OLS      & RF       & 2SLS     & OLS      & RF       & 2SLS     & OLS      & RF       & 2SLS\\  
          
          \midrule 
-         Upstream coal mines (sum)                                & 0.0163        &               & -0.0059       & -0.0101       &               & 0.1236        & -0.1238       &               & -1.951        & 0.2167        &               & -1.866\\   
-                                                                  & (0.0244)      &               & (0.0063)      & (0.0399)      &               & (0.1120)      & (0.3553)      &               & (1.910)       & (0.2190)      &               & (1.899)\\   
-         post95 $\times$ Upstream sulfur \%                       &               & 0.0014        &               &               & -0.0297       &               &               & 0.4690        &               &               & 0.4486        &   \\   
-                                                                  &               & (0.0015)      &               &               & (0.0263)      &               &               & (0.4473)      &               &               & (0.4480)      &   \\   
+         Upstream coal mines (sum)                                & 0.0163   &          & -0.0059  & -0.0102  &          & 0.1236   & -0.1238  &          & -1.9508  & 0.2167   &          & -1.8659\\   
+                                                                  & (0.0244) &          & (0.0063) & (0.0399) &          & (0.1120) & (0.3553) &          & (1.9101) & (0.2190) &          & (1.8991)\\   
+         post95 $\times$ Upstream sulfur \%                       &          & 0.0014   &          &          & -0.0297  &          &          & 0.4690   &          &          & 0.4486   &   \\   
+                                                                  &          & (0.0015) &          &          & (0.0263) &          &          & (0.4473) &          &          & (0.4480) &   \\   
          
-         F-test (1st stage, clustered), Upstream coal mines (sum) &               &               & 27.52         &               &               & 27.52         &               &               & 27.52         &               &               & 27.52\\  
-         
-          \\
-         
-         Observations                                             & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225\\  
+         F-test (1st stage, clustered), Upstream coal mines (sum) &          &          & 27.52    &          &          & 27.52    &          &          & 27.52    &          &          & 27.52\\  
          
           \\
          
-         CWS fixed effects                                        & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                       & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         Observations                                             & 6,225    & 6,225    & 6,225    & 6,225    & 6,225    & 6,225    & 6,225    & 6,225    & 6,225    & 6,225    & 6,225    & 6,225\\  
          
          \bottomrule
          

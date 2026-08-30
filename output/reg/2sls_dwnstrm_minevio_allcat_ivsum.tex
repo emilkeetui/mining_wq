@@ -10,29 +10,24 @@
       
       %start:tab
       
-      \begin{tabular}{lcccccccccccc}
+      \begin{tabular}{lrrrrrrrrrrrr}
          \toprule
          
           & \multicolumn{3}{c}{Nitrates} & \multicolumn{3}{c}{Arsenic} & \multicolumn{3}{c}{Inorganic chemicals} & \multicolumn{3}{c}{Radionuclides}\\
          
-                                                                  & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+                                                                  & OLS          & RF             & 2SLS           & OLS           & RF            & 2SLS          & OLS           & RF       & 2SLS     & OLS      & RF       & 2SLS\\  
          
          \midrule 
-         Upstream coal mines (sum)                                & 3.319$^{*}$   &               & 19.85$^{**}$  & 3.501$^{**}$  &               & 14.60$^{*}$   & 3.476$^{**}$  &               & 11.79         & 2.873         &               & -2.390\\   
-                                                                  & (1.810)       &               & (9.491)       & (1.701)       &               & (7.953)       & (1.751)       &               & (8.697)       & (2.295)       &               & (10.82)\\   
-         post95 $\times$ Upstream sulfur \%                       &               & -4.772$^{**}$ &               &               & -3.511$^{*}$  &               &               & -2.834        &               &               & 0.5745        &   \\   
-                                                                  &               & (2.199)       &               &               & (1.937)       &               &               & (2.121)       &               &               & (2.572)       &   \\   
+         Upstream coal mines (sum)                                & 3.3187$^{*}$ &                & 19.8484$^{**}$ & 3.5012$^{**}$ &               & 14.6024$^{*}$ & 3.4757$^{**}$ &          & 11.7893  & 2.8727   &          & -2.3895\\   
+                                                                  & (1.8101)     &                & (9.4913)       & (1.7014)      &               & (7.9535)      & (1.7509)      &          & (8.6973) & (2.2945) &          & (10.8228)\\   
+         post95 $\times$ Upstream sulfur \%                       &              & -4.7718$^{**}$ &                &               & -3.5106$^{*}$ &               &               & -2.8343  &          &          & 0.5745   &   \\   
+                                                                  &              & (2.1988)       &                &               & (1.9371)      &               &               & (2.1211) &          &          & (2.5724) &   \\   
          
-         F-test (1st stage, clustered), Upstream coal mines (sum) &               &               & 27.52         &               &               & 27.52         &               &               & 27.52         &               &               & 27.52\\  
-         
-          \\
-         
-         Observations                                             & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225         & 6,225\\  
+         F-test (1st stage, clustered), Upstream coal mines (sum) &              &                & 27.52          &               &               & 27.52         &               &          & 27.52    &          &          & 27.52\\  
          
           \\
          
-         CWS fixed effects                                        & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                       & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         Observations                                             & 6,225        & 6,225          & 6,225          & 6,225         & 6,225         & 6,225         & 6,225         & 6,225    & 6,225    & 6,225    & 6,225    & 6,225\\  
          
          \bottomrule
          

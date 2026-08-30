@@ -10,31 +10,26 @@
       
       %start:tab
       
-      \begin{tabular}{lcccccc}
+      \begin{tabular}{lrrrrrr}
          \toprule
          
           & \multicolumn{3}{c}{Total coliform (MR)} & \multicolumn{3}{c}{VOCs (MR)}\\
          
-                                                                             & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+                                                                             & OLS      & RF            & 2SLS      & OLS      & RF       & 2SLS\\  
          
          \midrule 
-         num\_coal\_mines\_upstream\_mean                                    & -0.1573       &               & -14.69        & -0.1918       &               & -8.830\\   
-                                                                             & (0.1985)      &               & (10.97)       & (2.377)       &               & (18.41)\\   
-         post95 $\times$ sulfur\_unified\_mean                               &               & 0.6250$^{**}$ &               &               & 0.4681        &   \\   
-                                                                             &               & (0.3090)      &               &               & (0.9650)      &   \\   
+         num\_coal\_mines\_upstream\_mean                                    & -0.1573  &               & -14.6874  & -0.1918  &          & -8.8304\\   
+                                                                             & (0.1985) &               & (10.9687) & (2.3769) &          & (18.4150)\\   
+         post95 $\times$ sulfur\_unified\_mean                               &          & 0.6250$^{**}$ &           &          & 0.4681   &   \\   
+                                                                             &          & (0.3090)      &           &          & (0.9650) &   \\   
          
-         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_mean     &               &               & 3.40          &               &               & 4.68\\  
-         
-          \\
-         
-         Observations                                                        & 8,514         & 8,514         & 8,514         & 9,120         & 9,120         & 9,120\\  
-         R$^2$                                                               & 0.16435       & 0.16514       & 0.16514       & 0.13707       & 0.13709       & 0.13709\\  
-         Within R$^2$                                                        & 0.00144       & 0.00239       & 0.00239       & 0.00072       & 0.00075       & 0.00075\\  
+         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_mean     &          &               & 3.40      &          &          & 4.68\\  
          
           \\
          
-         CWS fixed effects                                                   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                                  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         Observations                                                        & 8,514    & 8,514         & 8,514     & 9,120    & 9,120    & 9,120\\  
+         R$^2$                                                               & 0.16435  & 0.16514       & 0.16514   & 0.13707  & 0.13709  & 0.13709\\  
+         Within R$^2$                                                        & 0.00144  & 0.00239       & 0.00239   & 0.00072  & 0.00075  & 0.00075\\  
          
          \bottomrule
          

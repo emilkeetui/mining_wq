@@ -10,26 +10,26 @@
 \centering
 \begin{tabular}{lccccc}
    \tabularnewline \midrule \midrule
-   Dependent Variables: & mr\_same\_fwd           & mr\_same\_fwd6mon       & mr\_same\_fwd   & mr\_same\_fwd6mon   & mr\_anyioc\_fwd\\    
-                        & Arsenic (1-yr)          & Arsenic (6-mon)         & Nitrate (1-yr)  & Nitrate (6-mon)     & Pooled inorganic \\   
-   Model:               & (1)                     & (2)                     & (3)             & (4)                 & (5)\\  
+   Dependent Variables: & mr\_same\_fwd         & mr\_same\_fwd6mon     & mr\_same\_fwd   & mr\_same\_fwd6mon   & mr\_anyioc\_fwd\\    
+                        & Arsenic (1-yr)        & Arsenic (6-mon)       & Nitrate (1-yr)  & Nitrate (6-mon)     & Pooled inorganic \\   
+   Model:               & (1)                   & (2)                   & (3)             & (4)                 & (5)\\  
    \midrule
    \emph{Variables}\\
-   ratio                & $1.23\times 10^{-10}$   & $1.31\times 10^{-10}$   & 0.0796          & 0.1801              & -0.0597\\   
-                        & ($1.19\times 10^{-5}$)  & ($5.16\times 10^{-6}$)  & (0.0719)        & (0.1522)            & (0.0811)\\   
-   mean\_concentration  & 2.847                   & 2.893                   & 0.0076          & -0.0173             &   \\   
-                        & (3.533)                 & (2.712)                 & (0.0153)        & (0.0153)            &   \\   
-   near\_mcl            &                         &                         & 0.5877$^{**}$   & 0.2565$^{**}$       & 0.0040\\   
-                        &                         &                         & (0.2448)        & (0.1016)            & (0.0242)\\   
+   ratio                & $1.04\times 10^{-8}$  & $1.07\times 10^{-8}$  & 7.960           & 18.01               & -5.968\\   
+                        & (0.0012)              & (0.0005)              & (7.190)         & (15.22)             & (8.111)\\   
+   mean\_concentration  & 284.7                 & 289.3                 & 0.7591          & -1.725              &   \\   
+                        & (353.3)               & (271.2)               & (1.529)         & (1.528)             &   \\   
+   near\_mcl            &                       &                       & 58.77$^{**}$    & 25.65$^{**}$        & 0.4033\\   
+                        &                       &                       & (24.48)         & (10.16)             & (2.418)\\   
    \midrule
    \emph{Fixed-effects}\\
-   PWSID                & Yes                     & Yes                     & Yes             & Yes                 & Yes\\  
-   YEAR                 & Yes                     & Yes                     & Yes             & Yes                 & Yes\\  
-   contaminant\_code    &                         &                         &                 &                     & Yes\\  
+   PWSID                & Yes                   & Yes                   & Yes             & Yes                 & Yes\\  
+   YEAR                 & Yes                   & Yes                   & Yes             & Yes                 & Yes\\  
+   contaminant\_code    &                       &                       &                 &                     & Yes\\  
    \midrule
    \emph{Fit statistics}\\
-   R$^2$                & 0.21966                 & 0.27763                 & 0.30798         & 0.22859             & 0.38970\\  
-   Observations         & 419                     & 419                     & 851             & 851                 & 3,705\\  
+   R$^2$                & 0.21966               & 0.27763               & 0.30798         & 0.22859             & 0.38970\\  
+   Observations         & 419                   & 419                   & 851             & 851                 & 3,705\\  
    \midrule \midrule
    \multicolumn{6}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
    \multicolumn{6}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\

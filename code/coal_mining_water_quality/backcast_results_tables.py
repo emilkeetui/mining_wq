@@ -1,7 +1,7 @@
 # ============================================================
 # Script: backcast_results_tables.py
 # Purpose: Produce the results tables for the population-backcasting section
-#          of writeup/Mining_and_Water_Quality (1)/main.tex: recovery counts
+#          of writeup/population_backcasting/main.tex: recovery counts
 #          (how many downstream CWSs and which years), summary statistics of
 #          the backcast residential population, and the average change from
 #          the earliest backcast year (1990) to 2005.
@@ -9,11 +9,11 @@
 #          clean_data/cws_data/cws_geopop_annual.parquet
 #          clean_data/cws_data/cws_residential_exposure_annual.parquet
 #          clean_data/cws_data/prod_vio_sulfur.parquet
-# Outputs: writeup/Mining_and_Water_Quality (1)/sum/backcast_recovery.tex
-#          writeup/Mining_and_Water_Quality (1)/sum/backcast_popsum.tex
-#          writeup/Mining_and_Water_Quality (1)/sum/backcast_change_9005.tex
-#          writeup/Mining_and_Water_Quality (1)/sum/backcast_exposure_series.tex
-# Author: EK  Date: 2026-07-27
+# Outputs: writeup/population_backcasting/sum/backcast_recovery.tex
+#          writeup/population_backcasting/sum/backcast_popsum.tex
+#          writeup/population_backcasting/sum/backcast_change_9005.tex
+#          writeup/population_backcasting/sum/backcast_exposure_series.tex
+# Author: EK  Date: 2026-07-27 (repointed to standalone writeup 2026-08-28)
 # ============================================================
 
 from pathlib import Path
@@ -23,7 +23,7 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CLEAN_CWS = PROJECT_ROOT / "clean_data" / "cws_data"
-SUM_DIR = PROJECT_ROOT / "writeup" / "Mining_and_Water_Quality (1)" / "sum"
+SUM_DIR = PROJECT_ROOT / "writeup" / "population_backcasting" / "sum"
 
 EXPOSURE_GEO = CLEAN_CWS / "downstream_mine_exposure_geo.parquet"
 GEOPOP_ANNUAL = CLEAN_CWS / "cws_geopop_annual.parquet"
@@ -93,7 +93,7 @@ def table_recovery(crosswalk, annual, roster):
         r"\bottomrule",
         r"\end{tabular}",
         r"\end{adjustbox}",
-        r"\begin{minipage}{\textwidth}\footnotesize",
+        r"\begin{minipage}{\textwidth}\footnotesize\raggedright",
         r"\vspace{0.5em}",
         r"\textit{Notes:} A community water system is downstream if at least one of its intakes lies "
         r"in a HUC12 directly downstream of a HUC12 with an active coal mine, and none lies in a "
@@ -140,7 +140,7 @@ def table_popsum(annual):
         r"\bottomrule",
         r"\end{tabular}",
         r"\end{adjustbox}",
-        r"\begin{minipage}{\textwidth}\footnotesize",
+        r"\begin{minipage}{\textwidth}\footnotesize\raggedright",
         r"\vspace{0.5em}",
         r"\textit{Notes:} The unit is the residential population inside a system's exposure polygon "
         r"($\hat{G}_{i,t}$), not the population the utility reports serving. The distribution is "
@@ -168,7 +168,7 @@ def table_change(annual, roster):
         tot_b, tot_e = g["base"].sum(), g["end"].sum()
         return (rf"{label} & {fmt(a['N'])} & {fmt(tot_b)} & {fmt(tot_e)} & "
                 rf"{100 * (tot_e / tot_b - 1):.2f} & {fmt(a['mean'])} & {fmt(a['median'])} & "
-                rf"{p['mean']:.1f} & {p['median']:.2f} & {100 * (g['pct_chg'] < 0).mean():.1f} \\")
+                rf"{p['mean']:.2f} & {p['median']:.2f} & {100 * (g['pct_chg'] < 0).mean():.2f} \\")
 
     # Roster-weighted totals, which also carry the extensive margin.
     r_base = set(roster.loc[roster["year"] == BASE_YEAR, "PWSID"]) & set(wide.index)
@@ -211,7 +211,7 @@ def table_change(annual, roster):
         r"\bottomrule",
         r"\end{tabular}",
         r"\end{adjustbox}",
-        r"\begin{minipage}{\textwidth}\footnotesize",
+        r"\begin{minipage}{\textwidth}\footnotesize\raggedright",
         r"\vspace{0.5em}",
         r"\textit{Notes:} Panel A holds the set of systems fixed and so measures only within-system "
         r"population growth. Percentage changes are computed per system and then averaged, so the "
@@ -250,7 +250,7 @@ def table_exposure_series(exposure):
         r"\bottomrule",
         r"\end{tabular}",
         r"\end{adjustbox}",
-        r"\begin{minipage}{\textwidth}\footnotesize",
+        r"\begin{minipage}{\textwidth}\footnotesize\raggedright",
         r"\vspace{0.5em}",
         r"\textit{Notes:} $E^{G}_t=\sum_{i\in\mathcal{D}_t}\hat{G}_{i,t}$ sums backcast residential "
         r"population over the systems that are one HUC12 directly downstream of an active coal mine "

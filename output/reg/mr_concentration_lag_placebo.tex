@@ -3,25 +3,25 @@
 \caption{Placebo: MR Violations Preceding High Contaminant Concentration (Past Window)}\label{tab:mr_concentration_lag_placebo}
 \centering
 \begin{adjustbox}{width = \textwidth, center}
-   \begin{tabular}{lcccccc}
+   \begin{tabular}{lrrrrrr}
       \toprule    
-                                       & Arsenic MR (1-yr)      & Arsenic MR (6-mon)   & Nitrate MR (1-yr) & Nitrate MR (6-mon)   & Pooled IOC (1-yr)  & Pooled IOC (6-mon) \\   
-                                       & (1)                    & (2)                  & (3)               & (4)                  & (5)                & (6)\\  
+                                       & Arsenic MR (1-yr) & Arsenic MR (6-mon)   & Nitrate MR (1-yr) & Nitrate MR (6-mon)   & Pooled IOC (1-yr)  & Pooled IOC (6-mon) \\   
+                                       & (1)               & (2)                  & (3)               & (4)                  & (5)                & (6)\\  
       \midrule 
-      Mean concen. (z-score)                    & $-9.11\times 10^{-5}$  & 0.0014               & -0.0111           & 0.0120               &                    &   \\   
-                                       & (0.0022)               & (0.0015)             & (0.0166)          & (0.0107)             &                    &   \\   
-      Concen. $>$ 50\% MCL                        &                        &                      & -0.2169$^{*}$     & -0.0870$^{*}$        & -0.0740$^{*}$      & -0.0846$^{**}$\\   
-                                       &                        &                      & (0.1108)          & (0.0441)             & (0.0375)           & (0.0390)\\   
-      Concen./MCL                            &                        &                      &                   &                      & -0.0241            & -0.0171\\   
-                                       &                        &                      &                   &                      & (0.0308)           & (0.0377)\\   
+      Mean concen. (z-score)                    & -0.0091           & 0.1447               & -1.1068           & 1.2054               &                    &   \\   
+                                       & (0.2230)          & (0.1456)             & (1.6587)          & (1.0748)             &                    &   \\   
+      Concen. $>$ 50\% MCL                        &                   &                      & -21.6875$^{*}$    & -8.6984$^{*}$        & -7.4034$^{*}$      & -8.4639$^{**}$\\   
+                                       &                   &                      & (11.0836)         & (4.4096)             & (3.7532)           & (3.9044)\\   
+      Concen./MCL                            &                   &                      &                   &                      & -2.4089            & -1.7088\\   
+                                       &                   &                      &                   &                      & (3.0833)           & (3.7727)\\   
        \\
-      Observations                     & 419                    & 419                  & 851               & 851                  & 3,705              & 3,705\\  
+      Observations                     & 419               & 419                  & 851               & 851                  & 3,705              & 3,705\\  
        \\
-      CWS fixed effects              & $\checkmark$           & $\checkmark$         & $\checkmark$      & $\checkmark$         & $\checkmark$       & $\checkmark$\\   
-      YEAR fixed effects               & $\checkmark$           & $\checkmark$         & $\checkmark$      & $\checkmark$         & $\checkmark$       & $\checkmark$\\   
-      Contaminant fixed effects  &                        &                      &                   &                      & $\checkmark$       & $\checkmark$\\   
+      CWS fixed effects              & $\checkmark$      & $\checkmark$         & $\checkmark$      & $\checkmark$         & $\checkmark$       & $\checkmark$\\   
+      Year fixed effects               & $\checkmark$      & $\checkmark$         & $\checkmark$      & $\checkmark$         & $\checkmark$       & $\checkmark$\\   
+      Contaminant fixed effects  &                   &                      &                   &                      & $\checkmark$       & $\checkmark$\\   
       \bottomrule
    \end{tabular}
 \end{adjustbox}
-{\tiny\linespread{1}\selectfont \par \raggedright Past-window placebo: same specifications as the forward-window table but outcome is an MR violation occurring BEFORE the sample date (1--365 days before for 1-yr columns; 1--182 days before for 6-mon columns). *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level.}
+{\tiny\linespread{1}\selectfont \par \raggedright Past-window placebo: same specifications as the forward-window table but outcome is an MR violation occurring BEFORE the sample date (1--365 days before for 1-yr columns; 1--182 days before for 6-mon columns), equal to 100 if a violation occurred and 0 otherwise; coefficients and standard errors are in percentage points. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level.}
 \end{table}

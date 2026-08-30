@@ -1,14 +1,14 @@
 # ============================================================
 # Script: backcast_validation_tables.py
 # Purpose: Results tables for the backcasting leave-one-out validation
-#          (writeup/cws_exposure_backcasting.tex sec 3.8): LOAO fold-by-tier
-#          accuracy of the Step 3 capture-ratio layer, and LODO
+#          (writeup/population_backcasting/main.tex validation section): LOAO
+#          fold-by-tier accuracy of the Step 3 capture-ratio layer, and LODO
 #          direction-by-tier accuracy of the Step 2 kappa-constant chaining.
 # Inputs:  clean_data/cws_data/cws_loao_validation.parquet
 #          clean_data/cws_data/cws_lodo_validation.parquet
-# Outputs: writeup/Mining_and_Water_Quality (1)/sum/backcast_loao.tex
-#          writeup/Mining_and_Water_Quality (1)/sum/backcast_lodo.tex
-# Author: EK  Date: 2026-07-29
+# Outputs: writeup/population_backcasting/sum/backcast_loao.tex
+#          writeup/population_backcasting/sum/backcast_lodo.tex
+# Author: EK  Date: 2026-07-29 (repointed to standalone writeup 2026-08-28)
 # ============================================================
 
 from pathlib import Path
@@ -17,7 +17,7 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CLEAN_CWS = PROJECT_ROOT / "clean_data" / "cws_data"
-SUM_DIR = PROJECT_ROOT / "writeup" / "Mining_and_Water_Quality (1)" / "sum"
+SUM_DIR = PROJECT_ROOT / "writeup" / "population_backcasting" / "sum"
 
 LOAO = CLEAN_CWS / "cws_loao_validation.parquet"
 LODO = CLEAN_CWS / "cws_lodo_validation.parquet"
@@ -76,7 +76,7 @@ def table_loao(loao: pd.DataFrame):
         r"\bottomrule",
         r"\end{tabular}",
         r"\end{adjustbox}",
-        r"\begin{minipage}{\textwidth}\footnotesize",
+        r"\begin{minipage}{\textwidth}\footnotesize\raggedright",
         r"\vspace{0.5em}",
         r"\textit{Notes:} Folds hold out a whole era rather than an individual anchor because "
         r"2010 and 2011 are near-duplicates (correlation 0.998; 90.8\% of systems report an "
@@ -131,7 +131,7 @@ def table_lodo(lodo: pd.DataFrame):
         r"\bottomrule",
         r"\end{tabular}",
         r"\end{adjustbox}",
-        r"\begin{minipage}{\textwidth}\footnotesize",
+        r"\begin{minipage}{\textwidth}\footnotesize\raggedright",
         r"\vspace{0.5em}",
         r"\textit{Notes:} ``Forward'' scales the earlier decennial's apportionment up to the "
         r"target using the county's PEP growth; ``backward'' scales the later decennial down. "
@@ -147,6 +147,7 @@ def table_lodo(lodo: pd.DataFrame):
 
 
 def main():
+    SUM_DIR.mkdir(parents=True, exist_ok=True)
     loao = pd.read_parquet(LOAO, engine="pyarrow")
     lodo = pd.read_parquet(LODO, engine="pyarrow")
     table_loao(loao)
