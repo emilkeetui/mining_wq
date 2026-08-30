@@ -10,29 +10,29 @@
       
       %start:tab
       
-      \begin{tabular}{lccccccccc}
+      \begin{tabular}{lrrrrrrrrr}
          \toprule
          
           & \multicolumn{3}{c}{Any informal enf} & \multicolumn{3}{c}{Any formal enf} & \multicolumn{3}{c}{No enforcement}\\
          
-                                                                  & OLS           & RF            & 2SLS          & OLS            & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+                                                                  & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
          
          \midrule 
-         Upstream coal mines (sum)                                & 0.0264$^{**}$ &               & -0.0230       & -0.0106$^{**}$ &               & -0.1199       & -0.0257$^{*}$ &               & -0.0112\\   
-                                                                  & (0.0118)      &               & (0.1666)      & (0.0050)       &               & (0.0993)      & (0.0137)      &               & (0.1663)\\   
-         post95 $\times$ Upstream sulfur \%                       &               & 0.0029        &               &                & 0.0150$^{*}$  &               &               & 0.0014        &   \\   
-                                                                  &               & (0.0201)      &               &                & (0.0085)      &               &               & (0.0211)      &   \\   
+         Upstream coal mines (sum)                                & 2.644$^{**}$  &               & -2.300        & -1.056$^{**}$ &               & -11.99        & -2.566$^{*}$  &               & -1.116\\   
+                                                                  & (1.178)       &               & (16.66)       & (0.5037)      &               & (9.926)       & (1.371)       &               & (16.63)\\   
+         post95 $\times$ Upstream sulfur \%                       &               & 0.2881        &               &               & 1.503$^{*}$   &               &               & 0.1399        &   \\   
+                                                                  &               & (2.014)       &               &               & (0.8506)      &               &               & (2.106)       &   \\   
          
-         F-test (1st stage, clustered), Upstream coal mines (sum) &               &               & 1.58          &                &               & 1.58          &               &               & 1.58\\  
-         
-          \\
-         
-         Observations                                             & 1,829         & 1,829         & 1,829         & 1,829          & 1,829         & 1,829         & 1,829         & 1,829         & 1,829\\  
+         F-test (1st stage, clustered), Upstream coal mines (sum) &               &               & 1.58          &               &               & 1.58          &               &               & 1.58\\  
          
           \\
          
-         CWS fixed effects                                        & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                       & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         Observations                                             & 1,829         & 1,829         & 1,829         & 1,829         & 1,829         & 1,829         & 1,829         & 1,829         & 1,829\\  
+         
+          \\
+         
+         CWS fixed effects                                        & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         year fixed effects                                       & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
          
          \bottomrule
          

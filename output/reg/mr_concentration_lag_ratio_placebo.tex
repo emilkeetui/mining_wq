@@ -10,26 +10,26 @@
 \centering
 \begin{tabular}{lccccc}
    \tabularnewline \midrule \midrule
-   Dependent Variables: & mr\_same\_past          & mr\_same\_past6mon      & mr\_same\_past   & mr\_same\_past6mon   & mr\_anyioc\_past\\    
-                        & Arsenic (1-yr)          & Arsenic (6-mon)         & Nitrate (1-yr)   & Nitrate (6-mon)      & Pooled inorganic \\   
-   Model:               & (1)                     & (2)                     & (3)              & (4)                  & (5)\\  
+   Dependent Variables: & mr\_same\_past          & mr\_same\_past6mon    & mr\_same\_past   & mr\_same\_past6mon   & mr\_anyioc\_past\\    
+                        & Arsenic (1-yr)          & Arsenic (6-mon)       & Nitrate (1-yr)   & Nitrate (6-mon)      & Pooled inorganic \\   
+   Model:               & (1)                     & (2)                   & (3)              & (4)                  & (5)\\  
    \midrule
    \emph{Variables}\\
-   ratio                & $-2.78\times 10^{-10}$  & $7.58\times 10^{-11}$   & -0.0847          & -0.2655              & -0.0241\\   
-                        & ($1.45\times 10^{-5}$)  & ($7.51\times 10^{-6}$)  & (0.0844)         & (0.2183)             & (0.0308)\\   
-   mean\_concentration  & -0.0989                 & 1.571                   & -0.0050          & 0.0409               &   \\   
-                        & (2.424)                 & (1.582)                 & (0.0229)         & (0.0298)             &   \\   
-   near\_mcl            &                         &                         & -0.2147$^{*}$    & -0.0802$^{**}$       & -0.0740$^{*}$\\   
-                        &                         &                         & (0.1088)         & (0.0385)             & (0.0375)\\   
+   ratio                & $-3.83\times 10^{-10}$  & $5.79\times 10^{-9}$  & -8.469           & -26.55               & -2.409\\   
+                        & (0.0014)                & (0.0008)              & (8.436)          & (21.83)              & (3.083)\\   
+   mean\_concentration  & -9.891                  & 157.1                 & -0.4989          & 4.086                &   \\   
+                        & (242.4)                 & (158.2)               & (2.293)          & (2.978)              &   \\   
+   near\_mcl            &                         &                       & -21.47$^{*}$     & -8.020$^{**}$        & -7.403$^{*}$\\   
+                        &                         &                       & (10.88)          & (3.852)              & (3.753)\\   
    \midrule
    \emph{Fixed-effects}\\
-   PWSID                & Yes                     & Yes                     & Yes              & Yes                  & Yes\\  
-   YEAR                 & Yes                     & Yes                     & Yes              & Yes                  & Yes\\  
-   contaminant\_code    &                         &                         &                  &                      & Yes\\  
+   PWSID                & Yes                     & Yes                   & Yes              & Yes                  & Yes\\  
+   YEAR                 & Yes                     & Yes                   & Yes              & Yes                  & Yes\\  
+   contaminant\_code    &                         &                       &                  &                      & Yes\\  
    \midrule
    \emph{Fit statistics}\\
-   R$^2$                & 0.16037                 & 0.15716                 & 0.22445          & 0.13757              & 0.43194\\  
-   Observations         & 419                     & 419                     & 851              & 851                  & 3,705\\  
+   R$^2$                & 0.16037                 & 0.15716               & 0.22445          & 0.13757              & 0.43194\\  
+   Observations         & 419                     & 419                   & 851              & 851                  & 3,705\\  
    \midrule \midrule
    \multicolumn{6}{l}{\emph{Clustered (PWSID) standard-errors in parentheses}}\\
    \multicolumn{6}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\

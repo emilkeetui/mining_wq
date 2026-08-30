@@ -10,31 +10,26 @@
       
       %start:tab
       
-      \begin{tabular}{lcccccccccccc}
+      \begin{tabular}{lrrrrrrrrrrrr}
          \toprule
          
           & \multicolumn{3}{c}{Nitrates} & \multicolumn{3}{c}{Arsenic} & \multicolumn{3}{c}{Inorganic chemicals} & \multicolumn{3}{c}{Radionuclides}\\
          
-                                                                            & OLS                   & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF                    & 2SLS                  & OLS                   & RF            & 2SLS\\  
+                                                                            & OLS                   & RF            & 2SLS      & OLS      & RF            & 2SLS      & OLS      & RF                    & 2SLS                  & OLS                   & RF            & 2SLS\\  
          
          \midrule 
-         num\_coal\_mines\_unified\_mean                                    & 0.1236                &               & 36.31         & 0.7883        &               & 29.99         & 1.296         &                       & 13.91                 & 0.5047                &               & -73.48$^{*}$\\   
-                                                                            & (0.7868)              &               & (23.21)       & (0.7060)      &               & (18.33)       & (0.9105)      &                       & (21.29)               & (0.7007)              &               & (39.58)\\   
-         post95 $\times$ sulfur\_unified\_mean                              &                       & -2.267$^{*}$  &               &               & -1.872$^{*}$  &               &               & -0.8688               &                       &                       & 4.588$^{**}$  &   \\   
-                                                                            &                       & (1.238)       &               &               & (1.045)       &               &               & (1.348)               &                       &                       & (1.798)       &   \\   
+         num\_coal\_mines\_unified\_mean                                    & 0.1236                &               & 36.3101   & 0.7883   &               & 29.9861   & 1.2955   &                       & 13.9130               & 0.5047                &               & -73.4807$^{*}$\\   
+                                                                            & (0.7868)              &               & (23.2124) & (0.7060) &               & (18.3340) & (0.9105) &                       & (21.2944)             & (0.7007)              &               & (39.5776)\\   
+         post95 $\times$ sulfur\_unified\_mean                              &                       & -2.2674$^{*}$ &           &          & -1.8725$^{*}$ &           &          & -0.8688               &                       &                       & 4.5884$^{**}$ &   \\   
+                                                                            &                       & (1.2380)      &           &          & (1.0454)      &           &          & (1.3477)              &                       &                       & (1.7984)      &   \\   
          
-         F-test (1st stage, clustered), num\_coal\_mines\_unified\_mean     &                       &               & 9.27          &               &               & 9.27          &               &                       & 9.27                  &                       &               & 9.27\\  
-         
-          \\
-         
-         Observations                                                       & 19,450                & 19,450        & 19,450        & 19,450        & 19,450        & 19,450        & 19,450        & 19,450                & 19,450                & 19,450                & 19,450        & 19,450\\  
-         R$^2$                                                              & 0.18213               & 0.18244       & 0.18244       & 0.20368       & 0.20383       & 0.20383       & 0.22354       & 0.22330               & 0.22330               & 0.27643               & 0.27748       & 0.27748\\  
-         Within R$^2$                                                       & $2.92\times 10^{-5}$  & 0.00041       & 0.00041       & 0.00021       & 0.00040       & 0.00040       & 0.00036       & $6.08\times 10^{-5}$  & $6.08\times 10^{-5}$  & $5.28\times 10^{-5}$  & 0.00150       & 0.00150\\  
+         F-test (1st stage, clustered), num\_coal\_mines\_unified\_mean     &                       &               & 9.27      &          &               & 9.27      &          &                       & 9.27                  &                       &               & 9.27\\  
          
           \\
          
-         CWS fixed effects                                                  & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                                 & $\checkmark$          & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$  & $\checkmark$\\   
+         Observations                                                       & 19,450                & 19,450        & 19,450    & 19,450   & 19,450        & 19,450    & 19,450   & 19,450                & 19,450                & 19,450                & 19,450        & 19,450\\  
+         R$^2$                                                              & 0.18213               & 0.18244       & 0.18244   & 0.20368  & 0.20383       & 0.20383   & 0.22354  & 0.22330               & 0.22330               & 0.27643               & 0.27748       & 0.27748\\  
+         Within R$^2$                                                       & $2.92\times 10^{-5}$  & 0.00041       & 0.00041   & 0.00021  & 0.00040       & 0.00040   & 0.00036  & $6.08\times 10^{-5}$  & $6.08\times 10^{-5}$  & $5.28\times 10^{-5}$  & 0.00150       & 0.00150\\  
          
          \bottomrule
          

@@ -1,0 +1,25 @@
+\begin{table}[ht]
+\centering
+\caption{Leave-one-anchor-out validation of the reported-served layer $\hat S_{i,t}$. Each fold withholds a whole era of anchors and predicts it from the survivors using the production estimator.}
+\label{tab:backcast_loao}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{llrrrrr}
+\toprule
+Held-out era & Tier & Systems & Aggregate error & Median APE & Mean APE & Share $\le\!25\%$ \\
+\midrule
+2010--2011 (from SYR2 + 2006) & Service-area & 227 & -10.3\% & 14.8\% & 41.7\% & 62.1\% \\
+ & County & 38 & -26.1\% & 6.1\% & 20.9\% & 78.9\% \\
+\addlinespace
+2006 (from SYR2 + 2010/2011) & Service-area & 225 & +7.3\% & 13.6\% & 29.1\% & 64.9\% \\
+ & County & 34 & +22.6\% & 1.8\% & 17.0\% & 82.4\% \\
+\addlinespace
+1998--2005 (from 2006 + 2010/2011) & Service-area & 118 & -21.5\% & 12.5\% & 28.6\% & 63.6\% \\
+ & County & 22 & -4.2\% & 5.9\% & 8.5\% & 90.9\% \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\textwidth}\footnotesize\raggedright
+\vspace{0.5em}
+\textit{Notes:} Folds hold out a whole era rather than an individual anchor because 2010 and 2011 are near-duplicates (correlation 0.998; 90.8\% of systems report an identical value in both years), so a per-anchor leave-one-out would predict 2011 from 2010 with near-zero error -- a vacuous test. Aggregate error is the \% deviation of the summed prediction from the summed held-out truth, the estimand that matters for $E^S_t$. APE is the per-system absolute percentage error; mean APE is inflated by small systems off a near-zero base and is reported for completeness, not as the headline. County-tier systems carry a reported level forward on the county growth factor rather than a ratio, so their error is not comparable to the service-area tier and the two are never pooled.
+\end{minipage}
+\end{table}

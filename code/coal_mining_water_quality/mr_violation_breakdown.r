@@ -298,20 +298,34 @@ cat("Downstream 2SLS sample obs (1985-2005):", nrow(d1_panel), "\n")
 N_d1     <- nrow(d1_panel)
 N_pws_d1 <- length(unique(d1_panel$PWSID))
 
+p_at <- function(x, prob) quantile(x, probs = prob, na.rm = TRUE, names = FALSE)
+
 stats_d1 <- data.frame(
   contaminant = c("Inorganic chemicals", "Nitrates", "Arsenic"),
-  mr_mean  = c(mean(d1_panel$inorganic_chemicals_MR_share_days, na.rm = TRUE),
-               mean(d1_panel$nitrates_MR_share_days,            na.rm = TRUE),
-               mean(d1_panel$arsenic_MR_share_days,             na.rm = TRUE)),
-  mr_sd    = c(sd(d1_panel$inorganic_chemicals_MR_share_days,   na.rm = TRUE),
-               sd(d1_panel$nitrates_MR_share_days,              na.rm = TRUE),
-               sd(d1_panel$arsenic_MR_share_days,               na.rm = TRUE)),
-  mcl_mean = c(mean(d1_panel$inorganic_chemicals_MCL_share_days, na.rm = TRUE),
-               mean(d1_panel$nitrates_MCL_share_days,            na.rm = TRUE),
-               mean(d1_panel$arsenic_MCL_share_days,             na.rm = TRUE)),
-  mcl_sd   = c(sd(d1_panel$inorganic_chemicals_MCL_share_days,  na.rm = TRUE),
-               sd(d1_panel$nitrates_MCL_share_days,             na.rm = TRUE),
-               sd(d1_panel$arsenic_MCL_share_days,              na.rm = TRUE))
+  mr_mean   = c(mean(d1_panel$inorganic_chemicals_MR_share_days, na.rm = TRUE),
+                mean(d1_panel$nitrates_MR_share_days,            na.rm = TRUE),
+                mean(d1_panel$arsenic_MR_share_days,             na.rm = TRUE)),
+  mr_sd     = c(sd(d1_panel$inorganic_chemicals_MR_share_days,   na.rm = TRUE),
+                sd(d1_panel$nitrates_MR_share_days,              na.rm = TRUE),
+                sd(d1_panel$arsenic_MR_share_days,               na.rm = TRUE)),
+  mr_p90    = c(p_at(d1_panel$inorganic_chemicals_MR_share_days, 0.90),
+                p_at(d1_panel$nitrates_MR_share_days,            0.90),
+                p_at(d1_panel$arsenic_MR_share_days,             0.90)),
+  mr_p99    = c(p_at(d1_panel$inorganic_chemicals_MR_share_days, 0.99),
+                p_at(d1_panel$nitrates_MR_share_days,            0.99),
+                p_at(d1_panel$arsenic_MR_share_days,             0.99)),
+  mcl_mean   = c(mean(d1_panel$inorganic_chemicals_MCL_share_days, na.rm = TRUE),
+                 mean(d1_panel$nitrates_MCL_share_days,            na.rm = TRUE),
+                 mean(d1_panel$arsenic_MCL_share_days,             na.rm = TRUE)),
+  mcl_sd     = c(sd(d1_panel$inorganic_chemicals_MCL_share_days,  na.rm = TRUE),
+                 sd(d1_panel$nitrates_MCL_share_days,             na.rm = TRUE),
+                 sd(d1_panel$arsenic_MCL_share_days,              na.rm = TRUE)),
+  mcl_p90    = c(p_at(d1_panel$inorganic_chemicals_MCL_share_days, 0.90),
+                 p_at(d1_panel$nitrates_MCL_share_days,            0.90),
+                 p_at(d1_panel$arsenic_MCL_share_days,             0.90)),
+  mcl_p99    = c(p_at(d1_panel$inorganic_chemicals_MCL_share_days, 0.99),
+                 p_at(d1_panel$nitrates_MCL_share_days,            0.99),
+                 p_at(d1_panel$arsenic_MCL_share_days,             0.99))
 )
 print(stats_d1)
 
@@ -320,21 +334,24 @@ fp2 <- function(x) sprintf("%.2f", x)
 make_row <- function(i) {
   paste0(stats_d1$contaminant[i],
          " & ", fp2(stats_d1$mr_mean[i]),  " & ", fp2(stats_d1$mr_sd[i]),
+         " & ", fp2(stats_d1$mr_p90[i]),   " & ", fp2(stats_d1$mr_p99[i]),
          " & ", fp2(stats_d1$mcl_mean[i]), " & ", fp2(stats_d1$mcl_sd[i]),
+         " & ", fp2(stats_d1$mcl_p90[i]),  " & ", fp2(stats_d1$mcl_p99[i]),
          " \\\\")
 }
 
 t_days_lines <- c(
   "\\begin{table}[htbp]",
   "\\centering",
-  "\\caption{Days in a Year with IOC Violation}",
+  "\\caption{Number of Days in a Year Drinking Water Utilities Experience an Inorganic Chemical Water Violation}",
   "\\label{tab:ioc_days_dwnstrm}",
   "\\small",
-  "\\begin{tabular}{lrrrr}",
+  "\\begin{tabular}{lrrrrrrrr}",
   "\\hline\\hline",
-  " & \\multicolumn{2}{c}{\\textbf{MR Violations}} & \\multicolumn{2}{c}{\\textbf{MCL Violations}} \\\\",
-  "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}",
-  "\\textbf{Contaminant} & \\textbf{Mean} & \\textbf{SD} & \\textbf{Mean} & \\textbf{SD} \\\\",
+  " & \\multicolumn{4}{c}{\\textbf{MR Violations}} & \\multicolumn{4}{c}{\\textbf{MCL Violations}} \\\\",
+  "\\cmidrule(lr){2-5}\\cmidrule(lr){6-9}",
+  paste0("\\textbf{Contaminant} & \\textbf{Mean} & \\textbf{SD} & \\textbf{P90} & \\textbf{P99} & ",
+         "\\textbf{Mean} & \\textbf{SD} & \\textbf{P90} & \\textbf{P99} \\\\"),
   "\\hline",
   make_row(1),
   make_row(2),
@@ -345,14 +362,10 @@ t_days_lines <- c(
   "\\vspace{4pt}",
   "\\footnotesize",
   "\\raggedright",
-  paste0("\\textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine, ",
-         "years 1985--2005. ",
+  paste0("\\textit{Notes:} Sample of drinking water utilities downstream of a coal mine between 1985--2005. ",
          "MR = monitoring and reporting violation; MCL = maximum contaminant level violation. ",
-         "Inorganic chemicals encompasses nitrates and arsenic as sub-contaminants. ",
-         "Outcomes measured as days out of the year in violation. ",
-         "N\\,=\\,", format(N_d1, big.mark = ","),
-         " CWS$\\times$year observations across ",
-         format(N_pws_d1, big.mark = ","), " unique community water systems."),
+         "N\\,=\\,", format(N_d1, big.mark = ","), ". ",
+         format(N_pws_d1, big.mark = ","), " unique utilities."),
   "\\end{minipage}",
   "\\end{table}"
 )

@@ -10,31 +10,26 @@
       
       %start:tab
       
-      \begin{tabular}{lcccccccccccc}
+      \begin{tabular}{lrrrrrrrrrrrr}
          \toprule
          
           & \multicolumn{3}{c}{Nitrates} & \multicolumn{3}{c}{Arsenic} & \multicolumn{3}{c}{Inorganic chemicals} & \multicolumn{3}{c}{Radionuclides}\\
          
-                                                                             & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+                                                                             & OLS      & RF             & 2SLS          & OLS      & RF             & 2SLS          & OLS      & RF             & 2SLS      & OLS      & RF       & 2SLS\\  
          
          \midrule 
-         num\_coal\_mines\_upstream\_mean                                    & -0.6629       &               & 54.50$^{*}$   & 1.053         &               & 45.26$^{*}$   & 1.131         &               & 41.91         & 2.331         &               & -32.92\\   
-                                                                             & (1.876)       &               & (29.80)       & (1.919)       &               & (26.36)       & (1.952)       &               & (26.56)       & (2.041)       &               & (32.16)\\   
-         post95 $\times$ sulfur\_unified\_mean                               &               & -4.072$^{**}$ &               &               & -3.381$^{**}$ &               &               & -3.131$^{**}$ &               &               & 2.459         &   \\   
-                                                                             &               & (1.577)       &               &               & (1.461)       &               &               & (1.555)       &               &               & (2.118)       &   \\   
+         num\_coal\_mines\_upstream\_mean                                    & -0.6629  &                & 54.5022$^{*}$ & 1.0533   &                & 45.2606$^{*}$ & 1.1306   &                & 41.9055   & 2.3308   &          & -32.9181\\   
+                                                                             & (1.8763) &                & (29.7996)     & (1.9189) &                & (26.3582)     & (1.9522) &                & (26.5635) & (2.0408) &          & (32.1575)\\   
+         post95 $\times$ sulfur\_unified\_mean                               &          & -4.0716$^{**}$ &               &          & -3.3812$^{**}$ &               &          & -3.1306$^{**}$ &           &          & 2.4592   &   \\   
+                                                                             &          & (1.5774)       &               &          & (1.4615)       &               &          & (1.5555)       &           &          & (2.1181) &   \\   
          
-         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_mean     &               &               & 7.23          &               &               & 7.23          &               &               & 7.23          &               &               & 7.23\\  
-         
-          \\
-         
-         Observations                                                        & 12,189        & 12,189        & 12,189        & 12,189        & 12,189        & 12,189        & 12,189        & 12,189        & 12,189        & 12,189        & 12,189        & 12,189\\  
-         R$^2$                                                               & 0.14200       & 0.14327       & 0.14327       & 0.16445       & 0.16566       & 0.16566       & 0.17923       & 0.18008       & 0.18008       & 0.23662       & 0.23685       & 0.23685\\  
-         Within R$^2$                                                        & 0.00046       & 0.00194       & 0.00194       & 0.00029       & 0.00173       & 0.00173       & 0.00033       & 0.00136       & 0.00136       & 0.00040       & 0.00070       & 0.00070\\  
+         F-test (1st stage, clustered), num\_coal\_mines\_upstream\_mean     &          &                & 7.23          &          &                & 7.23          &          &                & 7.23      &          &          & 7.23\\  
          
           \\
          
-         CWS fixed effects                                                   & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                                  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         Observations                                                        & 12,189   & 12,189         & 12,189        & 12,189   & 12,189         & 12,189        & 12,189   & 12,189         & 12,189    & 12,189   & 12,189   & 12,189\\  
+         R$^2$                                                               & 0.14200  & 0.14327        & 0.14327       & 0.16445  & 0.16566        & 0.16566       & 0.17923  & 0.18008        & 0.18008   & 0.23662  & 0.23685  & 0.23685\\  
+         Within R$^2$                                                        & 0.00046  & 0.00194        & 0.00194       & 0.00029  & 0.00173        & 0.00173       & 0.00033  & 0.00136        & 0.00136   & 0.00040  & 0.00070  & 0.00070\\  
          
          \bottomrule
          

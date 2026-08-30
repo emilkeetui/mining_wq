@@ -10,7 +10,7 @@
       
       %start:tab
       
-      \begin{tabular}{lcc}
+      \begin{tabular}{lrr}
          \toprule
          
           & \multicolumn{2}{c}{num\_coal\_mines\_upstream\_mean}\\
@@ -21,7 +21,7 @@
                                                   & (1)            & (2)\\  
          
          \midrule 
-         post95 $\times$ sulfur\_unified\_mean    & -0.0425$^{*}$  & -0.0530$^{**}$\\   
+         post95 $\times$ sulfur\_unified\_mean    & -0.0426$^{*}$  & -0.0530$^{**}$\\   
                                                   & (0.0231)       & (0.0245)\\   
          
          F-test (1st stage, clustered)            & 3.40           & 4.68\\  
@@ -32,11 +32,6 @@
          R$^2$                                    & 0.73988        & 0.73439\\  
          Within R$^2$                             & 0.00360        & 0.00526\\  
          
-          \\
-         
-         CWS fixed effects                        & $\checkmark$   & $\checkmark$\\   
-         year fixed effects                       & $\checkmark$   & $\checkmark$\\   
-         
          \bottomrule
          
       \end{tabular}
@@ -46,7 +41,7 @@
       
    \end{adjustbox}
       {\tiny\linespread{1}\selectfont \par \raggedright 
-   \textit{Notes:} The dependent variable is the number of coal mines in watersheds upstream of the community water system's intake, averaged across upstream watersheds. The instrument interacts an indicator for the post-1995 period with the mean coal sulfur content of the intake watershed. The sample is community water systems at most two watersheds downstream of a coal mine. Standard errors clustered at the CWS level. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+   \textit{Notes:} The dependent variable is the number of coal mines in watersheds upstream of the community water system's intake, averaged across upstream watersheds. The instrument interacts an indicator for the post-1995 period with the mean coal sulfur content of the intake watershed. The sample is community water systems at most two watersheds downstream of a coal mine. All specifications include CWS and year fixed effects. Standard errors clustered at the CWS level. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
    
 \end{table}
 

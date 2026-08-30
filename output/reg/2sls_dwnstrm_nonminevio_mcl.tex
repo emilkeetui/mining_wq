@@ -10,7 +10,7 @@
       
       %start:tab
       
-      \begin{tabular}{lcccccc}
+      \begin{tabular}{lrrrrrr}
          \toprule
          
           & \multicolumn{3}{c}{Total coliform (MCL)} & \multicolumn{3}{c}{VOCs (MCL)}\\
@@ -18,8 +18,8 @@
                                                                              & OLS                   & RF                    & 2SLS                  & OLS                   & RF                    & 2SLS\\  
          
          \midrule 
-         num\_coal\_mines\_upstream\_mean                                    & -0.0459               &                       & 0.3671                & 0.0087                &                       & -1.711\\   
-                                                                             & (0.1647)              &                       & (2.903)               & (0.1353)              &                       & (3.464)\\   
+         num\_coal\_mines\_upstream\_mean                                    & -0.0459               &                       & 0.3671                & 0.0087                &                       & -1.7111\\   
+                                                                             & (0.1647)              &                       & (2.9025)              & (0.1353)              &                       & (3.4637)\\   
          post95 $\times$ sulfur\_unified\_mean                               &                       & -0.0188               &                       &                       & 0.1026                &   \\   
                                                                              &                       & (0.1493)              &                       &                       & (0.2052)              &   \\   
          
@@ -30,11 +30,6 @@
          Observations                                                        & 4,254                 & 4,254                 & 4,254                 & 4,576                 & 4,576                 & 4,576\\  
          R$^2$                                                               & 0.13219               & 0.13219               & 0.13219               & 0.09510               & 0.09519               & 0.09519\\  
          Within R$^2$                                                        & $8.77\times 10^{-6}$  & $6.46\times 10^{-6}$  & $6.46\times 10^{-6}$  & $2.57\times 10^{-7}$  & $9.88\times 10^{-5}$  & $9.88\times 10^{-5}$\\   
-         
-          \\
-         
-         CWS fixed effects                                                   & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
-         year fixed effects                                                  & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$          & $\checkmark$\\   
          
          \bottomrule
          

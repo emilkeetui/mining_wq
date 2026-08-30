@@ -10,29 +10,24 @@
       
       %start:tab
       
-      \begin{tabular}{lcccccc}
+      \begin{tabular}{lrrrrrr}
          \toprule
          
           & \multicolumn{3}{c}{Total coliform} & \multicolumn{3}{c}{VOCs}\\
          
-                                                                  & OLS           & RF            & 2SLS          & OLS           & RF            & 2SLS\\  
+                                                                  & OLS      & RF       & 2SLS     & OLS      & RF       & 2SLS\\  
          
          \midrule 
-         Upstream coal mines (sum)                                & -0.3461       &               & 1.035         & -1.392        &               & 5.580\\   
-                                                                  & (0.2743)      &               & (2.189)       & (1.373)       &               & (6.957)\\   
-         post95 $\times$ Upstream sulfur \%                       &               & -0.1520       &               &               & -0.9838       &   \\   
-                                                                  &               & (0.3234)      &               &               & (1.168)       &   \\   
+         Upstream coal mines (sum)                                & -0.3461  &          & 1.0345   & -1.3915  &          & 5.5800\\   
+                                                                  & (0.2743) &          & (2.1887) & (1.3731) &          & (6.9565)\\   
+         post95 $\times$ Upstream sulfur \%                       &          & -0.1520  &          &          & -0.9838  &   \\   
+                                                                  &          & (0.3234) &          &          & (1.1683) &   \\   
          
-         F-test (1st stage, clustered), Upstream coal mines (sum) &               &               & 17.21         &               &               & 21.07\\  
-         
-          \\
-         
-         Observations                                             & 4,254         & 4,254         & 4,254         & 4,576         & 4,576         & 4,576\\  
+         F-test (1st stage, clustered), Upstream coal mines (sum) &          &          & 17.21    &          &          & 21.07\\  
          
           \\
          
-         CWS fixed effects                                        & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                       & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$  & $\checkmark$\\   
+         Observations                                             & 4,254    & 4,254    & 4,254    & 4,576    & 4,576    & 4,576\\  
          
          \bottomrule
          
