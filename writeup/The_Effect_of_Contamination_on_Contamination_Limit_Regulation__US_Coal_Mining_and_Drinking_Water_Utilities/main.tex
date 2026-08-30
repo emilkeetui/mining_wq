@@ -183,6 +183,8 @@ The literature on enforcement has found that enforcement is effective when its s
 
 I focus on drinking water utilities downstream of coal mines between 1985 and 2005. In particular, I focus on a class of drinking water utilities known legally as community water systems that serve at least 25 consumers through at least 15 connections throughout the year, since these are regulated by the Safe Drinking Water Act (SDWA). The Safe Drinking Water Act (SDWA) is a federal regulation that requires utilities to remove contaminants and self-report compliance to state regulators. Regulators issue a maximum contaminant level (MCL) violation to a utility that self-reports a contaminant above the MCL. MCL violations are serious threats to public health and require timely rectification, and they often trigger enforcement. Regulators cannot issue MCL violations until a utility self-reports, creating an opportunity to conceal an MCL violation with a violation for not self-reporting, known as a monitoring and reporting (MR) violation. Utilities have an incentive to under-report to avoid self-reporting costs, which are expensive in and of themselves and require hiring technical and administrative staff and paying laboratories. Utilities found self-reporting requirements to be difficult to meet due to the administrative and technical burden. Utilities needed to be administratively organized to conduct the right tests and report them on schedule. Technical staff were required to conduct separate tests for contaminants or to prepare samples to be sent to laboratories. Indiana drinking water utility managers who responded to a 1980 survey on the impact of the SDWA said that its reporting requirements had the greatest impact on their systems \parencite{oleckno1982national}. 
 
+Nitrate and arsenic MR requirements changed during this period; however, they changed nationally as part of the three-year compliance reporting schedule. Arsenic and nitrate MCLs did not change during this period, and both are contaminants that may be related to coal mining. The IOC rule contains all IOCs during this period, some of which are subject to changing MCLs and some of which may be contaminant byproducts of coal mining. Nitrate and arsenic MR requirements changed during this period; however, they changed nationally as part of the three-year compliance reporting schedule. Year fixed effects in empirical models are used to address the concerns that changes in MR violations would be the result of changing MR requirements. 
+
 Utility's under-reporting incentives increase as contamination increases. Contamination increases the likelihood that a utility's water quality exceeds the MCL, increasing the incentive to underreport in order to conceal an MCL violation. Self-reporting requirements, and therefore self-reporting costs, increase with contamination. The number of tests a utility was required to conduct varied according to the regulator-assessed risk of contamination to its water supply. Utilities assessed as having impaired water were required to self-report more tests than a utility with less impaired water. As self-reporting costs rise, the utility's cost savings and incentives from underreporting increase.
 
 %Utility self-reporting requirements were standardized in 1991 under the Standardized Monitoring Framework (SMF), to occur in three-year compliance cycles. Utilities had to re-test for contaminants every three years to demonstrate that the contaminant was not present in the system.
@@ -190,80 +192,168 @@ Utility's under-reporting incentives increase as contamination increases. Contam
 The states enforce the SDWA and are responsible for bringing violating utilities into compliance with the SDWA. With the exception of a subset of violating circumstances and mandatory notifications to consumers that utilities must provide when in violation, the SDWA gives states wide discretionary powers to tailor compliance and enforcement plans to each utility and violation; the intention is for the violation to be resolved quickly enough to reduce the health impacts of contamination. MCL violations are treated seriously and receive comparably stricter enforcement than MR violations. However, an intentional MR violation concealing an MCL violation is more harshly punished than a regular MR violation. Enforcement is frequently remedial rather than punitive in addressing the cause of the violation. Enforcement can be informal (letters, notices of violation, compliance plans), formal (court mandated compliance plans, legal prosecution, fines), or involve visits (sanitary, sampling, technical assistance) to the utility. Non-fine enforcement is still costly to utilities: compliance plans can require installing treatment infrastructure or hiring technical personnel, and public notifications for violations have large reputational costs that deter violations \parencite{bennear2008impacts}.
 
 I focus on the regulation of water contamination by arsenic, nitrates, barium, and selenium, as they are contaminants that can be generated by coal mining; in addition, their MCLs did not change between 1985 and 2005.\footnote{The list of regulated contaminants has been added to over time: in 1985, there were 23 regulated contaminants, and by 2005, there were 93.} Arsenic, nitrates, barium, and selenium are inorganic chemicals that are commonly produced during coal mining through acid mine drainage (AMD) \parencite{liang2017spatial, boente2020benzo, rouhani2023overview}. AMD occurs when rocks containing sulfides are exposed to air and water, beginning the process of oxidation and decomposition \parencite{ceto2000abandoned}. The oxidized minerals form sulfuric acid, which dissolves metal ions and sulfates that can then be carried into surface or ground water \parencite{akcil2006acid, skousen2019acid}. Mines can reduce AMD by covering excavated material with water in tailing ponds. Contamination enters water systems when tailing ponds fail. Coal mining can also generate pollution through coal wash slurry. Coal washing processes coal with water and chemicals to remove impurities and improve combustibility. The slurry waste is often mixed with water and stored in retaining ponds or abandoned mine shafts. Dissolved pollutants enter groundwater and surface water by seeping through porous rocks or through retaining pond failures \parencite{Sealey2000}.
- 
+
 \section{Theoretical model}
+	
+	\subsection{Setup}
+	
+	I build a theoretical model to formalize a utility's decisions to comply with water contamination regulation under rising contamination.
+    
+	Utilities are required to meet contamination requirements and self report their compliance. I follow \textcite{mookherjee1994marginal} and assume that utilities find contamination regulation costly to comply with. A compliance cost is determined by both a utility's ability to manage a drinking water system, such as the skills of its managerial and technical staff, and the costs of water treatment, including the cost of filtration equipment and sterilization chemicals. Utility compliance cost, $\theta$, is a random variable drawn from $F(\cdot\,;m)$, a strictly increasing and continuously differentiable cumulative distribution function with support $(0, \bar{\theta})$, density $f(\cdot\,;m)$, and contamination $m$. A larger $\theta$ represents higher compliance costs. When compliance is costless, there are no financial benefits to negligence and $a=0$. Increasing $m$ weakly lowers the probability that a utility's compliance cost falls at or below any given level so that $\partial F(\theta;m)/\partial m \le 0$ for every $\theta$. Utilities know their draw of $\theta$, but regulators only know the distribution of $\theta$. 
 
-\subsection{Setup}
+    Utilities receive a benefit from neglecting their contamination control requirements. The utility chooses a negligence level $a \in [0, \bar{a}]$, which measures how much it avoids the requirements of drinking water quality regulations, from avoiding every requirement $\bar{a}$ to full compliance 0. Regulators do not directly observe a utility's choice of $a$. A utility receives a benefit $\theta b(a)$ from having compliance costs $\theta$ and choosing a negligence level $a$, where $b'(a)>0$ and $b''(a)<0$. A utility's benefits from negligent contamination control are the savings on wages and chemicals. The opportunity cost to the utility of choosing a compliance level $a$ relative to maximum negligence $\bar{a}$ is $\theta[b(\bar{a})-b(a)]$. The financial benefit of a certain level of negligence to a profit maximizing privately owned utility is obvious. Publicly owned utilities also benefit from cost savings that allow them to forgo rate increases or tax collection, which may be unpopular with residents.
+	
+	Utilities face $N$ required self-reporting events per year. Given negligence $a$, each self-reporting event would reveal an MCL exceedance with a probability $q(a)$, with $q(0)=0$, $q'>0$, and $q'' \ge 0$. I modify the penalty structure from \textcite{kaplow1994optimal} by assuming that self-reporting is costly. A utility's self-reporting costs $c \sim G(\cdot\,;m)$ are drawn from a strictly increasing and continuously differentiable cumulative distribution function with density $g(\cdot\,;m)$. Regulators require utilities to increase sampling with rising contamination so that the distribution $G()$ depends on upstream contamination $m$ where $\partial G(c;m)/\partial m \le 0$ for every $c$. Raising $m$ weakly lowers the probability that a utility's self-reporting cost is at or below any given level. 
+	
+	Regulators perfectly observe under reporting. Unlike \textcite{mookherjee1994marginal}, I assume regulators do not observe MCL violations unless utilities self report water quality or the regulator conducts an inspection. Regulators use penalties and investigations for under-reporting and for exceeding regulatory standards for water quality. Utilities receive a sanction $r$ if they self-report a contamination level above the MCL and a penalty $t$ for an MR violation. Regulators investigate under-reporting utilities with a probability $p$ and issue a sanction $s$ for a discovered MCL violation, where $s>r$.
+	
+	%(The number of true exceedances is then Binomial $(N, q(a)) \approx$ Poisson with mean $Nq(a)$, so Section 1's Poisson structure is recovered with intensity $Nq(a)$ in place of $a$.) For the empirically relevant range, $q(a)$ is small: mining degrades source water \emph{within} the MCL for most systems.
+	%the sanctions $(r,s,t)$ and enforcement intensity $p$ do not depend on $m$.
+	
+	For each required self-reporting event, the utility chooses to self-report at a cost $c$ or not report and receive an MR violation. Per-event expected costs are the sum of expected penalties and self-reporting costs
+	\begin{align*}
+		\text{self-report:} \quad & c + q(a)\,r \\
+		\text{do not self-report (MR):} \quad & t + p\left[q(a)\,s\right]
+	\end{align*}
+	%Taking $r > ps$ throughout, 
+	The utility self-reports if and only if
+	\begin{equation}\label{eq:chat}
+		c \le \hat{c}(a) \equiv t - (r - ps)\,q(a).
+	\end{equation}
+	$(r − ps)q(a)$ is the wedge between disclosing a violation and hiding it. Even a system with no MCL violations, $q(a) = 0$, stops self-reporting once $c > t$ when self-reporting is more expensive than the expected sanction for skipping it, and there is no MCL violation to conceal. The self-reporting threshold is decreasing in $q(a)$, so systems with a higher probability of exceeding the MCL reduce self-reporting at lower cost thresholds. The expected penalty is
+	\begin{equation}\label{eq:endog_penalty}
+		e(a) = N \min\left\{\, c + q(a)r,\;\; t + ps\,q(a) \,\right\},
+	\end{equation}
+	which is increasing in $a$.
+	
+	\subsection{Optimal negligence}
+	
+	The utility's problem is to minimize the losses of the opportunity cost of choosing a negligence below $\bar{a}$ and the penalty of $e(a)$. Therefore, the utility maximizes $-\theta[b(\bar{a}) - b(a)] - e(a)$ with respect to $a$. 
+    The first-order condition is piecewise:
+	\begin{align}
+		\theta b'(a) &= N r\, q'(a) & \text{(self-reporting region, } c \le \hat{c}(a)) \\
+		\theta b'(a) &= N ps\, q'(a) & \text{(do not self-report (MR) region, } c > \hat{c}(a))
+	\end{align}
+	Assuming $r > ps$, the marginal penalty is lower when the utility is in the MR region than when it is in the self-reporting region. An exogenous decrease in $\hat{c}(a)$ increases the size of the MR region. Utilities that draw a higher self-reporting cost c are more likely to fall in the MR region. An increase in the population's cost distribution raises the share of utilities in that region without moving the boundary $\hat{c}(a)$ itself.
+	
+	\subsection{The propositions}
+	
+	The model predicts that when water quality deteriorates due to increased contamination, self-reporting rates fall.
+	
+	\textbf{Proposition 1:} Negligence is globally increasing in compliance costs, $\partial a/\partial\theta = b'(a) / [\,-\theta b''(a) + N\rho\, q''(a)\,] > 0$ within each region, where $\rho \in \{r, ps\}$ is the region's sanction, and where the denominator is assumed positive to satisfy the second-order condition of maximizing the utility's negligence problem.
+	
+	\textbf{Proposition 2:} The number of under-reporting utilities increases as contamination increases $\partial MR/\partial m \ge 0$.
 
-I build a theoretical model to formalize a utility's decisions to comply with water contamination regulation under rising contamination. Utilities have two different incentives to underreport water quality: to avoid the direct costs of self-reporting and to hide an MCL. Regulators use penalties and investigations for under-reporting and for exceeding regulatory standards for water quality. Penalties can involve fines or the menu of enforcement options described in the institutional background. I assume utilities are able to assign a dollar cost to non-financial penalties and compare the dollar amount of all penalties. Penalties differ if a utility fails to self-report and exceeds an MCL compared to if a utility fails to self-report and does not exceed an MCL. 
+    For a given compliance-cost type $\theta$, the negligence choice $a_{SR}(\theta)$ in the self-reporting region solves $\theta b'(a) = Nr\,q'(a)$. This gives the type specific switching cost
+	\begin{equation}\label{eq:cstar}
+		c^*(\theta) \equiv \hat{c}(a_{SR}(\theta)) = t - (r-ps)\,q(a_{SR}(\theta)).
+	\end{equation}
+	
+	A type-$\theta$ utility under-reports if and only if its cost draw exceeds this cutoff, $c > c^*(\theta)$, so the aggregate number of utilities under-reporting and receiving an MR violation is
+	\begin{equation}\label{eq:MRm}
+		MR(m) = \int_0^{\bar\theta} \big[\,1 - G(c^*(\theta);m)\,\big]\, f(\theta;m)\, d\theta \;\equiv\; \int_0^{\bar\theta} h(\theta,m)\, f(\theta;m)\, d\theta.
+	\end{equation}
+	
+	Differentiating \eqref{eq:MRm} splits into two channels:
+	\begin{equation}\label{eq:split}
+		\frac{\partial MR}{\partial m} = \underbrace{\int_0^{\bar\theta} \frac{\partial h(\theta,m)}{\partial m}\, f(\theta;m)\, d\theta}_{\text{Channel A: cost-distribution shift}} \;+\; \underbrace{\int_0^{\bar\theta} h(\theta,m)\, \frac{\partial f(\theta;m)}{\partial m}\, d\theta}_{\text{Channel B: type-distribution shift}}.
+	\end{equation}
+	
+	\textit{Channel A:}
+	\[
+	\frac{\partial h(\theta,m)}{\partial m} = -\frac{\partial G(c^*(\theta);m)}{\partial m} \ge 0 \quad \text{for every } \theta,
+	\]
+	since $\partial G(\cdot\,;m)/\partial m \le 0$ pointwise. 
+    
+    %Hence Channel A $\ge 0$: holding the type composition fixed, an increase in the cumulative probability of receiving a higher reporting cost for all potential costs self-reporting cost distribution pushes more mass of $c$ above each type's unchanged cutoff.
+	
+	\textit{Channel B:}    
+    
+    %The maintained assumption signs $\partial F(\theta;m)/\partial m \le 0$, but Channel B is written in terms of the \emph{density} derivative $\partial f(\theta;m)/\partial m$, which has no assumed sign — a rightward shift in a cdf can raise the density in one part of the support and lower it in another. To use the assumption we actually have, rewrite Channel B in terms of $F$ instead of $f$ via integration by parts.
 
-I follow \textcite{mookherjee1994marginal} and assume that utilities find contamination regulation costly to comply with. In \textcite{mookherjee1994marginal}, compliance is costly, non-compliance has harmful externalities, and regulators observe violations perfectly. I modify the penalty structure from \textcite{kaplow1994optimal} by assuming self-reporting is costly. In \textcite{kaplow1994optimal}, self-reporting itself is not costly. 
+     Proceed via integration by parts
+	
+	%Define $\varphi(\theta;m) \equiv \partial F(\theta;m)/\partial m$. Since $f(\theta;m) = \partial F(\theta;m)/\partial\theta$, swapping the order of the two partial derivatives gives $\partial f(\theta;m)/\partial m = \partial \varphi(\theta;m)/\partial\theta \equiv \varphi'(\theta;m)$, so Channel B is
+	%\[
+	%\int_0^{\bar\theta} h(\theta,m)\,\varphi'(\theta;m)\, d\theta.
+	%\]
+	%Integrating by parts (treating $\varphi'(\theta;m)\,d\theta$ as $d\varphi$),
+	%\[
+	%\int_0^{\bar\theta} h(\theta,m)\,\varphi'(\theta;m)\, d\theta = \Big[\,h(\theta,m)\,\varphi(\theta;m)\,\Big]_0^{\bar\theta} - \int_0^{\bar\theta} h'(\theta)\,\varphi(\theta;m)\, d\theta.
+	%\]
+	%The boundary term vanishes: $\varphi(0;m) = \partial F(0;m)/\partial m = 0$ and $\varphi(\bar\theta;m) = \partial F(\bar\theta;m)/\partial m = 0$, since $F(0;m)=0$ and $F(\bar\theta;m)=1$ for every $m$ (the cdf is pinned at the endpoints of its support regardless of $m$). Substituting $\varphi(\theta;m) = \partial F(\theta;m)/\partial m$ back in,
 
-The utility chooses a negligence level $a \in [0, \bar{a}]$, which measures how much it avoids the requirements of drinking water quality regulations, from avoiding every requirement $\bar{a}$ to full compliance 0. Failing to self-report water quality, not installing pollution abatement technology, and exceeding an MCL are examples of utility negligence. Regulators do not directly observe a utility's choice of $a$. Utilities face a compliance cost, $\theta$, that is a random variable drawn from $\Theta$, which is a strictly increasing and continuously differentiable function $F(\cdot)$ with support $(0, \bar{\theta})$. Utilities know their draw of $\theta$, but regulators only know the distribution of $\theta$. A compliance cost is determined by both a utility's ability to manage a drinking water system, such as the skills of its managerial and technical staff, and the costs of water treatment, including the cost of filtration equipment and sterilization chemicals. Utilities receive a benefit $\theta b(a)$ from having compliance costs $\theta$ and choosing a negligence level $a$. A utility's benefits from under-reporting a specific contaminant are the savings on wages, testing equipment, and lab fees. The opportunity cost to the utility of choosing a compliance level $a$ relative to maximum negligence $\bar{a}$ is $\theta[b\bar{a}-b(a)]$. The financial benefit of a certain level of negligence to a profit maximizing privately owned utility is obvious. Publicly owned utilities also benefit from cost savings that allow them to forgo rate increases or tax collection, which may be unpopular with residents.
+	\begin{equation}\label{eq:channelB}
+		\int_0^{\bar\theta} h(\theta,m)\,\frac{\partial f(\theta;m)}{\partial m}\, d\theta = -\int_0^{\bar\theta} h'(\theta)\,\frac{\partial F(\theta;m)}{\partial m}\, d\theta.
+	\end{equation}
+	%Integration by parts has moved the derivative off of $f$ (unsigned) and onto $h$ (now $h'(\theta)$, which can be signed) — this is what makes the assumption $\partial F/\partial m \le 0$ usable at all. 
+    
+    Signing \eqref{eq:channelB} therefore requires the slope of $h$ in $\theta$. Differentiating \eqref{eq:cstar},
+	\[
+	c^{*\prime}(\theta) = -(r-ps)\,q'(a_{SR}(\theta))\,a_{SR}'(\theta) < 0,
+	\]
+	since $a_{SR}'(\theta) > 0$ by Proposition 1, $q' > 0$, and $r > ps$. Then
+	\[
+	h'(\theta) = -g(c^*(\theta);m)\,c^{*\prime}(\theta) \ge 0,
+	\]
+	so $h$ is non-decreasing in $\theta$: higher-cost types choose more negligence, which lowers their own switching cutoff and makes them more likely to under-report.
+	\[
+	\text{Channel B} = -\int_0^{\bar\theta} \underbrace{h'(\theta)}_{\ge 0}\,\underbrace{\frac{\partial F(\theta;m)}{\partial m}}_{\le 0}\, d\theta \;\ge\; 0.
+	\]
+	By assumption $\partial F(\theta;m)/\partial m \le 0$.
+	$\partial MR/\partial m = \text{Channel A} + \text{Channel B} \ge 0$. 
+    
+    Contamination from mining raises MR violations both by directly increasing self-reporting costs relative to each type's fixed cutoff and by shifting the population toward higher-cost types who are already structurally closer to their own cutoff.
 
-Utilities face $N$ required self-reporting events per year. Given negligence $a$, each self-reporting event would reveal an MCL exceedance with a probability $q(a)$, with $q(0)=0$, $q'>0$, and $q'' \ge 0$.
-
-%(The number of true exceedances is then Binomial $(N, q(a)) \approx$ Poisson with mean $Nq(a)$, so Section 1's Poisson structure is recovered with intensity $Nq(a)$ in place of $a$.) For the empirically relevant range, $q(a)$ is small: mining degrades source water \emph{within} the MCL for most systems.
-
-Self-reporting costs $c$ are utility-specific and depend on upstream contamination $m$ so that $c \sim G(\cdot\,;m)$, with $m$ shifting the distribution rightward (first-order stochastic dominance). Degraded source water triggers additional required sampling even when contamination remains below the MCL.
-
-Utilities receive a sanction $r$ if they self-report a contamination level above the MCL. Utilities receive penalty $t$ for an MR violation. Regulators investigate utilities that do not report with a probability $p$ and issue a sanction $s$ for an MCL violation, where $s>r$.
-
-%the sanctions $(r,s,t)$ and enforcement intensity $p$ do not depend on $m$.
-
-For each required self-reporting event, the utility chooses to self-report at a cost $c$ or not and receive an MR violation. Regulators observe a self-reporting violation when a utility fails to self-report on schedule; regulators perfectly observe self-reporting violations. Per-event expected penalties are
-\begin{align*}
-\text{self-report:} \quad & c + q(a)\,r \\
-\text{do not self-report:} \quad & t + p\left[q(a)\,s\right]
-\end{align*}
-Taking $r > ps$ throughout, the utility self-reports if and only if
-\begin{equation}\label{eq:chat}
-c \le \hat{c}(a) \equiv t - (r - ps)\,q(a).
-\end{equation}
-Even a system with no MCL violations, $q(a) = 0$, stops self-reporting once $c > t$, when self-reporting is more expensive than the expected sanction for skipping it, and there is no MCL violation to conceal. The self-reporting threshold is decreasing in $q(a)$, so systems closer to or above the MCL abandon self-reporting at lower cost thresholds. The expected penalty is
-\begin{equation}\label{eq:endog_penalty}
-e(a) = N \min\left\{\, c + q(a)r,\;\; t + ps\,q(a) \,\right\},
-\end{equation}
-which is increasing in $a$.
-
-\subsection{Optimal negligence}
-
-The utility maximizes $-\theta[b(\bar{a}) - b(a)] - e(a)$ with respect to $a$. The first-order condition is piecewise:
-\begin{align}
-\theta b'(a) &= N r\, q'(a) & \text{(self-reporting region, } c \le \hat{c}(a)) \\
-\theta b'(a) &= N ps\, q'(a) & \text{(MR region, } c > \hat{c}(a))
-\end{align}
-Because $r > ps$, the marginal penalty is lower when the utility is in the MR region than when it is in the self-reporting region. When $c$ increases exogenously, the region of MR increases. Suppose costs increase such that $c_1 =\hat{c}(a_1) < c_2$. The increase in $c$ pushes a system from self-reporting into the MR region, its marginal penalty falls from $Nr\,q'(a)$ to $Nps\,q'(a)$ and since $b'(a)<0$, its negligence rate increases.
-
-\subsection{The propositions}
-
-The model predicts that when water quality deteriorates due to increased contamination, self-reporting rates fall.
-
-\textbf{Proposition 1:} $\partial a/\partial\theta = b'(a) / [\,-\theta b''(a) + N\rho\, q''(a)\,] > 0$ within each region (where $\rho \in \{r, ps\}$ is the region's sanction), with an upward jump at $\hat{\theta}$. Negligence is globally increasing in $\theta$.
-
-\textbf{Proposition 2}: Contamination from mining creates ambiguous effects on MR violation rates, $\partial MR/\partial m$.
-Mining contamination acts on self-reporting through the cost of self-reporting and the penalties for exceeding the MCL. On the cost side, $c$ is drawn from $G(\cdot;m)$ with $m$ shifting the distribution rightward (first-order stochastic dominance), so that each self-reporting cost draw is higher. The area of the MR violation in the first order condition increases. If self-reporting costs increase by a large enough amount, this can result in MR violations from self-reporting costs outweighing penalties, even for systems with no MCL violation, $q(0)$.
-Direct contamination from mining inducing an MCL has an ambiguous effect on self-reporting. From Equation \ref{eq:chat}, contamination will increase MR violations if the expected penalty from being in violation and not reporting ($psq(a)$) outweighs the penalty from being in MCL violation and self-reporting ($rq(a)$). If investigations are unlikely or ineffective in discovering MCL violations, then utilities have an incentive not to self-report when contamination rises.
-
-The identifying content of the cost channel is that $G$ is the distribution of the cost of executing and reporting a compliant test, $c$, which is a different object from the contaminant concentration that drives $q(a)$ (the probability a sample exceeds an MCL). Mining can shift $G$ rightward while leaving $q$ unchanged. The concentration stays below the MCL so $q$, and hence recorded MCL violations, do not move, yet running a compliant monitoring program becomes more expensive due to more contaminants to sample and more tests to conduct. Source water downstream of coal mining carries elevated contaminants that may be high enough to require additional self-reporting. Detecting below an MCL can push a system into a higher monitoring frequency or additional source-water points, raising $N$ and hence total testing cost $N\cdot c$.
-
-\textbf{Proposition 3:} scaling $(r,s,t) \to \lambda(r,s,t)$ scales $e'(a)$ by $\lambda$ in both regions, so $a$ falls; and $\hat{c}(a) = \lambda\left[pt - (r-ps)q(a)\right]$ scales up by $\lambda$ while $c$ does not, so the testing region expands. Higher penalties reduce negligence and increase self-reporting.
+	\textbf{Proposition 3:} Increasing all penalties increases the number of utilities self-reporting. 
+	
+	Consider scaling every sanction by a common factor $\lambda>0$: $(r,s,t) \to \lambda(r,s,t)$, holding $q(\cdot)$, $b(\cdot)$, $N$, $p$, and the cost draws $\theta,c$ fixed. Per-event penalties $e(a)$ become
+    \begin{align*}
+		\text{self-report:} \quad & c + q(a)\,\lambda r \\
+		\text{do not self-report (MR):} \quad & \lambda t + p\left[q(a)\,\lambda s\right]
+	\end{align*}
+	
+	Differentiating within self-reporting region,
+	\begin{align*}
+		e_\lambda'(a) &= N\lambda r\,q'(a) = \lambda\, e'(a) & \text{(self-reporting region)} \\
+		e_\lambda'(a) &= N\lambda ps\,q'(a) = \lambda\, e'(a) & \text{(MR region)}
+	\end{align*}
+	
+	Negligence falls in $\lambda$.
+	\[
+	\frac{\partial a}{\partial \lambda} = \frac{N\rho\,q'(a)}{\theta b''(a) - \lambda N\rho\, q''(a)}.
+	\]
+	The second-order condition invoked in Proposition 1, $\lambda N\rho\,q''(a) - \theta b''(a) \ge 0$, required for $a$ to be a maximum, makes the denominator non-positive, so $\partial a/\partial\lambda \le 0$: negligence is weakly decreasing in the enforcement scale, within each region.
+	
+	The self-reporting cutoff scales by $\lambda$. The self-report condition with the scaled penalties, $c + \lambda r\,q(a) \le \lambda\big[t+ps\,q(a)\big]$ rearranges to
+	\begin{equation}\label{eq:chat_lambda}
+		c \le \hat{c}_\lambda(a) \equiv \lambda\big[\,t - (r-ps)\,q(a)\,\big] = \lambda\,\hat{c}(a).
+	\end{equation}
+	Unlike $\hat{c}(a)$ itself, the self-report cost $c$ does not scale with $\lambda$ since it is a technology/labor cost, not a legal penalty, so scaling $\lambda$ up moves the threshold $\hat{c}_\lambda(a)$ relative to a fixed distribution of $c$.
+	
+	Assume $t \ge (r-ps)\,q(\bar a).$ Then $\hat{c}(a)\ge 0 \text{ for all } a \in [0,\bar a]$. Without this assumption, it is possible for $(r-ps)q(a) > t$ to lead to $\hat{c}(a)\le 0$ at large $a$. When $\hat{c}(a)\le 0$, since self-report cost $c \ge 0$, a negative threshold means no utility with any cost draw would self-report.
+	
+	Evaluating $\hat{c}(.)$ at the negligence $a_\lambda$ from Step 2, the self-reporting threshold is $C^*(\lambda) \equiv \hat{c}_\lambda(a_\lambda) = \lambda\,\hat{c}(a_\lambda)$. Its total derivative is
+	\[
+	\frac{dC^*}{d\lambda} = \hat{c}(a_\lambda) + \lambda\,\hat{c}'(a_\lambda)\,\frac{da_\lambda}{d\lambda}.
+	\]
+	The first term is $\ge 0$ by step 4. The second term is also $\ge 0$: $\hat{c}'(a) = -(r-ps)q'(a) < 0$ and $da_\lambda/d\lambda \le 0$ from Step 2, so their product is non-negative, and $\lambda>0$. Raising the enforcement scale raises the self-report threshold at the optimal negligence level, holding the population's cost draws fixed, increasing the number of utilities with $c \le C^*(\lambda)$, and expanding the self-reporting region. Higher enforcement intensity reduces negligence and increases self-reporting.
 
 \section{Data}
 
-To test the predictions of this model, I construct a panel dataset from 1985 to 2005 of drinking water utilities downstream of at least one active coal mine, their self-reporting compliance, MCL compliance, contaminant concentrations, and the enforcement the utilities received. This data allows me to measure self-reporting rates following an increase in contamination from coal mining.
+I test the predictions of this model on a panel dataset from 1985 to 2005 of drinking water utilities downstream of at least one active coal mine. I include utility and regulator behavior related to self-reporting compliance, MCL compliance, contaminant concentrations, and the violation enforcement utilities received.
+
+I form a yearly panel of utilities that were active continuously between 1985 and 2005, had water intakes with data on sulfur as a percentage of coal weight, and had no water intakes in a watershed with a coal mine that was active at any time between 1985 and 2005. As I explain later in the data section, this rule for utility water intakes ensures that I identify utilities with impaired water intakes. My sample contains 340 unique utilities. 
 
 \subsection{Utility characteristic, regulator, and violation data}
 
-The EPA's Safe Drinking Water Information System (SDWIS) Enforcement and Compliance History Online (ECHO) is a quarterly updated dataset containing utility characteristics, facilities, enforcement actions, and violations. Utility characteristics are updated during each quarterly update unless the system was deactivated, in which case characteristics represent those present at deactivation. I form a yearly panel of utilities that were active continuously between 1985 and 2005, had water intakes with data on sulfur as a percentage of coal weight, and had no water intakes in a watershed with a coal mine that was active at any time between 1985 and 2005. As I explain later in the data section, this rule for utility water intakes ensures that I identify utilities with impaired water intakes. My sample contains 340 unique utilities. 
+I identify utilities active between 1985 and 2005 from the EPA's Safe Drinking Water Information System (SDWIS) Enforcement and Compliance History Online (ECHO). Time-varying utility characteristic data are not available for all utilities during this time period. The only time-varying utility characteristic I use is its number of active facilities, such as water intakes and treatment plants.  
 
-Time-varying utility characteristic data are not available for all utilities during this time period. The only time-varying characteristic I use is the number of active facilities such as water intakes and treatment plants run by a utility, which I create by taking the annual count of the number of active facilities owned by a utility. 
+I use SDWIS ECHO data to construct outcome variables for MR and MCL violations for a general IOC water contamination rule, the arsenic contaminant rule, and the nitrate contaminant rule. SDWIS ECHO uniquely identifies utility violations with information on the start and end dates of the violation, the type of SDWA rule violated, and the contaminant. To avoid double counting violations, I exclude any IOC violations that occur at the same time and at the same utility as an arsenic or nitrate violation. I measure utility violations with a binary variable equal to one if the utility experienced a violation of that type anytime during the year. I measure the share or number of days a year a utility was in violation as a robustness check because I cannot precisely measure when the utility exceeded an MCL. Violations are often triggered when utilities fail to meet testing schedules and then continue for a set period after they are issued, rather than reflecting a period of continual violation. 
 
-I use SDWIS ECHO data to construct outcome variables for MR and MCL violations for a general IOC contaminant rule, the arsenic rule, and the nitrate rule. To avoid double counting, I exclude any IOC violations that occur at the same time and at the same utility as an arsenic or nitrate violation. SDWA uniquely identifies utility violations with information on the start and end dates of the violation, the type of SDWA rule violated, and the contaminant. Arsenic and nitrate MCLs did not change during this period, and both are contaminants that may be related to coal mining. The IOC rule contains all IOCs during this period, some of which are subject to changing MCLs. Nitrate and arsenic MR requirements changed during this period; however, they changed nationally as part of the three-year compliance reporting schedule. Year fixed effects in empirical models are used to address the concerns that changes in MR violations would be the result of changing MR requirements. 
+%Figure \ref{img:mineviolengthhist_downstream} plots histograms of the lengths of arsenic, IOC, and nitrate violations. 
 
-The primary outcome variable for utility violations is a binary variable equal to one if the utility experienced a violation of that type anytime during the year. This variable measures the likelihood of a utility not self-reporting water quality or exceeding an MCL. The dates of the violation in the SDWIS data do not necessarily reflect the time a utility was continuously violating. Violations are often triggered when utilities fail to meet testing schedules and then continue for a set period of time after they are issued. Figure \ref{img:mineviolengthhist_downstream} plots histograms of the lengths of arsenic, IOC, and nitrate violations. There is a tendency for the length of time of violations to align with quarters of the year. As a robustness test, I measure violations as the days out of a year in violation rather than as a binary measure of whether the violation took place during any part of the year.
-
-Table \ref{tab:ioc_days_dwnstrm} presents means and standard deviations of the number of days out of a year that a utility spends with an IOC MR and MCL violation. On average, a utility spends between 10 and 15 days out of a year with an MR violation and less than a day with an MCL violation. This reflects that MCL violations are health dangers and are resolved as quickly as possible, as well as the rarity of MCL violations, where, in a given year, most utilities do not receive an MCL violation. The large standard deviation of 56 to 67 days reflects the multi-modal distribution that characterizes the number of days a utility is in violation: many utilities do not receive an MR violation in a year, and those that do tend to experience it for multiple quarters of the year. 
+Table \ref{tab:ioc_days_dwnstrm} presents the means and standard deviations of the number of days in a year that a utility spends with an IOC MR and MCL violation. On average, a utility spends between 10 and 15 days of the year with an MR violation and less than a day with an MCL violation. This reflects that MCL violations are health dangers and are resolved as quickly as possible, as well as the rarity of MCL violations, where, in a given year, most utilities do not receive an MCL violation. The large standard deviation of 56 to 67 days reflects the multi-modal distribution that characterizes the number of days a utility is in violation: many utilities do not receive an MR violation in a year, and those that do tend to experience it for multiple quarters of the year. 
 
 %Panel A in table \ref{tab:mr_mcl_violation_breakdown} reports the share of MR violations that occur due to missing the regular self-reporting schedule versus those that occur to confirm a test. MR violations are primarily for regularly scheduled violations as opposed to missing confirmation schedules (what is check/repeat/confirmation?)
 
