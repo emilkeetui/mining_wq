@@ -1,50 +1,36 @@
-
 \begin{table}[htbp]
-   
-   \caption{\label{2sls_dwnstrm_minevio_allcat_ivsum_binvio} Effect of coal mines on IOC violations (any violation category, CWSs at most one HUC12 down-stream)}
-   \bigskip
-   
-   \centering
-   
-   \begin{adjustbox}{width = \textwidth, center}
-      
-      %start:tab
-      
-      \begin{tabular}{lccccccccc}
-         \toprule
-         
-          & \multicolumn{3}{c}{Nitrates} & \multicolumn{3}{c}{Arsenic} & \multicolumn{3}{c}{Inorganic chemicals}\\
-         
-                                                                  & OLS            & RF              & 2SLS           & OLS           & RF             & 2SLS          & OLS            & RF            & 2SLS\\  
-         
-         \midrule 
-         Upstream coal mines (sum)                                & 0.0194$^{***}$ &                 & 0.0991$^{***}$ & 0.0167$^{**}$ &                & 0.0751$^{**}$ & 0.0175$^{***}$ &               & 0.0634$^{*}$\\   
-                                                                  & (0.0072)       &                 & (0.0372)       & (0.0065)      &                & (0.0306)      & (0.0065)       &               & (0.0332)\\   
-         post95 $\times$ Upstream sulfur \%                       &                & -0.0238$^{***}$ &                &               & -0.0180$^{**}$ &               &                & -0.0152$^{*}$ &   \\   
-                                                                  &                & (0.0084)        &                &               & (0.0073)       &               &                & (0.0080)      &   \\   
-         
-         F-test (1st stage, clustered), Upstream coal mines (sum) &                &                 & 27.52          &               &                & 27.52         &                &               & 27.52\\  
-         
-          \\
-         
-         Observations                                             & 6,225          & 6,225           & 6,225          & 6,225         & 6,225          & 6,225         & 6,225          & 6,225         & 6,225\\  
-         
-          \\
-         
-         CWS fixed effects                                        & $\checkmark$   & $\checkmark$    & $\checkmark$   & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$\\   
-         year fixed effects                                       & $\checkmark$   & $\checkmark$    & $\checkmark$   & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$   & $\checkmark$  & $\checkmark$\\   
-         
-         \bottomrule
-         
-      \end{tabular}
-      
-      %end:tab
-      
-      
-   \end{adjustbox}
-      {\tiny\linespread{1}\selectfont \par \raggedright 
-   \textit{Notes:} Columns show OLS, reduced form, and 2SLS estimates. Dependent variable is an indicator equal to 1 if the CWS had any violation of that type during the year, 0 otherwise. The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content across upstream watersheds. Standard errors clustered at the CWS level. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
-   
+\raggedright
+\begin{minipage}{14.5cm}
+\caption{\label{2sls_dwnstrm_minevio_allcat_ivsum_binvio} Effect of coal mines on inorganic chemical violations at utilities}
+\end{minipage}
+\small
+{\setlength{\tabcolsep}{4pt}%
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}}
+\hline\hline
+ & Nitrates & Arsenic & Inorganic chemicals \\
+\hline
+\multicolumn{4}{l}{Panel A: OLS} \\
+Upstream coal mines (sum) & \phantom{(}\phantom{-}1.94$^{***}$ & \phantom{(}\phantom{-}1.67$^{**\phantom{*}}$ & \phantom{(}\phantom{-}1.75$^{***}$ \\
+ & (\phantom{-}0.72)\phantom{$^{***}$} & (\phantom{-}0.65)\phantom{$^{***}$} & (\phantom{-}0.65)\phantom{$^{***}$} \\
+\end{tabular}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}}
+\hline
+\multicolumn{4}{l}{Panel B: Reduced Form} \\
+post95 $\times$ Upstream sulfur \% & \phantom{(}-2.38$^{***}$ & \phantom{(}-1.80$^{**\phantom{*}}$ & \phantom{(}-1.52$^{*\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}0.84)\phantom{$^{***}$} & (\phantom{-}0.73)\phantom{$^{***}$} & (\phantom{-}0.80)\phantom{$^{***}$} \\
+\end{tabular}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}}
+\hline
+\multicolumn{4}{l}{Panel C: 2SLS} \\
+Upstream coal mines (sum) & \phantom{(}\phantom{-}9.91$^{***}$ & \phantom{(}\phantom{-}7.50$^{**\phantom{*}}$ & \phantom{(}\phantom{-}6.34$^{*\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}3.72)\phantom{$^{***}$} & (\phantom{-}3.06)\phantom{$^{***}$} & (\phantom{-}3.32)\phantom{$^{***}$} \\
+\hline\hline
+\end{tabular}
+}
+\begin{minipage}{14.5cm}
+\vspace{4pt}
+\footnotesize
+\raggedright
+\textit{Notes:} Dependent variable equals 1 if the utility had any violation of that type during the year, 0 otherwise; coefficients and standard errors multiplied by 100 to show percentage point change. The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content across upstream watersheds. All specifications include utilities and year fixed effects. Standard errors clustered at the utilities level. The first-stage F-statistic (clustered at the utility level) for the instrumented variable, Upstream coal mines (sum), is 27.52. Sample period 1985--2005. Number of observations = 6,225. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
+\end{minipage}
 \end{table}
-
-

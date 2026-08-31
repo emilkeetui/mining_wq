@@ -220,7 +220,7 @@ I focus on the regulation of water contamination by arsenic, nitrates, barium, a
 	\begin{equation}\label{eq:chat}
 		c \le \hat{c}(a) \equiv t - (r - ps)\,q(a).
 	\end{equation}
-	$(r − ps)q(a)$ is the wedge between disclosing a violation and hiding it. Even a system with no MCL violations, $q(a) = 0$, stops self-reporting once $c > t$ when self-reporting is more expensive than the expected sanction for skipping it, and there is no MCL violation to conceal. The self-reporting threshold is decreasing in $q(a)$, so systems with a higher probability of exceeding the MCL reduce self-reporting at lower cost thresholds. The expected penalty is
+	$(r - ps)q(a)$ is the wedge between disclosing a violation and hiding it. Even a system with no MCL violations, $q(a) = 0$, stops self-reporting once $c > t$ when self-reporting is more expensive than the expected sanction for skipping it, and there is no MCL violation to conceal. The self-reporting threshold is decreasing in $q(a)$, so systems with a higher probability of exceeding the MCL reduce self-reporting at lower cost thresholds. The expected penalty is
 	\begin{equation}\label{eq:endog_penalty}
 		e(a) = N \min\left\{\, c + q(a)r,\;\; t + ps\,q(a) \,\right\},
 	\end{equation}
@@ -678,22 +678,17 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 \outsum{visit_type_summary}\clearpage
 \outsum{mr_mcl_incidence_summary}\clearpage
 \outsum{violation_binary_days_panels}\clearpage
+\outsum{enforcement_visit_type_panels}\clearpage
 \outsum{6yr_huc02fe_inorg_val_sumstats_ravalli_2005}\clearpage
 \outsum{syr2_mr_comparison}\clearpage
 \outsum{upstream_coal_summary}\clearpage
 \outreg{fs_dwnstrm_minevio_ivsum}\clearpage
 
-\begin{landscape}\null\vfill
-\outreg{2sls_dwnstrm_minevio_allcat_ivsum_binvio}
-\vfill\null\end{landscape}
+\outreg{2sls_dwnstrm_minevio_allcat_ivsum_binvio}\clearpage
 
-\begin{landscape}\null\vfill
-\outreg{2sls_dwnstrm_minevio_mr_ivsum_binvio}
-\vfill\null\end{landscape}
+\outreg{2sls_dwnstrm_minevio_mr_ivsum_binvio}\clearpage
 
-\begin{landscape}\null\vfill
-\outreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio}
-\vfill\null\end{landscape}
+\outreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio}\clearpage
 
 % Local copy: notes text differs from the pipeline version in output/reg/.
 % Re-point to \outreg once the pipeline regenerates matching notes.
@@ -702,13 +697,9 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 \outreg{mr_concentration_lag_national_downstream_states}\clearpage
 \outsum{sanitary_visit_timing_formal_enforcement_rate}\clearpage
 
-\begin{landscape}\null\vfill
-\outreg{h3_inf_formal_d12}
-\vfill\null\end{landscape}
+\outreg{h3_inf_formal_d12}\clearpage
 
-\begin{landscape}\null\vfill
-\outreg{h2_snsv_d12}
-\vfill\null\end{landscape}
+\outreg{h2_snsv_d12}\clearpage
 
 % ---------- Figures ----------
 
@@ -746,7 +737,7 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 \begin{figure}
 \centering
 \outfig{map_huc12_main_sample.png}
-\caption{Watersheds with a coal mine in the main analysis sample}
+\caption{Location HUC12 watersheds containing coal mines between 1985 and 2005.}
 \label{map:map_huc12_main_sample}
 {\footnotesize\linespread{1}\selectfont\par\raggedright
 \textit{Notes:} Shading distinguishes watersheds containing a coal mine that lie directly upstream of a water utility in the main sample from watersheds containing a coal mine with no water utility located downstream.}
@@ -755,22 +746,17 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 
 \begin{figure}
 \centering
-% Local copy: differs from the pipeline version in output/fig/.
 \includegraphics[width=0.8\linewidth]{plots/coal_summary_plot.png}
-\caption{Coal production trends by watershed sulfur content, 1983 to 2005}
+\caption{Coal production trends by HUC12 watershed sulfur content, 1983 to 2005.}
 \label{plot:coal_summary_plot}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Lines show average tons of coal produced per watershed and year, separately for watersheds classified as high sulfur and low sulfur based on the sulfur content of the coal bed.}
 \end{figure}
 \clearpage
 
 \begin{figure}
 \centering
-\outfig{sulfur_histogram_downstream2sls.png}
-\caption{Distribution of coal sulfur content across watersheds}
+\includegraphics[height=0.8\textheight]{\outputdir/fig/sulfur_histogram_downstream2sls.png}
+\caption{\raggedright Histogram of the percentage of sulfur in coal weight in HUC12 watersheds downstream of coal production and where a water utility intake is located. The top two panels show histograms of utility-year observations.}
 \label{hist:sulfurhuc12}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Histogram of the percentage of sulfur by weight in the coal bed for watersheds where a water utility intake and coal production are co-located.}
 \end{figure}
 \clearpage
 

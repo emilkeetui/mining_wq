@@ -51,6 +51,23 @@ cat(sprintf("D1 main panel: %d PWSIDs x %d PWSID-years\n\n",
             length(ids_d1_main), nrow(d1_main)))
 rm(main_pvs); gc()
 
+# ── Cache visit/enforcement aggregates so re-runs (e.g. regenerating just the
+# H2/H3 tables) can skip the 355 MB and 3.7 GB CSV reads entirely. ───────────
+cache_dir <- file.path(ROOT, "clean_data", "cws_data")
+dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
+sv_cache  <- file.path(cache_dir, "sdwa_visit_agg_d12.parquet")
+enf_cache <- file.path(cache_dir, "sdwa_enf_agg_d12.parquet")
+
+if (file.exists(sv_cache) && file.exists(enf_cache)) {
+
+cat("\nFound cached visit/enforcement aggregates - skipping the 355 MB / 3.7 GB CSV reads.\n")
+sv_agg  <- read_parquet(sv_cache)
+enf_agg <- read_parquet(enf_cache)
+cat(sprintf("Loaded %d cached visit aggregate rows from %s\n", nrow(sv_agg), sv_cache))
+cat(sprintf("Loaded %d cached enforcement aggregate rows from %s\n", nrow(enf_agg), enf_cache))
+
+} else {
+
 # ── Step 2: Site visits ───────────────────────────────────────────────────────
 cat("Reading SDWA_SITE_VISITS.csv (355 MB)...\n")
 sv <- fread(file.path(SDWA, "SDWA_SITE_VISITS.csv"),
@@ -88,10 +105,6 @@ yr_sv <- sv[, .N, by = year][order(year)]
 print(as.data.frame(yr_sv))
 
 # ── Cache visit aggregates so future subsample work can skip the 355 MB read ──
-cache_dir <- file.path(ROOT, "clean_data", "cws_data")
-dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
-
-sv_cache <- file.path(cache_dir, "sdwa_visit_agg_d12.parquet")
 if (file.exists(sv_cache)) cat("NOTE: overwriting existing cache:", sv_cache, "\n")
 sv_out <- as.data.frame(sv_agg)
 sv_out$PWSID <- as.character(sv_out$PWSID)
@@ -158,7 +171,6 @@ cat(sprintf("Unique PWSIDs with formal action: %d (%.1f%%)\n",
     100 * length(unique(formal_d12$PWSID)) / length(ids_d12)))
 
 # ── Cache enforcement aggregates so future subsample work can skip the 3.9 GB read ──
-enf_cache <- file.path(cache_dir, "sdwa_enf_agg_d12.parquet")
 if (file.exists(enf_cache)) cat("NOTE: overwriting existing cache:", enf_cache, "\n")
 enf_out <- as.data.frame(enf_agg)
 enf_out$PWSID <- as.character(enf_out$PWSID)
@@ -208,6 +220,8 @@ yr_noncmpl <- enf[!is.na(noncmpl_year) & noncmpl_year >= 1985 & noncmpl_year <= 
 print(as.data.frame(yr_noncmpl))
 
 rm(enf, formal_d12); gc()
+
+}
 
 # ── Step 4: Build regression panel ───────────────────────────────────────────
 cat("\nBuilding regression panel...\n")
@@ -616,6 +630,139 @@ right_align_tabular <- function(x) {
 
 postprocess_table <- function(x) right_align_tabular(rename_col_numbers_to_labels(move_notes_below_adjustbox(x)))
 
+# ── Panel-style binary-outcome table renderer (copied from
+# run_main_tables.r's render_panel_binary_table suite; see CLAUDE.md on
+# copying wrap_for_beamer()-style helpers into any new table-generating
+# script). Renders three vertically-stacked panels (OLS/RF/2SLS) with
+# decimal-aligned, sign-padded coefficients instead of side-by-side columns.
+# Unlike the run_main_tables.r version, `notes` is passed in explicitly
+# rather than hardcoded, since each table here carries its own note text. ──
+fmt_pair <- function(est, se, pval, digits = 2) {
+  sign_coef <- if (est < 0) "-" else "\\phantom{-}"
+  num       <- sprintf(paste0("%.", digits, "f"), abs(est))
+  se_num    <- sprintf(paste0("%.", digits, "f"), se)
+  int_w     <- function(s) nchar(sub("\\..*$", "", s))
+  w         <- max(int_w(num), int_w(se_num))
+  pad_to    <- function(s) {
+    cur <- int_w(s)
+    if (cur < w) paste0(paste(rep("\\phantom{0}", w - cur), collapse = ""), s) else s
+  }
+  num    <- pad_to(num)
+  se_num <- pad_to(se_num)
+  stars_n <- if (is.na(pval)) 0L else if (pval < 0.01) 3L else if (pval < 0.05) 2L else if (pval < 0.1) 1L else 0L
+  stars_render <- paste0(vapply(1:3, function(i) if (i <= stars_n) "*" else "\\phantom{*}", character(1)), collapse = "")
+  list(
+    coef = paste0("\\phantom{(}", sign_coef, num, "$^{", stars_render, "}$"),
+    se   = paste0("(", "\\phantom{-}", se_num, ")\\phantom{$^{***}$}")
+  )
+}
+
+fmt_single <- function(x, digits = 2) sprintf(paste0("%.", digits, "f"), x)
+
+get_term <- function(model, term) {
+  ct <- fixest::coeftable(model)
+  row <- if (term %in% rownames(ct)) term else paste0("fit_", term)
+  if (row %in% rownames(ct)) {
+    list(est = ct[row, "Estimate"], se = ct[row, "Std. Error"], pval = ct[row, "Pr(>|t|)"])
+  } else {
+    list(est = NA_real_, se = NA_real_, pval = NA_real_)
+  }
+}
+
+render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile, notes) {
+  y_vec    <- names(result)
+  n_y      <- length(y_vec)
+  y_labels <- sapply(y_vec, function(v) if (!is.null(dict) && v %in% names(dict)) dict[[v]] else v)
+  coal_lab <- if (!is.null(dict) && coalvar %in% names(dict)) dict[[coalvar]] else coalvar
+
+  instr_parts     <- strsplit(instr_str, ":")[[1]]
+  instr_lab_parts <- sapply(instr_parts, function(p) if (!is.null(dict) && p %in% names(dict)) dict[[p]] else p)
+  instr_lab       <- paste(instr_lab_parts, collapse = " $\\times$ ")
+
+  # Data columns are capped at 3cm each (the width tuned for 3-4 outcome
+  # tables) but shrink further for tables with more outcome columns so the
+  # table never exceeds the 16.51cm text width (12pt article, 1in margins).
+  label_w_cm <- 5.5
+  max_w_cm   <- 16
+  data_w_cm  <- min(3, (max_w_cm - label_w_cm) / n_y)
+  label_w    <- paste0(label_w_cm, "cm")
+  data_w     <- paste0(data_w_cm, "cm")
+  total_w    <- paste0(label_w_cm + n_y * data_w_cm, "cm")
+  col_spec   <- paste0("p{", label_w, "}",
+                        paste(rep(paste0(">{\\raggedleft\\arraybackslash}p{", data_w, "}"), n_y), collapse = ""))
+  header_row <- paste0(" & ", paste0(y_labels, collapse = " & "), " \\\\")
+
+  ols_terms <- lapply(y_vec, function(y) get_term(result[[y]]$OLS, coalvar))
+  rf_terms  <- lapply(y_vec, function(y) get_term(result[[y]]$RF,  instr_str))
+  iv_terms  <- lapply(y_vec, function(y) get_term(result[[y]]$IV,  coalvar))
+
+  ols_cells <- lapply(ols_terms, function(t) fmt_pair(t$est, t$se, t$pval))
+  rf_cells  <- lapply(rf_terms,  function(t) fmt_pair(t$est, t$se, t$pval))
+  iv_cells  <- lapply(iv_terms,  function(t) fmt_pair(t$est, t$se, t$pval))
+
+  coef_line <- function(cells, row_label) {
+    paste0(row_label, " & ", paste(sapply(cells, `[[`, "coef"), collapse = " & "), " \\\\")
+  }
+  se_line <- function(cells) {
+    paste0(" & ", paste(sapply(cells, `[[`, "se"), collapse = " & "), " \\\\")
+  }
+
+  panel_a <- c(
+    paste0("\\begin{tabular}{", col_spec, "}"),
+    "\\hline\\hline",
+    header_row,
+    "\\hline",
+    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel A: OLS} \\\\"),
+    coef_line(ols_cells, coal_lab),
+    se_line(ols_cells),
+    "\\end{tabular}"
+  )
+
+  panel_b <- c(
+    paste0("\\begin{tabular}{", col_spec, "}"),
+    "\\hline",
+    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel B: Reduced Form} \\\\"),
+    coef_line(rf_cells, instr_lab),
+    se_line(rf_cells),
+    "\\end{tabular}"
+  )
+
+  panel_c <- c(
+    paste0("\\begin{tabular}{", col_spec, "}"),
+    "\\hline",
+    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel C: 2SLS} \\\\"),
+    coef_line(iv_cells, coal_lab),
+    se_line(iv_cells),
+    "\\hline\\hline",
+    "\\end{tabular}"
+  )
+
+  table_lines <- c(
+    "\\begin{table}[htbp]",
+    "\\raggedright",
+    paste0("\\begin{minipage}{", total_w, "}"),
+    paste0("\\caption{\\label{", label, "} ", title, "}"),
+    "\\end{minipage}",
+    "\\small",
+    "{\\setlength{\\tabcolsep}{4pt}%",
+    panel_a,
+    panel_b,
+    panel_c,
+    "}",
+    paste0("\\begin{minipage}{", total_w, "}"),
+    "\\vspace{4pt}",
+    "\\footnotesize",
+    "\\raggedright",
+    notes,
+    "\\end{minipage}",
+    "\\end{table}"
+  )
+
+  out_path <- file.path(ROOT, "output/reg", paste0(outfile, ".tex"))
+  writeLines(table_lines, out_path)
+  cat("  Panel table written to:", out_path, "\n")
+}
+
 dir.create(file.path(ROOT, "output/reg"), showWarnings = FALSE, recursive = TRUE)
 out_tex <- file.path(ROOT, "output/reg/h2_visits_d12.tex")
 
@@ -640,9 +787,6 @@ if (file.exists(out_tex) && file.info(out_tex)$size > 0) {
 
 out_tex_b   <- file.path(ROOT, "output/reg/h2_snsv_d12.tex")
 f_label_b   <- "F-test (1st stage, clustered), Upstream coal mines (sum)"
-f_vec_b     <- rep(c("", "", format(f_cl_b, nsmall = 2)), length(visit_outcomes))
-el_b        <- list(f_vec_b)
-names(el_b) <- f_label_b
 
 dict_b <- c(
   "any_snsv"                        = "Sanitary visits",
@@ -653,45 +797,49 @@ dict_b <- c(
   "num_coal_mines_upstream_sum"     = "Upstream coal mines (sum)",
   "fit_num_coal_mines_upstream_sum" = "Upstream coal mines (sum)",
   "post95:sulfur_unified_mean"      = "post95 $\\times$ Upstream sulfur \\%",
+  "post95"                          = "post95",
+  "sulfur_unified_mean"             = "Upstream sulfur \\%",
   "PWSID"                           = "CWS"
 )
 
-etable(models_b,
-       title          = "Effect of Coal Mining on Regulator Visit Probability by Visit Type (D1 Downstream Sample, LPM)",
-       label          = "tab:h2_snsv_d12",
-       dict           = dict_b,
-       drop           = "num_facilities",
-       drop.section   = "fixef",
-       extralines     = el_b,
-       fitstat        = ~n,
-       digits         = "r4",
-       notes          = paste0("\\textit{Notes:} Sample restricted to community water systems strictly downstream ",
-                               "of a coal mine. ",
-                               "N = ", nrow(panel_d1), " CWS-years. Each panel of 3 columns (OLS, RF, 2SLS) ",
-                               "reports a separate binary outcome, equal to 100 if any visit of that type occurred ",
-                               "in the CWS-year and 0 otherwise; coefficients and standard errors are in ",
-                               "percentage points. ",
-                               "Sanitary visits are sanitary surveys and follow-up sanitary surveys. ",
-                               "Technical assistance includes technical assistance, engineering ",
-                               "determination/advice/plan review, and operation and maintenance visits. ",
-                               "Enforcement visits include formal enforcement, investigation, and emergency ",
-                               "assistance visits. Sample collection is sample collection visits. Inspection ",
-                               "includes site inspections, regularly scheduled visits, and informal system ",
-                               "inspections. ",
-                               "The instrument interacts an indicator for the post-1995 period with mean ",
-                               "upstream coal sulfur content. All specifications include CWS and year fixed ",
-                               "effects. SEs clustered at the CWS level. ",
-                               "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."),
-       style.tex      = style.tex("aer", adjustbox = TRUE),
-       tex            = TRUE,
-       postprocess.tex = postprocess_table,
-       file           = out_tex_b,
-       replace        = TRUE)
+result_b <- lapply(names(visit_outcomes), function(oc) {
+  list(OLS = models_b[[paste0(oc, "_ols")]],
+       RF  = models_b[[paste0(oc, "_rf")]],
+       IV  = models_b[[paste0(oc, "_iv")]],
+       f_clustered = f_cl_b)
+})
+names(result_b) <- names(visit_outcomes)
+
+notes_b <- paste0("\\textit{Notes:} Sample restricted to community water systems strictly downstream ",
+                  "of a coal mine. ",
+                  "N = ", nrow(panel_d1), " utility-years. Panels (OLS, reduced form, 2SLS) report ",
+                  "coefficients for each visit-type outcome shown in the columns, equal to 100 if any ",
+                  "visit of that type occurred in the utility-year and 0 otherwise; coefficients and ",
+                  "standard errors are in percentage points. ",
+                  "Sanitary visits are sanitary surveys and follow-up sanitary surveys. ",
+                  "Technical assistance includes technical assistance, engineering ",
+                  "determination/advice/plan review, and operation and maintenance visits. ",
+                  "Enforcement visits include formal enforcement, investigation, and emergency ",
+                  "assistance visits. Sample collection is sample collection visits. Inspection ",
+                  "includes site inspections, regularly scheduled visits, and informal system ",
+                  "inspections. ",
+                  "The instrument interacts an indicator for the post-1995 period with mean ",
+                  "upstream coal sulfur content. All specifications include utilities and year fixed ",
+                  "effects. SEs clustered at the utilities level. ",
+                  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1.")
+
+render_panel_binary_table(result = result_b, dict = dict_b,
+                           coalvar = "num_coal_mines_upstream_sum",
+                           instr_str = "post95:sulfur_unified_mean",
+                           title = "Effect of Coal Mining on Regulator Visit Probability by Visit Type (Downstream Sample, LPM)",
+                           label = "tab:h2_snsv_d12",
+                           outfile = "h2_snsv_d12",
+                           notes = notes_b)
 cat(sprintf("\nTable saved to: %s\n", out_tex_b))
 if (file.exists(out_tex_b) && file.info(out_tex_b)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")
 } else {
-  stop("Output file missing or empty — check etable() call.")
+  stop("Output file missing or empty — check render_panel_binary_table() call.")
 }
 
 # ── Surface-water subsample: H2b table (visit-type LPM), panel_d1_sw ─────────
@@ -792,55 +940,50 @@ inf_d1_pct <- mean(panel_d1$any_informal)
 frm_d1_pct <- mean(panel_d1$any_formal)
 ned1_pct   <- mean(panel_d1$no_enf)
 f_label_d1 <- "F-test (1st stage, clustered), Upstream coal mines (sum)"
-f_vec_d1   <- c("", "", format(round(f_cl_d1, 2), nsmall = 2),
-                "", "", format(round(f_cl_d1, 2), nsmall = 2),
-                "", "", format(round(f_cl_d1, 2), nsmall = 2))
-el_d1 <- list(f_vec_d1)
-names(el_d1) <- f_label_d1
 
 dict_enf <- c(
-  "any_informal"                    = "Any informal enf",
-  "any_formal"                      = "Any formal enf",
+  "any_informal"                    = "Any informal enforcement",
+  "any_formal"                      = "Any formal enforcement",
   "no_enf"                          = "No enforcement",
   "num_coal_mines_upstream_sum"     = "Upstream coal mines (sum)",
   "fit_num_coal_mines_upstream_sum" = "Upstream coal mines (sum)",
   "post95:sulfur_unified_mean"      = "post95 $\\times$ Upstream sulfur \\%",
+  "post95"                          = "post95",
+  "sulfur_unified_mean"             = "Upstream sulfur \\%",
   "PWSID"                           = "CWS"
 )
 
-etable(ols_id1, rf_id1, iv_id1, ols_fd1, rf_fd1, iv_fd1, ols_ned1, rf_ned1, iv_ned1,
-       title          = "Effect of Coal Mining on Enforcement Actions by Type (D1 Downstream Sample)",
-       label          = "tab:h3_inf_formal_d12",
-       dict           = dict_enf,
-       drop           = "num_facilities",
-       drop.section   = "fixef",
-       extralines     = el_d1,
-       fitstat        = ~n,
-       digits         = "r4",
-       notes          = paste0("\\textit{Notes:} Sample restricted to community water systems strictly ",
-                               "downstream of a coal mine. Each outcome is equal to 100 if the enforcement ",
-                               "event occurred in the CWS-year and 0 otherwise; coefficients and standard ",
-                               "errors are in percentage points. ",
-                               "Cols 1-3: informal enforcement action (",
-                               sprintf("%.1f", inf_d1_pct), "% of panel). ",
-                               "Cols 4-6: formal enforcement action (",
-                               sprintf("%.1f", frm_d1_pct), "% of panel). ",
-                               "Cols 7-9: no enforcement (",
-                               sprintf("%.1f", ned1_pct), "% of panel). ",
-                               "The instrument interacts an indicator for the post-1995 period with mean ",
-                               "upstream coal sulfur content. All specifications include CWS and year fixed ",
-                               "effects. SEs clustered at the CWS level. ",
-                               "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."),
-       style.tex      = style.tex("aer", adjustbox = TRUE),
-       tex            = TRUE,
-       postprocess.tex = postprocess_table,
-       file           = out_tex_h3_inf,
-       replace        = TRUE)
+result_h3_inf <- list(
+  any_informal = list(OLS = ols_id1,  RF = rf_id1,  IV = iv_id1,  f_clustered = f_cl_d1),
+  any_formal   = list(OLS = ols_fd1,  RF = rf_fd1,  IV = iv_fd1,  f_clustered = f_cl_d1),
+  no_enf       = list(OLS = ols_ned1, RF = rf_ned1, IV = iv_ned1, f_clustered = f_cl_d1)
+)
+
+notes_h3_inf <- paste0("\\textit{Notes:} Sample restricted to community water systems strictly ",
+                       "downstream of a coal mine. Each outcome is equal to 100 if the enforcement ",
+                       "event occurred in the utility-year and 0 otherwise; coefficients and standard ",
+                       "errors are in percentage points. ",
+                       "Informal enforcement actions occur in ",
+                       sprintf("%.1f", inf_d1_pct), "\\% of the panel, formal enforcement actions in ",
+                       sprintf("%.1f", frm_d1_pct), "\\% of the panel, and no enforcement in ",
+                       sprintf("%.1f", ned1_pct), "\\% of the panel. ",
+                       "The instrument interacts an indicator for the post-1995 period with mean ",
+                       "upstream coal sulfur content. All specifications include utilities and year fixed ",
+                       "effects. SEs clustered at the utilities level. ",
+                       "*** p$<$0.01, ** p$<$0.05, * p$<$0.1.")
+
+render_panel_binary_table(result = result_h3_inf, dict = dict_enf,
+                           coalvar = "num_coal_mines_upstream_sum",
+                           instr_str = "post95:sulfur_unified_mean",
+                           title = "Effect of Coal Mining on Enforcement Actions by Type (Downstream Sample)",
+                           label = "tab:h3_inf_formal_d12",
+                           outfile = "h3_inf_formal_d12",
+                           notes = notes_h3_inf)
 cat(sprintf("\nTable saved to: %s\n", out_tex_h3_inf))
 if (file.exists(out_tex_h3_inf) && file.info(out_tex_h3_inf)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")
 } else {
-  stop("Output file missing or empty — check etable() call.")
+  stop("Output file missing or empty — check render_panel_binary_table() call.")
 }
 
 # ── Surface-water subsample: H3 informal/formal/no-enforcement table, panel_d1_sw ──

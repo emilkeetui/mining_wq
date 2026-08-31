@@ -4,7 +4,7 @@
    \bigskip
    \centering
    \begin{adjustbox}{width = 0.9\textwidth, center}
-      \begin{tabular}{lp{3.8cm}rrrrr}
+      \begin{tabular}{>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedleft\arraybackslash}p{1.3cm}>{\raggedleft\arraybackslash}p{1.3cm}>{\raggedleft\arraybackslash}p{1.3cm}>{\raggedleft\arraybackslash}p{1.15cm}>{\raggedleft\arraybackslash}p{1.3cm}}
          \toprule
          Variable & MCL & Mean & Max & Std.\ Dev. & $N$ & Near MCL \\
          \midrule
@@ -17,6 +17,9 @@
          \bottomrule
       \end{tabular}
    \end{adjustbox}
-   {\tiny\linespread{1}\selectfont \par \raggedright \textit{Notes:} Sample period 1998--2011. For cumulative upstream coal production, statistics are computed over unique CWS$\times$year pairs that appear in at least one regression sample. ``Near MCL'' is the share of CWS-year mean concentrations exceeding 50\% of the applicable MCL. Sample: community water systems strictly downstream of a coal mine.}
+   \begin{minipage}{\linewidth}
+   \vspace{4pt}
+   {\tiny\linespread{1}\selectfont\raggedright \textit{Notes:} Sample period 1998--2011. Cumulative upstream coal production (10M ST) is cumulative coal production since 1985, in units of 10 million short tons, in the watershed immediately upstream of the CWS's intake. For cumulative upstream coal production, statistics are computed over unique CWS$\times$year pairs that appear in at least one regression sample. ``Near MCL'' is the share of CWS-year mean concentrations exceeding 50\% of the applicable MCL. Sample: community water systems strictly downstream of a coal mine.}
+   \end{minipage}
 \end{table}
 

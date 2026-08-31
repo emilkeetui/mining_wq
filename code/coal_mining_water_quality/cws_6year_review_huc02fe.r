@@ -292,7 +292,9 @@ nice_chem <- function(x) {
 # ---------------------------------------------------------------------------
 run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_main_std,
                              detect_for = character(0), exclude_chems = character(0),
-                             only_groups = NULL) {
+                             only_groups = NULL, no_r2_groups = character(0),
+                             title_override = list(), note_override = list(),
+                             dict_override = list()) {
   for (grp in chem_groups) {
     if (!is.null(only_groups) && !(grp$file_label %in% only_groups)) next
     cat("\n--- Group:", grp$group_label, file_sfx, "---\n")
@@ -303,9 +305,13 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
     }
 
     outcomes_mode <- if (!is.null(grp$outcomes)) grp$outcomes else "both"
-    grp_dict      <- if (!is.null(grp$dict))     grp$dict     else dict_global
+    grp_dict      <- if (grp$file_label %in% names(dict_override)) dict_override[[grp$file_label]]
+                      else if (!is.null(grp$dict))                 grp$dict
+                      else                                         dict_global
     # TC group uses note_tc; all others use note
-    grp_note      <- if (isTRUE(grp$is_tc)) note_tc else note
+    grp_note      <- if (grp$file_label %in% names(note_override)) note_override[[grp$file_label]]
+                      else if (isTRUE(grp$is_tc))                  note_tc
+                      else                                         note
     grp_chems     <- setdiff(grp$chems, exclude_chems)
 
     models_list   <- list()
@@ -396,16 +402,24 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
     out <- file.path(OUTPUT_DIR,
                      paste0("6yr_huc02fe_", grp$file_label, file_sfx, ".tex"))
 
+    grp_fitstat <- if (grp$file_label %in% no_r2_groups) ~ n else ~ . + n + r2
+
+    grp_title <- if (grp$file_label %in% names(title_override)) {
+      title_override[[grp$file_label]]
+    } else {
+      paste0("Effect of cumulative upstream coal production on ",
+             grp$group_label, " (6-Year Review, downstream CWSs",
+             title_sfx, ")")
+    }
+
     etable(
       models_list,
       headers         = hdr_vec,
-      fitstat         = ~ . + n + r2,
+      fitstat         = grp_fitstat,
       style.tex       = style.tex("aer", adjustbox = TRUE),
       tex             = TRUE,
       drop            = "^num_facilities$",
-      title           = paste0("Effect of cumulative upstream coal production on ",
-                               grp$group_label, " (6-Year Review, downstream CWSs",
-                               title_sfx, ")"),
+      title           = grp_title,
       label           = paste0("tab:6yr_huc02fe_", grp$file_label, file_sfx),
       dict            = grp_dict,
       notes           = grp_note,
@@ -571,7 +585,11 @@ run_count_tables <- function(df, note, file_sfx, title_sfx, note_tc_cnt = note_t
 #   note_val  — footnote for the regression table
 # ---------------------------------------------------------------------------
 run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
-                               note_ss_period = "Sample period 1998--2011. ") {
+                               note_ss_period = "Sample period 1998--2011. ",
+                               entity_label = "CWS",
+                               add_panel_b_above_median = FALSE,
+                               sumstats_exclude_chems = character(0),
+                               include_sample_sentence = TRUE) {
   cat("\n=== INORGANIC CHEMICALS --- MEAN CONCENTRATION", file_sfx, "===\n")
 
   grp_inorg <- chem_groups[[1]]  # inorganic chemicals
@@ -621,9 +639,6 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
   # ---- Summary statistics ----
   cat("\n--- Summary statistics for inorg_val", file_sfx, "---\n")
 
-  sum_rows  <- list()
-  coal_list <- list()
-
   mcl_labels <- c(
     "arsenic"  = "Pre-2006: 0.050 mg/L, 2006+: 0.010 mg/L",
     "nitrate"  = "10.0 mg/L",
@@ -649,55 +664,74 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
     rep(unname(mcl_values[[chem]]), length(year))
   }
 
-  for (chem in inorg_val_chems) {
-    d_s <- df6_arg[df6_arg$CHEMID_name == chem, ]
-    if (nrow(d_s) < 30) next
+  # build_sumstats(): compute the summary-statistics data frame (one row per
+  # inorganic chemical plus a trailing coal-production row) for a given copy
+  # of the prepared dataset. Reused for Panel A (full sample) and, when
+  # requested, Panel B (above-median cumulative coal production subsample).
+  build_sumstats <- function(df_subset) {
+    sum_rows  <- list()
+    coal_list <- list()
+    chems_ss  <- setdiff(inorg_val_chems, sumstats_exclude_chems)
 
-    m_s <- tryCatch(
-      feols(fml_val, data = d_s, cluster = ~PWSID),
-      error = function(e) NULL
-    )
-    if (is.null(m_s)) next
+    for (chem in chems_ss) {
+      d_s <- df_subset[df_subset$CHEMID_name == chem, ]
+      if (nrow(d_s) == 0) next
 
-    keep_s <- complete.cases(d_s[, c("VALUE", "VALUE_max", "coal_prod_upstream_cumsum_10mst",
-                                      "num_facilities", "huc02", "year", "PWSID")])
-    d_reg_s <- d_s[keep_s, ]
-    cat("  ", chem, ": n_complete =", nrow(d_reg_s), "| feols nobs =", m_s$nobs, "\n")
+      keep_s <- complete.cases(d_s[, c("VALUE", "VALUE_max", "coal_prod_upstream_cumsum_10mst",
+                                        "num_facilities", "huc02", "year", "PWSID")])
+      d_reg_s <- d_s[keep_s, ]
+      if (nrow(d_reg_s) == 0) next
+      cat("  ", chem, ": n_complete =", nrow(d_reg_s), "\n")
 
-    near_mcl_share <- if (chem %in% names(mcl_values) || chem == "arsenic") {
-      half_mcl <- 0.5 * mcl_value_for(chem, d_reg_s$year)
-      mean(d_reg_s$VALUE > half_mcl, na.rm = TRUE)
-    } else {
-      NA_real_
+      near_mcl_share <- if (chem %in% names(mcl_values) || chem == "arsenic") {
+        half_mcl <- 0.5 * mcl_value_for(chem, d_reg_s$year)
+        mean(d_reg_s$VALUE > half_mcl, na.rm = TRUE)
+      } else {
+        NA_real_
+      }
+
+      sum_rows[[chem]] <- data.frame(
+        variable  = paste0(nice_chem(chem), " (mg/L)"),
+        mcl_label = ifelse(chem %in% names(mcl_labels), mcl_labels[[chem]], "---"),
+        mean_val  = mean(d_reg_s$VALUE,     na.rm = TRUE),
+        max_val   = max(d_reg_s$VALUE_max,  na.rm = TRUE),
+        sd_val    = sd(d_reg_s$VALUE,       na.rm = TRUE),
+        n_obs     = nrow(d_reg_s),
+        near_mcl  = near_mcl_share,
+        stringsAsFactors = FALSE
+      )
+      coal_list[[chem]] <- d_reg_s[, c("PWSID", "year", "coal_prod_upstream_cumsum_10mst")]
     }
 
-    sum_rows[[chem]] <- data.frame(
-      variable  = paste0(nice_chem(chem), " (mg/L)"),
-      mcl_label = ifelse(chem %in% names(mcl_labels), mcl_labels[[chem]], "---"),
-      mean_val  = mean(d_reg_s$VALUE,     na.rm = TRUE),
-      max_val   = max(d_reg_s$VALUE_max,  na.rm = TRUE),
-      sd_val    = sd(d_reg_s$VALUE,       na.rm = TRUE),
-      n_obs     = nrow(d_reg_s),
-      near_mcl  = near_mcl_share,
+    if (length(coal_list) == 0) return(list(sum_df = NULL, coal_df = NULL))
+
+    coal_df <- unique(do.call(rbind, coal_list))
+    coal_df <- coal_df[!duplicated(coal_df[, c("PWSID", "year")]), ]
+    sum_rows[["coal"]] <- data.frame(
+      variable  = "Cumul. upstream coal prod. (10M ST)",
+      mcl_label = "---",
+      mean_val  = mean(coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE),
+      max_val   = max(coal_df$coal_prod_upstream_cumsum_10mst,  na.rm = TRUE),
+      sd_val    = sd(coal_df$coal_prod_upstream_cumsum_10mst,   na.rm = TRUE),
+      n_obs     = sum(!is.na(coal_df$coal_prod_upstream_cumsum_10mst)),
+      near_mcl  = NA_real_,
       stringsAsFactors = FALSE
     )
-    coal_list[[chem]] <- d_reg_s[, c("PWSID", "year", "coal_prod_upstream_cumsum_10mst")]
+
+    list(sum_df = do.call(rbind, sum_rows), coal_df = coal_df)
   }
 
-  coal_df <- unique(do.call(rbind, coal_list))
-  coal_df <- coal_df[!duplicated(coal_df[, c("PWSID", "year")]), ]
-  sum_rows[["coal"]] <- data.frame(
-    variable  = "Cumul. upstream coal prod. (10M ST)",
-    mcl_label = "---",
-    mean_val  = mean(coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE),
-    max_val   = max(coal_df$coal_prod_upstream_cumsum_10mst,  na.rm = TRUE),
-    sd_val    = sd(coal_df$coal_prod_upstream_cumsum_10mst,   na.rm = TRUE),
-    n_obs     = sum(!is.na(coal_df$coal_prod_upstream_cumsum_10mst)),
-    near_mcl  = NA_real_,
-    stringsAsFactors = FALSE
-  )
+  panel_a   <- build_sumstats(df6_arg)
+  sum_df_a  <- panel_a$sum_df
 
-  sum_df <- do.call(rbind, sum_rows)
+  panel_b_df <- NULL
+  if (add_panel_b_above_median) {
+    median_cum_prod <- median(panel_a$coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE)
+    cat("  Median cumulative upstream coal production (10M ST):", median_cum_prod, "\n")
+    df6_above  <- df6_arg[df6_arg$coal_prod_upstream_cumsum_10mst > median_cum_prod, ]
+    panel_b    <- build_sumstats(df6_above)
+    panel_b_df <- panel_b$sum_df
+  }
 
   fmt_num <- function(x) {
     if (is.na(x)) return("---")
@@ -706,17 +740,101 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
   fmt_n <- function(x) formatC(x, format = "d", big.mark = ",")
   fmt_pct <- function(x) if (is.na(x)) "---" else sprintf("%.1f\\%%", 100 * x)
 
-  note_ss <- paste0(
-    "\\textit{Notes:} ",
-    note_ss_period,
-    "For cumulative upstream coal production, statistics are computed over unique ",
-    "CWS$\\times$year pairs that appear in at least one regression sample. ",
-    "``Near MCL'' is the share of CWS-year mean concentrations exceeding 50\\% ",
-    "of the applicable MCL. ",
-    "Sample: community water systems strictly downstream of a coal mine."
+  note_ss_parts <- c(
+    paste0("\\textit{Notes:} ", trimws(note_ss_period, which = "right")),
+    paste0("Cumulative upstream coal production (10M ST) is cumulative coal production ",
+           "since 1985, in units of 10 million short tons, in the watershed immediately ",
+           "upstream of the ", entity_label, "'s intake."),
+    paste0("For cumulative upstream coal production, statistics are computed over unique ",
+           entity_label, "$\\times$year pairs that appear in at least one regression sample."),
+    paste0("``Near MCL'' is the share of ", entity_label,
+           "-year mean concentrations exceeding 50\\% of the applicable MCL.")
   )
+  if (include_sample_sentence) {
+    note_ss_parts <- c(note_ss_parts,
+      "Sample: community water systems strictly downstream of a coal mine.")
+  }
+  if (add_panel_b_above_median) {
+    note_ss_parts <- c(note_ss_parts,
+      paste0("Panel B restricts Panel A's sample to ", entity_label,
+             "-year observations with cumulative upstream coal production above the ",
+             "sample median of ", fmt_num(median_cum_prod), " (10M ST)."))
+  }
+  note_ss <- paste(note_ss_parts, collapse = " ")
 
   tab_label <- paste0("tab:6yr_huc02fe_inorg_val_sumstats", file_sfx)
+
+  # Fixed-width columns (rather than auto-fit l/r) so that, when Panel B is
+  # rendered as a second, independent tabular, its columns line up exactly
+  # with Panel A's despite each tabular sizing itself independently — the
+  # same reasoning used for the label column in enforcement_visit_type_panels.r.
+  col_spec <- paste0(
+    ">{\\raggedright\\arraybackslash}p{4.4cm}",
+    ">{\\raggedright\\arraybackslash}p{3.6cm}",
+    ">{\\raggedleft\\arraybackslash}p{1.3cm}",
+    ">{\\raggedleft\\arraybackslash}p{1.3cm}",
+    ">{\\raggedleft\\arraybackslash}p{1.3cm}",
+    ">{\\raggedleft\\arraybackslash}p{1.15cm}",
+    ">{\\raggedleft\\arraybackslash}p{1.3cm}"
+  )
+  header_row <- "Variable & MCL & Mean & Max & Std.\\ Dev. & $N$ & Near MCL \\\\"
+
+  make_ss_row <- function(r) {
+    paste0(
+      "         ", r$variable, " & ",
+      r$mcl_label, " & ",
+      fmt_num(r$mean_val), " & ",
+      fmt_num(r$max_val), " & ",
+      fmt_num(r$sd_val), " & ",
+      fmt_n(r$n_obs), " & ",
+      fmt_pct(r$near_mcl), " \\\\"
+    )
+  }
+
+  # When Panel B is present, the panel-title row is not followed by its own
+  # rule (no line directly below "Panel A/B: ..."), and only a single rule
+  # (Panel A's \bottomrule) separates the two panels — Panel B's tabular has
+  # no \toprule of its own, avoiding a doubled rule where Panel A's closing
+  # line and Panel B's opening line would otherwise sit right on top of
+  # each other.
+  # The very top and bottom rules of the whole (possibly two-panel) table use
+  # a doubled \hline\hline. When Panel B is present, Panel A's closing rule
+  # is instead the single rule separating the two panels (see comment above),
+  # and the doubled bottom rule moves to the end of Panel B's tabular.
+  top_rule    <- if (add_panel_b_above_median) "         \\hline\\hline" else "         \\toprule"
+  bottom_rule <- if (add_panel_b_above_median) "         \\hline\\hline" else "         \\bottomrule"
+
+  panel_a_lines <- c(
+    "   \\begin{adjustbox}{width = 0.9\\textwidth, center}",
+    paste0("      \\begin{tabular}{", col_spec, "}"),
+    top_rule,
+    paste0("         ", header_row),
+    "         \\midrule"
+  )
+  if (add_panel_b_above_median) {
+    panel_a_lines <- c(panel_a_lines,
+      "         \\multicolumn{7}{l}{\\textbf{Panel A: Full sample}} \\\\")
+  }
+  panel_a_lines <- c(panel_a_lines,
+    vapply(seq_len(nrow(sum_df_a)), function(i) make_ss_row(sum_df_a[i, ]), character(1)),
+    if (add_panel_b_above_median) "         \\bottomrule" else bottom_rule,
+    "      \\end{tabular}",
+    "   \\end{adjustbox}"
+  )
+
+  panel_b_lines <- character(0)
+  if (add_panel_b_above_median) {
+    panel_b_lines <- c(
+      "   \\bigskip",
+      "   \\begin{adjustbox}{width = 0.9\\textwidth, center}",
+      paste0("      \\begin{tabular}{", col_spec, "}"),
+      "         \\multicolumn{7}{l}{\\textbf{Panel B: Utility exposed to above median cumulative tons of coal extraction}} \\\\",
+      vapply(seq_len(nrow(panel_b_df)), function(i) make_ss_row(panel_b_df[i, ]), character(1)),
+      bottom_rule,
+      "      \\end{tabular}",
+      "   \\end{adjustbox}"
+    )
+  }
 
   tex_ss <- c(
     "",
@@ -725,31 +843,12 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
            "Summary statistics: mean concentration for inorganic chemicals and cumulative upstream coal production}"),
     "   \\bigskip",
     "   \\centering",
-    "   \\begin{adjustbox}{width = 0.9\\textwidth, center}",
-    "      \\begin{tabular}{lp{3.8cm}rrrrr}",
-    "         \\toprule",
-    "         Variable & MCL & Mean & Max & Std.\\ Dev. & $N$ & Near MCL \\\\",
-    "         \\midrule"
-  )
-
-  for (i in seq_len(nrow(sum_df))) {
-    r <- sum_df[i, ]
-    tex_ss <- c(tex_ss, paste0(
-      "         ", r$variable, " & ",
-      r$mcl_label, " & ",
-      fmt_num(r$mean_val), " & ",
-      fmt_num(r$max_val), " & ",
-      fmt_num(r$sd_val), " & ",
-      fmt_n(r$n_obs), " & ",
-      fmt_pct(r$near_mcl), " \\\\"
-    ))
-  }
-
-  tex_ss <- c(tex_ss,
-    "         \\bottomrule",
-    "      \\end{tabular}",
-    "   \\end{adjustbox}",
-    paste0("   {\\tiny\\linespread{1}\\selectfont \\par \\raggedright ", note_ss, "}"),
+    panel_a_lines,
+    panel_b_lines,
+    "   \\begin{minipage}{\\linewidth}",
+    "   \\vspace{4pt}",
+    paste0("   {\\tiny\\linespread{1}\\selectfont\\raggedright ", note_ss, "}"),
+    "   \\end{minipage}",
     "\\end{table}",
     ""
   )
@@ -856,7 +955,17 @@ cat("Rows (1998-2005):", nrow(df6r_2005),
     "| year range:", min(df6r_2005$year), "-", max(df6r_2005$year), "\n")
 run_group_tables(df6r_2005, note_2005_rav, file_sfx = "_ravalli_2005",
                  title_sfx = ", Ravalli et al.~(2022) cleaning, robustness 1998--2005",
-                 note_tc = note_tc_main_rav, exclude_chems = "chromium")
+                 note_tc = note_tc_main_rav, exclude_chems = "chromium",
+                 no_r2_groups = "inorg",
+                 title_override = list(
+                   inorg = "Effect of cumulative upstream coal production on Inorganic Chemicals, SYR2 1998--2005"
+                 ),
+                 note_override = list(
+                   inorg = "\\textit{Notes:} Standard errors clustered at the utility level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+                 ),
+                 dict_override = list(
+                   inorg = { d <- dict_global; d["PWSID"] <- "Utility"; d }
+                 ))
 
 # ---------------------------------------------------------------------------
 # Surface-water subsample: re-estimate the inorganic-chemicals 1998-2005
@@ -905,7 +1014,11 @@ run_inorg_val_table(df6r, file_sfx = "_ravalli",
 run_inorg_val_table(df6r_2005, file_sfx = "_ravalli_2005",
                     title_sfx = ", Ravalli et al.~(2022) cleaning, robustness 1998--2005",
                     note_val = note_inorg_val_rav_2005,
-                    note_ss_period = "Sample period 1998--2005. ")
+                    note_ss_period = "SYR2 sample from 1998--2005. ",
+                    entity_label = "utility",
+                    add_panel_b_above_median = TRUE,
+                    sumstats_exclude_chems = "chromium",
+                    include_sample_sentence = FALSE)
 
 # ---------------------------------------------------------------------------
 # Scatter plot: beta particle mean concentration vs cumulative upstream coal
