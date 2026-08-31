@@ -1,8 +1,8 @@
 # ============================================================
 # Script: syr2_mr_comparison.r
-# Purpose: Compare MR/MCL violation rates between CWSs with
+# Purpose: Compare MR/MCL violation rates between utilities with
 #          and without SYR2 readings for inorganic chemicals
-#          of interest (arsenic, nitrate, selenium, chromium, barium)
+#          of interest (arsenic, nitrate, selenium, barium)
 # Inputs:  clean_data/cws_data/prod_vio_sulfur.parquet
 #          clean_data/cws_6year_review.parquet
 # Outputs: output/sum/syr2_mr_comparison.tex
@@ -17,20 +17,20 @@ library(tidyr)
 panel <- read_parquet("clean_data/cws_data/prod_vio_sulfur.parquet")
 syr2  <- read_parquet("clean_data/cws_6year_review.parquet")
 
-cat("Panel:", nrow(panel), "rows,", n_distinct(panel$PWSID), "unique CWSs\n")
-cat("SYR2 :", nrow(syr2),  "rows,", n_distinct(syr2$PWSID),  "unique CWSs\n")
+cat("Panel:", nrow(panel), "rows,", n_distinct(panel$PWSID), "unique utilities\n")
+cat("SYR2 :", nrow(syr2),  "rows,", n_distinct(syr2$PWSID),  "unique utilities\n")
 
 # ── Restrict to strictly downstream 2SLS sample ──────────────
 panel <- panel |>
   filter(minehuc_downstream_of_mine == 1 & minehuc_mine == 0)
 
-cat("Downstream sample:", nrow(panel), "rows,", n_distinct(panel$PWSID), "unique CWSs\n")
+cat("Downstream sample:", nrow(panel), "rows,", n_distinct(panel$PWSID), "unique utilities\n")
 
 # ── Identify groups ──────────────────────────────────────────
 # Target chemicals for SYR2 reading eligibility
-target_chems <- c("arsenic", "nitrate", "selenium", "chromium", "barium")
+target_chems <- c("arsenic", "nitrate", "selenium", "barium")
 
-# Group 1: CWSs with >= 1 SYR2 reading for a target chemical
+# Group 1: utilities with >= 1 SYR2 reading for a target chemical
 pws_with_readings <- syr2 |>
   filter(
     CHEMID_name %in% target_chems,
@@ -39,13 +39,13 @@ pws_with_readings <- syr2 |>
   distinct(PWSID) |>
   pull(PWSID)
 
-# States that have at least one such CWS
+# States that have at least one such utility
 states_with_readings <- syr2 |>
   filter(PWSID %in% pws_with_readings) |>
   distinct(STATE_CODE) |>
   pull(STATE_CODE)
 
-cat("Group 1 CWSs (has target-chemical SYR2 reading):", length(pws_with_readings), "\n")
+cat("Group 1 utilities (has target-chemical SYR2 reading):", length(pws_with_readings), "\n")
 cat("States with any target-chemical SYR2 reading:", length(states_with_readings), "\n")
 
 # Assign groups using panel's STATE_CODE
@@ -61,8 +61,8 @@ group_assign <- pwsid_state |>
   ) |>
   filter(!is.na(group))
 
-cat("Group 1:", sum(group_assign$group == 1), "CWSs\n")
-cat("Group 2:", sum(group_assign$group == 2), "CWSs\n")
+cat("Group 1:", sum(group_assign$group == 1), "utilities\n")
+cat("Group 2:", sum(group_assign$group == 2), "utilities\n")
 
 # ── Attach group to panel ────────────────────────────────────
 panel_grp <- panel |>
@@ -202,18 +202,16 @@ build_table <- function(rows, n1, n2) {
     "\\vspace{4pt}\n",
     "\\footnotesize\n",
     "\\raggedright\n",
-    "\\textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine. ",
+    "\\textit{Notes:} Sample restricted to utilities strictly downstream of a coal mine. ",
     "\\textit{Has SYR2 reading}: at least one Six-Year Review contaminant reading ",
-    "for arsenic, nitrate, selenium, chromium, or barium. ",
-    "\\textit{No SYR2 reading}: CWS is in a state where at least one CWS ",
-    "has a SYR2 reading but the CWS itself does not. ",
-    "MR violations: any arsenic, nitrate, or inorganic chemicals ",
-    "monitoring and reporting violation (inorganic chemicals encompasses selenium, chromium, and barium). ",
-    "MCL violations: any arsenic, nitrate, or inorganic chemicals ",
-    "maximum contaminant level violation. ",
+    "for arsenic, nitrate, selenium, or barium. ",
+    "\\textit{No SYR2 reading}: utility is in a state where at least one utility ",
+    "has a SYR2 reading but the utility itself does not. ",
+    "MR violation: IOC monitoring and reporting violation. ",
+    "MCL violation: IOC maximum contaminant violation. ",
     "Mean annual violations: sum of MR and MCL violation indicators ",
-    "across arsenic, nitrate, and inorganic chemicals categories (maximum of 6 per CWS-year). ",
-    "$N$ CWSs: group 1 = ", n1, ", group 2 = ", n2, ". ",
+    "across arsenic, nitrate, and inorganic chemicals categories (maximum of 6 per utility-year). ",
+    "$N$ utilities: group 1 = ", n1, ", group 2 = ", n2, ". ",
     "Diff.~stars from two-sample $t$-test: ",
     "*** $p<0.01$, ** $p<0.05$, * $p<0.1$.\n",
     "\\end{minipage}\n",

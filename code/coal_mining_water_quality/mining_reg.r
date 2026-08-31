@@ -466,8 +466,14 @@ mtext("Sample: HUC12's with at least one active mine between 1985 and 2005 and",
 mtext("directly upstream of a utility water intake.", side = 1, line = 4.8, cex = 0.75, col = "grey40")
 dev.off()
 
-# plot coal prod by high sulfur
-coal_prod_over_time <- coal_data[coal_data$year<2006,] %>% group_by(high_sulfur, year) %>%
+# plot coal prod by high sulfur — all mine-colocated or upstream-of-mine HUC12s
+# (not restricted to HUC12s upstream of a downstream-only 2SLS CWS intake)
+coal_data_summary <- arrow::read_parquet("Z:/ek559/mining_wq/clean_data/huc_coal_charac_geom_match.parquet")
+coal_data_summary <- coal_data_summary[coal_data_summary$minehuc %in% c("mine", "upstream_of_mine") &
+                                       coal_data_summary$year >= 1983 & coal_data_summary$year <= 2005, ]
+coal_data_summary$high_sulfur <- as.integer(coal_data_summary$sulfur_colocated > 2)
+
+coal_prod_over_time <- coal_data_summary %>% group_by(high_sulfur, year) %>%
   summarise(avg_huc_coal = mean(production_short_tons_coal_colocated, na.rm = TRUE),
             tot_sulf_coal = sum(production_short_tons_coal_colocated, na.rm = TRUE),
             mean_coal_mine = mean(num_coal_mines_colocated, na.rm = TRUE),
@@ -476,46 +482,37 @@ coal_prod_over_time <- coal_data[coal_data$year<2006,] %>% group_by(high_sulfur,
 coal_prod_over_time$high_sulfur <- as.factor(coal_prod_over_time$high_sulfur)
 
 # graphing coal production summary stats
+sulfur_labels <- c("0" = "Low sulfur (<2% weight)", "1" = "High sulfur (>2% weight)")
+
 plot1 = ggplot(coal_prod_over_time, aes(x = year, y = avg_huc_coal, color = high_sulfur)) +
     geom_line() +
     labs(title = "Mean HUC12 Coal Production", x = "Year", y = "Short tons") +
-    scale_color_manual(values = c("0" = "blue", "1" = "red"),
-                       labels = c("0" = "Low Sulfur", "1" = "High Sulfur")) +
-    theme_minimal() +
-    # Add vertical lines
-    geom_vline(xintercept = 1993, linetype = "dashed", color = "black") +
-    # Add labels near the lines
-    annotate("text", x = 1993, y = max(coal_prod_over_time$avg_huc_coal, na.rm = TRUE),
-             label = "Stage 1 permit", vjust = -0.5, hjust = 1, angle = 90, size = 2.3)
+    scale_color_manual(name = "Sulfur level", values = c("0" = "blue", "1" = "red"),
+                       labels = sulfur_labels) +
+    scale_y_continuous(labels = scales::label_number()) +
+    theme_minimal()
 
 plot2 = ggplot(coal_prod_over_time, aes(x = year, y = tot_sulf_coal, color = high_sulfur)) +
     geom_line() +
     labs(title = "Total HUC12 Coal Production", x = "Year", y = "Short tons") +
-    scale_color_manual(values = c("0" = "blue", "1" = "red"),
-                       labels = c("0" = "Low Sulfur", "1" = "High Sulfur")) +
-    theme_minimal()+
-    # Add vertical lines
-    geom_vline(xintercept = 1993, linetype = "dashed", color = "black") +
-    # Add labels near the lines
-    annotate("text", x = 1993, y = max(coal_prod_over_time$avg_huc_coal, na.rm = TRUE),
-             label = "Stage 1 permit", vjust = -0.5, hjust = 0, angle = 90, size = 2.3)
+    scale_color_manual(name = "Sulfur level", values = c("0" = "blue", "1" = "red"),
+                       labels = sulfur_labels) +
+    scale_y_continuous(labels = scales::label_number()) +
+    theme_minimal()
 
 plot3 = ggplot(coal_prod_over_time, aes(x = year, y = mean_coal_mine, color = high_sulfur)) +
     geom_line() +
     labs(title = "Mean Active HUC12 Coal Mines", x = "Year", y = "Number of mines") +
-    scale_color_manual(values = c("0" = "blue", "1" = "red"),
-                       labels = c("0" = "Low Sulfur", "1" = "High Sulfur")) +
+    scale_color_manual(name = "Sulfur level", values = c("0" = "blue", "1" = "red"),
+                       labels = sulfur_labels) +
+    scale_y_continuous(labels = scales::label_number()) +
     theme_minimal()
 
 combined_plot <- wrap_plots(list(plot1, plot2, plot3), ncol = 1) +
     plot_layout(guides = "collect") &
     theme(legend.position = "bottom")
 
-combined_plot <- combined_plot +
-    plot_annotation(caption = "Sample: mine HUC12s upstream of CWS intakes (downstream-only 2SLS sample)") &
-    theme(plot.caption = element_text(hjust = 0, color = "grey40", size = 7))
-
-ggsave("Z:/ek559/mining_wq/output/fig/coal_summary_plot.png", combined_plot, height = 5, width = 5)
+ggsave("Z:/ek559/mining_wq/output/fig/coal_summary_plot.png", combined_plot, height = 5, width = 6.5)
 
 coal_data$post93 <- 0
 coal_data$post93[coal_data$year>1992] <- 1

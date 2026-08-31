@@ -7,30 +7,34 @@ note{}={NA is missing data. Water source use refers to the upstream/mine HUC12 s
 ]                     %% tabularray outer close
 {                     %% tabularray inner open
 colspec={Q[]Q[]Q[]Q[]Q[]Q[]},
-cell{1}{1}={}{halign=l, halign=c,},
-cell{1}{2}={}{halign=l, halign=c,},
-cell{1}{3}={c=2,}{halign=r, halign=c, halign=c,},
-cell{1}{4}={}{halign=r, halign=c,},
-cell{1}{5}={c=2,}{halign=r, halign=c, halign=c,},
-cell{1}{6}={}{halign=r, halign=c,},
-cell{2,4,6,8,10,12,14,16,18}{1}={}{halign=l,},
-cell{2,4,6,8,10,12,14,16,18}{2}={}{halign=l,},
-cell{2,4,6,8,10,12,14,16,18}{3}={}{halign=r,},
-cell{2,4,6,8,10,12,14,16,18}{4}={}{halign=r,},
-cell{2,4,6,8,10,12,14,16,18}{5}={}{halign=r,},
-cell{2,4,6,8,10,12,14,16,18}{6}={}{halign=r,},
-cell{3,5,7,9,11,13,15,17,19}{1}={}{halign=l, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19}{2}={}{halign=l, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19}{3}={}{halign=r, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19}{4}={}{halign=r, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19}{5}={}{halign=r, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19}{6}={}{halign=r, bg=cededed,},
-row{even}={bg=black!5!white},
+hline{2}={6}{solid, black, 0.03em},
+hline{2}={3,5}{solid, black, 0.03em, l=-0.5},
+hline{2}={4}{solid, black, 0.03em, r=-0.5},
+hline{3}={1-6}{solid, black, 0.05em},
+hline{1}={1-6}{solid, black, 0.08em},
+hline{20}={1-6}{solid, black, 0.08em},
+cell{1}{1}={}{halign=c},
+cell{1}{2}={}{halign=c},
+cell{1}{3}={c=2}{halign=c},
+cell{1}{4}={}{halign=c},
+cell{1}{5}={c=2}{halign=c},
+cell{1}{6}={}{halign=c},
+cell{2,4,6,8,10,12,14,16,18}{1}={}{halign=l},
+cell{2,4,6,8,10,12,14,16,18}{2}={}{halign=l},
+cell{2,4,6,8,10,12,14,16,18}{3}={}{halign=r},
+cell{2,4,6,8,10,12,14,16,18}{4}={}{halign=r},
+cell{2,4,6,8,10,12,14,16,18}{5}={}{halign=r},
+cell{2,4,6,8,10,12,14,16,18}{6}={}{halign=r},
+cell{3,5,7,9,11,13,15,17,19}{1}={}{bg=cededed, halign=l},
+cell{3,5,7,9,11,13,15,17,19}{2}={}{bg=cededed, halign=l},
+cell{3,5,7,9,11,13,15,17,19}{3}={}{bg=cededed, halign=r},
+cell{3,5,7,9,11,13,15,17,19}{4}={}{bg=cededed, halign=r},
+cell{3,5,7,9,11,13,15,17,19}{5}={}{bg=cededed, halign=r},
+cell{3,5,7,9,11,13,15,17,19}{6}={}{bg=cededed, halign=r},
 }                     %% tabularray inner close
 \tinytableDefineColor{cededed}{HTML}{ededed}
-\toprule
-&  & Mine (N=5649) &  & Upstream (N=5751) &  \\ \cmidrule[lr]{3-4}\cmidrule[lr]{5-6}
-&    & N & Pct. & N & Pct. \\ \midrule %% TinyTableHeader
+&  & Mine (N=5649) &  & Upstream (N=5751) &  \\
+&    & N & Pct. & N & Pct. \\
 PWS deactivated & N & 4144 & 73.4 & 4520 & 78.6 \\
 & Y & 1505 & 26.6 & 1231 & 21.4 \\
 water source use & Emergency & 16 & 0.3 & 32 & 0.6 \\
@@ -48,7 +52,6 @@ Primary water source & Bought GW influenced by SW & 16 & 0.3 & 16 & 0.3 \\
 & GW purchased & 48 & 0.8 & 56 & 1.0 \\
 & Surface water (SW) & 1791 & 31.7 & 1067 & 18.6 \\
 & SW purchased & 431 & 7.6 & 344 & 6.0 \\
-\bottomrule
 \end{talltblr}
 }
 \end{table}
