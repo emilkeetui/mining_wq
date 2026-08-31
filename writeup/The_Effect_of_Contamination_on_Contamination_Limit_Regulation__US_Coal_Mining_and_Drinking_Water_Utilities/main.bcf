@@ -2437,13 +2437,11 @@
     <bcf:citekey order="38" intorder="2">stratford2015coalprod</bcf:citekey>
     <bcf:citekey order="39" intorder="1">wheelock1984coal</bcf:citekey>
     <bcf:citekey order="40" intorder="1">schweinfurth2009introduction</bcf:citekey>
-    <bcf:citekey order="41" intorder="1">schweinfurth2009introduction</bcf:citekey>
-    <bcf:citekey order="42" intorder="1">angrist1994identification</bcf:citekey>
-    <bcf:citekey order="43" intorder="1">montielolea2013robust</bcf:citekey>
-    <bcf:citekey order="44" intorder="1">staigerstock1997instrumental</bcf:citekey>
-    <bcf:citekey order="45" intorder="1">callaway2024difference</bcf:citekey>
-    <bcf:citekey order="46" intorder="1">olmstead2010economics</bcf:citekey>
-    <bcf:citekey order="47" intorder="1">kang2021understanding</bcf:citekey>
+    <bcf:citekey order="41" intorder="1">angrist1994identification</bcf:citekey>
+    <bcf:citekey order="42" intorder="1">montielolea2013robust</bcf:citekey>
+    <bcf:citekey order="43" intorder="1">staigerstock1997instrumental</bcf:citekey>
+    <bcf:citekey order="44" intorder="1">olmstead2010economics</bcf:citekey>
+    <bcf:citekey order="45" intorder="1">kang2021understanding</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nyt">

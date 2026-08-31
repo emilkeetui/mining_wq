@@ -104,10 +104,9 @@ CRS = "EPSG:5070"
 mine_geom = mine_geom.to_crs(CRS)
 states    = gpd.read_file(str(STATES_SHP)).to_crs(CRS)
 
-# Clip extent to mine HUC12 bounding box + buffer
+# Clip extent to the smallest bounding box that still contains all mine HUC12s
 bounds = mine_geom.total_bounds          # minx, miny, maxx, maxy
-buf    = 150_000                          # 150 km
-extent = box(bounds[0]-buf, bounds[1]-buf, bounds[2]+buf, bounds[3]+buf)
+extent = box(bounds[0], bounds[1], bounds[2], bounds[3])
 states_clip = states.clip(extent)
 
 # ── 8. Plot ───────────────────────────────────────────────────────────────────
@@ -124,8 +123,8 @@ mine_geom[mine_geom["category"] == "green"].plot(
 
 states_clip.boundary.plot(ax=ax, color="#666666", linewidth=0.5, zorder=4)
 
-ax.set_xlim(bounds[0]-buf, bounds[2]+buf)
-ax.set_ylim(bounds[1]-buf, bounds[3]+buf)
+ax.set_xlim(bounds[0], bounds[2])
+ax.set_ylim(bounds[1], bounds[3])
 ax.axis("off")
 ax.set_title("HUC12 watersheds containing coal mines, 1985-2005", fontsize=18)
 
@@ -133,7 +132,7 @@ legend_handles = [
     mpatches.Patch(facecolor="#2ca02c", label="Upstream of utility water intake"),
     mpatches.Patch(facecolor="red", label="Not upstream of utility water intake"),
 ]
-ax.legend(handles=legend_handles, loc="lower left", frameon=True, fontsize=18,
+ax.legend(handles=legend_handles, loc="upper right", frameon=True, fontsize=18,
           framealpha=0.9, edgecolor="#cccccc")
 
 plt.tight_layout()
