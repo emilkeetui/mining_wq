@@ -7,37 +7,40 @@ note{}={NA is missing data.},
 ]                     %% tabularray outer close
 {                     %% tabularray inner open
 colspec={Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]},
-cell{1}{1}={}{halign=l, halign=c,},
-cell{1}{2}={}{halign=l, halign=c,},
-cell{1}{3}={c=2,}{halign=r, halign=c, halign=c,},
-cell{1}{4}={}{halign=r, halign=c,},
-cell{1}{5}={c=2,}{halign=r, halign=c, halign=c,},
-cell{1}{6}={}{halign=r, halign=c,},
-cell{1}{7}={}{halign=r, halign=c,},
-cell{1}{8}={}{halign=r, halign=c,},
-cell{2,4,6,8,10,12,14,16,18,20,22,24}{1}={}{halign=l,},
-cell{2,4,6,8,10,12,14,16,18,20,22,24}{2}={}{halign=l,},
-cell{2,4,6,8,10,12,14,16,18,20,22,24}{3}={}{halign=r,},
-cell{2,4,6,8,10,12,14,16,18,20,22,24}{4}={}{halign=r,},
-cell{2,4,6,8,10,12,14,16,18,20,22,24}{5}={}{halign=r,},
-cell{2,4,6,8,10,12,14,16,18,20,22,24}{6}={}{halign=r,},
-cell{2,4,6,8,10,12,14,16,18,20,22,24}{7}={}{halign=r,},
-cell{2,4,6,8,10,12,14,16,18,20,22,24}{8}={}{halign=r,},
-cell{3,5,7,9,11,13,15,17,19,21,23}{1}={}{halign=l, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19,21,23}{2}={}{halign=l, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19,21,23}{3}={}{halign=r, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19,21,23}{4}={}{halign=r, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19,21,23}{5}={}{halign=r, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19,21,23}{6}={}{halign=r, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19,21,23}{7}={}{halign=r, bg=cededed,},
-cell{3,5,7,9,11,13,15,17,19,21,23}{8}={}{halign=r, bg=cededed,},
+hline{2}={3,5}{solid, black, 0.03em, l=-0.5},
+hline{2}={4,6}{solid, black, 0.03em, r=-0.5},
+hline{3}={1-8}{solid, black, 0.05em},
 hline{5}={1-8}{solid, black, 0.05em},
-row{even}={bg=black!5!white},
+hline{1}={1-8}{solid, black, 0.08em},
+hline{25}={1-8}{solid, black, 0.08em},
+cell{1}{1}={}{halign=c},
+cell{1}{2}={}{halign=c},
+cell{1}{3}={c=2}{halign=c},
+cell{1}{4}={}{halign=c},
+cell{1}{5}={c=2}{halign=c},
+cell{1}{6}={}{halign=c},
+cell{1}{7}={}{halign=c},
+cell{1}{8}={}{halign=c},
+cell{2,4,6,8,10,12,14,16,18,20,22,24}{1}={}{halign=l},
+cell{2,4,6,8,10,12,14,16,18,20,22,24}{2}={}{halign=l},
+cell{2,4,6,8,10,12,14,16,18,20,22,24}{3}={}{halign=r},
+cell{2,4,6,8,10,12,14,16,18,20,22,24}{4}={}{halign=r},
+cell{2,4,6,8,10,12,14,16,18,20,22,24}{5}={}{halign=r},
+cell{2,4,6,8,10,12,14,16,18,20,22,24}{6}={}{halign=r},
+cell{2,4,6,8,10,12,14,16,18,20,22,24}{7}={}{halign=r},
+cell{2,4,6,8,10,12,14,16,18,20,22,24}{8}={}{halign=r},
+cell{3,5,7,9,11,13,15,17,19,21,23}{1}={}{bg=cededed, halign=l},
+cell{3,5,7,9,11,13,15,17,19,21,23}{2}={}{bg=cededed, halign=l},
+cell{3,5,7,9,11,13,15,17,19,21,23}{3}={}{bg=cededed, halign=r},
+cell{3,5,7,9,11,13,15,17,19,21,23}{4}={}{bg=cededed, halign=r},
+cell{3,5,7,9,11,13,15,17,19,21,23}{5}={}{bg=cededed, halign=r},
+cell{3,5,7,9,11,13,15,17,19,21,23}{6}={}{bg=cededed, halign=r},
+cell{3,5,7,9,11,13,15,17,19,21,23}{7}={}{bg=cededed, halign=r},
+cell{3,5,7,9,11,13,15,17,19,21,23}{8}={}{bg=cededed, halign=r},
 }                     %% tabularray inner close
 \tinytableDefineColor{cededed}{HTML}{ededed}
-\toprule
-&  & Mine (N=5649) &  & Upstream (N=5751) &  &  &  \\ \cmidrule[lr]{3-4}\cmidrule[lr]{5-6}
-&    & Mean & Std. Dev. & Mean & Std. Dev. & Diff. in Means & Std. Error \\ \midrule %% TinyTableHeader
+&  & Mine (N=5649) &  & Upstream (N=5751) &  &  &  \\
+&    & Mean & Std. Dev. & Mean & Std. Dev. & Diff. in Means & Std. Error \\
 PWS N Source HUC12 &  & 3.0 & 3.1 & 2.5 & 3.8 & -0.5 & 0.1 \\
 Population served &  & 5531.6 & 35018.3 & 8020.6 & 50453.8 & 2489.0 & 812.2 \\
 &  & N & Pct. & N & Pct. &  &  \\
@@ -60,7 +63,6 @@ Filtration in place & N & 3897 & 69.0 & 4615 & 80.2 &  &  \\
 & Y & 1752 & 31.0 & 1136 & 19.8 &  &  \\
 Source treated & N & 4241 & 75.1 & 4044 & 70.3 &  &  \\
 & Y & 1408 & 24.9 & 1707 & 29.7 &  &  \\
-\bottomrule
 \end{talltblr}
 }
 \end{table}

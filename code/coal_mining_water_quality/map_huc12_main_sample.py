@@ -116,7 +116,7 @@ fig, ax = plt.subplots(figsize=(10, 7))
 states_clip.plot(ax=ax, color="#f5f5f5", edgecolor="#bbbbbb", linewidth=0.4, zorder=1)
 
 mine_geom[mine_geom["category"] == "grey"].plot(
-    ax=ax, color="#888888", edgecolor="none", alpha=0.85, zorder=2
+    ax=ax, color="red", edgecolor="none", alpha=0.85, zorder=2
 )
 mine_geom[mine_geom["category"] == "green"].plot(
     ax=ax, color="#2ca02c", edgecolor="none", alpha=0.85, zorder=3
@@ -127,13 +127,13 @@ states_clip.boundary.plot(ax=ax, color="#666666", linewidth=0.5, zorder=4)
 ax.set_xlim(bounds[0]-buf, bounds[2]+buf)
 ax.set_ylim(bounds[1]-buf, bounds[3]+buf)
 ax.axis("off")
+ax.set_title("HUC12 watersheds containing coal mines, 1985-2005", fontsize=18)
 
 legend_handles = [
-    mpatches.Patch(facecolor="#2ca02c", label="Mine HUC12 — upstream of main-sample CWS"),
-    mpatches.Patch(facecolor="#888888", label="Mine HUC12 — no downstream main-sample CWS"),
-    mpatches.Patch(facecolor="#f5f5f5", edgecolor="#bbbbbb", label="No mining"),
+    mpatches.Patch(facecolor="#2ca02c", label="Upstream of utility water intake"),
+    mpatches.Patch(facecolor="red", label="Not upstream of utility water intake"),
 ]
-ax.legend(handles=legend_handles, loc="lower right", frameon=True, fontsize=9,
+ax.legend(handles=legend_handles, loc="lower left", frameon=True, fontsize=18,
           framealpha=0.9, edgecolor="#cccccc")
 
 plt.tight_layout()

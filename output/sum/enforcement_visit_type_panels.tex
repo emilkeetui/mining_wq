@@ -1,0 +1,43 @@
+% ============================================================
+% Table: Enforcement Actions and Site Visits, Coal Mining Exposed Utilities, 1985--2005
+% Purpose: Two-panel summary of enforcement action types (Formal/Informal/Any) and
+%          site visit types (Sanitary/Technical assistance/Enforcement/Sample
+%          collection/Inspection) over the whole panel and MR-/MCL-year subsets.
+% Sample:  Main 2SLS downstream utility-year sample (minehuc_downstream_of_mine=1,
+%          minehuc_mine=0, 1985-2005, excluding PWSID WV3303401, minus 7 fixed-effect
+%          singleton rows dropped by the reference 2SLS specification)
+% N:       6,225 utility-year observations (MR-year subset N=451; MCL-year subset N=26)
+% ============================================================
+
+\begin{table}[htbp]
+\raggedright
+\caption{Enforcement Actions and Site Visits, Coal Mining Exposed Utilities 1985--2005}
+\label{tab:enforcement_visit_type_panels}
+\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.3cm} *{6}{>{\raggedleft\arraybackslash}p{1.55cm}}}
+\hline\hline
+ & \multicolumn{2}{c}{\textbf{Whole panel}} & \multicolumn{2}{c}{\textbf{During MR year}} & \multicolumn{2}{c}{\textbf{During MCL year}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+ & \textbf{\%} & \textbf{N} & \textbf{\%} & \textbf{N} & \textbf{\%} & \textbf{N} \\
+\multicolumn{7}{l}{\textbf{Panel A: Enforcement type}} \\
+Formal & \phantom{0}\phantom{0}3.50 & 218 & \phantom{0}\phantom{0}9.53 & 43 & \phantom{0}\phantom{0}7.69 & 2 \\
+Informal & \phantom{0}19.02 & 1,184 & \phantom{0}67.63 & 305 & \phantom{0}53.85 & 14 \\
+Any & \phantom{0}21.37 & 1,330 & \phantom{0}70.73 & 319 & \phantom{0}65.38 & 17 \\
+\end{tabular}
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.3cm} *{6}{>{\raggedleft\arraybackslash}p{1.55cm}}}
+\hline
+\multicolumn{7}{l}{\textbf{Panel B: Visit type}} \\
+Sanitary & \phantom{0}14.55 & 906 & \phantom{0}14.19 & 64 & \phantom{0}\phantom{0}7.69 & 2 \\
+Technical assistance & \phantom{0}\phantom{0}2.33 & 145 & \phantom{0}\phantom{0}4.88 & 22 & \phantom{0}\phantom{0}0.00 & 0 \\
+Enforcement & \phantom{0}\phantom{0}1.16 & 72 & \phantom{0}\phantom{0}2.44 & 11 & \phantom{0}\phantom{0}3.85 & 1 \\
+Sample collection & \phantom{0}\phantom{0}0.90 & 56 & \phantom{0}\phantom{0}0.44 & 2 & \phantom{0}\phantom{0}0.00 & 0 \\
+Inspection & \phantom{0}\phantom{0}4.05 & 252 & \phantom{0}\phantom{0}5.76 & 26 & \phantom{0}\phantom{0}3.85 & 1 \\
+\hline\hline
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\raggedright
+\textit{Notes:} Sample of drinking water utilities downstream of a coal mine between 1985--2005. MR = monitoring and reporting violation; MCL = maximum contaminant level violation. Whole panel columns report the share and count of utility-year cells with a given enforcement action or site visit type, among all 6,225 cells. During MR year and During MCL year columns restrict to the 451 and 26 cells, respectively, with a nitrate, arsenic, or inorganic chemical violation of that category, before computing the same share and count. Panel A: Formal and Informal enforcement follow the EPA SDWIS enforcement-action classification; Any is a cell with an enforcement action of either category. Panel B: Sanitary visits are sanitary surveys and follow-up sanitary surveys; Technical assistance covers technical assistance, engineering, and operations and maintenance visits; Enforcement visits are formal-enforcement, investigation, and emergency site visits; Sample collection is a sample-collection visit; Inspection covers site, regularly scheduled, and informal system inspections. An enforcement action or visit type may co-occur with others in the same cell, so rows need not sum to the Any/whole-panel total. Number of observations = 6,225.
+\end{minipage}
+\end{table}

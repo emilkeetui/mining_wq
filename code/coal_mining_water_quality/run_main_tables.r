@@ -315,9 +315,14 @@ first_stage_table <- function(storage_list_name, outfile, title = NULL,
 # first panel and the very bottom of the last panel; single \hline for every
 # other internal rule, so the three tabulars read as one table.
 fmt_pair <- function(est, se, pval, digits = 2) {
-  num    <- sprintf(paste0("%.", digits, "f"), est)
-  se_num <- sprintf(paste0("%.", digits, "f"), se)
-  int_w  <- function(s) nchar(sub("\\..*$", "", sub("^-", "", s)))
+  # Reserve a sign slot for both lines of the pair (real "-" or a matching
+  # \phantom{-}) so a negative coefficient's minus sign does not shift its
+  # digits - and therefore its decimal point - out of alignment with the
+  # (always non-negative) standard error printed directly below it.
+  sign_coef <- if (est < 0) "-" else "\\phantom{-}"
+  num       <- sprintf(paste0("%.", digits, "f"), abs(est))
+  se_num    <- sprintf(paste0("%.", digits, "f"), se)
+  int_w  <- function(s) nchar(sub("\\..*$", "", s))
   w      <- max(int_w(num), int_w(se_num))
   pad_to <- function(s) {
     cur <- int_w(s)
@@ -328,8 +333,8 @@ fmt_pair <- function(est, se, pval, digits = 2) {
   stars_n <- if (is.na(pval)) 0L else if (pval < 0.01) 3L else if (pval < 0.05) 2L else if (pval < 0.1) 1L else 0L
   stars_render <- paste0(vapply(1:3, function(i) if (i <= stars_n) "*" else "\\phantom{*}", character(1)), collapse = "")
   list(
-    coef = paste0("\\phantom{(}", num, "$^{", stars_render, "}$"),
-    se   = paste0("(", se_num, ")\\phantom{$^{***}$}")
+    coef = paste0("\\phantom{(}", sign_coef, num, "$^{", stars_render, "}$"),
+    se   = paste0("(", "\\phantom{-}", se_num, ")\\phantom{$^{***}$}")
   )
 }
 
@@ -362,8 +367,15 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
   # though each panel's tabular is a separate environment with its own
   # row-label text ("Upstream coal mines (sum)" vs. the longer instrument
   # interaction label).
-  label_w    <- "5.5cm"
-  data_w     <- "5.2cm"
+  # Data columns are capped at 3cm each (the width tuned for the 3-outcome
+  # tables) but shrink further for tables with more outcome columns so the
+  # table never exceeds the 16.51cm text width (12pt article, 1in margins).
+  label_w_cm <- 5.5
+  max_w_cm   <- 16
+  data_w_cm  <- min(3, (max_w_cm - label_w_cm) / n_y)
+  label_w    <- paste0(label_w_cm, "cm")
+  data_w     <- paste0(data_w_cm, "cm")
+  total_w    <- paste0(label_w_cm + n_y * data_w_cm, "cm")
   col_spec   <- paste0("p{", label_w, "}",
                         paste(rep(paste0(">{\\raggedleft\\arraybackslash}p{", data_w, "}"), n_y), collapse = ""))
   header_row <- paste0(" & ", paste0(y_labels, collapse = " & "), " \\\\")
@@ -384,17 +396,12 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     paste0(" & ", paste(sapply(cells, `[[`, "se"), collapse = " & "), " \\\\")
   }
 
-  # Rule under the outcome-name header spans only the data columns (not the
-  # blank cell above the row-label column).
-  sub_rule <- paste0("\\cline{2-", n_y + 1, "}")
-
   panel_a <- c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline\\hline",
-    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel A: OLS} \\\\"),
-    "\\hline",
     header_row,
-    sub_rule,
+    "\\hline",
+    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel A: OLS} \\\\"),
     coef_line(ols_cells, coal_lab),
     se_line(ols_cells),
     "\\end{tabular}"
@@ -404,9 +411,6 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline",
     paste0("\\multicolumn{", n_y + 1, "}{l}{Panel B: Reduced Form} \\\\"),
-    "\\hline",
-    header_row,
-    sub_rule,
     coef_line(rf_cells, instr_lab),
     se_line(rf_cells),
     "\\end{tabular}"
@@ -416,9 +420,6 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline",
     paste0("\\multicolumn{", n_y + 1, "}{l}{Panel C: 2SLS} \\\\"),
-    "\\hline",
-    header_row,
-    sub_rule,
     coef_line(iv_cells, coal_lab),
     se_line(iv_cells),
     "\\hline\\hline",
@@ -457,12 +458,16 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
   table_lines <- c(
     "\\begin{table}[htbp]",
     "\\raggedright",
+    paste0("\\begin{minipage}{", total_w, "}"),
     paste0("\\caption{\\label{", label, "} ", title, "}"),
+    "\\end{minipage}",
     "\\small",
+    "{\\setlength{\\tabcolsep}{4pt}%",
     panel_a,
     panel_b,
     panel_c,
-    "\\begin{minipage}{\\linewidth}",
+    "}",
+    paste0("\\begin{minipage}{", total_w, "}"),
     "\\vspace{4pt}",
     "\\footnotesize",
     "\\raggedright",
@@ -654,12 +659,16 @@ for (sp in bin_sample_specs) {
     fs_store_name <- paste0("fs_store_", sp$sample, sp$suffix, "_", vp$name, "_bin")
     for (cp in cat_specs) {
       fname           <- paste0("2sls_", sp$sample, "_", vp$name, "_", cp$name, sp$suffix, "_binvio")
-      is_panel_target <- identical(fname, "2sls_dwnstrm_minevio_mr_ivsum_binvio")
-      tab_title       <- if (is_panel_target) {
-        "Effect of coal mines on inorganic chemical monitoring and reporting violations at utilities"
-      } else {
+      # All three category cuts (any violation / MCL / MR) of the main
+      # dwnstrm+_ivsum binary spec render as panel-style tables so their
+      # main.tex entries share one consistent (portrait) layout.
+      is_panel_target <- TRUE
+      tab_title       <- switch(cp$name,
+        allcat = "Effect of coal mines on inorganic chemical violations at utilities",
+        mcl    = "Effect of coal mines on inorganic chemical maximum contaminant level violations at utilities",
+        mr     = "Effect of coal mines on inorganic chemical monitoring and reporting violations at utilities",
         paste0("Effect of coal mines on ", vp$titlevio, " (", cp$titlecat, ", ", sp$titlesamp, ")")
-      }
+      )
       varlist   <- vp[[cp$varkey]]
       cat("\nRunning:", fname, "\n")
       tsls_reg_output_main(dset=sp$dset, varlist=varlist, coalvar=sp$coalvar,
