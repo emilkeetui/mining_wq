@@ -312,6 +312,40 @@ wrap_table_float(out_tex,
 reformat_notes_tiny(out_tex)
 cat(sprintf("\nTable saved to: %s\n", out_tex))
 
+# -- Presentation companion: notes stripped to clustering + stars only (FE
+# rows already shown in the table body) -- see
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+note_main_present <- paste0(
+  "\\textit{Notes:} SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+out_tex_present <- sub("\\.tex$", "_present.tex", out_tex)
+if (have_ars) {
+  etable(ars, ars_6mon, nit, nit_6mon, pool, pool_6mon,
+         headers   = main_headers,
+         notes     = note_main_present,
+         fitstat   = ~n,
+         digits    = "r4",
+         style.tex = style.tex("aer", adjustbox = TRUE),
+         file      = out_tex_present,
+         replace   = TRUE)
+} else {
+  etable(nit, nit_6mon, pool, pool_6mon,
+         headers   = main_headers,
+         notes     = note_main_present,
+         fitstat   = ~n,
+         digits    = "r4",
+         style.tex = style.tex("aer", adjustbox = TRUE),
+         file      = out_tex_present,
+         replace   = TRUE)
+}
+rename_tex(out_tex_present)
+right_align_tabular(out_tex_present)
+wrap_table_float(out_tex_present,
+  "Monitoring and Reporting (MR) violations following contaminant concentration readings",
+  label = "tab:mr_concentration_lag")
+reformat_notes_tiny(out_tex_present)
+cat(sprintf("Presentation table saved to: %s\n", out_tex_present))
+
 note_placebo <- paste0(
   "Past-window placebo: same specifications as the forward-window table but outcome is ",
   "an MR violation occurring BEFORE the sample date (1--365 days before for 1-yr columns; ",

@@ -1,0 +1,481 @@
+﻿% ============================================================
+% File:    job_talk.tex
+% Purpose: 30-slide beamer job-talk version of main.tex
+% Inputs:  ../../output/reg/*_present.tex, ../../output/sum/*_present.tex,
+%          ../../output/fig/*.png, img/*, citation.bib
+% Outputs: job_talk.pdf
+% Author:  EK  Date: 2026-08-31
+% ============================================================
+
+\documentclass{beamer}
+\usetheme{Boadilla}
+\setbeamertemplate{footline}[page number]
+\setbeamertemplate{navigation symbols}{}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{adjustbox}
+\usepackage{varwidth}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=bwl-FU
+]{biblatex}
+\addbibresource{citation.bib}
+
+% ============================================================
+% Pipeline output directory (relative to this file)
+%   \presreg{name}  -> ../../output/reg/name_present.tex
+%   \pressum{name}  -> ../../output/sum/name_present.tex
+%   \presfig{f.png} -> ../../output/fig/f.png
+% ============================================================
+\newcommand{\outputdir}{../../output}
+
+% The generated *_present.tex files are written as article floats:
+% \begin{table}[htbp] ... \caption{...} ... \end{table}. Beamer has no float
+% mechanism, and wrapping a float in adjustbox raises
+% "! LaTeX Error: Not in outer par mode." Neutralise the float and swallow the
+% caption (on a slide the frame title carries the caption text), so the table
+% body is plain material that can be boxed and scaled.
+\makeatletter
+\renewenvironment{table}[1][]{\par\centering}{\par}
+\renewcommand{\caption}[2][]{}
+\makeatother
+
+% Box the table body at its natural width inside a varwidth, so multi-panel
+% files still break between panels instead of setting them side by side, then
+% shrink only as much as is needed to fit the slide.
+% Optional argument overrides the width key, for source files that hardcode a
+% narrow adjustbox (e.g. width = 0.45\textwidth) and so need scaling UP: max
+% width only ever shrinks.
+\newcommand{\slidetableinput}[2][max width=\textwidth]{%
+  \adjustbox{#1, max totalheight=0.80\textheight, center}{%
+    \begin{varwidth}{17cm}%
+      \input{#2}%
+    \end{varwidth}}}
+\newcommand{\presreg}[2][max width=\textwidth]{\slidetableinput[#1]{\outputdir/reg/#2_present}}
+\newcommand{\pressum}[2][max width=\textwidth]{\slidetableinput[#1]{\outputdir/sum/#2_present}}
+\newcommand{\presfig}[2][0.75\textheight]{%
+  \begin{center}%
+  \adjustbox{max width=\textwidth, max height=#1}{\includegraphics{\outputdir/fig/#2}}%
+  \end{center}}
+
+% One-line takeaway under a table or figure. The group must close AFTER \par or
+% the paragraph inherits the outer font's baselineskip on its first line.
+\newcommand{\takeaway}[1]{\par\medskip{\footnotesize #1\par}}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\title[Contamination and Self-Reported Compliance]{The Effect of Contamination on Contamination Limit Regulation}
+\subtitle{US Coal Mining and Drinking Water Utilities}
+\author{Emil Kee-Tui}
+\institute{Charles H. Dyson School of Applied Economics and Management \\ Cornell University}
+\date{August 2026}
+
+\begin{document}
+
+% ---------------------------------------------------------------- 1
+\begin{frame}
+\titlepage
+\end{frame}
+
+% ---------------------------------------------------------------- 2
+\begin{frame}{Coal is not going away, and ``clean'' coal is not clean}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\begin{itemize}\small
+    \item Coal supplied 16\% of US electricity in 2025 (\cite{IEA2025GER}).
+    \item Federal policy is expanding mining access and delaying plant retirements (\cite{Trump2025EO14260}; \cite{Daly2025CoalMining}).
+    \item ``Clean'' coal $\equiv$ low sulfur coal $\equiv$ less acid rain.
+    \item It says nothing about water: mining leaches arsenic, selenium, and barium into source water (\cite{skousen2019acid}).
+    \item 85\% of US households drink water from a utility that must treat and test that source water.
+\end{itemize}
+\end{column}
+\begin{column}{0.46\textwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{img/president_clean_coal.PNG}
+\par\medskip{\scriptsize ``Clean'' coal $\equiv$ $\leq 2\%$ sulfur by weight.\par}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ---------------------------------------------------------------- 3
+\begin{frame}{The regulator only sees what the firm chooses to report}
+\begin{itemize}
+    \item Contamination limits, from taxes to drinking water, are policed by \textbf{self-reported compliance}.
+    \item The regulator learns of an exceedance only if the firm tests and files.
+    \item Two violations, very different prices:
+    \begin{itemize}
+        \item \textbf{MCL} --- reported contamination above the limit. Costly, often formally enforced.
+        \item \textbf{MR} --- failure to monitor and report. Cheap.
+    \end{itemize}
+    \item Rising contamination pushes both incentives the same way:
+    \begin{itemize}
+        \item testing requirements, and so \textbf{reporting costs}, rise with impairment;
+        \item the \textbf{value of concealing} an exceedance rises too.
+    \end{itemize}
+    \item If the price of silence does not rise with contamination, monitoring quietly fails.
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 4
+\begin{frame}{Research question}
+\begin{center}
+\begin{beamercolorbox}[sep=10pt,center,rounded=true,shadow=true]{block body}
+\large What happens to firms and regulators when contamination of the regulated output rises exogenously, under self-reported compliance?
+\end{beamercolorbox}
+\end{center}
+\bigskip
+\begin{itemize}
+    \item Does contamination reduce firm self-reporting?
+    \item Is the reduction concealment of exceedances, or avoidance of reporting costs?
+    \item Does the regulator's enforcement rise to meet it?
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 5
+\begin{frame}{What I do, and what is new}
+\begin{itemize}
+    \item Setting: community water systems (CWS) downstream of coal mines, 1985--2005.
+    \begin{itemize}
+        \item Contamination arrives as an \textbf{upstream externality} --- the firm cannot cut it by cutting output.
+        \item That separation is what makes the effect of contamination identifiable.
+    \end{itemize}
+    \item Instrument: upstream coal sulfur \% $\times$ post-1995, the Acid Rain Program Phase I deadline.
+    \item Three things that are new:
+    \begin{itemize}
+        \item First causal estimates of coal mining on \textbf{treated} drinking water at US utilities.
+        \item First evidence that \textbf{the cost of self-reporting}, not only concealment, drives water utility under-reporting (cf.\ \cite{bennear2009sampling}; \cite{zou2021unwatched}).
+        \item First estimates of how \textbf{contamination itself} shifts regulator enforcement and inspection (\cite{shimshack2014economics}).
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 6
+\begin{frame}{What I find}
+\begin{itemize}\small
+    \item $\uparrow$ mining $\rightarrow$ $\uparrow$ contaminant concentrations. 10M cumulative tons upstream raises mean arsenic by 0.0023 mg/L, about 100\% of its sample mean; selenium $+$69\%, barium $+$24\%. All stay below the MCL.
+    \item $\uparrow$ mining $\rightarrow$ $\uparrow$ \textbf{under-reporting}. One more upstream mine raises MR violations by 7--10 pp, more than doubling the base rate.
+    \item $\uparrow$ mining $\rightarrow$ \textbf{no} change in MCL violations. The contamination record goes blank, not red.
+    \item Costs, not only concealment: when nitrate readings cross 50\% of the MCL and monitoring requirements step up, failure to report jumps.
+    \item $\uparrow$ mining $\rightarrow$ $\downarrow$ \textbf{formal enforcement} ($-$5.7 pp) but $\uparrow$ \textbf{sanitary visits} ($+$14 pp).
+\end{itemize}
+\medskip
+\begin{center}
+\begin{beamercolorbox}[sep=6pt,center,rounded=true]{block body}
+Contamination shifts monitoring from the firm onto the regulator, without ever raising the price of silence.
+\end{beamercolorbox}
+\end{center}
+\end{frame}
+
+% ================================================================
+\section{Setting and data}
+% ================================================================
+
+% ---------------------------------------------------------------- 8
+\begin{frame}{The SDWA runs on self-reports}
+\begin{itemize}
+    \item Community water systems: $\geq$ 25 people, $\geq$ 15 connections, year-round.
+    \item The utility tests its own water on a schedule and files results with the state.
+    \begin{itemize}
+        \item Testing needs technical staff, administrative tracking, and paid laboratories.
+        \item Surveyed managers named reporting as the SDWA's single largest burden (\cite{oleckno1982national}).
+        \item Schedules \textbf{tighten with assessed source-water impairment}.
+    \end{itemize}
+    \item States hold primacy and wide discretion. Enforcement is remedial before punitive: informal (letters, notices, compliance plans), formal (consent decrees, fines, prosecution), and visits (sanitary, sampling, technical assistance).
+    \item No self-report $\Rightarrow$ no MCL violation can be issued.
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 9
+\begin{frame}{Mining puts inorganic chemicals in the water}
+\begin{itemize}
+    \item \textbf{Acid mine drainage}: exposed sulfide rock oxidises, forms sulfuric acid, dissolves metal ions and sulfates, which travel into surface and ground water (\cite{skousen2019acid}).
+    \item \textbf{Coal wash slurry}: impurities stored in retaining ponds seep through porous rock, or the ponds fail.
+    \item Both scale with the \textbf{sulfur content} of the coal seam.
+    \item Contaminants: \textbf{arsenic, nitrate, barium, selenium} --- all inorganic chemicals, all with MCLs unchanged over 1985--2005.
+    \item Removing them is not free: replacing one small system's arsenic filtration cost \$192,000 plus \$60/day to run (US EPA, 2011).
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 10
+\begin{frame}{The Acid Rain Program moved coal, not for water reasons}
+\begin{columns}[T]
+\begin{column}{0.44\textwidth}
+\begin{itemize}\small
+    \item 1990 Clean Air Act amendments cap SO$_2$ from power plants; Phase I deadline \textbf{1995}.
+    \item Power plants were 90\% of coal demand; switching to low sulfur coal was the main compliance response.
+    \item Demand shifts \textbf{toward low sulfur}, \textbf{away from high sulfur} seams.
+    \item High sulfur mines cannot wash the sulfur out --- it is bound into the coal's chemical structure.
+\end{itemize}
+\end{column}
+\begin{column}{0.54\textwidth}
+\includegraphics[width=\textwidth]{\outputdir/fig/coal_summary_plot.png}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ---------------------------------------------------------------- 11
+\begin{frame}{Model: the utility's two decisions}
+Utility draws compliance cost $\theta \sim F(\cdot\,;m)$ and reporting cost $c \sim G(\cdot\,;m)$, both worsening in upstream contamination $m$.
+\begin{itemize}\small
+    \item Chooses negligence $a$, unobserved, with benefit $\theta b(a)$, $b'>0$, $b''<0$.
+    \item Each of $N$ required tests would reveal an exceedance with probability $q(a)$, $q'>0$.
+    \item Penalties: $r$ for a self-reported exceedance, $t$ for an MR violation, $s>r$ if an audit (probability $p$) uncovers a hidden exceedance.
+\end{itemize}
+\[
+\underbrace{c + q(a)\,r}_{\text{report}} \;\lessgtr\; \underbrace{t + p\,q(a)\,s}_{\text{stay silent}}
+\;\Longrightarrow\;
+\text{report iff } c \le \hat c(a) \equiv t - (r-ps)\,q(a).
+\]
+\begin{itemize}
+    \item A system with \textbf{zero} exceedance risk still stops reporting once $c > t$.
+    \item Silence is cheap at the margin: $ps < r$.
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 12
+\begin{frame}{Model: three predictions I take to the data}
+\begin{block}{Proposition 1}
+Negligence rises in compliance cost: $\partial a/\partial\theta > 0$ within each region.
+\end{block}
+\begin{block}{Proposition 2}
+Under-reporting rises with contamination, $\partial MR/\partial m \ge 0$, through two channels: reporting costs shift up against a fixed cutoff, and the population shifts toward high-cost types whose own cutoff is already lower.
+\end{block}
+\begin{block}{Proposition 3}
+Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting threshold, $C^*(\lambda) = \lambda\,\hat c(a_\lambda)$. Reporting costs are technology, not legal penalties, so they do not scale with enforcement.
+\end{block}
+\takeaway{Proposition 2 is the test. Proposition 3 says the lever is the price of silence, not the stringency of the limit.}
+\end{frame}
+
+% ---------------------------------------------------------------- 13
+\begin{frame}{Data}
+\begin{itemize}\small
+    \item \textbf{Violations, enforcement, visits} --- SDWIS/ECHO, universe of CWSs 1985--2005. Binary by CWS $\times$ year; days-in-year as a robustness measure.
+    \begin{itemize}
+        \item Under-inclusive but accurate: 95\% of the violations SDWIS holds are correctly reported (US EPA, 2000).
+    \end{itemize}
+    \item \textbf{Contaminant concentrations} --- EPA Six-Year Review round 2, 1998--2005. Cleaned following \cite{ravalli2022sociodemographic}; non-detects set to MDL/$\sqrt{2}$.
+    \item \textbf{Mines} --- MSHA locations merged to EIA annual production, mine by mine.
+    \item \textbf{Coal sulfur \%} --- USGS COALQUAL cores, averaged within 20 km of each watershed.
+    \item \textbf{Hydrology} --- NHDPlus HUC12 boundaries and inflow/outflow.
+    \item Sample: CWSs with an intake \textbf{strictly one HUC12 downstream} of a mine watershed. 6,225 CWS-years, 333 CWSs.
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 14
+\begin{frame}{Matching intakes to the watershed above them}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\begin{itemize}\small
+    \item HUC12 is the finest watershed mapped for the continental US ($>$87,000 units).
+    \item Exposure = mines and tons in the HUC12s \textbf{directly upstream} of the CWS's intakes.
+    \item Intakes \textbf{colocated} with a mine are excluded: an intake at a watershed's inflow need not be downstream of a mine at its outflow.
+    \item Multiple intakes: sum production, average sulfur.
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\includegraphics[width=\textwidth]{img/WBD_Base_HUStructure_small.png}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ---------------------------------------------------------------- 15
+\begin{frame}{MR violations are common; MCL violations barely exist}
+\pressum{violation_binary_days_panels}
+\takeaway{Nitrate MR 6.1\%, arsenic 4.0\%, IOC 4.6\% of CWS-years. MCL violations: 4, 2, and 20 events across twenty years.}
+\end{frame}
+
+% ================================================================
+\section{Does coal mining contaminate utility water?}
+% ================================================================
+
+% ---------------------------------------------------------------- 17
+\begin{frame}{Design: cumulative production, measured concentrations}
+\begin{equation*}
+\textit{Concen}_{cht}= \beta\cdot\!\!\sum_{\tau=1985}^{t}\!\!\text{UpstreamCoalProd}_{c\tau} + \rho_c + HUC02_h\cdot\tau_t + \epsilon_{cht}
+\end{equation*}
+\begin{itemize}\small
+    \item $\textit{Concen}_{cht}$: mean annual concentration at CWS $c$ in basin $h$, year $t$ (SYR2, 1998--2005).
+    \item $\beta$: effect of 10 million additional cumulative short tons mined upstream since 1985.
+    \item $\rho_c$: CWS fixed effects. $HUC02_h\cdot\tau_t$: basin-specific year effects, absorbing region-wide industrial trends.
+    \item SEs clustered at the CWS level.
+\end{itemize}
+\medskip
+\begin{itemize}
+    \item Continuous treatment, \textbf{no pure control}: identification comes from relative exposure.
+    \item Assumption: CWSs with large upstream production changes would have trended like those with small ones.
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 18
+\begin{frame}{Mining raises contaminant levels --- but not above the limit}
+\presreg{6yr_huc02fe_inorg_ravalli_2005}
+\takeaway{Arsenic $+$0.0023 mg/L per 10M tons: about 100\% of its mean, and 4.6\% of the pre-2006 MCL. Selenium $+$69\% and barium $+$24\% of their means. Nitrate is positive but imprecise. \textbf{Every reading in the sample stays under its MCL.}}
+\end{frame}
+
+% ================================================================
+\section{Do utilities keep self-reporting?}
+% ================================================================
+
+% ---------------------------------------------------------------- 20
+\begin{frame}{IV design: the ARP as a shifter of where coal is mined}
+First stage:
+\begin{equation*}
+\begin{split}
+\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{NumFacility}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + Y_t + C_c + \nu_{ct}
+\end{split}
+\end{equation*}
+Second stage:
+\begin{equation*}
+\text{Violation}_{vct} = \beta_0 + \beta_1\text{NumFacility}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} + Y_t + C_c + \epsilon_{ct}
+\end{equation*}
+\begin{itemize}\small
+    \item $\text{Post95}_t = \mathbf{1}\{t > 1995\}$. Sulfur is time-invariant, so $C_c$ absorbs its level.
+    \item Outcome: 1 if CWS $c$ had a violation of type $v$ at any point in year $t$. Coefficients are in percentage points.
+    \item SEs clustered at the CWS level.
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 21
+\begin{frame}{Before 1995 mines followed sulfur; after 1995 they did not}
+\presfig[0.74\textheight]{scatterhuccoalsulfur_pooled.png}
+\end{frame}
+
+% ---------------------------------------------------------------- 22
+\begin{frame}{First stage: high sulfur watersheds lost their mines}
+\presreg[width=0.62\textwidth]{fs_dwnstrm_minevio_ivsum}
+\takeaway{$F = 27.5$, above the 23.1 critical value of \cite{montielolea2013robust} for a 5\% test against 10\% worst-case bias, and well above the rule of thumb of 10 (\cite{staigerstock1997instrumental}).}
+\end{frame}
+
+% ---------------------------------------------------------------- 23
+\begin{frame}{Why I believe the instrument}
+\begin{itemize}\small
+    \item \textbf{Independence.} The ARP is national clean-\emph{air} law. Its scope, stringency, and 1995 date were set by national energy and emissions politics, not by any downstream utility's water quality or its influence over mine siting. Time-invariant sulfur exposure is absorbed by CWS fixed effects.
+    \item \textbf{Exclusion.} The threat is a post-1995 SDWA change hitting high- and low-sulfur utilities differently. National rule changes are absorbed by year effects. Directly testable: regress the number of intake facilities --- the observable proxy for the model's negligence type --- on the instrument. The coefficient is $-0.0016$ (s.e.\ 0.0016), with and without a balanced panel.
+    \item \textbf{Monotonicity.} A defier is a high-sulfur watershed that expanded \emph{because} its coal was high sulfur. Scrubber adopters lose share rather than gain it; low-cost high-sulfur regions that expand anyway are never-takers. Monotonicity is pairwise in sulfur, so low- and high-sulfur areas may respond in opposite directions (\cite{angrist1994identification}).
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 24
+\begin{frame}{Mining makes utilities stop reporting}
+\presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio}
+\takeaway{One more upstream mine: nitrate MR $+$9.9 pp, arsenic $+$7.4 pp, IOC $+$7.1 pp, against base rates of 6.1\%, 4.0\%, and 4.6\%. OLS is roughly five times smaller --- negative omitted variable bias, as expected if utilities that can keep mines out are also better at compliance.}
+\end{frame}
+
+% ---------------------------------------------------------------- 25
+\begin{frame}{And the contamination record goes blank, not red}
+\presreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio}
+\takeaway{MCL effects are economically and statistically indistinguishable from zero. This is not evidence that the water stayed clean: without a self-report, the regulator cannot issue an MCL violation at all.}
+\end{frame}
+
+% ---------------------------------------------------------------- 26
+\begin{frame}{Reporting cost, not only concealment}
+\begin{itemize}\small
+    \item Nitrate rules require \textbf{more frequent monitoring} once a reading exceeds 50\% of the MCL --- a discrete jump in $c$ with no jump in the penalty for silence.
+    \item The model predicts MR rises at that threshold even holding exceedance risk fixed.
+\end{itemize}
+\presreg{mr_concentration_lag}
+\takeaway{Crossing 50\% of the nitrate MCL raises the probability of failing to report within six months by 26 pp, and within a year by 59 pp. Descriptive, not causal --- read the sign, not the magnitude.}
+\end{frame}
+
+% ================================================================
+\section{How do regulators respond?}
+% ================================================================
+
+% ---------------------------------------------------------------- 28
+\begin{frame}{Enforcement moves the wrong way}
+\presreg{h3_inf_formal_d12}
+\takeaway{One more upstream mine cuts formal enforcement by 5.7 pp against a base rate of 3.5\%; informal enforcement is flat. Formal action needs evidence, and under-reporting is precisely the absence of evidence.}
+\end{frame}
+
+% ---------------------------------------------------------------- 29
+\begin{frame}{The regulator substitutes its own monitoring instead}
+\presreg{h2_snsv_d12}
+\takeaway{Sanitary visits $+$14.1 pp against a base rate of 14.6\%; enforcement visits $+$3.7 pp. Regulators show up --- and then do not sanction. Either there are no hidden exceedances, or visits do not find them (\cite{mi2026technology}); I cannot separate the two.}
+\end{frame}
+
+% ---------------------------------------------------------------- 30
+\begin{frame}{Conclusion}
+\begin{itemize}\small
+    \item Exogenous contamination raises the cost of self-reporting, and self-reporting falls --- \textbf{even where the quality standard is never breached}.
+    \item The evidence points to cost avoidance over concealment: concentrations stay below MCLs, regulators visit but do not prosecute, and reporting failures spike exactly where monitoring requirements step up.
+    \item Enforcement does not keep pace. Formal action falls as contamination rises, and the regulator absorbs the monitoring burden through sanitary visits instead.
+    \item \textbf{Policy.} Tightening MCLs does nothing if nobody tests. Raising the price of \emph{not} reporting where source water is impaired is the binding lever (\cite{malik1993self}; \cite{harford1987self}).
+    \item Open question: whether shifting monitoring onto the regulator is efficient depends on relative monitoring costs and on regulator preferences.
+\end{itemize}
+\vfill
+\centering \small ek559@cornell.edu
+\end{frame}
+
+% ================================================================
+% Appendix
+% ================================================================
+\begin{frame}
+\vfill
+\centering
+\begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+\usebeamerfont{title}Appendix\par
+\end{beamercolorbox}
+\vfill
+\end{frame}
+
+\begin{frame}{Appendix: combined MR and MCL violations}
+\presreg{2sls_dwnstrm_minevio_allcat_ivsum_binvio}
+\takeaway{The combined effect is the MR effect: nitrate $+$9.9 pp, arsenic $+$7.5 pp, IOC $+$6.3 pp.}
+\end{frame}
+
+\begin{frame}{Appendix: instrument balance on intake facilities}
+\presreg{exclusion_test_num_facilities}
+\end{frame}
+
+\begin{frame}{Appendix: concentration summary statistics}
+\pressum{6yr_huc02fe_inorg_val_sumstats_ravalli_2005}
+\end{frame}
+
+\begin{frame}{Appendix: who appears in the Six-Year Review}
+\pressum{syr2_mr_comparison}
+\takeaway{Utilities with SYR2 readings are 18--23 pp more likely to ever incur an MR violation. The concentration sample over-represents the more negligent utilities, so it is not selected toward clean systems.}
+\end{frame}
+
+\begin{frame}{Appendix: enforcement and visits in the panel}
+\pressum{enforcement_visit_type_panels}
+\takeaway{Enforcement responds to violations --- any enforcement rises from 21\% overall to 71\% in MR years --- but sanitary visits are no more likely in MR years than in any other year.}
+\end{frame}
+
+\begin{frame}{Appendix: reporting lag, national downstream states}
+\presreg{mr_concentration_lag_national_downstream_states}
+\end{frame}
+
+\begin{frame}{Appendix: where coal production moved, 1985--2005}
+\presfig[0.72\textheight]{proportionatecircleprod_diff_allminehuc12_1985_2005.png}
+\end{frame}
+
+\begin{frame}{Appendix: residualized first stage}
+\presfig[0.72\textheight]{first_stage_scatter_dwnstrm.png}
+\end{frame}
+
+\begin{frame}{Appendix: sample watersheds}
+\presfig[0.72\textheight]{map_huc12_main_sample.png}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+\printbibliography
+\end{frame}
+
+\end{document}

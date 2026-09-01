@@ -119,6 +119,7 @@ postprocess_table <- function(x) right_align_tabular(rename_col_numbers_to_label
 
 tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, label,
                                   instr_str, dict = NULL, notes = NULL,
+                                  notes_present = NULL,
                                   storage_list_name = NULL, subheader = NULL,
                                   fitstat = ~ ., panel_style = FALSE) {
   controls            <- c("num_facilities")
@@ -188,6 +189,14 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
     render_panel_binary_table(result = result, dict = dict, coalvar = coalvar,
                                instr_str = instr_str, title = title, label = label,
                                outfile = regoutname)
+    # Presentation companion: same panels, notes stripped to FE + clustering +
+    # stars only (see .claude/logs/2026-08-31-presentation-notes-tables.md).
+    if (!is.null(notes_present)) {
+      render_panel_binary_table(result = result, dict = dict, coalvar = coalvar,
+                                 instr_str = instr_str, title = title, label = label,
+                                 outfile = paste0(regoutname, "_present"),
+                                 notes = notes_present)
+    }
     return(invisible(NULL))
   }
 
@@ -228,6 +237,7 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
 first_stage_table <- function(storage_list_name, outfile, title = NULL,
                                label = NULL, which_coalvar = NULL,
                                drop = NULL, dict = NULL, notes = NULL,
+                               notes_present = NULL,
                                fitstat = ~ n) {
   fs_list      <- get(storage_list_name, envir = .GlobalEnv)
   model_list   <- list()
@@ -301,6 +311,16 @@ first_stage_table <- function(storage_list_name, outfile, title = NULL,
   if (!is.null(dict))        etable_args$dict    <- dict
   if (!is.null(notes))       etable_args$notes   <- notes
   do.call(etable, c(model_list, etable_args))
+
+  # Presentation companion: same table, notes stripped to FE + clustering +
+  # stars only (see .claude/logs/2026-08-31-presentation-notes-tables.md).
+  if (!is.null(notes_present)) {
+    etable_args_present         <- etable_args
+    etable_args_present$notes   <- notes_present
+    etable_args_present$file    <- sub("\\.tex$", "_present.tex",
+                                        etable_args$file)
+    do.call(etable, c(model_list, etable_args_present))
+  }
 }
 
 # ── Panel-style table for a binary-violation MR/2SLS table ──────────────────
@@ -372,7 +392,7 @@ get_term <- function(model, term) {
   }
 }
 
-render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile) {
+render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile, notes = NULL) {
   y_vec    <- names(result)
   n_y      <- length(y_vec)
   y_labels <- sapply(y_vec, function(v) if (!is.null(dict) && v %in% names(dict)) dict[[v]] else v)
@@ -489,7 +509,7 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
            " to ", fmt_single(max(f_vals)), " across outcomes.")
   }
 
-  note_text <- paste0(
+  note_text <- if (!is.null(notes)) notes else paste0(
     "\\textit{Notes:} Dependent variable equals 1 if the utility had any violation of that type ",
     "during the year, 0 otherwise; coefficients and standard errors multiplied by 100 to show ",
     "percentage point change. The instrument interacts an indicator for the post-1995 period with ",
@@ -621,6 +641,14 @@ for (sp in sample_specs) {
     fs_title   <- paste0("First stage: effect of the Acid Rain Program on the number of upstream coal mines (",
                          fs_agg, ", ", sp$titlesamp, ")")
     cat("\nProducing first-stage table:", fs_outfile, "\n")
+    # Presentation companion only for the one first-stage table used in
+    # main.tex (fs_dwnstrm_minevio_ivsum) — see
+    # .claude/logs/2026-08-31-presentation-notes-tables.md.
+    fs_notes_present <- if (fs_outfile == "fs_dwnstrm_minevio_ivsum") {
+      paste0("\\textit{Notes:} All specifications include CWS and year fixed effects. ",
+             "Standard errors clustered at the CWS level. ",
+             "*** p$<$0.01, ** p$<$0.05, * p$<$0.1.")
+    } else NULL
     first_stage_table(
       storage_list_name = fs_store_name,
       outfile           = fs_outfile,
@@ -629,6 +657,7 @@ for (sp in sample_specs) {
       drop              = "num_facilities",
       dict              = vio_dict,
       notes             = fs_note(sp$suffix == "_ivsum", sp$notesamp),
+      notes_present     = fs_notes_present,
       fitstat           = if (sp$suffix == "_ivsum") ~ n else ~ .
     )
   }
@@ -716,9 +745,17 @@ for (sp in bin_sample_specs) {
       )
       varlist   <- vp[[cp$varkey]]
       cat("\nRunning:", fname, "\n")
+      # Presentation companion: notes stripped to FE + clustering + stars
+      # only (see .claude/logs/2026-08-31-presentation-notes-tables.md).
+      bin_notes_present <- paste0(
+        "\\textit{Notes:} All specifications include utilities and year fixed effects. ",
+        "Standard errors clustered at the utilities level. ",
+        "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+      )
       tsls_reg_output_main(dset=sp$dset, varlist=varlist, coalvar=sp$coalvar,
                            regoutname=fname, title=tab_title, label=fname,
                            instr_str=sp$instr, dict=vio_dict_bin, notes=std_note_ivsum_bin,
+                           notes_present=bin_notes_present,
                            storage_list_name=fs_store_name,
                            subheader=cp$titlecat,
                            fitstat=~ n,

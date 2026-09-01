@@ -197,4 +197,21 @@ header <- c(
 out_path <- "Z:/ek559/mining_wq/output/sum/violation_binary_days_panels.tex"
 writeLines(c(header, "", table_lines), out_path)
 cat("\nOutput written to:", out_path, "\n")
+
+# -- Presentation companion: same table body, notes block omitted entirely
+# (summary statistics carry no clustering/FE/stars) -- see
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+table_lines_present <- c(
+  "\\begin{table}[htbp]",
+  "\\raggedright",
+  "\\caption{Coal Mining Exposed Utilities' Inorganic Chemical Water Violations 1985--2005}",
+  "\\label{tab:violation_binary_days_panels}",
+  "\\small",
+  panel_a_lines,
+  panel_b_lines,
+  "\\end{table}"
+)
+out_path_present <- sub("\\.tex$", "_present.tex", out_path)
+writeLines(c(header, "", table_lines_present), out_path_present)
+cat("Presentation output written to:", out_path_present, "\n")
 cat("=== DONE ===\n")

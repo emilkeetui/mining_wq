@@ -226,3 +226,29 @@ if (file.exists(out_tex) && file.info(out_tex)$size > 0) {
 } else {
   cat(sprintf("[ERROR] %s missing or empty.\n", out_tex))
 }
+
+# -- Presentation companion: notes stripped to FE + clustering + stars only
+# (FE rows are dropped via drop.section="fixef" above, so the statement must
+# stay) -- see .claude/logs/2026-08-31-presentation-notes-tables.md.
+note_main_present <- paste0(
+  "\\textit{Notes:} All specifications include CWS and year fixed effects. ",
+  "SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+out_tex_present <- sub("\\.tex$", "_present.tex", out_tex)
+etable(fwd, fwd6mon, fwd_logit, fwd6mon_logit,
+       headers      = c("Nitrate MR (1-yr)", "Nitrate MR (6-mon)",
+                         "Nitrate MR (1-yr) Logit", "Nitrate MR (6-mon) Logit"),
+       notes        = note_main_present,
+       fitstat      = ~n,
+       digits       = "r4",
+       drop.section = "fixef",
+       style.tex    = style.tex("aer", adjustbox = TRUE),
+       file         = out_tex_present,
+       replace      = TRUE)
+rename_tex(out_tex_present)
+right_align_tabular(out_tex_present)
+wrap_table_float(out_tex_present,
+  "Nitrate MR violations following a reading above 50\\% of the MCL (national sample, downstream-2SLS-sample states)",
+  label = "tab:mr_concentration_lag_national_downstream_states")
+reformat_notes_tiny(out_tex_present)
+cat(sprintf("Presentation table saved to: %s\n", out_tex_present))
