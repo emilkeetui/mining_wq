@@ -1,0 +1,346 @@
+\documentclass{beamer}
+\usetheme{Boadilla}
+\setbeamertemplate{footline}[page number]
+\usepackage{tabularray}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{codehigh}
+\usepackage{breqn}
+\usepackage{amssymb}
+\usepackage{adjustbox}
+\usepackage[normalem]{ulem}
+\usepackage{booktabs}
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{siunitx}
+\newcommand{\tinytableTabularrayUnderline}[1]{\underline{#1}}
+\newcommand{\tinytableTabularrayStrikeout}[1]{\sout{#1}}
+\NewTableCommand{\tinytableDefineColor}[3]{\definecolor{#1}{#2}{#3}}
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=bwl-FU
+]{biblatex}
+\addbibresource{citation.bib}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\title{The Effect of Contamination on Contamination Limit Regulation: US Coal Mining and Drinking Water Utilities}
+\author{Emil Kee-Tui}
+	\affil{\small \emph{Charles H. Dyson School of Applied Economics and Management, Cornell University}}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Coal mining in the US}
+    \begin{itemize}
+        \item US coal mining in the near term is likely to continue to meet demand. 
+        
+        \item Coal provided 33\% of global electricity in 2024 and 16\% of US electricity in 2025 (\cite{IEA2025GER}). 
+ 
+        \item Trump administration; seeking to maintain and expand coal power generation and mining (\cite{Trump2025EO14260}, \cite{Trump2025EO14261}, \cite{Trump2025Proc10914}; \cite{Daly2025CoalMining}).
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{}
+    \begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.066]{img/president_clean_coal.PNG}
+    \caption{Low sulfur coal $\equiv$ $\leq$ 2\% sulfur by weight $\equiv$ ``clean" coal}
+    \label{img:president_clean_coal}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Coal mining in the US}
+    \begin{itemize}
+        \item ``Clean" coal, in fact, is not clean.
+        \begin{itemize}
+            \item Coal burning emits greenhouse gases and air pollution.
+            \item Coal mining contaminates water.
+        \end{itemize}
+        \item The 1990 Clean Air Act Amendments, a.k.a. the Acid Rain Program (ARP), caused US coal demand to shift to low sulfur coal.
+        \begin{itemize}
+            \item SO2 and NOx emission limits on coal fired power plants (main consumers of US coal).
+            \item Compliance deadline for most power plants by end of 1995 (stage 1).
+            \item Compliance achieved with low sulfur coal.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Drinking water regulation}
+    \begin{itemize}
+        \item US coal mining's water pollution impacts depend on the responses of community water systems (CWS).
+        \item CWSs regulated by the Safe Drinking Water Act (SDWA).
+        \item CWSs self monitor and report water quality to regulators.
+        \item CWSs violate the SDWA when they fail:
+        \begin{itemize}
+            \item To monitor their water and/or report tests to regulators on time (MR violation).
+            \item Tested contaminant levels exceed the maximum contaminant level (MCL violation).
+            \item MCL violations have greater penalties than MR violations.
+        \end{itemize}
+        \item Enforcement attempts to be remedial rather than punitive.
+        \item CWS incentives to meet SDWA depend on the cost of compliance and the penalty of non-compliance.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Research questions}  
+    \begin{itemize}
+        \item How did the Acid Rain Program shift the burden of coal mining water pollution?
+        \item Do CWSs stay in SDWA compliance with upstream coal mining pollution?
+        \item Does coal mining raise water pollution at CWSs?
+        \item Does coal mining raise enforcement at CWSs affected by coal mining?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{What this paper does}
+\begin{itemize}
+    \item CWS panel dataset of
+    \begin{itemize}
+        \item SDWA violations
+        \item Contaminant concentrations
+        \item Water intakes
+        \item Upstream coal production and characteristics
+    \end{itemize}
+    \item Identify populations relying on a CWS downstream of coal mining before and after ARP.
+
+    \item 2SLS: coal mining on CWS SDWA violations
+        \begin{itemize}
+            \item Upstream coal mine instrument: upstream coal sulfur \% $\times$ post 1995 (ARP stage 1 deadline)
+        \end{itemize}
+        
+    \item DiD: coal mining effect on CWS water pollution
+
+    \item 2SLS: regulator actions towards CWSs affected by coal mining.
+
+\end{itemize}    
+\end{frame}
+
+\begin{frame}{Results}
+\begin{itemize}
+\item Low sulfur coal areas had fewer CWS intakes, pre-vs-post ARP, 82\% fewer people receiving water from a CWS downstream of a coal mine.
+
+\item CWS SDWA inorganic chemical MR violations (non-compliance) are higher due to coal mining.
+
+\item $\uparrow$ coal mining $\rightarrow$ $\uparrow$ mean concentrations of inorganic chemicals (costs of compliance)
+  
+\item $\uparrow$ coal mining $\rightarrow$ $\downarrow$ formal enforcement (penalty of non-compliance) + $\uparrow$ sanitary visits (remedial enforcement)
+
+\item CWS non-compliance increases as costs of compliance increase and penalty for non-compliance decreases
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Data}
+    \begin{itemize}
+    \item Matching CWS intakes to upstream mines
+    \begin{itemize}
+        \item MSHA mine locations and EPA CWS water intakes at HUC12 level
+        \item USGS US HUC12 inflow/outflow
+        \item $NumIntakes_{ct}=$Number of CWS water intakes
+    \end{itemize}
+    \end{itemize}
+    \begin{figure}[h]
+    \centering
+    \includegraphics[scale=4.6]{img/WBD_Base_HUStructure_small.png}
+    \label{img:huc12pic}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Data}
+\begin{itemize}
+    \item $NumMines_{ct}=$Number of mines/tons of coal mined upstream
+    \begin{itemize}
+        \item EIA mine output
+    \end{itemize}
+    \item $UpstreamCoalSulfur\%_c=$Coal Sulfur \% for HUC12's upstream of CWS c
+    \begin{itemize}
+        \item USGS samples of coal bed characteristics
+    \end{itemize}
+    \item Regulator visits and formal/informal enforcement against each CWS
+    \begin{itemize}
+        \item SDWIS/ECHO
+    \end{itemize}
+    \item Contaminant concentrations at CWS in year
+    \begin{itemize}
+        \item EPA six year review rounds 2 and 3 (SY2 and SY3)
+        \item Exclude contaminants if missing $\geq$ 90\% and outliers 100x MCL
+        \item Missing PA in SYR2, covers 1997-2011, subset of CWSs
+    \end{itemize}
+    \item Population using CWS, $\text{Days in Violation}_{vct}$
+    \begin{itemize}
+        \item SDWIS/ECHO
+        \item Survey: 10\% MR in SDWIS but 95\% MR in SDWIS were accurate.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Data: Days in violation}
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.54]{plots/mineviolengthhist_downstream.png}
+    \label{img:huc12pic}
+\end{figure}    
+\end{frame}
+
+\begin{frame}{ARP on coal mining}
+\begin{figure}[h]
+    \centering    \includegraphics[scale=0.46]{plots/proportionatecircleprod_diff_allminehuc12_1985_2005.png}
+\label{map:proportionatecircleprod_diff_allminehuc12_1985_2005}
+\end{figure}
+\end{frame}
+
+\begin{frame}{ARP on CWS mining exposure}
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.46]{plots/proportionatecircle_upstream_mines_huc12_1985_2005.png}
+\label{map:proportionatecircle_upstream_mines_huc12_1985_2005}
+\end{figure}
+\end{frame}
+
+\begin{frame}{IV Model: mining on CWS violations}
+First stage:
+\begin{equation}\label{1ststage2sls}
+\begin{split}
+\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{NumIntakes}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + Y_t + C_c + \nu_{ct}
+\end{split}
+\end{equation}
+
+Second stage:
+\begin{equation}\label{2ndstage2sls}
+\begin{split}
+\text{Days in Violation}_{vct} &= \beta_0 + \beta_1\text{NumIntakes}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} \\
+&\quad + Y_t + C_c + \epsilon_{ct}
+\end{split}
+\end{equation}
+
+\begin{itemize}
+    \begin{itemize}
+        \item $Post95_t=$ 1 if year $>$ 1995 
+        \item Standard errors are clustered at the CWS level
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{IV identification assumptions}
+    \begin{itemize}
+        \item Exclusion: $\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t$ did not affect violations outside of number of upstream mines.
+        \item Independence: $\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t$, as good as random conditional on covariates. $\text{Post95}_t$ determined by the national CAAA legislation, and control for time invariant $\text{UpstreamCoalSulfur\%}$ with CWS fixed effects.
+        \item Monotonicity/no defiers: A defier is a HUC12 that experienced more mining after 1995 because it had higher sulfur.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{``First stage"}
+    \begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.58]{plots/scatterhuccoalsulfur_pooled.png}
+    \label{plot:scatterhuccoalsulfur}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Results: mining on CWS MR violations}
+\input{reg/2sls_dwnstrm_minevio_mr_ivsum}
+\end{frame}
+
+\begin{frame}{Results: mining on CWS MCL violations}
+\input{reg/2sls_dwnstrm_minevio_mcl_ivsum}
+\end{frame}
+
+\begin{frame}{Results}
+\begin{itemize}
+    \item Mining increases MR violations.
+    \item Mining does not increase MCL violations.
+    \item MR violations are a form of non-compliance with SDWA.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{DiD Model: mining on CWS contaminant concentrations}
+\begin{itemize}
+    \item Panel data
+    \begin{equation}\label{eq:huc02reg}
+    \textit{Concen}_{cht}= \beta\cdot\sum_{\tau=1985}^t\text{UpstreamCoalProd}_{c\tau}  + \rho_c + HUC02_h\cdot\tau_t + \epsilon_{cht}
+\end{equation}
+
+    \begin{itemize}
+        \item $\textit{Concen}_{cht}=$ mean contaminant concentration at CWS c in HUC02 h in year t.
+        \item $\sum_{\tau=1985}^t\text{upstream coal prod}_{c\tau}=$ cumulative tons of coal mined upstream of CWS c in the HUC12 h from 1985 to year t.
+        \item $\rho_c=$CWS fixed effects
+        \item $HUC02_h\cdot\tau_t=$HUC02 interacted with time fixed effects
+        \item Standard errors are clustered at the CWS level
+    \end{itemize}
+    \item Continuous DiD with no pure control observations. 
+    \item Identification: CWSs that experience a large decline in coal production would have trended the same as CWSs with a small decline.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Results: mining on CWS contaminant concentrations}
+    \input{reg/6yr_huc02fe_inorg_val}
+\end{frame}
+
+\begin{frame}{Results}
+\begin{itemize}
+    \item Mining increases mean inorganic chemical contamination (by 40-80\% of mean concentrations).
+    \item Mining raises CWS costs to completely remove contaminants.
+    \item CWSs downstream of mines face costlier SDWA compliance. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}{IV Model: mining on regulator actions}
+
+First stage:
+\begin{equation}\label{1ststage2sls}
+\begin{split}
+\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{NumIntakes}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + Y_t + C_c + \nu_{ct}
+\end{split}
+\end{equation}
+
+Second stage:
+\begin{equation}\label{2ndstage2sls}
+\begin{split}
+\text{Regulatory Action}_{vct} &= \beta_0 + \beta_1\text{NumIntakes}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} \\
+&\quad + Y_t + C_c + \epsilon_{ct}
+\end{split}
+\end{equation}
+
+\begin{itemize}
+    \begin{itemize}
+        \item $Post95_t=$ 1 if year $>$ 1995 
+        \item $NumIntakes_{ct}=$Number of CWS water intakes
+        \item $\text{Regulatory Action}_{vct}=$sanitary visits/formal enforcement/informal enforcement
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Results: regulator informal vs formal enforcement response to CWS violations}
+\input{reg/h3_inf_formal_d12}
+\end{frame}
+
+\begin{frame}{Results: regulator sanitary visits to CWS}
+\input{reg/h2_snsv_d12}
+\end{frame}
+
+\begin{frame}{Conclusion}
+\begin{itemize}
+    \item Mining induces lower CWS SDWA compliance.
+    \item $\uparrow$ mining $\rightarrow$   $\uparrow$ inorganic chemical water contamination.
+    \item $\uparrow$ inorganic chemical water contamination $\rightarrow$ $\uparrow$ CWS cost of SDWA compliance.
+    \item $\uparrow$ mining $\rightarrow$ $\downarrow$ formal enforcement action (62\% decrease relative to mean formal enforcement rate) + $\uparrow$ sanitary visits (non-punitive enforcement).
+    \item (Lower punishment for violations + higher costs of compliance) $\rightarrow$ reduced CWS SDWA compliance.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Thank you!}
+    Email: ek559@cornell.edu
+\end{frame}
+\end{document}
