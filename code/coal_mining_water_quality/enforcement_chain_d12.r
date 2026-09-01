@@ -887,6 +887,22 @@ if (file.exists(out_tex_b) && file.info(out_tex_b)$size > 0) {
   stop("Output file missing or empty — check render_panel_binary_table() call.")
 }
 
+# -- Presentation companion: notes stripped to FE + clustering + stars only
+# (no FE checkmark rows in this panel-style table) -- see
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+notes_b_present <- paste0(
+  "\\textit{Notes:} All specifications include utilities and year fixed effects. ",
+  "SEs clustered at the utilities level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+render_panel_binary_table(result = result_b, dict = dict_b,
+                           coalvar = "num_coal_mines_upstream_sum",
+                           instr_str = "post95:sulfur_unified_mean",
+                           title = "Effect of Coal Mining on Regulator Visit Probability by Visit Type (Downstream Sample, LPM)",
+                           label = "tab:h2_snsv_d12",
+                           outfile = "h2_snsv_d12_present",
+                           notes = notes_b_present)
+cat("Presentation table saved to:", file.path(ROOT, "output/reg/h2_snsv_d12_present.tex"), "\n")
+
 # ── Surface-water subsample: H2b table (visit-type LPM), panel_d1_sw ─────────
 cat("\n=== H2b (surface water): Any visit by type (binary, LPM) ~ mining (D1 SW panel) ===\n")
 
@@ -1030,6 +1046,22 @@ if (file.exists(out_tex_h3_inf) && file.info(out_tex_h3_inf)$size > 0) {
 } else {
   stop("Output file missing or empty — check render_panel_binary_table() call.")
 }
+
+# -- Presentation companion: notes stripped to FE + clustering + stars only
+# (no FE checkmark rows in this panel-style table) -- see
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+notes_h3_inf_present <- paste0(
+  "\\textit{Notes:} All specifications include utilities and year fixed effects. ",
+  "SEs clustered at the utilities level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+render_panel_binary_table(result = result_h3_inf, dict = dict_enf,
+                           coalvar = "num_coal_mines_upstream_sum",
+                           instr_str = "post95:sulfur_unified_mean",
+                           title = "Effect of Coal Mining on Enforcement Actions by Type (Downstream Sample)",
+                           label = "tab:h3_inf_formal_d12",
+                           outfile = "h3_inf_formal_d12_present",
+                           notes = notes_h3_inf_present)
+cat("Presentation table saved to:", file.path(ROOT, "output/reg/h3_inf_formal_d12_present.tex"), "\n")
 
 # ── Surface-water subsample: H3 informal/formal/no-enforcement table, panel_d1_sw ──
 cat("\n=== H3 (D1 surface water): Informal/formal enforcement ~ mining ===\n")

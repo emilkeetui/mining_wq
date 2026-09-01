@@ -218,13 +218,32 @@ build_table <- function(rows, n1, n2) {
     "\\end{table}\n"
   )
 
-  paste0(header, body, footer)
+  # Presentation companion: same tabular, notes block omitted entirely
+  # (summary statistics carry no clustering/FE; only the diff-stars legend
+  # would apply, but the note text itself is dropped per the "no notes"
+  # convention for summary tables) -- see
+  # .claude/logs/2026-08-31-presentation-notes-tables.md.
+  footer_present <- paste0(
+    "\\hline\\hline\n",
+    "\\end{tabular}\n",
+    "\\end{adjustbox}\n",
+    "\\end{table}\n"
+  )
+
+  list(main = paste0(header, body, footer),
+       present = paste0(header, body, footer_present))
 }
 
-tex <- build_table(rows, g1_row$n_cws, g2_row$n_cws)
+tex_variants <- build_table(rows, g1_row$n_cws, g2_row$n_cws)
+tex <- tex_variants$main
 
 out_path <- "output/sum/syr2_mr_comparison.tex"
 writeLines(tex, out_path)
 cat("\nTable written to:", out_path, "\n")
+
+out_path_present <- sub("\\.tex$", "_present.tex", out_path)
+writeLines(tex_variants$present, out_path_present)
+cat("Presentation table written to:", out_path_present, "\n")
+
 cat("\n--- LaTeX preview ---\n")
 cat(tex)

@@ -1,0 +1,39 @@
+% ============================================================
+% Table: Coal Mining Exposed Utilities' Inorganic Chemical Water Violations, 1985--2005
+% Purpose: Two-panel summary of MR and MCL violations for nitrates, arsenic, and IOCs —
+%          Panel A: Any Violation in Year (% non-zero, num. violations).
+%          Panel B: Days in Year (mean, SD, P90, P99).
+% Sample:  Downstream 2SLS utility-year sample (minehuc_downstream_of_mine=1, minehuc_mine=0,
+%          1985-2005, excluding PWSID WV3303401)
+% N:       6,232 utility-year observations across 340 unique utilities
+% ============================================================
+
+\begin{table}[htbp]
+\raggedright
+\caption{Coal Mining Exposed Utilities' Inorganic Chemical Water Violations 1985--2005}
+\label{tab:violation_binary_days_panels}
+\small
+\begin{tabular}{l *{4}{>{\centering\arraybackslash}p{3.02cm}}}
+\hline\hline
+\multicolumn{5}{l}{\textbf{Panel A: Any violation in year}} \\
+ & \multicolumn{2}{c}{\textbf{MR}} & \multicolumn{2}{c}{\textbf{MCL}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+\textbf{Contaminant} & \textbf{\%} & \textbf{N} & \textbf{\%} & \textbf{N} \\
+\hline
+Nitrates & 6.05 & 377 & 0.06 & 4 \\
+Arsenic & 4.01 & 250 & 0.03 & 2 \\
+IOCs & 4.59 & 286 & 0.32 & 20 \\
+\end{tabular}
+\begin{tabular}{l *{8}{>{\centering\arraybackslash}p{1.3cm}}}
+\hline
+\multicolumn{9}{l}{\textbf{Panel B: Days in year}} \\
+ & \multicolumn{4}{c}{\textbf{MR}} & \multicolumn{4}{c}{\textbf{MCL}} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+\textbf{Contaminant} & \textbf{Mean} & \textbf{SD} & \textbf{P90} & \textbf{P99} & \textbf{Mean} & \textbf{SD} & \textbf{P90} & \textbf{P99} \\
+\hline
+Nitrates & 15.53 & 67.32 & 0.00 & 365.00 & 0.18 & 8.01 & 0.00 & 0.00 \\
+Arsenic & 10.69 & 56.01 & 0.00 & 365.00 & 0.04 & 2.59 & 0.00 & 0.00 \\
+IOCs & 12.27 & 60.15 & 0.00 & 365.00 & 0.78 & 15.83 & 0.00 & 0.00 \\
+\hline\hline
+\end{tabular}
+\end{table}

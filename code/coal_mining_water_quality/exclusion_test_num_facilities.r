@@ -318,4 +318,35 @@ out_path <- "Z:/ek559/mining_wq/output/reg/exclusion_test_num_facilities.tex"
 writeLines(table_lines, out_path)
 cat("\nTable written to:", out_path, "\n")
 
+# -- Presentation companion: notes stripped to clustering + stars only (FE
+# already shown via checkmark rows above) -- see
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+note_text_present <- paste0(
+  "\\textit{Notes:} Standard errors, clustered at the utility level, are shown in ",
+  "parentheses below each coefficient. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+
+table_lines_present <- c(
+  "\\begin{table}[htbp]",
+  "\\raggedright",
+  paste0("\\begin{minipage}{", total_w, "}"),
+  paste0("\\caption{\\label{exclusion_test_num_facilities} ", caption_title, "}"),
+  "\\end{minipage}",
+  "\\small",
+  "{\\setlength{\\tabcolsep}{4pt}%",
+  tabular_lines,
+  "}",
+  paste0("\\begin{minipage}{", total_w, "}"),
+  "\\vspace{4pt}",
+  "\\footnotesize",
+  "\\raggedright",
+  note_text_present,
+  "\\end{minipage}",
+  "\\end{table}"
+)
+
+out_path_present <- sub("\\.tex$", "_present.tex", out_path)
+writeLines(table_lines_present, out_path_present)
+cat("Presentation table written to:", out_path_present, "\n")
+
 cat("\n================ Done ================\n")

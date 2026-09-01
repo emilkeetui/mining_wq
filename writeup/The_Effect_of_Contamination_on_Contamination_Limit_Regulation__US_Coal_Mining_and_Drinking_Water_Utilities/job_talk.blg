@@ -1,0 +1,15 @@
+[0] Config.pm:328> INFO - This is Biber 2.21
+[4] Config.pm:331> INFO - Logfile is 'job_talk.blg'
+[198] biber-MSWIN64:342> INFO - === 
+[329] Biber.pm:421> INFO - Reading 'job_talk.bcf'
+[486] Biber.pm:1002> INFO - Found 15 citekeys in bib section 0
+[530] Biber.pm:4487> INFO - Processing section 0
+[548] Biber.pm:4678> INFO - Looking for bibtex file 'citation.bib' for section 0
+[683] bibtex.pm:1713> INFO - LaTeX decoding ...
+[841] bibtex.pm:1519> INFO - Found BibTeX data source 'citation.bib'
+[983] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[988] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[994] Biber.pm:4307> INFO - Sorting list 'nyt/global//global/global/global' of type 'entry' with template 'nyt' and locale 'en-US'
+[999] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
+[1031] bbl.pm:676> INFO - Writing 'job_talk.bbl' with encoding 'UTF-8'
+[1167] bbl.pm:779> INFO - Output to job_talk.bbl
