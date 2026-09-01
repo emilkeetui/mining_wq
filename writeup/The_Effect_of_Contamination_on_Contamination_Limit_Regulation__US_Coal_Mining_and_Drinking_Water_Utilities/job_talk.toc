@@ -1,4 +1,4 @@
 \beamer@sectionintoc {1}{Setting and data}{7}{0}{1}
-\beamer@sectionintoc {2}{Does coal mining contaminate utility water?}{16}{0}{2}
-\beamer@sectionintoc {3}{Do utilities keep self-reporting?}{19}{0}{3}
-\beamer@sectionintoc {4}{How do regulators respond?}{27}{0}{4}
+\beamer@sectionintoc {2}{Does coal mining contaminate utility water?}{17}{0}{2}
+\beamer@sectionintoc {3}{Do utilities keep self-reporting?}{20}{0}{3}
+\beamer@sectionintoc {4}{How do regulators respond?}{28}{0}{4}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.8.24)  31 AUG 2026 21:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.8.24)  31 AUG 2026 23:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1258,53 +1258,54 @@ line 230.
 
 ] [13
 
+] [14
+
 ]
-<img/WBD_Base_HUStructure_small.png, id=191, 40.953pt x 40.953pt>
+<img/WBD_Base_HUStructure_small.png, id=210, 40.953pt x 40.953pt>
 File: img/WBD_Base_HUStructure_small.png Graphic file (type png)
 <use img/WBD_Base_HUStructure_small.png>
 Package pdftex.def Info: img/WBD_Base_HUStructure_small.png  used on input line
- 295.
+ 308.
 (pdftex.def)             Requested size: 164.30028pt x 164.36142pt.
- [14
+ [15
 
- <./img/WBD_Base_HUStructure_small.png>] (../../output/sum/violation_binary_day
-s_panels_present.tex)
-[15
-
-] [16
+ <./img/WBD_Base_HUStructure_small.png>]
+(../../output/sum/violation_binary_days_panels_present.tex) [16
 
 ] [17
 
-] (../../output/reg/6yr_huc02fe_inorg_ravalli_2005_present.tex)
-[18
-
-] [19
+] [18
 
 ]
-Overfull \hbox (2.64912pt too wide) detected at line 353
+(../../output/reg/6yr_huc02fe_inorg_ravalli_2005_present.tex) [19
+
+] [20
+
+]
+Overfull \hbox (2.64912pt too wide) detected at line 366
 []
  []
 
 LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <10> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 353.
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 366.
 
 LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <7> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 353.
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 366.
 
 LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <5> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 353.
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 366.
 
-[20
+[21
 
 ]
-<../../output/fig/scatterhuccoalsulfur_pooled.png, id=236, 578.16pt x 361.35pt>
+<../../output/fig/scatterhuccoalsulfur_pooled.png, id=253, 578.16pt x 361.35pt>
 
 File: ../../output/fig/scatterhuccoalsulfur_pooled.png Graphic file (type png)
 <use ../../output/fig/scatterhuccoalsulfur_pooled.png>
 Package pdftex.def Info: ../../output/fig/scatterhuccoalsulfur_pooled.png  used
- on input line 358.
+ on input line 371.
 (pdftex.def)             Requested size: 578.15858pt x 361.34912pt.
- [21
+ [22
 
  <../../output/fig/scatterhuccoalsulfur_pooled.png>]
 (../../output/reg/fs_dwnstrm_minevio_ivsum_present.tex
@@ -1316,98 +1317,104 @@ LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <6> not available
 (Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 13.
 )
 LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <9> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 364.
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 377.
 
- [22
+ [23
 
-] [23
-
-]
-(../../output/reg/2sls_dwnstrm_minevio_mr_ivsum_binvio_present.tex) [24
+] [24
 
 ]
-(../../output/reg/2sls_dwnstrm_minevio_mcl_ivsum_binvio_present.tex) [25
+(../../output/reg/2sls_dwnstrm_minevio_mr_ivsum_binvio_present.tex) [25
 
 ]
-(../../output/reg/mr_concentration_lag_present.tex) [26
-
-] [27
+(../../output/reg/2sls_dwnstrm_minevio_mcl_ivsum_binvio_present.tex) [26
 
 ]
-(../../output/reg/h3_inf_formal_d12_present.tex) [28
+(../../output/reg/mr_concentration_lag_present.tex) [27
+
+] [28
 
 ]
-(../../output/reg/h2_snsv_d12_present.tex) [29
+(../../output/reg/h3_inf_formal_d12_present.tex) [29
 
-] [30
+]
+(../../output/reg/h2_snsv_d12_present.tex) [30
 
 ] [31
 
+] [32
+
 ]
 (../../output/reg/2sls_dwnstrm_minevio_allcat_ivsum_binvio_present.tex)
-[32
+[33
 
-] (../../output/reg/exclusion_test_num_facilities_present.tex) [33
+] (../../output/reg/exclusion_test_num_facilities_present.tex) [34
 
 ]
 (../../output/sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005_present.tex)
-[34
+[35
 
-] (../../output/sum/syr2_mr_comparison_present.tex) [35
+] (../../output/sum/syr2_mr_comparison_present.tex) [36
 
 ]
-(../../output/sum/enforcement_visit_type_panels_present.tex) [36
+(../../output/sum/enforcement_visit_type_panels_present.tex) [37
 
 ]
 (../../output/reg/mr_concentration_lag_national_downstream_states_present.tex)
-[37
+[38
 
 ]
 <../../output/fig/proportionatecircleprod_diff_allminehuc12_1985_2005.png, id=3
-45, 783.76814pt x 498.663pt>
+62, 783.76814pt x 498.663pt>
 File: ../../output/fig/proportionatecircleprod_diff_allminehuc12_1985_2005.png 
 Graphic file (type png)
 <use ../../output/fig/proportionatecircleprod_diff_allminehuc12_1985_2005.png>
 Package pdftex.def Info: ../../output/fig/proportionatecircleprod_diff_allmineh
-uc12_1985_2005.png  used on input line 467.
+uc12_1985_2005.png  used on input line 480.
 (pdftex.def)             Requested size: 783.76622pt x 498.66177pt.
- [38
+ [39
 
  <../../output/fig/proportionatecircleprod_diff_allminehuc12_1985_2005.png>]
-<../../output/fig/first_stage_scatter_dwnstrm.png, id=352, 505.89pt x 419.166pt
+<../../output/fig/first_stage_scatter_dwnstrm.png, id=369, 505.89pt x 419.166pt
 >
 File: ../../output/fig/first_stage_scatter_dwnstrm.png Graphic file (type png)
 <use ../../output/fig/first_stage_scatter_dwnstrm.png>
 Package pdftex.def Info: ../../output/fig/first_stage_scatter_dwnstrm.png  used
- on input line 471.
+ on input line 484.
 (pdftex.def)             Requested size: 505.88875pt x 419.16498pt.
- [39
+ [40
 
  <../../output/fig/first_stage_scatter_dwnstrm.png>]
-<../../output/fig/map_huc12_main_sample.png, id=358, 715.11165pt x 495.41084pt>
+<../../output/fig/map_huc12_main_sample.png, id=375, 715.11165pt x 495.41084pt>
 
 File: ../../output/fig/map_huc12_main_sample.png Graphic file (type png)
 <use ../../output/fig/map_huc12_main_sample.png>
 Package pdftex.def Info: ../../output/fig/map_huc12_main_sample.png  used on in
-put line 475.
+put line 488.
 (pdftex.def)             Requested size: 715.1099pt x 495.40964pt.
- [40
+ [41
 
  <../../output/fig/map_huc12_main_sample.png>]
+Overfull \vbox (14.5826pt too high) detected at line 507
+ []
+
+[42
+
+]
 
 LaTeX Font Warning: Font shape `OT1/cmss/m/sc' in size <10.95> not available
-(Font)              Font shape `OT1/cmr/m/sc' tried instead on input line 479.
+(Font)              Font shape `OT1/cmr/m/sc' tried instead on input line 511.
 
-[41
+[43
 
  <C:/Users/ek559/AppData/Roaming/MiKTeX/tex/latex/beamer/beamericonarticle.pdf>
-] [42
-
-
-] [43
-
-
 ] [44
+
+
+] [45
+
+
+] [46
 
 
 ]
@@ -1432,10 +1439,10 @@ Package logreq Info: Writing requests to 'job_talk.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 31060 strings out of 467510
- 613402 string characters out of 5418903
+ 31074 strings out of 467510
+ 613738 string characters out of 5418903
  1435146 words of memory out of 5000000
- 59579 multiletter control sequences out of 15000+600000
+ 59589 multiletter control sequences out of 15000+600000
  646252 words of font info for 104 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,19n,123p,699b,1685s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1443,26 +1450,28 @@ Here is how much of TeX's memory you used:
 1095.pk> <C:\Users\ek559\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi60
 0\tcss1095.pk><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.p
 fb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Progr
-am Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiK
-TeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Program Files/MiKTeX/fonts/typ
-e1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/ams
-fonts/cm/cmmi9.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmss
-10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmss12.pfb><C:/P
-rogram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Program Files/
-MiKTeX/fonts/type1/public/amsfonts/cm/cmss9.pfb><C:/Program Files/MiKTeX/fonts/
-type1/public/amsfonts/cm/cmssbx10.pfb><C:/Program Files/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmssi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts
-/cm/cmssi8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi9.p
-fb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Progr
-am Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files/MiKT
-eX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files/MiKTeX/fonts/type
-1/public/amsfonts/cm/cmtt10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/ams
-fonts/symbols/msam10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/s
-ymbols/msam7.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/symbols/m
-sbm10.pfb>
-Output written on job_talk.pdf (44 pages, 13330304 bytes).
+am Files/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex9.pfb><C:/Program Files
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX/font
+s/type1/public/amsfonts/cm/cmmi6.pfb><C:/Program Files/MiKTeX/fonts/type1/publi
+c/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm
+/cmmi9.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><
+C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmss12.pfb><C:/Program F
+iles/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Program Files/MiKTeX/f
+onts/type1/public/amsfonts/cm/cmss9.pfb><C:/Program Files/MiKTeX/fonts/type1/pu
+blic/amsfonts/cm/cmssbx10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmssi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmss
+i8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi9.pfb><C:/P
+rogram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files/MiKTeX/fonts
+/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files/MiKTeX/fonts/type1/public
+/amsfonts/cm/cmsy8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/
+cmsy9.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C
+:/Program Files/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb><C:/Progr
+am Files/MiKTeX/fonts/type1/public/amsfonts/symbols/msam7.pfb><C:/Program Files
+/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on job_talk.pdf (46 pages, 13373745 bytes).
 PDF statistics:
- 533 PDF objects out of 1000 (max. 8388607)
- 114 named destinations out of 1000 (max. 500000)
- 274 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 571 PDF objects out of 1000 (max. 8388607)
+ 118 named destinations out of 1000 (max. 500000)
+ 310 words of extra memory for PDF output out of 10000 (max. 10000000)
 

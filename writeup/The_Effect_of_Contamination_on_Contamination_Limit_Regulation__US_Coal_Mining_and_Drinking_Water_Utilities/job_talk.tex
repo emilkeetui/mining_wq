@@ -171,7 +171,7 @@ citestyle=bwl-FU
     \item $\uparrow$ mining $\rightarrow$ $\uparrow$ contaminant concentrations. 10M cumulative tons upstream raises mean arsenic by 0.0023 mg/L, about 100\% of its sample mean; selenium $+$69\%, barium $+$24\%. All stay below the MCL.
     \item $\uparrow$ mining $\rightarrow$ $\uparrow$ \textbf{under-reporting}. One more upstream mine raises MR violations by 7--10 pp, more than doubling the base rate.
     \item $\uparrow$ mining $\rightarrow$ \textbf{no} change in MCL violations. The contamination record goes blank, not red.
-    \item Costs, not only concealment: when nitrate readings cross 50\% of the MCL and monitoring requirements step up, failure to report jumps.
+    \item Costs, not concealment: when nitrate readings cross 50\% of the MCL and monitoring requirements step up --- exceedance risk fixed, reporting cost up --- failure to report jumps.
     \item $\uparrow$ mining $\rightarrow$ $\downarrow$ \textbf{formal enforcement} ($-$5.7 pp) but $\uparrow$ \textbf{sanitary visits} ($+$14 pp).
 \end{itemize}
 \medskip
@@ -249,17 +249,30 @@ Utility draws compliance cost $\theta \sim F(\cdot\,;m)$ and reporting cost $c \
 \end{frame}
 
 % ---------------------------------------------------------------- 12
-\begin{frame}{Model: three predictions I take to the data}
+\begin{frame}{Model: why the utility goes quiet}
 \begin{block}{Proposition 1}
 Negligence rises in compliance cost: $\partial a/\partial\theta > 0$ within each region.
 \end{block}
 \begin{block}{Proposition 2}
-Under-reporting rises with contamination, $\partial MR/\partial m \ge 0$, through two channels: reporting costs shift up against a fixed cutoff, and the population shifts toward high-cost types whose own cutoff is already lower.
+Under-reporting rises with contamination, $\partial MR/\partial m \ge 0$, through \textbf{(A) cost} --- reporting costs shift up against a fixed cutoff --- and \textbf{(B) concealment} --- the population shifts toward high-negligence types whose cutoff is already lower.
 \end{block}
+\begin{block}{Corollary 1}
+Hold exceedance risk fixed, $q(a_{SR}(\theta)) \equiv \bar q$. The cutoff is then type-invariant, Channel B integrates to zero, and \emph{all} of $\partial MR/\partial m = -\,\partial G(\bar c\,;m)/\partial m \ge 0$ runs through Channel A.
+\end{block}
+\takeaway{Concealment needs exceedance risk to move; cost does not. Hold risk fixed, let reporting costs jump --- if under-reporting still rises, it is cost, not hiding.}
+\end{frame}
+
+% ---------------------------------------------------------------- 12b
+\begin{frame}{Model: the regulator has a lever, and it is not the limit}
 \begin{block}{Proposition 3}
 Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting threshold, $C^*(\lambda) = \lambda\,\hat c(a_\lambda)$. Reporting costs are technology, not legal penalties, so they do not scale with enforcement.
 \end{block}
-\takeaway{Proposition 2 is the test. Proposition 3 says the lever is the price of silence, not the stringency of the limit.}
+\begin{itemize}\small
+    \item Under-reporting driven by Channel A is \textbf{correctable}: raising the price of silence pulls the cutoff back up above the risen reporting cost.
+    \item Tightening the MCL does not. That moves exceedance risk --- under Corollary 1, precisely the margin that is not doing the work.
+    \item So the question for the regulator is not whether it \emph{could} respond, but whether it \emph{does}.
+\end{itemize}
+\takeaway{Proposition 2 and Corollary 1 are the test of the mechanism. Proposition 3 says the lever is the price of silence, which makes the observed enforcement response the thing to measure.}
 \end{frame}
 
 % ---------------------------------------------------------------- 13
@@ -381,17 +394,17 @@ Second stage:
 % ---------------------------------------------------------------- 25
 \begin{frame}{And the contamination record goes blank, not red}
 \presreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio}
-\takeaway{MCL effects are economically and statistically indistinguishable from zero. This is not evidence that the water stayed clean: without a self-report, the regulator cannot issue an MCL violation at all.}
+\takeaway{MCL effects are economically and statistically indistinguishable from zero. This is not evidence that the water stayed clean: without a self-report, the regulator cannot issue an MCL violation at all. It is also the wrong prediction for concealment --- hiding is worth paying for when an exceedance is at stake, and measured concentrations never get there.}
 \end{frame}
 
 % ---------------------------------------------------------------- 26
-\begin{frame}{Reporting cost, not only concealment}
+\begin{frame}{Reporting cost, not concealment: Corollary 1 in the data}
 \begin{itemize}\small
-    \item Nitrate rules require \textbf{more frequent monitoring} once a reading exceeds 50\% of the MCL --- a discrete jump in $c$ with no jump in the penalty for silence.
-    \item The model predicts MR rises at that threshold even holding exceedance risk fixed.
+    \item Nitrate rules require \textbf{more frequent monitoring} once a reading exceeds 50\% of the MCL --- a discrete jump in $c$, with no jump in the penalty for silence and no jump in exceedance risk: a reading at half the limit is still a reading under the limit.
+    \item That is Corollary 1's condition, met in the field. Exceedance risk is held fixed, reporting cost shifts up, Channel B is switched off --- so whatever happens to under-reporting here is Channel A.
 \end{itemize}
 \presreg{mr_concentration_lag}
-\takeaway{Crossing 50\% of the nitrate MCL raises the probability of failing to report within six months by 26 pp, and within a year by 59 pp. Descriptive, not causal --- read the sign, not the magnitude.}
+\takeaway{Crossing 50\% of the nitrate MCL raises the probability of failing to report within six months by 26 pp, and within a year by 59 pp. Descriptive, not causal --- read the sign, not the magnitude. Utilities go quiet exactly where reporting gets expensive, not where there is something to hide.}
 \end{frame}
 
 % ================================================================
@@ -407,16 +420,16 @@ Second stage:
 % ---------------------------------------------------------------- 29
 \begin{frame}{The regulator substitutes its own monitoring instead}
 \presreg{h2_snsv_d12}
-\takeaway{Sanitary visits $+$14.1 pp against a base rate of 14.6\%; enforcement visits $+$3.7 pp. Regulators show up --- and then do not sanction. Either there are no hidden exceedances, or visits do not find them (\cite{mi2026technology}); I cannot separate the two.}
+\takeaway{Sanitary visits $+$14.1 pp against a base rate of 14.6\%; enforcement visits $+$3.7 pp. Regulators show up --- and then do not sanction. Either there are no hidden exceedances, or visits do not find them (\cite{mi2026technology}); I cannot separate the two. Either way the price of silence never moves, which is the one thing Proposition 3 says would work.}
 \end{frame}
 
 % ---------------------------------------------------------------- 30
 \begin{frame}{Conclusion}
 \begin{itemize}\small
     \item Exogenous contamination raises the cost of self-reporting, and self-reporting falls --- \textbf{even where the quality standard is never breached}.
-    \item The evidence points to cost avoidance over concealment: concentrations stay below MCLs, regulators visit but do not prosecute, and reporting failures spike exactly where monitoring requirements step up.
+    \item The evidence points to cost avoidance, not concealment. Corollary 1 makes the two separable: with exceedance risk held fixed, only the cost channel can move under-reporting --- and that is exactly where reporting failures spike. Concentrations stay below MCLs and regulators visit but do not prosecute, both of which cut against a hiding story.
     \item Enforcement does not keep pace. Formal action falls as contamination rises, and the regulator absorbs the monitoring burden through sanitary visits instead.
-    \item \textbf{Policy.} Tightening MCLs does nothing if nobody tests. Raising the price of \emph{not} reporting where source water is impaired is the binding lever (\cite{malik1993self}; \cite{harford1987self}).
+    \item \textbf{Policy.} Tightening MCLs does nothing if nobody tests --- it moves the one margin Corollary 1 rules out. By Proposition 3 the binding lever is the price of \emph{not} reporting where source water is impaired, and it is not currently being pulled (\cite{malik1993self}; \cite{harford1987self}).
     \item Open question: whether shifting monitoring onto the regulator is efficient depends on relative monitoring costs and on regulator preferences.
 \end{itemize}
 \vfill
@@ -472,6 +485,25 @@ Second stage:
 
 \begin{frame}{Appendix: sample watersheds}
 \presfig[0.72\textheight]{map_huc12_main_sample.png}
+\end{frame}
+
+\begin{frame}{Appendix: Corollary 1, statement and proof}
+\footnotesize
+Write the share of types under-reporting as $h(\theta,m) = 1 - G(c^*(\theta);m)$, with cutoff $c^*(\theta) = t - (r-ps)\,q(a_{SR}(\theta))$, so that
+\[
+\frac{\partial MR}{\partial m} = \underbrace{\int_0^{\bar\theta}\!\frac{\partial h(\theta,m)}{\partial m}\,f(\theta;m)\,d\theta}_{\text{A: cost}} \;+\; \underbrace{\int_0^{\bar\theta}\! h(\theta,m)\,\frac{\partial f(\theta;m)}{\partial m}\,d\theta}_{\text{B: composition}}.
+\]
+\textbf{Corollary 1.} If $q(a_{SR}(\theta)) \equiv \bar q$ on $(0,\bar\theta)$, then $\partial MR/\partial m = -\,\partial G(\bar c;m)/\partial m \ge 0$, where $\bar c = t-(r-ps)\bar q$.
+\smallskip
+
+\textit{Proof.} The cutoff is then type-invariant, $c^*(\theta) \equiv \bar c$, so $h(\theta,m) = 1-G(\bar c;m)$ does not vary with $\theta$ and comes outside both integrals. The limits $0$ and $\bar\theta$ do not depend on $m$, so by Leibniz's rule
+\[
+\text{B} = \big[1-G(\bar c;m)\big]\,\frac{d}{dm}\!\left[\int_0^{\bar\theta}\! f(\theta;m)\,d\theta\right] = \big[1-G(\bar c;m)\big]\,\frac{d}{dm}[1] = 0,
+\]
+since $f(\cdot\,;m)$ is a density for every $m$. Channel A collapses to $-\,\partial G(\bar c;m)/\partial m \ge 0$, because contamination shifts reporting costs up. $\square$
+\smallskip
+
+\textbf{Why it matters.} Channel B is the concealment margin: it operates only if contamination reallocates mass toward types whose exceedance risk, and hence whose cutoff, differs. Shut it down and any remaining rise in under-reporting is avoidance of the reporting technology itself. The 50\%-of-MCL nitrate step is the empirical counterpart --- monitoring frequency jumps, the sanction schedule does not, and readings are nowhere near the limit.
 \end{frame}
 
 \begin{frame}[allowframebreaks]{References}

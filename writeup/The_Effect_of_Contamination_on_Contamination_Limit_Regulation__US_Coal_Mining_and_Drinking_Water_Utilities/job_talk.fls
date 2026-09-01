@@ -470,23 +470,23 @@ INPUT ..\..\output\fig\coal_summary_plot.png
 INPUT ..\..\output\fig\coal_summary_plot.png
 INPUT ..\..\output\fig\coal_summary_plot.png
 INPUT ..\..\output\fig\coal_summary_plot.png
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmssi10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmss9.tfm
-INPUT .\img\WBD_Base_HUStructure_small.png
-INPUT .\img\WBD_Base_HUStructure_small.png
-INPUT .\img\WBD_Base_HUStructure_small.png
-INPUT .\img\WBD_Base_HUStructure_small.png
-INPUT .\img\WBD_Base_HUStructure_small.png
-INPUT .\img\WBD_Base_HUStructure_small.png
-INPUT .\img\WBD_Base_HUStructure_small.png
-INPUT ..\..\output\sum\violation_binary_days_panels_present.tex
-INPUT ..\..\output\sum\violation_binary_days_panels_present.tex
-INPUT ..\..\output\sum\violation_binary_days_panels_present.tex
-INPUT ..\..\output\sum\violation_binary_days_panels_present.tex
-INPUT ..\..\output\sum\violation_binary_days_panels_present.tex
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmssi10.tfm
+INPUT .\img\WBD_Base_HUStructure_small.png
+INPUT .\img\WBD_Base_HUStructure_small.png
+INPUT .\img\WBD_Base_HUStructure_small.png
+INPUT .\img\WBD_Base_HUStructure_small.png
+INPUT .\img\WBD_Base_HUStructure_small.png
+INPUT .\img\WBD_Base_HUStructure_small.png
+INPUT .\img\WBD_Base_HUStructure_small.png
+INPUT ..\..\output\sum\violation_binary_days_panels_present.tex
+INPUT ..\..\output\sum\violation_binary_days_panels_present.tex
+INPUT ..\..\output\sum\violation_binary_days_panels_present.tex
+INPUT ..\..\output\sum\violation_binary_days_panels_present.tex
+INPUT ..\..\output\sum\violation_binary_days_panels_present.tex
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmssi8.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmssi8.tfm
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmssi10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmssi8.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmssi8.tfm
 INPUT ..\..\output\reg\6yr_huc02fe_inorg_ravalli_2005_present.tex
@@ -613,6 +613,8 @@ INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmcsc10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmcsc10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmex10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmex10.pfb
+INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cmextra\cmex9.pfb
+INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cmextra\cmex9.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi6.pfb
@@ -639,10 +641,14 @@ INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmssi9.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmssi9.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy10.pfb
+INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy6.pfb
+INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy6.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy7.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy7.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy8.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy8.pfb
+INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy9.pfb
+INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy9.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmtt10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmtt10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\symbols\msam10.pfb
