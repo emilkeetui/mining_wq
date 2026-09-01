@@ -305,8 +305,21 @@ I focus on the regulation of water contamination by arsenic, nitrates, barium, a
     
     Contamination from mining can raise MR violations by increasing self-reporting costs relative to each type's fixed cutoff and by shifting the population toward higher-cost types who are already structurally closer to their own cutoff.
 
+	\textbf{Corollary 1:} Suppose the true-exceedance probability along the self-reporting locus is invariant to compliance-cost type, $q(a_{SR}(\theta)) \equiv \bar q$ for all $\theta \in (0,\bar\theta)$. Then $\partial MR/\partial m$ collapses to Channel A alone, and the entire increase in under-reporting operates through self-reporting costs, holding the composition of compliance-cost types fixed.
 
-	\textbf{Proposition 3:} Increasing all penalties increases the number of utilities self-reporting. 
+    Under this condition the switching cutoff is type-invariant, $c^*(\theta) \equiv \bar c = t - (r-ps)\bar q$, so $h(\theta,m) = 1 - G(\bar c;m)$ does not vary with $\theta$. Pulling this constant outside the integral in Channel B leaves
+	\begin{align*}
+		\text{Channel B} &= \int_0^{\bar\theta} h(\theta,m)\,\frac{\partial f(\theta;m)}{\partial m}\, d\theta \\
+		&= \big[\,1-G(\bar c;m)\,\big]\int_0^{\bar\theta} \frac{\partial f(\theta;m)}{\partial m}\, d\theta \\
+		&= \big[\,1-G(\bar c;m)\,\big]\,\frac{d}{dm}\left[\int_0^{\bar\theta} f(\theta;m)\, d\theta\right] & \text{(Leibniz's rule: the limits } 0,\bar\theta \text{ do not depend on } m\text{)} \\
+		&= \big[\,1-G(\bar c;m)\,\big]\,\frac{d}{dm}[1] = 0, & \text{(} f(\cdot\,;m) \text{ is a density for every } m\text{)}
+	\end{align*}
+    Channel A collapses to a constant pulled outside its own integral,
+	\[
+	\frac{\partial MR}{\partial m} = \text{Channel A} = -\frac{\partial G(\bar c;m)}{\partial m} \;\ge\; 0.
+	\]
+
+	\textbf{Proposition 3:} Increasing all penalties increases the number of utilities self-reporting.
 	
 	Consider scaling every sanction by a common factor $\lambda>0$: $(r,s,t) \to \lambda(r,s,t)$, holding $q(\cdot)$, $b(\cdot)$, $N$, $p$, and the cost draws $\theta,c$ fixed. Per-event penalties $e(a)$ become
     \begin{align*}
@@ -736,10 +749,8 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 \begin{figure}
 \centering
 \outfig{map_huc12_main_sample.png}
-\caption{Location HUC12 watersheds containing coal mines between 1985 and 2005.}
+\caption{Shading distinguishes HUC12 watersheds that lie directly upstream of a water utility intake and contain a coal mine from HUC12 watersheds containing a coal mine with no water utility located downstream.}
 \label{map:map_huc12_main_sample}
-{\footnotesize\linespread{1}\selectfont\par\raggedright
-\textit{Notes:} Shading distinguishes watersheds containing a coal mine that lie directly upstream of a water utility in the main sample from watersheds containing a coal mine with no water utility located downstream.}
 \end{figure}
 \clearpage
 

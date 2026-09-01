@@ -119,6 +119,7 @@ postprocess_table <- function(x) right_align_tabular(rename_col_numbers_to_label
 
 tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, label,
                                   instr_str, dict = NULL, notes = NULL,
+                                  notes_present = NULL,
                                   storage_list_name = NULL, subheader = NULL,
                                   fitstat = ~ ., panel_style = FALSE) {
   controls            <- c("num_facilities")
@@ -188,6 +189,14 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
     render_panel_binary_table(result = result, dict = dict, coalvar = coalvar,
                                instr_str = instr_str, title = title, label = label,
                                outfile = regoutname)
+    # Presentation companion: same panels, notes stripped to FE + clustering +
+    # stars only (see .claude/logs/2026-08-31-presentation-notes-tables.md).
+    if (!is.null(notes_present)) {
+      render_panel_binary_table(result = result, dict = dict, coalvar = coalvar,
+                                 instr_str = instr_str, title = title, label = label,
+                                 outfile = paste0(regoutname, "_present"),
+                                 notes = notes_present)
+    }
     return(invisible(NULL))
   }
 
@@ -228,6 +237,7 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
 first_stage_table <- function(storage_list_name, outfile, title = NULL,
                                label = NULL, which_coalvar = NULL,
                                drop = NULL, dict = NULL, notes = NULL,
+                               notes_present = NULL,
                                fitstat = ~ n) {
   fs_list      <- get(storage_list_name, envir = .GlobalEnv)
   model_list   <- list()
@@ -301,6 +311,16 @@ first_stage_table <- function(storage_list_name, outfile, title = NULL,
   if (!is.null(dict))        etable_args$dict    <- dict
   if (!is.null(notes))       etable_args$notes   <- notes
   do.call(etable, c(model_list, etable_args))
+
+  # Presentation companion: same table, notes stripped to FE + clustering +
+  # stars only (see .claude/logs/2026-08-31-presentation-notes-tables.md).
+  if (!is.null(notes_present)) {
+    etable_args_present         <- etable_args
+    etable_args_present$notes   <- notes_present
+    etable_args_present$file    <- sub("\\.tex$", "_present.tex",
+                                        etable_args$file)
+    do.call(etable, c(model_list, etable_args_present))
+  }
 }
 
 # ── Panel-style table for a binary-violation MR/2SLS table ──────────────────
@@ -314,16 +334,18 @@ first_stage_table <- function(storage_list_name, outfile, title = NULL,
 # violation_binary_days_panels.r: \hline\hline only at the very top of the
 # first panel and the very bottom of the last panel; single \hline for every
 # other internal rule, so the three tabulars read as one table.
-fmt_pair <- function(est, se, pval, digits = 2) {
+fmt_num_wide <- function(est, se, pval, w, digits = 2) {
   # Reserve a sign slot for both lines of the pair (real "-" or a matching
   # \phantom{-}) so a negative coefficient's minus sign does not shift its
   # digits - and therefore its decimal point - out of alignment with the
-  # (always non-negative) standard error printed directly below it.
+  # (always non-negative) standard error printed directly below it. `w` is
+  # the shared integer-digit width computed across ALL three panels for this
+  # column (see fmt_col()), so decimal points line up down the whole column,
+  # not just within one panel's coefficient/SE pair.
   sign_coef <- if (est < 0) "-" else "\\phantom{-}"
   num       <- sprintf(paste0("%.", digits, "f"), abs(est))
   se_num    <- sprintf(paste0("%.", digits, "f"), se)
   int_w  <- function(s) nchar(sub("\\..*$", "", s))
-  w      <- max(int_w(num), int_w(se_num))
   pad_to <- function(s) {
     cur <- int_w(s)
     if (cur < w) paste0(strrep("\\phantom{0}", w - cur), s) else s
@@ -335,6 +357,24 @@ fmt_pair <- function(est, se, pval, digits = 2) {
   list(
     coef = paste0("\\phantom{(}", sign_coef, num, "$^{", stars_render, "}$"),
     se   = paste0("(", "\\phantom{-}", se_num, ")\\phantom{$^{***}$}")
+  )
+}
+
+# Formats one outcome column's OLS/RF/IV coefficient+SE pairs together, padding
+# all six numbers to a single shared integer-digit width so the decimal point
+# aligns down the entire column across the three stacked panels.
+fmt_col <- function(ols_t, rf_t, iv_t, digits = 2) {
+  int_w <- function(x) {
+    if (is.na(x)) return(0L)
+    nchar(sub("\\..*$", "", sprintf(paste0("%.", digits, "f"), abs(x))))
+  }
+  w <- max(int_w(ols_t$est), int_w(ols_t$se),
+           int_w(rf_t$est),  int_w(rf_t$se),
+           int_w(iv_t$est),  int_w(iv_t$se))
+  list(
+    ols = fmt_num_wide(ols_t$est, ols_t$se, ols_t$pval, w, digits),
+    rf  = fmt_num_wide(rf_t$est,  rf_t$se,  rf_t$pval,  w, digits),
+    iv  = fmt_num_wide(iv_t$est,  iv_t$se,  iv_t$pval,  w, digits)
   )
 }
 
@@ -352,7 +392,7 @@ get_term <- function(model, term) {
   }
 }
 
-render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile) {
+render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile, notes = NULL) {
   y_vec    <- names(result)
   n_y      <- length(y_vec)
   y_labels <- sapply(y_vec, function(v) if (!is.null(dict) && v %in% names(dict)) dict[[v]] else v)
@@ -375,7 +415,6 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
   data_w_cm  <- min(3, (max_w_cm - label_w_cm) / n_y)
   label_w    <- paste0(label_w_cm, "cm")
   data_w     <- paste0(data_w_cm, "cm")
-  total_w    <- paste0(label_w_cm + n_y * data_w_cm, "cm")
   col_spec   <- paste0("p{", label_w, "}",
                         paste(rep(paste0(">{\\raggedleft\\arraybackslash}p{", data_w, "}"), n_y), collapse = ""))
   header_row <- paste0(" & ", paste0(y_labels, collapse = " & "), " \\\\")
@@ -385,9 +424,10 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
   iv_terms  <- lapply(y_vec, function(y) get_term(result[[y]]$IV,  coalvar))
   f_vals    <- sapply(y_vec, function(y) result[[y]]$f_clustered)
 
-  ols_cells <- lapply(ols_terms, function(t) fmt_pair(t$est, t$se, t$pval))
-  rf_cells  <- lapply(rf_terms,  function(t) fmt_pair(t$est, t$se, t$pval))
-  iv_cells  <- lapply(iv_terms,  function(t) fmt_pair(t$est, t$se, t$pval))
+  col_fmts  <- lapply(seq_len(n_y), function(j) fmt_col(ols_terms[[j]], rf_terms[[j]], iv_terms[[j]]))
+  ols_cells <- lapply(col_fmts, `[[`, "ols")
+  rf_cells  <- lapply(col_fmts, `[[`, "rf")
+  iv_cells  <- lapply(col_fmts, `[[`, "iv")
 
   coef_line <- function(cells, row_label) {
     paste0(row_label, " & ", paste(sapply(cells, `[[`, "coef"), collapse = " & "), " \\\\")
@@ -396,7 +436,32 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     paste0(" & ", paste(sapply(cells, `[[`, "se"), collapse = " & "), " \\\\")
   }
 
-  panel_a <- c(
+  # Physical width of the tabular exceeds the sum of the p{} column widths by
+  # the \tabcolsep padding LaTeX inserts around every column (measured
+  # empirically: sum(col widths) + 2*(ncols)*tabcolsep). When that exceeds the
+  # document's text width (12pt article, 1in margins), scale each panel's
+  # tabular down via adjustbox per CLAUDE.md's multi-panel-table convention
+  # instead of narrowing columns.
+  tabcolsep_pt    <- 4
+  cm_per_pt       <- 2.54 / 72.27
+  textwidth_cm    <- 16.51
+  intercol_pad_cm <- 2 * (n_y + 1) * tabcolsep_pt * cm_per_pt
+  natural_w_cm    <- label_w_cm + n_y * data_w_cm + intercol_pad_cm
+  needs_scale     <- natural_w_cm > textwidth_cm
+  total_w         <- if (needs_scale) "\\linewidth" else paste0(round(natural_w_cm, 4), "cm")
+
+  wrap_panel <- function(lines) {
+    if (!needs_scale) return(lines)
+    tab_start <- grep("^\\\\begin\\{tabular\\}", lines)[1]
+    tab_end   <- max(grep("^\\\\end\\{tabular\\}", lines))
+    c(lines[seq_len(tab_start - 1)],
+      "\\begin{adjustbox}{max width=\\linewidth}",
+      lines[tab_start:tab_end],
+      "\\end{adjustbox}",
+      if (tab_end < length(lines)) lines[(tab_end + 1):length(lines)] else NULL)
+  }
+
+  panel_a <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline\\hline",
     header_row,
@@ -405,18 +470,18 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     coef_line(ols_cells, coal_lab),
     se_line(ols_cells),
     "\\end{tabular}"
-  )
+  ))
 
-  panel_b <- c(
+  panel_b <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline",
     paste0("\\multicolumn{", n_y + 1, "}{l}{Panel B: Reduced Form} \\\\"),
     coef_line(rf_cells, instr_lab),
     se_line(rf_cells),
     "\\end{tabular}"
-  )
+  ))
 
-  panel_c <- c(
+  panel_c <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline",
     paste0("\\multicolumn{", n_y + 1, "}{l}{Panel C: 2SLS} \\\\"),
@@ -424,7 +489,7 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     se_line(iv_cells),
     "\\hline\\hline",
     "\\end{tabular}"
-  )
+  ))
 
   n_obs  <- unique(sapply(y_vec, function(y) nobs(result[[y]]$IV)))
   n_note <- if (length(n_obs) == 1) {
@@ -444,7 +509,7 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
            " to ", fmt_single(max(f_vals)), " across outcomes.")
   }
 
-  note_text <- paste0(
+  note_text <- if (!is.null(notes)) notes else paste0(
     "\\textit{Notes:} Dependent variable equals 1 if the utility had any violation of that type ",
     "during the year, 0 otherwise; coefficients and standard errors multiplied by 100 to show ",
     "percentage point change. The instrument interacts an indicator for the post-1995 period with ",
@@ -576,6 +641,14 @@ for (sp in sample_specs) {
     fs_title   <- paste0("First stage: effect of the Acid Rain Program on the number of upstream coal mines (",
                          fs_agg, ", ", sp$titlesamp, ")")
     cat("\nProducing first-stage table:", fs_outfile, "\n")
+    # Presentation companion only for the one first-stage table used in
+    # main.tex (fs_dwnstrm_minevio_ivsum) — see
+    # .claude/logs/2026-08-31-presentation-notes-tables.md.
+    fs_notes_present <- if (fs_outfile == "fs_dwnstrm_minevio_ivsum") {
+      paste0("\\textit{Notes:} All specifications include CWS and year fixed effects. ",
+             "Standard errors clustered at the CWS level. ",
+             "*** p$<$0.01, ** p$<$0.05, * p$<$0.1.")
+    } else NULL
     first_stage_table(
       storage_list_name = fs_store_name,
       outfile           = fs_outfile,
@@ -584,6 +657,7 @@ for (sp in sample_specs) {
       drop              = "num_facilities",
       dict              = vio_dict,
       notes             = fs_note(sp$suffix == "_ivsum", sp$notesamp),
+      notes_present     = fs_notes_present,
       fitstat           = if (sp$suffix == "_ivsum") ~ n else ~ .
     )
   }
@@ -671,9 +745,17 @@ for (sp in bin_sample_specs) {
       )
       varlist   <- vp[[cp$varkey]]
       cat("\nRunning:", fname, "\n")
+      # Presentation companion: notes stripped to FE + clustering + stars
+      # only (see .claude/logs/2026-08-31-presentation-notes-tables.md).
+      bin_notes_present <- paste0(
+        "\\textit{Notes:} All specifications include utilities and year fixed effects. ",
+        "Standard errors clustered at the utilities level. ",
+        "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+      )
       tsls_reg_output_main(dset=sp$dset, varlist=varlist, coalvar=sp$coalvar,
                            regoutname=fname, title=tab_title, label=fname,
                            instr_str=sp$instr, dict=vio_dict_bin, notes=std_note_ivsum_bin,
+                           notes_present=bin_notes_present,
                            storage_list_name=fs_store_name,
                            subheader=cp$titlecat,
                            fitstat=~ n,

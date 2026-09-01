@@ -1,0 +1,27 @@
+
+\begin{table}[htbp]
+\caption{Monitoring and Reporting (MR) violations following contaminant concentration readings}\label{tab:mr_concentration_lag}
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+   \begin{tabular}{lrrrrrr}
+      \toprule    
+                                       & Arsenic MR (1-yr) & Arsenic MR (6-mon)  & Nitrate MR (1-yr) & Nitrate MR (6-mon)  & Pooled IOC (1-yr) & Pooled IOC (6-mon) \\   
+                                       & (1)               & (2)                 & (3)               & (4)                 & (5)               & (6)\\  
+      \midrule 
+      Mean concen. (z-score)                    & 0.2622            & 0.2665              & 1.2804            & 0.0482              &                   &   \\   
+                                       & (0.3250)          & (0.2495)            & (1.4274)          & (0.8741)            &                   &   \\   
+      Concen. $>$ 50\% MCL                        &                   &                     & 58.9693$^{**}$    & 26.1081$^{**}$      & 0.4033            & -2.1966\\   
+                                       &                   &                     & (24.6040)         & (10.5298)           & (2.4182)          & (1.4172)\\   
+      Concen./MCL                            &                   &                     &                   &                     & -5.9684           & -5.7062\\   
+                                       &                   &                     &                   &                     & (8.1107)          & (4.0256)\\   
+       \\
+      Observations                     & 419               & 419                 & 851               & 851                 & 3,705             & 3,705\\  
+       \\
+      CWS fixed effects              & $\checkmark$      & $\checkmark$        & $\checkmark$      & $\checkmark$        & $\checkmark$      & $\checkmark$\\   
+      Year fixed effects               & $\checkmark$      & $\checkmark$        & $\checkmark$      & $\checkmark$        & $\checkmark$      & $\checkmark$\\   
+      Contaminant fixed effects  &                   &                     &                   &                     & $\checkmark$      & $\checkmark$\\   
+      \bottomrule
+   \end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright \textit{Notes:} SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+\end{table}

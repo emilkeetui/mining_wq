@@ -294,6 +294,7 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
                              detect_for = character(0), exclude_chems = character(0),
                              only_groups = NULL, no_r2_groups = character(0),
                              title_override = list(), note_override = list(),
+                             note_present_override = list(),
                              dict_override = list()) {
   for (grp in chem_groups) {
     if (!is.null(only_groups) && !(grp$file_label %in% only_groups)) next
@@ -427,6 +428,29 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
       file            = out
     )
     cat("  Written:", out, "\n")
+
+    # Presentation companion: same table, notes stripped to FE + clustering +
+    # stars only, only for groups explicitly requested via
+    # note_present_override (see
+    # .claude/logs/2026-08-31-presentation-notes-tables.md).
+    if (grp$file_label %in% names(note_present_override)) {
+      out_present <- sub("\\.tex$", "_present.tex", out)
+      etable(
+        models_list,
+        headers         = hdr_vec,
+        fitstat         = grp_fitstat,
+        style.tex       = style.tex("aer", adjustbox = TRUE),
+        tex             = TRUE,
+        drop            = "^num_facilities$",
+        title           = grp_title,
+        label           = paste0("tab:6yr_huc02fe_", grp$file_label, file_sfx),
+        dict            = grp_dict,
+        notes           = note_present_override[[grp$file_label]],
+        postprocess.tex = move_notes_below_adjustbox,
+        file            = out_present
+      )
+      cat("  Presentation table written:", out_present, "\n")
+    }
   }
 }
 
@@ -589,7 +613,8 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
                                entity_label = "CWS",
                                add_panel_b_above_median = FALSE,
                                sumstats_exclude_chems = character(0),
-                               include_sample_sentence = TRUE) {
+                               include_sample_sentence = TRUE,
+                               also_present = FALSE) {
   cat("\n=== INORGANIC CHEMICALS --- MEAN CONCENTRATION", file_sfx, "===\n")
 
   grp_inorg <- chem_groups[[1]]  # inorganic chemicals
@@ -857,6 +882,27 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
                       paste0("6yr_huc02fe_inorg_val_sumstats", file_sfx, ".tex"))
   writeLines(tex_ss, out_ss)
   cat("  Written:", out_ss, "\n")
+
+  # Presentation companion: same table body, notes block omitted entirely
+  # (summary statistics carry no clustering/FE/stars) -- see
+  # .claude/logs/2026-08-31-presentation-notes-tables.md.
+  if (also_present) {
+    tex_ss_present <- c(
+      "",
+      "\\begin{table}[htbp]",
+      paste0("   \\caption{\\label{", tab_label, "} ",
+             "Summary statistics: mean concentration for inorganic chemicals and cumulative upstream coal production}"),
+      "   \\bigskip",
+      "   \\centering",
+      panel_a_lines,
+      panel_b_lines,
+      "\\end{table}",
+      ""
+    )
+    out_ss_present <- sub("\\.tex$", "_present.tex", out_ss)
+    writeLines(tex_ss_present, out_ss_present)
+    cat("  Presentation table written:", out_ss_present, "\n")
+  }
 }
 
 # ---------------------------------------------------------------------------
@@ -963,6 +1009,13 @@ run_group_tables(df6r_2005, note_2005_rav, file_sfx = "_ravalli_2005",
                  note_override = list(
                    inorg = "\\textit{Notes:} Standard errors clustered at the utility level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
                  ),
+                 # Presentation companion: the main note above already contains
+                 # only clustering + stars (FE shown via checkmark rows), so
+                 # reuse it verbatim -- see
+                 # .claude/logs/2026-08-31-presentation-notes-tables.md.
+                 note_present_override = list(
+                   inorg = "\\textit{Notes:} Standard errors clustered at the utility level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+                 ),
                  dict_override = list(
                    inorg = { d <- dict_global; d["PWSID"] <- "Utility"; d }
                  ))
@@ -1018,7 +1071,8 @@ run_inorg_val_table(df6r_2005, file_sfx = "_ravalli_2005",
                     entity_label = "utility",
                     add_panel_b_above_median = TRUE,
                     sumstats_exclude_chems = "chromium",
-                    include_sample_sentence = FALSE)
+                    include_sample_sentence = FALSE,
+                    also_present = TRUE)
 
 # ---------------------------------------------------------------------------
 # Scatter plot: beta particle mean concentration vs cumulative upstream coal
