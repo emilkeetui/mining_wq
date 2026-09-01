@@ -342,28 +342,13 @@ INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\palatino\pplri8c.tfm
 INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\palatino\pplrc7t.vf
 INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\palatino\pplr8r.tfm
 INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\palatino\pplri8c.vf
-INPUT ..\..\output\sum\ioc_days_dwnstrm.tex
-INPUT ..\..\output\sum\ioc_days_dwnstrm.tex
-INPUT ..\..\output\sum\ioc_days_dwnstrm.tex
-INPUT ..\..\output\sum\ioc_days_dwnstrm.tex
-INPUT ..\..\output\sum\ioc_days_dwnstrm.tex
+INPUT ..\..\output\sum\violation_binary_days_panels.tex
+INPUT ..\..\output\sum\violation_binary_days_panels.tex
+INPUT ..\..\output\sum\violation_binary_days_panels.tex
+INPUT ..\..\output\sum\violation_binary_days_panels.tex
+INPUT ..\..\output\sum\violation_binary_days_panels.tex
 INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\palatino\pplri7t.tfm
 INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\palatino\pplri7t.vf
-INPUT ..\..\output\sum\visit_type_summary.tex
-INPUT ..\..\output\sum\visit_type_summary.tex
-INPUT ..\..\output\sum\visit_type_summary.tex
-INPUT ..\..\output\sum\visit_type_summary.tex
-INPUT ..\..\output\sum\visit_type_summary.tex
-INPUT ..\..\output\sum\mr_mcl_incidence_summary.tex
-INPUT ..\..\output\sum\mr_mcl_incidence_summary.tex
-INPUT ..\..\output\sum\mr_mcl_incidence_summary.tex
-INPUT ..\..\output\sum\mr_mcl_incidence_summary.tex
-INPUT ..\..\output\sum\mr_mcl_incidence_summary.tex
-INPUT ..\..\output\sum\violation_binary_days_panels.tex
-INPUT ..\..\output\sum\violation_binary_days_panels.tex
-INPUT ..\..\output\sum\violation_binary_days_panels.tex
-INPUT ..\..\output\sum\violation_binary_days_panels.tex
-INPUT ..\..\output\sum\violation_binary_days_panels.tex
 INPUT ..\..\output\sum\enforcement_visit_type_panels.tex
 INPUT ..\..\output\sum\enforcement_visit_type_panels.tex
 INPUT ..\..\output\sum\enforcement_visit_type_panels.tex
@@ -379,11 +364,6 @@ INPUT ..\..\output\sum\syr2_mr_comparison.tex
 INPUT ..\..\output\sum\syr2_mr_comparison.tex
 INPUT ..\..\output\sum\syr2_mr_comparison.tex
 INPUT ..\..\output\sum\syr2_mr_comparison.tex
-INPUT ..\..\output\sum\upstream_coal_summary.tex
-INPUT ..\..\output\sum\upstream_coal_summary.tex
-INPUT ..\..\output\sum\upstream_coal_summary.tex
-INPUT ..\..\output\sum\upstream_coal_summary.tex
-INPUT ..\..\output\sum\upstream_coal_summary.tex
 INPUT ..\..\output\reg\fs_dwnstrm_minevio_ivsum.tex
 INPUT ..\..\output\reg\fs_dwnstrm_minevio_ivsum.tex
 INPUT ..\..\output\reg\fs_dwnstrm_minevio_ivsum.tex
@@ -424,11 +404,6 @@ INPUT ..\..\output\reg\mr_concentration_lag_national_downstream_states.tex
 INPUT ..\..\output\reg\mr_concentration_lag_national_downstream_states.tex
 INPUT ..\..\output\reg\mr_concentration_lag_national_downstream_states.tex
 INPUT ..\..\output\reg\mr_concentration_lag_national_downstream_states.tex
-INPUT ..\..\output\sum\sanitary_visit_timing_formal_enforcement_rate.tex
-INPUT ..\..\output\sum\sanitary_visit_timing_formal_enforcement_rate.tex
-INPUT ..\..\output\sum\sanitary_visit_timing_formal_enforcement_rate.tex
-INPUT ..\..\output\sum\sanitary_visit_timing_formal_enforcement_rate.tex
-INPUT ..\..\output\sum\sanitary_visit_timing_formal_enforcement_rate.tex
 INPUT ..\..\output\reg\h3_inf_formal_d12.tex
 INPUT ..\..\output\reg\h3_inf_formal_d12.tex
 INPUT ..\..\output\reg\h3_inf_formal_d12.tex
