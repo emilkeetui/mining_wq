@@ -244,7 +244,7 @@ data_w     <- paste0(data_w_cm, "cm")
 col_spec   <- paste0("p{", label_w, "}",
                       paste(rep(paste0(">{\\raggedleft\\arraybackslash}p{", data_w, "}"), n_y), collapse = ""))
 depvar_header <- " & \\multicolumn{2}{c}{Number of Intake Facilities} \\\\"
-header_row <- " & (1) & (2) \\\\"
+header_row <- " & \\multicolumn{1}{c}{(1)} & \\multicolumn{1}{c}{(2)} \\\\"
 
 # Physical width check (matches run_main_tables.r's multi-panel convention):
 # scale via adjustbox only if the natural width exceeds the text width.
@@ -288,7 +288,7 @@ if (needs_scale) {
   )
 }
 
-caption_title <- "Instrument balance: coal sulfur exposure after 1995 and the number of intake facilities at utilities"
+caption_title <- "Effect of instrument on utility characteristics"
 
 note_text <- paste0(
   "\\textit{Notes:} Standard errors, clustered at the utility level, are shown in ",
@@ -297,7 +297,7 @@ note_text <- paste0(
 
 table_lines <- c(
   "\\begin{table}[htbp]",
-  "\\raggedright",
+  "\\centering",
   paste0("\\begin{minipage}{", total_w, "}"),
   paste0("\\caption{\\label{exclusion_test_num_facilities} ", caption_title, "}"),
   "\\end{minipage}",
@@ -328,7 +328,7 @@ note_text_present <- paste0(
 
 table_lines_present <- c(
   "\\begin{table}[htbp]",
-  "\\raggedright",
+  "\\centering",
   paste0("\\begin{minipage}{", total_w, "}"),
   paste0("\\caption{\\label{exclusion_test_num_facilities} ", caption_title, "}"),
   "\\end{minipage}",

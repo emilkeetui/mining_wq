@@ -112,35 +112,52 @@ p_after <- huccoal %>%
 
 ggsave("Z:/ek559/mining_wq/output/fig/scatterhuccoalsulfur.png", width = 8, height = 5, dpi = 500)
 
-# Pooled version: single color, single best-fit line per panel
-p_before_pooled <- huccoal %>%
-  filter(year <= 1995) %>%
-  ggplot(aes(x = num_coal_mines_colocated, y = sulfur_colocated)) +
-  geom_point(alpha = 0.4, size = 1.5, color = "steelblue") +
-  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.9) +
-  labs(
-    title = "Up to and Including 1995",
-    x     = "Number of coal mines",
-    y     = "Sulfur (%)"
-  ) +
-  theme_bw()
+# Pooled version, binscatter: bin by number of coal mines, plot the mean and
+# SD of sulfur (%) across all HUC12s in each bin, with the linear fit (on the
+# underlying HUC12-year observations) drawn behind the binned points and
+# rendered with increased transparency.
+make_binscatter_panel <- function(df, panel_title) {
+  binned <- df %>%
+    group_by(num_coal_mines_colocated) %>%
+    summarise(
+      mean_sulfur = mean(sulfur_colocated, na.rm = TRUE),
+      sd_sulfur   = sd(sulfur_colocated, na.rm = TRUE),
+      .groups = "drop"
+    )
 
-p_after_pooled <- huccoal %>%
-  filter(year > 1995) %>%
-  ggplot(aes(x = num_coal_mines_colocated, y = sulfur_colocated)) +
-  geom_point(alpha = 0.4, size = 1.5, color = "steelblue") +
-  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.9) +
-  labs(
-    title = "After 1995",
-    x     = "Number of coal mines",
-    y     = "Sulfur (%)"
-  ) +
-  theme_bw()
+  fit <- lm(sulfur_colocated ~ num_coal_mines_colocated, data = df)
+  fit_line <- data.frame(
+    num_coal_mines_colocated = seq(
+      min(df$num_coal_mines_colocated, na.rm = TRUE),
+      max(df$num_coal_mines_colocated, na.rm = TRUE),
+      length.out = 100
+    )
+  )
+  fit_line$sulfur_colocated <- predict(fit, newdata = fit_line)
+
+  ggplot(mapping = aes(x = num_coal_mines_colocated, y = sulfur_colocated)) +
+    geom_line(data = fit_line, color = "black", linewidth = 0.9, alpha = 0.25) +
+    geom_pointrange(
+      data = binned,
+      aes(y = mean_sulfur, ymin = mean_sulfur - sd_sulfur, ymax = mean_sulfur + sd_sulfur),
+      color = "steelblue", size = 0.4
+    ) +
+    labs(
+      title = panel_title,
+      x     = "Number of coal mines",
+      y     = "Sulfur (%)"
+    ) +
+    theme_bw() +
+    theme(panel.grid = element_blank())
+}
+
+p_before_pooled <- make_binscatter_panel(huccoal %>% filter(year <= 1995), "Up to and Including 1995")
+p_after_pooled  <- make_binscatter_panel(huccoal %>% filter(year > 1995), "After 1995")
 
 (p_before_pooled + p_after_pooled) +
   plot_annotation(
-    title   = "HUC12 sulfur (%) vs. number of coal mines",
-    caption = "Sample: mine HUC12s (D1) upstream of downstream-only 2SLS CWS intakes, >= 1 active mine year 1985-2005.",
+    title   = "Descriptive evidence of first-stage relevance",
+    caption = "Sample: HUC12 watersheds directly upstream of drinking water utility water intakes 1985-2005.\nPoints show the mean sulfur as a percent of coal weight within each coal-mine-count bin; ranges show +/- 1 standard deviation within bin.",
     theme   = theme(plot.caption = element_text(hjust = 0))
   )
 

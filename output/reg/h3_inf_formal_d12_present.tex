@@ -7,23 +7,26 @@
 {\setlength{\tabcolsep}{4pt}%
 \begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}}
 \hline\hline
- & Any informal enforcement & Any formal enforcement & No enforcement \\
+ & \multicolumn{3}{c}{Any enforcement} \\
+\cline{2-4}
+ & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{Informal} & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{Formal} & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{None} \\
+ & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{(3)} \\
 \hline
-\multicolumn{4}{l}{Panel A: OLS} \\
+\multicolumn{4}{l}{OLS} \\
 Upstream coal mines (sum) & \phantom{(}\phantom{-}0.84$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-1.69$^{***}$ & \phantom{(}-0.78$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
  & (\phantom{-}0.79)\phantom{$^{***}$} & (\phantom{-}0.45)\phantom{$^{***}$} & (\phantom{-}0.86)\phantom{$^{***}$} \\
 \end{tabular}
 \begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}}
 \hline
-\multicolumn{4}{l}{Panel B: Reduced Form} \\
-post95 $\times$ Upstream sulfur \% & \phantom{(}\phantom{-}0.14$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}1.45$^{***}$ & \phantom{(}\phantom{-}0.03$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
- & (\phantom{-}1.02)\phantom{$^{***}$} & (\phantom{-}0.52)\phantom{$^{***}$} & (\phantom{-}1.08)\phantom{$^{***}$} \\
+\multicolumn{4}{l}{2SLS} \\
+Upstream coal mines (sum) & \phantom{(}-0.56$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-5.65$^{***}$ & \phantom{(}-0.10$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}4.00)\phantom{$^{***}$} & (\phantom{-}2.05)\phantom{$^{***}$} & (\phantom{-}4.23)\phantom{$^{***}$} \\
 \end{tabular}
 \begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}}
 \hline
-\multicolumn{4}{l}{Panel C: 2SLS} \\
-Upstream coal mines (sum) & \phantom{(}-0.56$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-5.65$^{***}$ & \phantom{(}-0.10$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
- & (\phantom{-}4.00)\phantom{$^{***}$} & (\phantom{-}2.05)\phantom{$^{***}$} & (\phantom{-}4.23)\phantom{$^{***}$} \\
+\multicolumn{4}{l}{RF} \\
+post95 $\times$ Upstream sulfur \% & \phantom{(}\phantom{-}0.14$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}1.45$^{***}$ & \phantom{(}\phantom{-}0.03$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}1.02)\phantom{$^{***}$} & (\phantom{-}0.52)\phantom{$^{***}$} & (\phantom{-}1.08)\phantom{$^{***}$} \\
 \hline\hline
 \end{tabular}
 }

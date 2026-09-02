@@ -44,6 +44,39 @@ move_notes_below_adjustbox <- function(x) {
   x
 }
 
+# add_cmidrule_under_superheader(): inserts a \cmidrule rule line directly
+# below the first multicolumn-spanning header row (e.g. the "Mean conc."
+# depvar span), underlining just the spanned columns, booktabs-style.
+add_cmidrule_under_superheader <- function(x) {
+  x <- paste(x, collapse = "\n")
+  lines <- strsplit(x, "\n")[[1]]
+  toprule_idx <- which(grepl("\\toprule", lines, fixed = TRUE))[1]
+  if (is.na(toprule_idx)) return(x)
+  hdr_idx <- NA
+  for (i in seq(toprule_idx + 1, length(lines))) {
+    if (grepl("\\multicolumn", lines[i], fixed = TRUE)) { hdr_idx <- i; break }
+    if (grepl("\\midrule", lines[i], fixed = TRUE)) break
+  }
+  if (is.na(hdr_idx)) return(x)
+
+  cells <- strsplit(lines[hdr_idx], "&", fixed = TRUE)[[1]]
+  col <- 0
+  rule_parts <- character(0)
+  for (cell in cells) {
+    m <- regmatches(cell, regexpr("\\\\multicolumn\\{([0-9]+)\\}", cell))
+    if (length(m) > 0 && nzchar(m)) {
+      n <- as.integer(sub("\\\\multicolumn\\{([0-9]+)\\}.*", "\\1", m))
+      rule_parts <- c(rule_parts, sprintf("\\cmidrule(lr){%d-%d}", col + 1, col + n))
+      col <- col + n
+    } else {
+      col <- col + 1
+    }
+  }
+  if (length(rule_parts) == 0) return(x)
+  lines <- append(lines, paste(rule_parts, collapse = " "), after = hdr_idx)
+  paste(lines, collapse = "\n")
+}
+
 # ---------------------------------------------------------------------------
 # Load datasets
 # ---------------------------------------------------------------------------
@@ -295,7 +328,8 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
                              only_groups = NULL, no_r2_groups = character(0),
                              title_override = list(), note_override = list(),
                              note_present_override = list(),
-                             dict_override = list()) {
+                             dict_override = list(),
+                             header_rule_for = character(0)) {
   for (grp in chem_groups) {
     if (!is.null(only_groups) && !(grp$file_label %in% only_groups)) next
     cat("\n--- Group:", grp$group_label, file_sfx, "---\n")
@@ -405,6 +439,12 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
 
     grp_fitstat <- if (grp$file_label %in% no_r2_groups) ~ n else ~ . + n + r2
 
+    grp_postprocess <- if (grp$file_label %in% header_rule_for) {
+      function(x) move_notes_below_adjustbox(add_cmidrule_under_superheader(x))
+    } else {
+      move_notes_below_adjustbox
+    }
+
     grp_title <- if (grp$file_label %in% names(title_override)) {
       title_override[[grp$file_label]]
     } else {
@@ -424,7 +464,7 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
       label           = paste0("tab:6yr_huc02fe_", grp$file_label, file_sfx),
       dict            = grp_dict,
       notes           = grp_note,
-      postprocess.tex = move_notes_below_adjustbox,
+      postprocess.tex = grp_postprocess,
       file            = out
     )
     cat("  Written:", out, "\n")
@@ -446,7 +486,7 @@ run_group_tables <- function(df, note, file_sfx, title_sfx, note_tc = note_tc_ma
         label           = paste0("tab:6yr_huc02fe_", grp$file_label, file_sfx),
         dict            = grp_dict,
         notes           = note_present_override[[grp$file_label]],
-        postprocess.tex = move_notes_below_adjustbox,
+        postprocess.tex = grp_postprocess,
         file            = out_present
       )
       cat("  Presentation table written:", out_present, "\n")
@@ -1018,7 +1058,8 @@ run_group_tables(df6r_2005, note_2005_rav, file_sfx = "_ravalli_2005",
                  ),
                  dict_override = list(
                    inorg = { d <- dict_global; d["PWSID"] <- "Utility"; d }
-                 ))
+                 ),
+                 header_rule_for = "inorg")
 
 # ---------------------------------------------------------------------------
 # Surface-water subsample: re-estimate the inorganic-chemicals 1998-2005

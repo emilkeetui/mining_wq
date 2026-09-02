@@ -689,7 +689,7 @@ get_term <- function(model, term) {
   }
 }
 
-render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile, notes) {
+render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile, notes, superheader = NULL) {
   y_vec    <- names(result)
   n_y      <- length(y_vec)
   y_labels <- sapply(y_vec, function(v) if (!is.null(dict) && v %in% names(dict)) dict[[v]] else v)
@@ -709,7 +709,37 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
   data_w     <- paste0(data_w_cm, "cm")
   col_spec   <- paste0("p{", label_w, "}",
                         paste(rep(paste0(">{\\raggedleft\\arraybackslash}p{", data_w, "}"), n_y), collapse = ""))
-  header_row <- paste0(" & ", paste0(y_labels, collapse = " & "), " \\\\")
+
+  # Column headings and column numbers are centered (the data columns
+  # underneath stay right-aligned for decimal alignment), via a per-cell
+  # \multicolumn override of the column's default alignment. The override
+  # keeps the column's fixed p{} width (wrapping long headers like
+  # "Technical assistance" onto a second line) rather than the unconstrained
+  # "c" LaTeX would otherwise size to content - an unconstrained cell here
+  # would make this row's tabular wider than the other panels', so a
+  # per-panel adjustbox (see wrap_panel() below) scales it down more than
+  # the panels underneath and the column numbers stop aligning across models.
+  centered_data_col <- paste0(">{\\centering\\arraybackslash}p{", data_w, "}")
+  header_cells <- paste0("\\multicolumn{1}{", centered_data_col, "}{", y_labels, "}")
+  header_row   <- paste0(" & ", paste(header_cells, collapse = " & "), " \\\\")
+  colnum_cells <- paste0("\\multicolumn{1}{", centered_data_col, "}{(", seq_len(n_y), ")}")
+  # Column numbers appear once for the whole table, directly under the
+  # column-heading row and above the rule that sets off the first panel.
+  colnum_row   <- paste0(" & ", paste(colnum_cells, collapse = " & "), " \\\\")
+  # Each panel's title row names its model, spanning the full table width.
+  title_row <- function(model_label) {
+    paste0("\\multicolumn{", n_y + 1, "}{l}{", model_label, "} \\\\")
+  }
+
+  # Superheader spans only the data columns (not the row-label column), with
+  # a partial rule (\cline) underneath so the rule does not run under the
+  # label column.
+  superheader_lines <- if (!is.null(superheader)) {
+    c(paste0(" & \\multicolumn{", n_y, "}{c}{", superheader, "} \\\\"),
+      paste0("\\cline{2-", n_y + 1, "}"))
+  } else {
+    NULL
+  }
 
   ols_terms <- lapply(y_vec, function(y) get_term(result[[y]]$OLS, coalvar))
   rf_terms  <- lapply(y_vec, function(y) get_term(result[[y]]$RF,  instr_str))
@@ -752,32 +782,38 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
       if (tab_end < length(lines)) lines[(tab_end + 1):length(lines)] else NULL)
   }
 
-  panel_a <- wrap_panel(c(
+  # Panel order: OLS, then 2SLS, then reduced form. Each panel carries a
+  # title row naming its model (rather than "Panel A/B/C"); every internal
+  # rule is a full-width \hline (the only partial rule in the table is the
+  # \cline under the superheader).
+  panel_ols <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline\\hline",
+    superheader_lines,
     header_row,
+    colnum_row,
     "\\hline",
-    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel A: OLS} \\\\"),
+    title_row("OLS"),
     coef_line(ols_cells, coal_lab),
     se_line(ols_cells),
     "\\end{tabular}"
   ))
 
-  panel_b <- wrap_panel(c(
+  panel_iv <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline",
-    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel B: Reduced Form} \\\\"),
-    coef_line(rf_cells, instr_lab),
-    se_line(rf_cells),
+    title_row("2SLS"),
+    coef_line(iv_cells, coal_lab),
+    se_line(iv_cells),
     "\\end{tabular}"
   ))
 
-  panel_c <- wrap_panel(c(
+  panel_rf <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline",
-    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel C: 2SLS} \\\\"),
-    coef_line(iv_cells, coal_lab),
-    se_line(iv_cells),
+    title_row("RF"),
+    coef_line(rf_cells, instr_lab),
+    se_line(rf_cells),
     "\\hline\\hline",
     "\\end{tabular}"
   ))
@@ -790,9 +826,9 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     "\\end{minipage}",
     "\\small",
     "{\\setlength{\\tabcolsep}{4pt}%",
-    panel_a,
-    panel_b,
-    panel_c,
+    panel_ols,
+    panel_iv,
+    panel_rf,
     "}",
     paste0("\\begin{minipage}{", total_w, "}"),
     "\\vspace{4pt}",
@@ -834,9 +870,9 @@ out_tex_b   <- file.path(ROOT, "output/reg/h2_snsv_d12.tex")
 f_label_b   <- "F-test (1st stage, clustered), Upstream coal mines (sum)"
 
 dict_b <- c(
-  "any_snsv"                        = "Sanitary visits",
+  "any_snsv"                        = "Sanitary",
   "any_tech"                        = "Technical assistance",
-  "any_enfvisit"                    = "Enforcement visits",
+  "any_enfvisit"                    = "Enforcement",
   "any_smpl"                        = "Sample collection",
   "any_insp"                        = "Inspection",
   "num_coal_mines_upstream_sum"     = "Upstream coal mines (sum)",
@@ -855,9 +891,9 @@ result_b <- lapply(names(visit_outcomes), function(oc) {
 })
 names(result_b) <- names(visit_outcomes)
 
-notes_b <- paste0("\\textit{Notes:} Sample restricted to community water systems strictly downstream ",
+notes_b <- paste0("\\textit{Notes:} Sample restricted to utilities strictly downstream ",
                   "of a coal mine. ",
-                  "N = ", nrow(panel_d1), " utility-years. Panels (OLS, reduced form, 2SLS) report ",
+                  "N = ", nrow(panel_d1), " utility-years. Panels (OLS, 2SLS, reduced form) report ",
                   "coefficients for each visit-type outcome shown in the columns, equal to 100 if any ",
                   "visit of that type occurred in the utility-year and 0 otherwise; coefficients and ",
                   "standard errors are in percentage points. ",
@@ -879,7 +915,8 @@ render_panel_binary_table(result = result_b, dict = dict_b,
                            title = "Effect of Coal Mining on Regulator Visit Probability by Visit Type (Downstream Sample, LPM)",
                            label = "tab:h2_snsv_d12",
                            outfile = "h2_snsv_d12",
-                           notes = notes_b)
+                           notes = notes_b,
+                           superheader = "Any visits")
 cat(sprintf("\nTable saved to: %s\n", out_tex_b))
 if (file.exists(out_tex_b) && file.info(out_tex_b)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")
@@ -900,7 +937,8 @@ render_panel_binary_table(result = result_b, dict = dict_b,
                            title = "Effect of Coal Mining on Regulator Visit Probability by Visit Type (Downstream Sample, LPM)",
                            label = "tab:h2_snsv_d12",
                            outfile = "h2_snsv_d12_present",
-                           notes = notes_b_present)
+                           notes = notes_b_present,
+                           superheader = "Any visits")
 cat("Presentation table saved to:", file.path(ROOT, "output/reg/h2_snsv_d12_present.tex"), "\n")
 
 # ── Surface-water subsample: H2b table (visit-type LPM), panel_d1_sw ─────────
@@ -950,9 +988,9 @@ etable(models_b_sw,
        drop           = "num_facilities",
        extralines     = el_b_sw,
        fitstat        = ~n,
-       notes          = paste0("\\textit{Notes:} Sample restricted to community water systems strictly downstream ",
+       notes          = paste0("\\textit{Notes:} Sample restricted to utilities strictly downstream ",
                                "of a coal mine. ",
-                               "Sample further restricted to community water systems whose primary water source is surface water. ",
+                               "Sample further restricted to utilities whose primary water source is surface water. ",
                                "N = ", nrow(panel_d1_sw), " CWS-years. Each panel of 3 columns (OLS, RF, 2SLS) ",
                                "reports a separate binary outcome: any visit of that type in a CWS-year. ",
                                visit_note_block_sw,
@@ -1003,9 +1041,9 @@ ned1_pct   <- mean(panel_d1$no_enf)
 f_label_d1 <- "F-test (1st stage, clustered), Upstream coal mines (sum)"
 
 dict_enf <- c(
-  "any_informal"                    = "Any informal enforcement",
-  "any_formal"                      = "Any formal enforcement",
-  "no_enf"                          = "No enforcement",
+  "any_informal"                    = "Informal",
+  "any_formal"                      = "Formal",
+  "no_enf"                          = "None",
   "num_coal_mines_upstream_sum"     = "Upstream coal mines (sum)",
   "fit_num_coal_mines_upstream_sum" = "Upstream coal mines (sum)",
   "post95:sulfur_unified_mean"      = "post95 $\\times$ Upstream sulfur \\%",
@@ -1020,7 +1058,7 @@ result_h3_inf <- list(
   no_enf       = list(OLS = ols_ned1, RF = rf_ned1, IV = iv_ned1, f_clustered = f_cl_d1)
 )
 
-notes_h3_inf <- paste0("\\textit{Notes:} Sample restricted to community water systems strictly ",
+notes_h3_inf <- paste0("\\textit{Notes:} Sample restricted to utilities strictly ",
                        "downstream of a coal mine. Each outcome is equal to 100 if the enforcement ",
                        "event occurred in the utility-year and 0 otherwise; coefficients and standard ",
                        "errors are in percentage points. ",
@@ -1039,7 +1077,8 @@ render_panel_binary_table(result = result_h3_inf, dict = dict_enf,
                            title = "Effect of Coal Mining on Enforcement Actions by Type (Downstream Sample)",
                            label = "tab:h3_inf_formal_d12",
                            outfile = "h3_inf_formal_d12",
-                           notes = notes_h3_inf)
+                           notes = notes_h3_inf,
+                           superheader = "Any enforcement")
 cat(sprintf("\nTable saved to: %s\n", out_tex_h3_inf))
 if (file.exists(out_tex_h3_inf) && file.info(out_tex_h3_inf)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")
@@ -1060,7 +1099,8 @@ render_panel_binary_table(result = result_h3_inf, dict = dict_enf,
                            title = "Effect of Coal Mining on Enforcement Actions by Type (Downstream Sample)",
                            label = "tab:h3_inf_formal_d12",
                            outfile = "h3_inf_formal_d12_present",
-                           notes = notes_h3_inf_present)
+                           notes = notes_h3_inf_present,
+                           superheader = "Any enforcement")
 cat("Presentation table saved to:", file.path(ROOT, "output/reg/h3_inf_formal_d12_present.tex"), "\n")
 
 # ── Surface-water subsample: H3 informal/formal/no-enforcement table, panel_d1_sw ──
@@ -1124,9 +1164,9 @@ if (length(h3_kept_sw) == 0) {
     drop           = "num_facilities",
     extralines     = el_d1_sw,
     fitstat        = ~n,
-    notes          = paste0("\\textit{Notes:} Sample restricted to community water systems strictly ",
+    notes          = paste0("\\textit{Notes:} Sample restricted to utilities strictly ",
                             "downstream of a coal mine. ",
-                            "Sample further restricted to community water systems whose primary water source is surface water. ",
+                            "Sample further restricted to utilities whose primary water source is surface water. ",
                             col_desc_sw,
                             "The instrument interacts an indicator for the post-1995 period with mean ",
                             "upstream coal sulfur content. SEs clustered at the CWS level. ",

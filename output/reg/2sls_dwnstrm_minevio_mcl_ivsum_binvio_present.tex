@@ -7,23 +7,26 @@
 {\setlength{\tabcolsep}{4pt}%
 \begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}}
 \hline\hline
- & Nitrates (MCL) & Arsenic (MCL) & Inorganic chemicals (MCL) \\
+ & \multicolumn{3}{c}{Any MCL violation} \\
+\cline{2-4}
+ & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{Nitrates} & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{Arsenic} & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{Inorganic chemicals} \\
+ & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{(3)} \\
 \hline
-\multicolumn{4}{l}{Panel A: OLS} \\
+\multicolumn{4}{l}{OLS} \\
 Upstream coal mines (sum) & \phantom{(}-0.02$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.02$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.00$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
  & (\phantom{-}0.02)\phantom{$^{***}$} & (\phantom{-}0.04)\phantom{$^{***}$} & (\phantom{-}0.14)\phantom{$^{***}$} \\
 \end{tabular}
 \begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}}
 \hline
-\multicolumn{4}{l}{Panel B: Reduced Form} \\
-post95 $\times$ Upstream sulfur \% & \phantom{(}\phantom{-}0.00$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.02$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.19$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
- & (\phantom{-}0.00)\phantom{$^{***}$} & (\phantom{-}0.01)\phantom{$^{***}$} & (\phantom{-}0.16)\phantom{$^{***}$} \\
+\multicolumn{4}{l}{2SLS} \\
+Upstream coal mines (sum) & \phantom{(}-0.02$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.08$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.78$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}0.02)\phantom{$^{***}$} & (\phantom{-}0.06)\phantom{$^{***}$} & (\phantom{-}0.69)\phantom{$^{***}$} \\
 \end{tabular}
 \begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}>{\raggedleft\arraybackslash}p{3cm}}
 \hline
-\multicolumn{4}{l}{Panel C: 2SLS} \\
-Upstream coal mines (sum) & \phantom{(}-0.02$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.08$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.78$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
- & (\phantom{-}0.02)\phantom{$^{***}$} & (\phantom{-}0.06)\phantom{$^{***}$} & (\phantom{-}0.69)\phantom{$^{***}$} \\
+\multicolumn{4}{l}{RF} \\
+post95 $\times$ Upstream sulfur \% & \phantom{(}\phantom{-}0.00$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.02$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.19$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}0.00)\phantom{$^{***}$} & (\phantom{-}0.01)\phantom{$^{***}$} & (\phantom{-}0.16)\phantom{$^{***}$} \\
 \hline\hline
 \end{tabular}
 }

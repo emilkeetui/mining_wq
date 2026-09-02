@@ -189,3 +189,69 @@ control-sensitivity numbers unchanged (0.41% / 0.08% / 0.11%).
 interaction "estimated without utility fixed effects" — a fixed-effects
 reference that Rule 7 forbids while FE checkmark rows are in the table body.
 Reworded to "identified from differences across utilities".
+
+---
+
+## Revision 4 (2026-09-02) — title, header centering, table placement
+
+**Change 1:** `caption_title` changed from "Instrument balance: coal sulfur
+exposure after 1995 and the number of intake facilities at utilities" to
+"Effect of instrument on utility characteristics".
+
+**Change 2:** `header_row` cells `(1)`/`(2)` wrapped in
+`\multicolumn{1}{c}{...}` so they render centered over their data columns
+instead of inheriting the data columns' `\raggedleft` alignment.
+
+**Right-justify / decimal-alignment check (no code change):** data columns
+already use `>{\raggedleft\arraybackslash}p{2.5cm}` for right-justification,
+and `fmt_num_wide()`/`fmt_col_terms()` already phantom-pad every coefficient
+and SE in a column to a shared integer-digit width before rendering, so
+decimal points already align within each column (all values in this table
+have a 1-digit integer part, so no visible padding was actually inserted this
+run, but the mechanism is column-width-aware and will pad correctly if a
+future estimate has a 2-digit integer part).
+
+**Change 3 (main.tex):** wrapped
+`\outreg{exclusion_test_num_facilities}` in `\begin{center}...\end{center}`
+(main.tex line ~705) so the table float is centered on the page. Previously
+the table had only `\raggedright` at the top of its `table` environment,
+which (with no other justification declared) left the narrower-than-textwidth
+minipage/tabular content flush against the left margin rather than centered;
+`\raggedright` was already equivalent to the default there, so it wasn't
+doing anything — `\centering` (via the wrapping `center` environment) was
+needed to actually center the block. The notes minipage's own local
+`\raggedright` is unaffected and still left-justifies the notes text per
+`table-figure-formatting.md` Rule 1.
+
+**Verified:** `Rscript.exe --vanilla exclusion_test_num_facilities.r` exits 0;
+regenerated `.tex` shows the new title, centered `(1)`/`(2)` headers, and
+unchanged coefficients (col 1: -0.0016 (0.0016); col 2: sulfur 0.0384
+(0.0735), interaction -0.0016 (0.0017); N = 6,225 / 5,460; utilities 333 /
+260). Recompiled `main.tex` with `latexmk -pdf` end-to-end: 65-page
+`main.pdf` produced, no new errors (the 2 pre-existing undefined-reference
+warnings — `tab:mr_mcl_incidence_summary`, `tab:sanitary_visit_timing_...` —
+are unrelated commented-out tables, not touched by this change).
+
+**Correction:** the `\begin{center}...\end{center}` wrap in main.tex did not
+actually center the table — user reported it was still flush left after
+recompiling. Root cause: a `table` float starts its own grouping, so the
+float's own internal `\raggedright` declaration (right after
+`\begin{table}[htbp]`) overrides any alignment set by an environment wrapped
+*around* the float in main.tex; the outer `\begin{center}` had no effect on
+content inside the float. Fixed at the source instead: changed the
+table-level `\raggedright` to `\centering` in both `table_lines` and
+`table_lines_present` in `exclusion_test_num_facilities.r` (the notes
+minipage's own local `\raggedright` is untouched, so notes text is still
+left-justified per `table-figure-formatting.md` Rule 1), regenerated the
+table, and removed the now-unnecessary `\begin{center}` wrap in main.tex.
+Recompiled `main.tex` again: 65-page PDF, same 2 pre-existing unrelated
+undefined-reference warnings, no new errors.
+
+**[LEARN:latex] Wrapping an `\outreg{...}`/`\input{}`'d float in
+`\begin{center}` does not center it → the float's own internal
+`\raggedright`/`\centering` declaration (set inside the generated `.tex`,
+right after `\begin{table}`) is what controls its horizontal placement,
+since a float opens its own grouping that overrides outer alignment
+declarations. To center a pipeline-generated table, edit the alignment
+declaration in the table-generating script, not the `\outreg{}` call site
+in main.tex.
