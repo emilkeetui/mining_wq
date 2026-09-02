@@ -121,7 +121,8 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
                                   instr_str, dict = NULL, notes = NULL,
                                   notes_present = NULL,
                                   storage_list_name = NULL, subheader = NULL,
-                                  fitstat = ~ ., panel_style = FALSE) {
+                                  fitstat = ~ ., panel_style = FALSE,
+                                  superheader = NULL) {
   controls            <- c("num_facilities")
   drop_controls_exact <- paste0("^(", paste(controls, collapse = "|"), ")$")
   fe_str              <- "PWSID + year"
@@ -188,14 +189,14 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
   if (panel_style) {
     render_panel_binary_table(result = result, dict = dict, coalvar = coalvar,
                                instr_str = instr_str, title = title, label = label,
-                               outfile = regoutname)
+                               outfile = regoutname, superheader = superheader)
     # Presentation companion: same panels, notes stripped to FE + clustering +
     # stars only (see .claude/logs/2026-08-31-presentation-notes-tables.md).
     if (!is.null(notes_present)) {
       render_panel_binary_table(result = result, dict = dict, coalvar = coalvar,
                                  instr_str = instr_str, title = title, label = label,
                                  outfile = paste0(regoutname, "_present"),
-                                 notes = notes_present)
+                                 notes = notes_present, superheader = superheader)
     }
     return(invisible(NULL))
   }
@@ -392,10 +393,14 @@ get_term <- function(model, term) {
   }
 }
 
-render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile, notes = NULL) {
+render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile, notes = NULL, superheader = NULL) {
   y_vec    <- names(result)
   n_y      <- length(y_vec)
   y_labels <- sapply(y_vec, function(v) if (!is.null(dict) && v %in% names(dict)) dict[[v]] else v)
+  # Superheader already communicates whether a table is MCL- or MR-only, so
+  # per-column "(MCL)"/"(MR)" suffixes are redundant here.
+  y_labels <- gsub(" \\(MCL\\)$", "", y_labels)
+  y_labels <- gsub(" \\(MR\\)$",  "", y_labels)
   coal_lab <- if (!is.null(dict) && coalvar %in% names(dict)) dict[[coalvar]] else coalvar
 
   instr_parts     <- strsplit(instr_str, ":")[[1]]
@@ -417,7 +422,37 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
   data_w     <- paste0(data_w_cm, "cm")
   col_spec   <- paste0("p{", label_w, "}",
                         paste(rep(paste0(">{\\raggedleft\\arraybackslash}p{", data_w, "}"), n_y), collapse = ""))
-  header_row <- paste0(" & ", paste0(y_labels, collapse = " & "), " \\\\")
+
+  # Column headings and column numbers are centered (the data columns
+  # underneath stay right-aligned for decimal alignment), via a per-cell
+  # \multicolumn override of the column's default alignment. The override
+  # keeps the column's fixed p{} width (wrapping long headers like
+  # "Technical assistance" onto a second line) rather than the unconstrained
+  # "c" LaTeX would otherwise size to content - an unconstrained cell here
+  # would make this row's tabular wider than the other panels', so a
+  # per-panel adjustbox (see wrap_panel() below) scales it down more than
+  # the panels underneath and the column numbers stop aligning across models.
+  centered_data_col <- paste0(">{\\centering\\arraybackslash}p{", data_w, "}")
+  header_cells <- paste0("\\multicolumn{1}{", centered_data_col, "}{", y_labels, "}")
+  header_row   <- paste0(" & ", paste(header_cells, collapse = " & "), " \\\\")
+  colnum_cells <- paste0("\\multicolumn{1}{", centered_data_col, "}{(", seq_len(n_y), ")}")
+  # Column numbers appear once for the whole table, directly under the
+  # column-heading row and above the rule that sets off the first panel.
+  colnum_row   <- paste0(" & ", paste(colnum_cells, collapse = " & "), " \\\\")
+  # Each panel's title row names its model, spanning the full table width.
+  title_row <- function(model_label) {
+    paste0("\\multicolumn{", n_y + 1, "}{l}{", model_label, "} \\\\")
+  }
+
+  # Superheader spans only the data columns (not the row-label column), with
+  # a partial rule (\cline) underneath so the rule does not run under the
+  # label column.
+  superheader_lines <- if (!is.null(superheader)) {
+    c(paste0(" & \\multicolumn{", n_y, "}{c}{", superheader, "} \\\\"),
+      paste0("\\cline{2-", n_y + 1, "}"))
+  } else {
+    NULL
+  }
 
   ols_terms <- lapply(y_vec, function(y) get_term(result[[y]]$OLS, coalvar))
   rf_terms  <- lapply(y_vec, function(y) get_term(result[[y]]$RF,  instr_str))
@@ -461,32 +496,38 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
       if (tab_end < length(lines)) lines[(tab_end + 1):length(lines)] else NULL)
   }
 
-  panel_a <- wrap_panel(c(
+  # Panel order: OLS, then 2SLS, then reduced form. Each panel carries a
+  # title row naming its model (rather than "Panel A/B/C"); every internal
+  # rule is a full-width \hline (the only partial rule in the table is the
+  # \cline under the superheader).
+  panel_ols <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline\\hline",
+    superheader_lines,
     header_row,
+    colnum_row,
     "\\hline",
-    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel A: OLS} \\\\"),
+    title_row("OLS"),
     coef_line(ols_cells, coal_lab),
     se_line(ols_cells),
     "\\end{tabular}"
   ))
 
-  panel_b <- wrap_panel(c(
+  panel_iv <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline",
-    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel B: Reduced Form} \\\\"),
-    coef_line(rf_cells, instr_lab),
-    se_line(rf_cells),
+    title_row("2SLS"),
+    coef_line(iv_cells, coal_lab),
+    se_line(iv_cells),
     "\\end{tabular}"
   ))
 
-  panel_c <- wrap_panel(c(
+  panel_rf <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\hline",
-    paste0("\\multicolumn{", n_y + 1, "}{l}{Panel C: 2SLS} \\\\"),
-    coef_line(iv_cells, coal_lab),
-    se_line(iv_cells),
+    title_row("RF"),
+    coef_line(rf_cells, instr_lab),
+    se_line(rf_cells),
     "\\hline\\hline",
     "\\end{tabular}"
   ))
@@ -528,9 +569,9 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     "\\end{minipage}",
     "\\small",
     "{\\setlength{\\tabcolsep}{4pt}%",
-    panel_a,
-    panel_b,
-    panel_c,
+    panel_ols,
+    panel_iv,
+    panel_rf,
     "}",
     paste0("\\begin{minipage}{", total_w, "}"),
     "\\vspace{4pt}",
@@ -744,6 +785,13 @@ for (sp in bin_sample_specs) {
         paste0("Effect of coal mines on ", vp$titlevio, " (", cp$titlecat, ", ", sp$titlesamp, ")")
       )
       varlist   <- vp[[cp$varkey]]
+      # The superheader names the violation-category cut this table is
+      # restricted to; it spans just the outcome columns underneath it.
+      tab_superheader <- switch(cp$name,
+        allcat = "Any violation",
+        mcl    = "Any MCL violation",
+        mr     = "Any MR violation"
+      )
       cat("\nRunning:", fname, "\n")
       # Presentation companion: notes stripped to FE + clustering + stars
       # only (see .claude/logs/2026-08-31-presentation-notes-tables.md).
@@ -759,7 +807,8 @@ for (sp in bin_sample_specs) {
                            storage_list_name=fs_store_name,
                            subheader=cp$titlecat,
                            fitstat=~ n,
-                           panel_style=is_panel_target)
+                           panel_style=is_panel_target,
+                           superheader=tab_superheader)
     }
     fs_outfile <- paste0("fs_", sp$sample, "_", vp$name, sp$suffix, "_binvio")
     fs_title   <- paste0("First stage: effect of the Acid Rain Program on the number of upstream coal mines (",

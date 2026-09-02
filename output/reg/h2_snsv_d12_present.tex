@@ -8,9 +8,12 @@
 \begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}}
 \hline\hline
- & Sanitary visits & Technical assistance & Enforcement visits & Sample collection & Inspection \\
+ & \multicolumn{5}{c}{Any visits} \\
+\cline{2-6}
+ & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{Sanitary} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{Technical assistance} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{Enforcement} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{Sample collection} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{Inspection} \\
+ & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{(3)} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{(4)} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{(5)} \\
 \hline
-\multicolumn{6}{l}{Panel A: OLS} \\
+\multicolumn{6}{l}{OLS} \\
 Upstream coal mines (sum) & \phantom{(}\phantom{-}\phantom{0}1.06$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.38$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.71$^{**\phantom{*}}$ & \phantom{(}-0.19$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.33$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
  & (\phantom{-}\phantom{0}0.67)\phantom{$^{***}$} & (\phantom{-}0.42)\phantom{$^{***}$} & (\phantom{-}0.32)\phantom{$^{***}$} & (\phantom{-}0.12)\phantom{$^{***}$} & (\phantom{-}0.47)\phantom{$^{***}$} \\
 \end{tabular}
@@ -18,17 +21,17 @@ Upstream coal mines (sum) & \phantom{(}\phantom{-}\phantom{0}1.06$^{\phantom{*}\
 \begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}}
 \hline
-\multicolumn{6}{l}{Panel B: Reduced Form} \\
-post95 $\times$ Upstream sulfur \% & \phantom{(}-\phantom{0}3.60$^{***}$ & \phantom{(}-0.36$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.94$^{**\phantom{*}}$ & \phantom{(}-0.34$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.48$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
- & (\phantom{-}\phantom{0}1.03)\phantom{$^{***}$} & (\phantom{-}0.48)\phantom{$^{***}$} & (\phantom{-}0.40)\phantom{$^{***}$} & (\phantom{-}0.27)\phantom{$^{***}$} & (\phantom{-}0.60)\phantom{$^{***}$} \\
+\multicolumn{6}{l}{2SLS} \\
+Upstream coal mines (sum) & \phantom{(}\phantom{-}14.06$^{***}$ & \phantom{(}\phantom{-}1.41$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}3.67$^{*\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}1.35$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-1.88$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}\phantom{0}4.87)\phantom{$^{***}$} & (\phantom{-}1.96)\phantom{$^{***}$} & (\phantom{-}1.88)\phantom{$^{***}$} & (\phantom{-}1.15)\phantom{$^{***}$} & (\phantom{-}2.41)\phantom{$^{***}$} \\
 \end{tabular}
 \end{adjustbox}
 \begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}}
 \hline
-\multicolumn{6}{l}{Panel C: 2SLS} \\
-Upstream coal mines (sum) & \phantom{(}\phantom{-}14.06$^{***}$ & \phantom{(}\phantom{-}1.41$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}3.67$^{*\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}1.35$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-1.88$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
- & (\phantom{-}\phantom{0}4.87)\phantom{$^{***}$} & (\phantom{-}1.96)\phantom{$^{***}$} & (\phantom{-}1.88)\phantom{$^{***}$} & (\phantom{-}1.15)\phantom{$^{***}$} & (\phantom{-}2.41)\phantom{$^{***}$} \\
+\multicolumn{6}{l}{RF} \\
+post95 $\times$ Upstream sulfur \% & \phantom{(}-\phantom{0}3.60$^{***}$ & \phantom{(}-0.36$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.94$^{**\phantom{*}}$ & \phantom{(}-0.34$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.48$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}\phantom{0}1.03)\phantom{$^{***}$} & (\phantom{-}0.48)\phantom{$^{***}$} & (\phantom{-}0.40)\phantom{$^{***}$} & (\phantom{-}0.27)\phantom{$^{***}$} & (\phantom{-}0.60)\phantom{$^{***}$} \\
 \hline\hline
 \end{tabular}
 \end{adjustbox}

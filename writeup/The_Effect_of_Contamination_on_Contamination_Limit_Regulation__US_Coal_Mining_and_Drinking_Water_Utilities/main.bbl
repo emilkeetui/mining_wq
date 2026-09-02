@@ -190,6 +190,52 @@
       \field{title}{Estimation and identification of local average treatment effects}
       \field{year}{1994}
     \endentry
+    \entry{anton2004incentives}{article}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=054eefa942b03dc449edf738c109f5ba}{%
+           family={Anton},
+           familyi={A\bibinitperiod},
+           given={Wilma\bibnamedelimb Rose\bibnamedelima Q},
+           giveni={W\bibinitperiod\bibinitdelim R\bibinitperiod\bibinitdelim Q\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=2b49b09e0f4abba8c8a16108686add6d}{%
+           family={Deltas},
+           familyi={D\bibinitperiod},
+           given={George},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=b962310f286f1cb63d1a0d00cde07096}{%
+           family={Khanna},
+           familyi={K\bibinitperiod},
+           given={Madhu},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{c0bffdd061c91464b8d2cb930afd1a5b}
+      \strng{fullhash}{c0bffdd061c91464b8d2cb930afd1a5b}
+      \strng{fullhashraw}{c0bffdd061c91464b8d2cb930afd1a5b}
+      \strng{bibnamehash}{c0bffdd061c91464b8d2cb930afd1a5b}
+      \strng{authorbibnamehash}{c0bffdd061c91464b8d2cb930afd1a5b}
+      \strng{authornamehash}{c0bffdd061c91464b8d2cb930afd1a5b}
+      \strng{authorfullhash}{c0bffdd061c91464b8d2cb930afd1a5b}
+      \strng{authorfullhashraw}{c0bffdd061c91464b8d2cb930afd1a5b}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of environmental economics and management}
+      \field{number}{1}
+      \field{title}{Incentives for environmental self-regulation and implications for environmental performance}
+      \field{volume}{48}
+      \field{year}{2004}
+      \field{pages}{632\bibrangedash 654}
+      \range{pages}{23}
+    \endentry
     \entry{epaarsenicbat}{report}{}{}
       \list{institution}{2}{%
         {USEPA Office of Research}%
@@ -736,14 +782,54 @@
       \field{pages}{2123\bibrangedash 2160}
       \range{pages}{38}
     \endentry
+    \entry{foster2013informational}{article}{}{}
+      \name{author}{2}{}{%
+        {{un=1,uniquepart=given,hash=9ad3a3a29d28eb60cca1a0b9f9fe05a8}{%
+           family={Foster},
+           familyi={F\bibinitperiod},
+           given={Andrew\bibnamedelima D},
+           giveni={A\bibinitperiod\bibinitdelim D\bibinitperiod},
+           givenun=1}}%
+        {{un=0,uniquepart=base,hash=25465371d8c7a3329131a3ec332620bf}{%
+           family={Gutierrez},
+           familyi={G\bibinitperiod},
+           given={Emilio},
+           giveni={E\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {American Economic Association}%
+      }
+      \strng{namehash}{68933bdc22aa721c412dc4ee8fe709af}
+      \strng{fullhash}{68933bdc22aa721c412dc4ee8fe709af}
+      \strng{fullhashraw}{68933bdc22aa721c412dc4ee8fe709af}
+      \strng{bibnamehash}{68933bdc22aa721c412dc4ee8fe709af}
+      \strng{authorbibnamehash}{68933bdc22aa721c412dc4ee8fe709af}
+      \strng{authornamehash}{68933bdc22aa721c412dc4ee8fe709af}
+      \strng{authorfullhash}{68933bdc22aa721c412dc4ee8fe709af}
+      \strng{authorfullhashraw}{68933bdc22aa721c412dc4ee8fe709af}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{American Economic Review}
+      \field{number}{3}
+      \field{title}{The informational role of voluntary certification: evidence from the Mexican clean industry program}
+      \field{volume}{103}
+      \field{year}{2013}
+      \field{pages}{303\bibrangedash 308}
+      \range{pages}{6}
+    \endentry
     \entry{foster2019arsenic}{article}{}{}
       \name{author}{5}{}{%
-        {{un=0,uniquepart=base,hash=d00f84062319346043b2814ccbac50eb}{%
+        {{un=1,uniquepart=given,hash=d00f84062319346043b2814ccbac50eb}{%
            family={Foster},
            familyi={F\bibinitperiod},
            given={Stephanie\bibnamedelima A},
            giveni={S\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=0}}%
+           givenun=1}}%
         {{un=0,uniquepart=base,hash=462dcf62775458cfe5bd6bcac5c1fcbe}{%
            family={Pennino},
            familyi={P\bibinitperiod},
@@ -2217,6 +2303,58 @@
       \field{year}{1984}
       \field{pages}{47\bibrangedash 123}
       \range{pages}{77}
+    \endentry
+    \entry{zirogiannis2023polluting}{article}{}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=093b81588d587b5d13af89e76622b341}{%
+           family={Zirogiannis},
+           familyi={Z\bibinitperiod},
+           given={Nikolaos},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=b85704e707a357d28c2ea59f195cd1d0}{%
+           family={Byrne},
+           familyi={B\bibinitperiod},
+           given={April},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=54a881d2e983d7b4bbff45a05537dd79}{%
+           family={Hollingsworth},
+           familyi={H\bibinitperiod},
+           given={Alex\bibnamedelima J},
+           giveni={A\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=228bb8b9e3e59810f6c1df2c1fd11765}{%
+           family={Konisky},
+           familyi={K\bibinitperiod},
+           given={David\bibnamedelima M},
+           giveni={D\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {ACS Publications}%
+      }
+      \strng{namehash}{30116a0148ae5b0e3603bd10c635bc3b}
+      \strng{fullhash}{ae98d16b4b1bd411729dad7f416797b5}
+      \strng{fullhashraw}{ae98d16b4b1bd411729dad7f416797b5}
+      \strng{bibnamehash}{30116a0148ae5b0e3603bd10c635bc3b}
+      \strng{authorbibnamehash}{30116a0148ae5b0e3603bd10c635bc3b}
+      \strng{authornamehash}{30116a0148ae5b0e3603bd10c635bc3b}
+      \strng{authorfullhash}{ae98d16b4b1bd411729dad7f416797b5}
+      \strng{authorfullhashraw}{ae98d16b4b1bd411729dad7f416797b5}
+      \field{sortinit}{Z}
+      \field{sortinithash}{96892c0b0a36bb8557c40c49813d48b3}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Environmental Science \& Technology}
+      \field{number}{31}
+      \field{title}{Polluting under the radar: emissions, inequality, and concrete batch plants in Houston}
+      \field{volume}{57}
+      \field{year}{2023}
+      \field{pages}{11410\bibrangedash 11419}
+      \range{pages}{10}
     \endentry
     \entry{zou2021unwatched}{article}{}{}
       \name{author}{1}{}{%
