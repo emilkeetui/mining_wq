@@ -209,9 +209,7 @@ Emissions were capped in two phases. In phase I, the EPA issued emission permits
 	
 	\subsection{Setup}
 	
-	I build a theoretical model to formalize a utility's decisions to comply with water contamination regulation under rising contamination.
-    
-	Utilities are required to meet contamination requirements and self report their compliance. I follow \textcite{mookherjee1994marginal} and assume that utilities find contamination regulation costly to comply with. A compliance cost is determined by both a utility's ability to manage a drinking water system, such as the skills of its managerial and technical staff, and the costs of water treatment, including the cost of filtration equipment and sterilization chemicals. Utility compliance cost, $\theta$, is a random variable drawn from $F(\cdot\,;m)$, a strictly increasing and continuously differentiable cumulative distribution function with support $(0, \bar{\theta})$, density $f(\cdot\,;m)$, and contamination $m$. A larger $\theta$ represents higher compliance costs. When compliance is costless, there are no financial benefits to negligence and $a=0$. Increasing $m$ weakly lowers the probability that a utility's compliance cost falls at or below any given level so that $\partial F(\theta;m)/\partial m \le 0$ for every $\theta$. Utilities know their draw of $\theta$, but regulators only know the distribution of $\theta$. 
+	I build a theoretical model to formalize a utility's decisions to comply with water contamination regulation under rising contamination. Utilities are required to meet contamination requirements and self report compliance. I follow \textcite{mookherjee1994marginal} and assume that utilities find contamination compliance costly. Compliance cost is determined by both a utility's ability to manage a drinking water system, such as the skills of its managerial and technical staff, and the costs of water treatment, including the cost of filtration equipment and sterilization chemicals. A utility's compliance cost, $\theta$, is a random variable drawn from $F(\cdot\,;m)$, a strictly increasing and continuously differentiable cumulative distribution function with support $(0, \bar{\theta})$, density $f(\cdot\,;m)$, and contamination $m$. A larger $\theta$ represents higher compliance costs. Increasing $m$ weakly lowers the probability that a utility's compliance cost falls at or below any given level so that $\partial F(\theta;m)/\partial m \le 0$ for every $\theta$. Utilities know their draw of $\theta$, but regulators only know the distribution of $\theta$. 
 
     Utilities receive a benefit from neglecting their contamination control requirements. The utility chooses a negligence level $a \in [0, \bar{a}]$, which measures how much it avoids the requirements of drinking water quality regulations, from avoiding every requirement $\bar{a}$ to full compliance 0. Regulators do not directly observe a utility's choice of $a$. A utility receives a benefit $\theta b(a)$ from having compliance costs $\theta$ and choosing a negligence level $a$, where $b'(a)>0$ and $b''(a)<0$. A utility's benefits from negligent contamination control are the savings on wages and chemicals. The opportunity cost to the utility of choosing a compliance level $a$ relative to maximum negligence $\bar{a}$ is $\theta[b(\bar{a})-b(a)]$. The financial benefit of a certain level of negligence to a profit maximizing privately owned utility is obvious. Publicly owned utilities also benefit from cost savings that allow them to forgo rate increases or tax collection, which may be unpopular with residents.
 	
@@ -222,17 +220,17 @@ Emissions were capped in two phases. In phase I, the EPA issued emission permits
 	%(The number of true exceedances is then Binomial $(N, q(a)) \approx$ Poisson with mean $Nq(a)$, so Section 1's Poisson structure is recovered with intensity $Nq(a)$ in place of $a$.) For the empirically relevant range, $q(a)$ is small: mining degrades source water \emph{within} the MCL for most systems.
 	%the sanctions $(r,s,t)$ and enforcement intensity $p$ do not depend on $m$.
 	
-	For each required self-reporting event, the utility chooses to self-report at a cost $c$ or not report and receive an MR violation. Per-event expected costs are the sum of expected penalties and self-reporting costs
+	For each required self-reporting event, the utility chooses to self-report at a cost $c$ or not report and receive an under reporting violation. Per-event expected costs are the sum of expected penalties and self-reporting costs
 	\begin{align*}
 		\text{self-report:} \quad & c + q(a)\,r \\
-		\text{do not self-report (MR):} \quad & t + p\left[q(a)\,s\right]
+		\text{under report (MR):} \quad & t + p\left[q(a)\,s\right]
 	\end{align*}
 	%Taking $r > ps$ throughout, 
 	The utility self-reports if and only if
 	\begin{equation}\label{eq:chat}
 		c \le \hat{c}(a) \equiv t - (r - ps)\,q(a).
 	\end{equation}
-	$(r - ps)q(a)$ is the wedge between disclosing a violation and hiding it. Even a system with no MCL violations, $q(a) = 0$, stops self-reporting once $c > t$ when self-reporting is more expensive than the expected sanction for skipping it, and there is no MCL violation to conceal. The self-reporting threshold is decreasing in $q(a)$, so systems with a higher probability of exceeding the MCL reduce self-reporting at lower cost thresholds. The expected penalty is
+	$(r - ps)q(a)$ is the wedge between disclosing a violation and hiding it. Even a system with no MCL violations, $q(a) = 0$, stops self-reporting once $c > t$, when self-reporting is more expensive than the expected sanction for skipping it, and there is no MCL violation to conceal. The self-reporting threshold is decreasing in $q(a)$, so systems with a higher probability of exceeding the MCL reduce self-reporting at lower cost thresholds. The expected penalty is
 	\begin{equation}\label{eq:endog_penalty}
 		e(a) = N \min\left\{\, c + q(a)r,\;\; t + ps\,q(a) \,\right\},
 	\end{equation}
@@ -246,13 +244,17 @@ Emissions were capped in two phases. In phase I, the EPA issued emission permits
 		\theta b'(a) &= N r\, q'(a) & \text{(self-reporting region, } c \le \hat{c}(a)) \\
 		\theta b'(a) &= N ps\, q'(a) & \text{(do not self-report (MR) region, } c > \hat{c}(a))
 	\end{align}
-	Assuming $r > ps$, the marginal penalty is lower when the utility is in the MR region than when it is in the self-reporting region. An exogenous decrease in $\hat{c}(a)$ increases the size of the MR region. Utilities that draw a higher self-reporting cost c are more likely to fall in the MR region. An increase in the population's cost distribution raises the share of utilities in that region without moving the boundary $\hat{c}(a)$ itself.
+	Assuming $r > ps$, the marginal penalty is lower when the utility is in the MR region than when it is in the self-reporting region. 
+    
+    An exogenous decrease in $\hat{c}(a)$ increases the size of the MR region. Utilities that draw a higher self-reporting cost c are more likely to fall in the MR region. An increase in the population's cost distribution raises the share of utilities in that region without moving the boundary $\hat{c}(a)$ itself.
 	
 	\subsection{The propositions}
 	
 	The model predicts that when water quality deteriorates due to increased contamination, self-reporting rates fall.
 	
-	\textbf{Proposition 1:} Negligence is globally increasing in compliance costs, $\partial a/\partial\theta = b'(a) / [\,-\theta b''(a) + N\rho\, q''(a)\,] > 0$ within each region, where $\rho \in \{r, ps\}$ is the region's sanction, and where the denominator is assumed positive to satisfy the second-order condition of maximizing the utility's negligence problem.
+	\textbf{Proposition 1:} Negligence is globally increasing in compliance costs, 
+    \[\frac{\partial a}{\partial\theta} = \frac{b'(a)}{-\theta b''(a) + N\rho\, q''(a)} > 0\]
+    within each region, where $\rho \in \{r, ps\}$ is the region's sanction, and where the denominator is assumed positive to satisfy the second-order condition of maximizing the utility's negligence problem.
 	
 	\textbf{Proposition 2:} The number of under-reporting utilities increases as contamination increases $\partial MR/\partial m \ge 0$.
 
