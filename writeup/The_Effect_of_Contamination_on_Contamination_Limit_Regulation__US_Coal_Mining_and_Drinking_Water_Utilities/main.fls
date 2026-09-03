@@ -394,11 +394,11 @@ INPUT .\reg\6yr_huc02fe_inorg_ravalli_2005.tex
 INPUT .\reg\6yr_huc02fe_inorg_ravalli_2005.tex
 INPUT .\reg\6yr_huc02fe_inorg_ravalli_2005.tex
 INPUT reg\6yr_huc02fe_inorg_ravalli_2005.tex
-INPUT ..\..\output\reg\mr_concentration_lag.tex
-INPUT ..\..\output\reg\mr_concentration_lag.tex
-INPUT ..\..\output\reg\mr_concentration_lag.tex
-INPUT ..\..\output\reg\mr_concentration_lag.tex
-INPUT ..\..\output\reg\mr_concentration_lag.tex
+INPUT ..\..\output\reg\mr_concentration_lag_ols.tex
+INPUT ..\..\output\reg\mr_concentration_lag_ols.tex
+INPUT ..\..\output\reg\mr_concentration_lag_ols.tex
+INPUT ..\..\output\reg\mr_concentration_lag_ols.tex
+INPUT ..\..\output\reg\mr_concentration_lag_ols.tex
 INPUT ..\..\output\reg\mr_concentration_lag_national_downstream_states.tex
 INPUT ..\..\output\reg\mr_concentration_lag_national_downstream_states.tex
 INPUT ..\..\output\reg\mr_concentration_lag_national_downstream_states.tex

@@ -156,7 +156,7 @@ header_block <- function() {
 # ── 7. Panel A — Enforcement type ─────────────────────────────────────────────
 panel_a_lines <- c(
   paste0("\\begin{tabular}{", col_spec, "}"),
-  "\\hline\\hline",
+  "\\toprule",
   header_block(),
   "\\multicolumn{7}{l}{\\textbf{Panel A: Enforcement type}} \\\\",
   sapply(panel_a_rows, make_row),
@@ -171,7 +171,7 @@ panel_b_lines <- c(
   "\\hline",
   "\\multicolumn{7}{l}{\\textbf{Panel B: Visit type}} \\\\",
   sapply(panel_b_rows, make_row),
-  "\\hline\\hline",
+  "\\bottomrule",
   "\\end{tabular}"
 )
 

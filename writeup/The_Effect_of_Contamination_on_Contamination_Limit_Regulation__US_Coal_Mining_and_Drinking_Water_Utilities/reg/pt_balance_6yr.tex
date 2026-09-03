@@ -10,40 +10,44 @@
       
       %start:tab
       
-      \begin{tabular}{lcccc}
+      \begin{tabular}{lrrrr}
          \toprule
          
-                                & Dose 1998--2005 (10M ST) & Any mining 1998--2005 & Dose 1998--2005 (10M ST) & Any mining 1998--2005\\  
+                                         & Dose 1998--2005 (10M ST) & Any mining 1998--2005 & Dose 1998--2005 (10M ST) & Any mining 1998--2005\\  
          
            & \multicolumn{2}{c}{No HUC02 FE} & \multicolumn{2}{c}{HUC02 FE} \\ 
-                                & Cumul. dose              & Any mining            & Cumul. dose              & Any mining \\   
+                                         & Cumul. dose              & Any mining            & Cumul. dose              & Any mining \\   
          
-                                & (1)                      & (2)                   & (3)                      & (4)\\  
+                                         & (1)                      & (2)                   & (3)                      & (4)\\  
          
          \midrule 
-         Constant               & 0.0601                   & -0.1413               &                          &   \\   
-                                & (0.1302)                 & (0.1077)              &                          &   \\   
-         Log backcast pop. 1997 & 0.0473                   & 0.0105                & 0.0519                   & 0.0107\\   
-                                & (0.0425)                 & (0.0104)              & (0.0445)                 & (0.0109)\\   
-         Log pop. served (SYR2) & -0.0489                  & -0.0062               & -0.0373                  & -0.0024\\   
-                                & (0.0418)                 & (0.0219)              & (0.0319)                 & (0.0230)\\   
-         Num. intake facilities & 0.0600                   & 0.0954$^{***}$        & 0.0318                   & 0.0932$^{***}$\\   
-                                & (0.0429)                 & (0.0332)              & (0.0328)                 & (0.0351)\\   
-         Surface water source   & 0.0820                   & 0.1663                & -0.1104                  & 0.1773\\   
-                                & (0.0849)                 & (0.1159)              & (0.1655)                 & (0.1271)\\   
-         Public ownership       & -0.0954                  & 0.1426$^{*}$          & -0.0404                  & 0.1561$^{*}$\\   
-                                & (0.1584)                 & (0.0756)              & (0.1204)                 & (0.0897)\\   
-         Wholesaler             & -0.1556                  & -0.2090               & -0.3919                  & -0.2173\\   
-                                & (0.1173)                 & (0.1286)              & (0.4044)                 & (0.1364)\\   
+         Constant                        & 0.0601                   & -0.1413               &                          &   \\   
+                                         & (0.1302)                 & (0.1077)              &                          &   \\   
+         Log backcast pop. 1997          & 0.0473                   & 0.0105                & 0.0519                   & 0.0107\\   
+                                         & (0.0425)                 & (0.0104)              & (0.0445)                 & (0.0109)\\   
+         Log pop. served (SYR2)          & -0.0489                  & -0.0062               & -0.0373                  & -0.0024\\   
+                                         & (0.0418)                 & (0.0219)              & (0.0319)                 & (0.0230)\\   
+         Num. intake facilities          & 0.0600                   & 0.0953$^{***}$        & 0.0318                   & 0.0932$^{***}$\\   
+                                         & (0.0429)                 & (0.0332)              & (0.0328)                 & (0.0351)\\   
+         Surface water source            & 0.0820                   & 0.1663                & -0.1104                  & 0.1773\\   
+                                         & (0.0849)                 & (0.1159)              & (0.1655)                 & (0.1271)\\   
+         Public ownership                & -0.0954                  & 0.1426$^{*}$          & -0.0404                  & 0.1561$^{*}$\\   
+                                         & (0.1584)                 & (0.0756)              & (0.1204)                 & (0.0897)\\   
+         Wholesaler                      & -0.1556                  & -0.2090               & -0.3919                  & -0.2173\\   
+                                         & (0.1173)                 & (0.1286)              & (0.4044)                 & (0.1364)\\   
+         
+         Joint $F$-test (all covariates) & 1.21                     & 5.67                  & 0.58                     & 4.01\\  
+         
+         \hspace{1em} $p$-value          & 0.308                    & 0.000                 & 0.748                    & 0.001\\  
          
           \\
          
-         Observations           & 122                      & 122                   & 122                      & 122\\  
-         R$^2$                  & 0.03523                  & 0.16847               & 0.14649                  & 0.18058\\  
+         Observations                    & 122                      & 122                   & 122                      & 122\\  
+         R$^2$                           & 0.03523                  & 0.16847               & 0.14649                  & 0.18058\\  
          
           \\
          
-         HUC02 fixed effects    &                          &                       & $\checkmark$             & $\checkmark$\\   
+         HUC02 fixed effects             &                          &                       & $\checkmark$             & $\checkmark$\\   
          
          \bottomrule
          
@@ -54,7 +58,7 @@
       
    \end{adjustbox}
       {\tiny\linespread{1}\selectfont \par \raggedright 
-   Cross-sectional balance test on the 6-Year Review estimation sample (1998--2005, Ravalli et al.~(2022) cleaning). One observation per CWS. The dependent variable is measured over 1998--2005. Covariates differ in timing, and only population pre-dates the dose window. Backcast population served in 1997 is constructed from decennial census geography and interpolated between the 1990 and 2000 census anchors; it is therefore dated before 1998 by construction but is not an observed 1997 measurement. The remaining covariates (population served, number of intake facilities, number of source HUC12s, primary source type, ownership, wholesaler status, and source water protection) are drawn from the SDWIS/SYR2 inventory and are recorded contemporaneously with the dose window: each CWS contributes its first observed record, which falls between 1998 and 2005 (41 CWSs in 1998, the remainder later). These attributes are perfectly time-invariant within CWS over 1998--2005 --- no system records more than one distinct value for any of them --- so the specific year of the record does not affect the measured value. They are nonetheless not verifiably pre-determined: a characteristic reported after mining occurred could in principle respond to it, which is most relevant for the number of intake facilities. No pre-1998 SDWIS attributes other than population are available. The test therefore asks whether observable CWS characteristics predict treatment intensity, and should be read as a comparability check rather than a strict test of selection on pre-determined characteristics. Columns 1 and 3 use cumulative upstream coal production (10 million short tons); columns 2 and 4 use an indicator for any positive upstream production. Columns 1--2 pool across river basins; columns 3--4 add HUC02 fixed effects, so identification is within major river basin, matching the fixed-effect structure of Table~\ref{tab:6yr\_huc02fe\_inorg\_ravalli\_2005}. The reported $F$-statistic is a joint test of all covariates. Of the 122 CWSs, 27 have positive upstream production over 1998--2005, so the extensive-margin columns are identified off a small number of onsets. Heteroskedasticity-robust standard errors. A jointly insignificant $F$-statistic indicates that observable CWS characteristics do not predict treatment intensity, which is consistent with the conditional parallel trends assumption. Sample: CWSs at most one HUC12 downstream of a coal mine (minehuc\_downstream\_of\_mine = 1, minehuc\_mine = 0).}
+   \textit{Notes:} Cross-sectional balance test on the 6-Year Review estimation sample (1998--2005, Ravalli et al.~(2022) cleaning). One observation per CWS. The dependent variable is measured over 1998--2005. Covariates differ in timing, and only population pre-dates the dose window. Backcast population served in 1997 is constructed from decennial census geography and interpolated between the 1990 and 2000 census anchors; it is therefore dated before 1998 by construction but is not an observed 1997 measurement. The remaining covariates (population served, number of intake facilities, number of source HUC12s, primary source type, ownership, wholesaler status, and source water protection) are drawn from the SDWIS/SYR2 inventory and are recorded contemporaneously with the dose window: each CWS contributes its first observed record, which falls between 1998 and 2005 (41 CWSs in 1998, the remainder later). These attributes are perfectly time-invariant within CWS over 1998--2005 --- no system records more than one distinct value for any of them --- so the specific year of the record does not affect the measured value. They are nonetheless not verifiably pre-determined: a characteristic reported after mining occurred could in principle respond to it, which is most relevant for the number of intake facilities. No pre-1998 SDWIS attributes other than population are available. The test therefore asks whether observable CWS characteristics predict treatment intensity, and should be read as a comparability check rather than a strict test of selection on pre-determined characteristics. Columns 1 and 3 use cumulative upstream coal production (10 million short tons); columns 2 and 4 use an indicator for any positive upstream production. The reported $F$-statistic is a joint test of all covariates. Of the 122 CWSs, 27 have positive upstream production over 1998--2005, so the extensive-margin columns are identified off a small number of onsets. Heteroskedasticity-robust standard errors. A jointly insignificant $F$-statistic indicates that observable CWS characteristics do not predict treatment intensity, which is consistent with the conditional parallel trends assumption. Sample: CWSs at most one HUC12 downstream of a coal mine. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
    
 \end{table}
 

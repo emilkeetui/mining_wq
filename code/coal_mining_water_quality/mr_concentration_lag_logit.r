@@ -1,20 +1,16 @@
 # ============================================================
-# Script: mr_concentration_lag_national_downstream_states.r
-# Purpose: State-restricted variant of mr_concentration_lag_national.r.
-#          Re-estimates the identical ratchet-avoidance (MR-following-
-#          near-MCL-reading) specification on the national SYR2
-#          nitrate sample, restricted to CWSs located in states that
-#          have at least one CWS in the main downstream 2SLS sample
-#          (minehuc_downstream_of_mine==1 & minehuc_mine==0, sample
-#          years 1985-2005). This tightens external validity relative
-#          to the fully unrestricted national sample: the mechanism is
-#          tested in the same states the main mining results come from.
-#          State is not present in the national nitrate parquet, so it
-#          is derived from the standard SDWIS PWSID prefix (first two
-#          characters = state postal code).
-# Inputs:  clean_data/mr_concentration_lag_national_nitrate.parquet
-# Outputs: output/reg/mr_concentration_lag_national_downstream_states.tex
-# Author: EK  Date: 2026-07-14
+# Script: mr_concentration_lag_logit.r
+# Purpose: OLS+Logit variant of mr_concentration_lag.r's nitrate spec,
+#          structured identically to
+#          mr_concentration_lag_national_downstream_states.r (4 cols:
+#          OLS 1-yr, OLS 6-mon, Logit 1-yr, Logit 6-mon) but estimated
+#          on mr_concentration_lag.r's measurement-level downstream-only
+#          mining sample (minehuc_downstream_of_mine==1) rather than the
+#          national sample restricted by state.
+# Inputs:  clean_data/mr_concentration_lag_measurement.parquet
+# Outputs: output/reg/mr_concentration_lag_logit.tex
+#          output/reg/mr_concentration_lag_logit_present.tex
+# Author: EK  Date: 2026-09-02
 # ============================================================
 
 .libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
@@ -25,72 +21,50 @@ ROOT <- "Z:/ek559/mining_wq"
 setwd(ROOT)
 
 # ── Step 1: Load + schema check ───────────────────────────────────────────────
-cat("Loading national nitrate analysis dataset...\n")
-df <- read_parquet("clean_data/mr_concentration_lag_national_nitrate.parquet")
+cat("Loading measurement-level analysis dataset...\n")
+df <- read_parquet("clean_data/mr_concentration_lag_measurement.parquet")
 str(df)   # PWSID must be <chr>, YEAR must be <int>
 
 cat(sprintf("\nRows: %d | unique PWSID: %d | years %d-%d\n",
             nrow(df), length(unique(df$PWSID)), min(df$YEAR), max(df$YEAR)))
 
-# ── Step 1b: restrict to states in the main downstream 2SLS sample ────────────
-# States with >=1 CWS in prod_vio_sulfur.parquet under
-# minehuc_downstream_of_mine==1 & minehuc_mine==0, year 1985-2005
-# (excludes one spurious STATE_CODE=="0", 1 PWSID, a data artifact).
-downstream_states <- c("AL", "CA", "CO", "FL", "GA", "IL", "KS", "KY", "LA", "MD", "NC", "NJ",
-                        "NY", "OH", "OR", "PA", "SC", "TN", "UT", "VA", "WA", "WV")
-
-df$state <- substr(df$PWSID, 1, 2)
-df <- df[df$state %in% downstream_states, ]
-
-n_states_kept <- length(unique(df$state))
-n_pwsid <- length(unique(df$PWSID))
-cat(sprintf("\nAfter restricting to downstream-2SLS-sample states (%d states):\n",
-            length(downstream_states)))
-cat(sprintf("Rows: %d | unique PWSID: %d | states represented: %d\n",
-            nrow(df), n_pwsid, n_states_kept))
-
-n_near_mcl <- sum(df$near_mcl == 1, na.rm = TRUE)
-n_above_mcl <- sum(df$above_mcl == 1, na.rm = TRUE)
-cat(sprintf("near_mcl==1 readings: %d\n", n_near_mcl))
-cat(sprintf("above_mcl==1 readings: %d\n", n_above_mcl))
+# ── Step 2: Nitrate subsample (raw 0/1 outcomes retained for logit) ───────────
+nit_df <- df[df$contaminant_code == "1040", ]
 
 # mean_concentration = PWSID-YEAR mean VALUE (matches mr_concentration_lag.r)
-df$mean_concentration <- ave(df$VALUE, df$PWSID, df$YEAR, FUN = mean)
-df$mean_conc_z <- scale(df$mean_concentration)[, 1]
+nit_df$mean_concentration <- ave(nit_df$VALUE, nit_df$PWSID, nit_df$YEAR, FUN = mean)
+nit_df$mean_conc_z <- scale(nit_df$mean_concentration)[, 1]
 
-# ── Raw-means frequency table (console only) ──────────────────────────────────
-cat("\n--- Raw means: mr_same_fwd by near_mcl ---\n")
-print(tapply(df$mr_same_fwd, df$near_mcl, mean, na.rm = TRUE))
-cat("\n--- Raw means: mr_same_fwd6mon by near_mcl ---\n")
-print(tapply(df$mr_same_fwd6mon, df$near_mcl, mean, na.rm = TRUE))
+cat(sprintf("\nNitrate (1040) subset N = %d\n", nrow(nit_df)))
 
-# ── Step 2: Named formulas ─────────────────────────────────────────────────────
-# The LPM columns are fit on a 0/100-coded copy of the outcome (df_lpm) so
-# coefficients/SEs are already in percentage-point units; the logit columns
-# keep fitting the genuine 0/1 outcome on the original df (required by the
-# binomial family). Both variants reuse the same dependent-variable name so
-# fixest's "Dependent Variables:" row still pairs columns 1&3 / 2&4 as one
-# variable each, matching the table's pre-existing column layout.
-df_lpm <- df
-df_lpm$mr_same_fwd     <- as.numeric(df$mr_same_fwd)     * 100
-df_lpm$mr_same_fwd6mon <- as.numeric(df$mr_same_fwd6mon) * 100
+n_near_mcl <- sum(nit_df$near_mcl == 1, na.rm = TRUE)
+cat(sprintf("near_mcl==1 readings: %d\n", n_near_mcl))
 
-fml_fwd       <- mr_same_fwd      ~ near_mcl + mean_conc_z | PWSID + YEAR
-fml_fwd6mon   <- mr_same_fwd6mon  ~ near_mcl + mean_conc_z | PWSID + YEAR
+# LPM columns fit on a 0/100-coded copy so coefficients/SEs are already in
+# percentage-point units; logit columns keep the genuine 0/1 outcome
+# (required by the binomial family) — same split as
+# mr_concentration_lag_national_downstream_states.r.
+nit_df_lpm <- nit_df
+nit_df_lpm$mr_same_fwd     <- as.numeric(nit_df$mr_same_fwd)     * 100
+nit_df_lpm$mr_same_fwd6mon <- as.numeric(nit_df$mr_same_fwd6mon) * 100
 
-# ── Step 3: Regressions ────────────────────────────────────────────────────────
-fwd      <- feols(fml_fwd,      data = df_lpm, cluster = ~PWSID)
-fwd6mon  <- feols(fml_fwd6mon,  data = df_lpm, cluster = ~PWSID)
+# ── Step 3: Named formulas ─────────────────────────────────────────────────────
+fml_fwd     <- mr_same_fwd     ~ near_mcl + mean_conc_z | PWSID + YEAR
+fml_fwd6mon <- mr_same_fwd6mon ~ near_mcl + mean_conc_z | PWSID + YEAR
 
-fwd_logit      <- feglm(fml_fwd,     data = df, cluster = ~PWSID, family = binomial)
-fwd6mon_logit  <- feglm(fml_fwd6mon, data = df, cluster = ~PWSID, family = binomial)
+# ── Step 4: Regressions ────────────────────────────────────────────────────────
+fwd     <- feols(fml_fwd,     data = nit_df_lpm, cluster = ~PWSID)
+fwd6mon <- feols(fml_fwd6mon, data = nit_df_lpm, cluster = ~PWSID)
 
-cat("\n--- Nitrate MR (1-yr), forward window ---\n");   print(summary(fwd))
-cat("\n--- Nitrate MR (6-mon), forward window ---\n");  print(summary(fwd6mon))
+fwd_logit     <- feglm(fml_fwd,     data = nit_df, cluster = ~PWSID, family = binomial)
+fwd6mon_logit <- feglm(fml_fwd6mon, data = nit_df, cluster = ~PWSID, family = binomial)
+
+cat("\n--- Nitrate MR (1-yr), forward window ---\n");          print(summary(fwd))
+cat("\n--- Nitrate MR (6-mon), forward window ---\n");         print(summary(fwd6mon))
 cat("\n--- Nitrate MR (1-yr), forward window, logit ---\n");   print(summary(fwd_logit))
 cat("\n--- Nitrate MR (6-mon), forward window, logit ---\n");  print(summary(fwd6mon_logit))
 
-# ── Step 4: table helpers (copied verbatim from mr_concentration_lag_national.r) ─
+# ── Step 5: table helpers (copied from mr_concentration_lag_national_downstream_states.r) ─
 wrap_table_float <- function(path, caption_text, label = NULL) {
   lines <- readLines(path)
 
@@ -130,17 +104,17 @@ wrap_table_float <- function(path, caption_text, label = NULL) {
   writeLines(c(before, new_body, after), path)
 }
 
-# rename_tex: adapted from mr_concentration_lag.r -- blank-dep-var-row regex
-# updated to 4 columns (LPM x2, logit x2) -> 4 "&" cells.
+# rename_tex: CWS terminology used throughout (not "Utility"), per CLAUDE.md --
+# always refer to the drinking water systems as Community Water Systems / CWS.
 rename_tex <- function(path) {
   txt <- paste(readLines(path), collapse = "\n")
   subs <- list(
     c("near\\_mcl",           "Concen. $>$ 50\\% MCL"),
     c("mean\\_conc\\_z",      "Mean concen. (z-score)"),
-    c("PWSID fixed-effects",   "Utility fixed-effects"),
-    c("PWSID fixed effects",   "Utility fixed effects"),
+    c("PWSID fixed-effects",   "CWS fixed-effects"),
+    c("PWSID fixed effects",   "CWS fixed effects"),
     c("Clustered \\(PWSID\\) standard-errors in parentheses",
-      "Clustered (Utility) standard-errors in parentheses"),
+      "Clustered (CWS) standard-errors in parentheses"),
     c("mr\\_same\\_fwd6mon",   ""),
     c("mr\\_same\\_fwd",       "")
   )
@@ -152,9 +126,6 @@ rename_tex <- function(path) {
   writeLines(strsplit(txt, "\n")[[1]], path)
 }
 
-# Right-align the model-coefficient columns of the tabular preamble (fixest's
-# default is centered, which does not decimal-align numbers of differing
-# digit-width) while leaving the leading row-label column ('l') untouched.
 right_align_tabular <- function(path) {
   lines <- readLines(path)
   txt   <- paste(lines, collapse = "\n")
@@ -165,10 +136,6 @@ right_align_tabular <- function(path) {
   }
 }
 
-# Pad significance-star markers with \phantom{} so that, within each
-# coefficient column, every row's digits occupy the same width -- combined
-# with right-alignment, this puts the decimal points in the same screen
-# position regardless of how many stars a given estimate earned.
 pad_stars_for_decimal_align <- function(path) {
   lines <- readLines(path)
 
@@ -245,26 +212,23 @@ reformat_notes_tiny <- function(path) {
   writeLines(new_lines, path)
 }
 
-# ── Step 5: LaTeX table ─────────────────────────────────────────────────────────
+# ── Step 6: LaTeX table ─────────────────────────────────────────────────────────
 dir.create(file.path(ROOT, "output/reg"), showWarnings = FALSE, recursive = TRUE)
 
 note_main <- paste0(
-  "\\textit{Notes:} National SYR2 sample restricted to states with at least one utility in the main ",
-  "downstream 2SLS sample (community water systems strictly downstream of a coal mine, 1985--2005), ",
-  "nitrate only. Outcome: nitrate MR (monitoring/reporting) violation in the forward window ",
-  "(1--365 days for the 1-yr column; 1--182 days for the 6-mon column) following the sample ",
-  "date. Concen. $>$ 50\\% MCL = ",
-  "reading at 50--100\\% of the MCL, the quarterly-monitoring trigger. ",
-  sprintf("States retained: %d. Unique utilities: %d. ", n_states_kept, n_pwsid),
-  sprintf("N of readings with concentration above 50 percent of the MCL: %d. ", n_near_mcl),
-  "Mean concentration = utility-year mean reading, z-scored across the sample. ",
-  "Cols 1--2 are linear probability models, coefficients and standard errors in percentage points; ",
-  "cols 3--4 are logit models on the underlying 0/1 outcome. ",
-  "All specifications include utility and year fixed effects. ",
-  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the utility level."
+  "\\textit{Notes:} SYR2 sample restricted to community water systems strictly ",
+  "downstream of a coal mine (1998--2005), nitrate only. Outcome: nitrate MR ",
+  "(monitoring/reporting) violation in the forward window (1--365 days for the 1-yr ",
+  "column; 1--182 days for the 6-mon column) following the sample date. Concen. $>$ ",
+  "50\\% MCL = reading at 50--100\\% of the MCL, the quarterly-monitoring trigger. ",
+  "Mean concentration = CWS-year mean reading, z-scored within chemical. ",
+  "Cols 1--2 are linear probability models, coefficients and standard errors in ",
+  "percentage points; cols 3--4 are logit models on the underlying 0/1 outcome. ",
+  "All specifications include CWS and year fixed effects. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level."
 )
 
-out_tex <- file.path(ROOT, "output/reg/mr_concentration_lag_national_downstream_states.tex")
+out_tex <- file.path(ROOT, "output/reg/mr_concentration_lag_logit.tex")
 etable(fwd, fwd6mon, fwd_logit, fwd6mon_logit,
        headers      = list(":_:" = c("OLS", "OLS", "Logit", "Logit"),
                             " "   = c("Nitrate MR (1-yr)", "Nitrate MR (6-mon)",
@@ -281,8 +245,8 @@ rename_tex(out_tex)
 right_align_tabular(out_tex)
 pad_stars_for_decimal_align(out_tex)
 wrap_table_float(out_tex,
-  "Nitrate MR violations following a reading above 50\\% of the MCL (national sample, downstream-2SLS-sample states)",
-  label = "tab:mr_concentration_lag_national_downstream_states")
+  "Nitrate MR violations following a reading above 50\\% of the MCL (downstream-of-mine sample)",
+  label = "tab:mr_concentration_lag_logit")
 reformat_notes_tiny(out_tex)
 cat(sprintf("\nTable saved to: %s\n", out_tex))
 
@@ -294,10 +258,10 @@ if (file.exists(out_tex) && file.info(out_tex)$size > 0) {
 
 # -- Presentation companion: notes stripped to FE + clustering + stars only
 # (FE rows are dropped via drop.section="fixef" above, so the statement must
-# stay) -- see .claude/logs/2026-08-31-presentation-notes-tables.md.
+# stay) -- matches the _present.tex pattern in both source scripts.
 note_main_present <- paste0(
-  "\\textit{Notes:} All specifications include utility and year fixed effects. ",
-  "SEs clustered at the utility level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+  "\\textit{Notes:} All specifications include CWS and year fixed effects. ",
+  "SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 out_tex_present <- sub("\\.tex$", "_present.tex", out_tex)
 etable(fwd, fwd6mon, fwd_logit, fwd6mon_logit,
@@ -316,7 +280,13 @@ rename_tex(out_tex_present)
 right_align_tabular(out_tex_present)
 pad_stars_for_decimal_align(out_tex_present)
 wrap_table_float(out_tex_present,
-  "Nitrate MR violations following a reading above 50\\% of the MCL (national sample, downstream-2SLS-sample states)",
-  label = "tab:mr_concentration_lag_national_downstream_states")
+  "Nitrate MR violations following a reading above 50\\% of the MCL (downstream-of-mine sample)",
+  label = "tab:mr_concentration_lag_logit")
 reformat_notes_tiny(out_tex_present)
 cat(sprintf("Presentation table saved to: %s\n", out_tex_present))
+
+if (file.exists(out_tex_present) && file.info(out_tex_present)$size > 0) {
+  cat(sprintf("Output verified: %s exists and is non-zero.\n", out_tex_present))
+} else {
+  cat(sprintf("[ERROR] %s missing or empty.\n", out_tex_present))
+}

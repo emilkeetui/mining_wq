@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.8.24)  2 SEP 2026 14:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.8.24)  2 SEP 2026 23:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1218,7 +1218,7 @@ Overfull \hbox (2.01134pt too wide) in paragraph at lines 28--28
 (reg/6yr_huc02fe_inorg_ravalli_2005.tex) [50
 
 ]
-(../../output/reg/mr_concentration_lag.tex) [51
+(../../output/reg/mr_concentration_lag_ols.tex) [51
 
 ]
 (../../output/reg/mr_concentration_lag_national_downstream_states.tex) [52
@@ -1352,7 +1352,7 @@ Package logreq Info: Writing requests to 'main.run.xml'.
  ) 
 Here is how much of TeX's memory you used:
  21929 strings out of 467510
- 481886 string characters out of 5418903
+ 481924 string characters out of 5418903
  1289910 words of memory out of 5000000
  50839 multiletter control sequences out of 15000+600000
  665697 words of font info for 140 fonts, out of 8000000 for 9000
@@ -1369,7 +1369,7 @@ sam10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.p
 fb><C:/Program Files/MiKTeX/fonts/type1/urw/palatino/uplb8a.pfb><C:/Program Fil
 es/MiKTeX/fonts/type1/urw/palatino/uplr8a.pfb><C:/Program Files/MiKTeX/fonts/ty
 pe1/urw/palatino/uplri8a.pfb>
-Output written on main.pdf (65 pages, 3553774 bytes).
+Output written on main.pdf (65 pages, 3553404 bytes).
 PDF statistics:
  288 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

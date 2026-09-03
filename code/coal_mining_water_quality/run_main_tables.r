@@ -332,8 +332,9 @@ first_stage_table <- function(storage_list_name, outfile, title = NULL,
 # and SE cells are phantom-padded to a common integer-digit width and a
 # common 3-star slot so the decimal points of the coefficient and its SE
 # line up vertically within a column. Follows the same multipanel rules as
-# violation_binary_days_panels.r: \hline\hline only at the very top of the
-# first panel and the very bottom of the last panel; single \hline for every
+# violation_binary_days_panels.r: a thick \toprule at the very top of the
+# first panel and a thick \bottomrule at the very bottom of the last panel;
+# single \hline for every
 # other internal rule, so the three tabulars read as one table.
 fmt_num_wide <- function(est, se, pval, w, digits = 2) {
   # Reserve a sign slot for both lines of the pair (real "-" or a matching
@@ -502,7 +503,7 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
   # \cline under the superheader).
   panel_ols <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
-    "\\hline\\hline",
+    "\\toprule",
     superheader_lines,
     header_row,
     colnum_row,
@@ -528,7 +529,7 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     title_row("RF"),
     coef_line(rf_cells, instr_lab),
     se_line(rf_cells),
-    "\\hline\\hline",
+    "\\bottomrule",
     "\\end{tabular}"
   ))
 

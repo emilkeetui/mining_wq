@@ -175,7 +175,7 @@ build_table <- function(rows, n1, n2) {
     "\\label{tab:syr2_mr_comparison}\n",
     "\\begin{adjustbox}{max width=\\textwidth}\n",
     "\\begin{tabular}{lrrrr}\n",
-    "\\hline\\hline\n",
+    "\\toprule\n",
     " & \\multicolumn{1}{c}{(1)} & \\multicolumn{1}{c}{(2)} & \\multicolumn{1}{c}{Diff.} & \\multicolumn{1}{c}{$p$-value} \\\\\n",
     " & Has SYR2 reading & No SYR2 reading & (1)$-$(2) & \\\\\n",
     "\\hline\n"
@@ -195,7 +195,7 @@ build_table <- function(rows, n1, n2) {
   }
 
   footer <- paste0(
-    "\\hline\\hline\n",
+    "\\bottomrule\n",
     "\\end{tabular}\n",
     "\\end{adjustbox}\n",
     "\\begin{minipage}{\\linewidth}\n",
@@ -224,7 +224,7 @@ build_table <- function(rows, n1, n2) {
   # convention for summary tables) -- see
   # .claude/logs/2026-08-31-presentation-notes-tables.md.
   footer_present <- paste0(
-    "\\hline\\hline\n",
+    "\\bottomrule\n",
     "\\end{tabular}\n",
     "\\end{adjustbox}\n",
     "\\end{table}\n"

@@ -3,23 +3,20 @@
 \caption{Nitrate MR violations following a reading above 50\% of the MCL (national sample, downstream-2SLS-sample states)}\label{tab:mr_concentration_lag_national_downstream_states}
 \centering
 \begin{adjustbox}{width = \textwidth, center}
-   \begin{tabular}{lcccc}
+   \begin{tabular}{lrrrr}
       \toprule    
-                          & Nitrate MR (1-yr) & Nitrate MR (6-mon)  & Nitrate MR (1-yr) Logit & Nitrate MR (6-mon) Logit \\   
-                          & (1)               & (2)                 & (3)                     & (4)\\  
-                          &  OLS              & OLS                 & Logit                   & Logit\\  
+       & \multicolumn{2}{c}{OLS} & \multicolumn{2}{c}{Logit} \\ \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+                      & Nitrate MR (1-yr) & Nitrate MR (6-mon)  & Nitrate MR (1-yr) & Nitrate MR (6-mon) \\   
+                      & (1)               & (2)                 & (3)               & (4)\\  
       \midrule 
-      Concen. $>$ 50\% MCL           & 0.0042$^{*}$      & 0.0015$^{*}$        & 0.1568$^{**}$           & 0.0969\\   
-                          & (0.0025)          & (0.0008)            & (0.0761)                & (0.0676)\\   
-      Mean concen. (z-score)       & 0.0220$^{**}$     & 0.0106$^{***}$      & 0.5452$^{***}$          & 0.3686$^{***}$\\   
-                          & (0.0093)          & (0.0038)            & (0.1906)                & (0.1327)\\   
+      Concen. $>$ 50\% MCL       & 0.4226$^{*\phantom{*}}$      & 0.1529$^{*\phantom{**}}$        & 0.1568$^{**\phantom{*}}$     & 0.0969$^{\phantom{***}}$\\   
+                      & (0.2498)          & (0.0840)            & (0.0761)          & (0.0676)\\   
+      Mean concen. (z-score)   & 2.1957$^{**}$     & 1.0630$^{***}$      & 0.5452$^{***}$    & 0.3686$^{***}$\\   
+                      & (0.9297)          & (0.3789)            & (0.1906)          & (0.1327)\\   
        \\
-      Observations        & 541,483           & 541,483             & 86,940                  & 65,317\\  
-       \\
-      CWS fixed effects & $\checkmark$      & $\checkmark$        & $\checkmark$            & $\checkmark$\\   
-      YEAR fixed effects  & $\checkmark$      & $\checkmark$        & $\checkmark$            & $\checkmark$\\   
+      Observations    & 541,483           & 541,483             & 86,940            & 65,317\\  
       \bottomrule
    \end{tabular}
 \end{adjustbox}
-{\tiny\linespread{1}\selectfont \par \raggedright \textit{Notes:} National SYR2 sample restricted to states with at least one CWS in the main downstream 2SLS sample (community water systems strictly downstream of a coal mine, 1985--2005), nitrate only. Outcome: nitrate MR (monitoring/reporting) violation in the forward window (1--365 days for the 1-yr column; 1--182 days for the 6-mon column) following the sample date. Concen. $>$ 50\% MCL = reading at 50--100\% of the MCL, the quarterly-monitoring trigger. States retained: 18. Unique CWSs: 53335. N of readings with concentration above 50 percent of the MCL: 85766. Mean concentration = CWS-year mean reading, z-scored across the sample. Cols 1--2 are linear probability models; cols 3--4 are logit models. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level.}
+{\tiny\linespread{1}\selectfont \par \raggedright \textit{Notes:} National SYR2 sample restricted to states with at least one utility in the main downstream 2SLS sample (community water systems strictly downstream of a coal mine, 1985--2005), nitrate only. Outcome: nitrate MR (monitoring/reporting) violation in the forward window (1--365 days for the 1-yr column; 1--182 days for the 6-mon column) following the sample date. Concen. $>$ 50\% MCL = reading at 50--100\% of the MCL, the quarterly-monitoring trigger. States retained: 18. Unique utilities: 53335. N of readings with concentration above 50 percent of the MCL: 85766. Mean concentration = utility-year mean reading, z-scored across the sample. Cols 1--2 are linear probability models, coefficients and standard errors in percentage points; cols 3--4 are logit models on the underlying 0/1 outcome. All specifications include utility and year fixed effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the utility level.}
 \end{table}

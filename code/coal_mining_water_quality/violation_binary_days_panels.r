@@ -120,7 +120,7 @@ col_b <- paste0("l *{8}{>{\\centering\\arraybackslash}p{", w_b, "}}")
 
 panel_a_lines <- c(
   paste0("\\begin{tabular}{", col_a, "}"),
-  "\\hline\\hline",
+  "\\toprule",
   "\\multicolumn{5}{l}{\\textbf{Panel A: Any violation in year}} \\\\",
   " & \\multicolumn{2}{c}{\\textbf{MR}} & \\multicolumn{2}{c}{\\textbf{MCL}} \\\\",
   "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}",
@@ -149,7 +149,7 @@ panel_b_lines <- c(
          "\\textbf{Mean} & \\textbf{SD} & \\textbf{P90} & \\textbf{P99} \\\\"),
   "\\hline",
   sapply(row_specs, make_days_row),
-  "\\hline\\hline",
+  "\\bottomrule",
   "\\end{tabular}"
 )
 

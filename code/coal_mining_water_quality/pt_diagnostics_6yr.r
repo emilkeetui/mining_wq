@@ -53,6 +53,20 @@ move_notes_below_adjustbox <- function(x) {
   x
 }
 
+# Right-align the model-coefficient columns (fixest's default is centered,
+# which does not decimal-align numbers of differing digit-width), leaving the
+# leading row-label column ('l') untouched. Copied from run_main_tables.r.
+right_align_tabular <- function(x) {
+  x <- paste(x, collapse = "\n")
+  m <- regmatches(x, regexpr("\\\\begin\\{tabular\\}\\{l+c+\\}", x))
+  if (length(m) == 1 && nzchar(m)) {
+    x <- sub(m, gsub("c", "r", m), x, fixed = TRUE)
+  }
+  x
+}
+
+postprocess_bal_table <- function(x) right_align_tabular(move_notes_below_adjustbox(x))
+
 # ---------------------------------------------------------------------------
 # Load
 # ---------------------------------------------------------------------------
@@ -182,7 +196,8 @@ for (i in seq_along(m_bal)) {
 
 # Joint F-test that all characteristics are unrelated to dose
 cat("\nJoint significance of all covariates (Wald):\n")
-wald_res <- character(0)
+wald_f <- character(0)
+wald_p <- character(0)
 for (i in seq_along(m_bal)) {
   # Joint test of the pre-determined covariates.
   w <- tryCatch(
@@ -193,9 +208,11 @@ for (i in seq_along(m_bal)) {
   )
   if (!is.null(w)) {
     cat("  Model", i, ": F =", round(w$stat, 3), " p =", round(w$p, 4), "\n")
-    wald_res <- c(wald_res, sprintf("%.3f (p = %.3f)", w$stat, w$p))
+    wald_f <- c(wald_f, format(round(w$stat, 2), nsmall = 2))
+    wald_p <- c(wald_p, format(round(w$p, 3), nsmall = 3))
   } else {
-    wald_res <- c(wald_res, "---")
+    wald_f <- c(wald_f, "---")
+    wald_p <- c(wald_p, "---")
   }
 }
 
@@ -217,8 +234,8 @@ dict_bal <- c(
 )
 
 note_bal <- paste0(
-  "Cross-sectional balance test on the 6-Year Review estimation sample ",
-  "(1998--2005, Ravalli et al.~(2022) cleaning). ",
+  "\\textit{Notes:} Cross-sectional balance test on the 6-Year Review ",
+  "estimation sample (1998--2005, Ravalli et al.~(2022) cleaning). ",
   "One observation per CWS. ",
   "The dependent variable is measured over 1998--2005. ",
   "Covariates differ in timing, and only population pre-dates the dose window. ",
@@ -242,9 +259,6 @@ note_bal <- paste0(
   "test of selection on pre-determined characteristics. ",
   "Columns 1 and 3 use cumulative upstream coal production (10 million short tons); ",
   "columns 2 and 4 use an indicator for any positive upstream production. ",
-  "Columns 1--2 pool across river basins; columns 3--4 add HUC02 fixed effects, so ",
-  "identification is within major river basin, matching the fixed-effect structure ",
-  "of Table~\\ref{tab:6yr_huc02fe_inorg_ravalli_2005}. ",
   "The reported $F$-statistic is a joint test of all covariates. ",
   "Of the 122 CWSs, 27 have positive upstream production over 1998--2005, so the ",
   "extensive-margin columns are identified off a small number of onsets. ",
@@ -252,26 +266,31 @@ note_bal <- paste0(
   "A jointly insignificant $F$-statistic indicates that observable CWS ",
   "characteristics do not predict treatment intensity, which is consistent with ",
   "the conditional parallel trends assumption. ",
-  "Sample: CWSs at most one HUC12 downstream of a coal mine ",
-  "(minehuc\\_downstream\\_of\\_mine = 1, minehuc\\_mine = 0)."
+  "Sample: CWSs at most one HUC12 downstream of a coal mine. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 
 out_bal <- file.path(OUT_REG, "pt_balance_6yr.tex")
 etable(
   m_bal,
   headers = list(
-    " " = c("No HUC02 FE" = 2, "HUC02 FE" = 2),
+    " " = list("No HUC02 FE" = 2, "HUC02 FE" = 2),
     "  " = c("Cumul. dose", "Any mining", "Cumul. dose", "Any mining")
   ),
   fitstat = ~ n + r2,
+  extralines = list(
+    "Joint $F$-test (all covariates)" = wald_f,
+    "\\hspace{1em} $p$-value"         = wald_p
+  ),
   style.tex = style.tex("aer", adjustbox = TRUE),
   tex = TRUE,
+  digits = "r4",
   title = paste0("Balance test: pre-determined CWS characteristics and ",
                  "subsequent upstream coal production"),
   label = "tab:pt_balance_6yr",
   dict = dict_bal,
   notes = note_bal,
-  postprocess.tex = move_notes_below_adjustbox,
+  postprocess.tex = postprocess_bal_table,
   file = out_bal, replace = TRUE
 )
 cat("Written:", out_bal, "\n")

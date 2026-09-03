@@ -863,11 +863,12 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
   # line and Panel B's opening line would otherwise sit right on top of
   # each other.
   # The very top and bottom rules of the whole (possibly two-panel) table use
-  # a doubled \hline\hline. When Panel B is present, Panel A's closing rule
-  # is instead the single rule separating the two panels (see comment above),
-  # and the doubled bottom rule moves to the end of Panel B's tabular.
-  top_rule    <- if (add_panel_b_above_median) "         \\hline\\hline" else "         \\toprule"
-  bottom_rule <- if (add_panel_b_above_median) "         \\hline\\hline" else "         \\bottomrule"
+  # the thick booktabs rules regardless of panel count. When Panel B is
+  # present, Panel A's closing rule is instead the single rule separating the
+  # two panels (see comment above), and the thick bottom rule moves to the
+  # end of Panel B's tabular.
+  top_rule    <- "         \\toprule"
+  bottom_rule <- "         \\bottomrule"
 
   panel_a_lines <- c(
     "   \\begin{adjustbox}{width = 0.9\\textwidth, center}",

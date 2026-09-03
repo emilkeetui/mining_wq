@@ -559,7 +559,7 @@ If coal mining affects contamination exceedances then this provides evidence of 
 
 I estimate the effect of SYR2 contaminant concentrations of nitrates on the likelihood of nitrate self-reporting violations. After 1991, the cost of self-reporting rose with contaminant concentrations. Nitrate self-reporting requirements required increased monitoring if nitrate concentrations were detected at 50 percent of the nitrate MCL.
 
-Table \ref{tab:mr_concentration_lag} reports regressions of linear probability models of the likelihood of a utility failing to monitor and report their water for nitrate levels within 6 months and a year of a contaminant reading. I find that when nitrate contaminant readings are greater than 50 percent of the nitrate MCL, a utility is 0.5 percentage points more likely to fail to self-report water tests for nitrates in the following year and 0.2 percentage points more likely to fail to monitor and report nitrate water tests within six months. The failures after a nitrate reading has exceeded 50 percent occur during a time of enhanced nitrate monitoring at the utility since these results are from 1997 to 2005. This suggests that utilities are more likely to fail to keep up with marginal increases in monitoring and reporting schedules. Enforcement does not increase. 
+Table \ref{tab:mr_concentration_lag_logit} reports regressions of linear probability models of the likelihood of a utility failing to monitor and report their water for nitrate levels within 6 months and a year of a contaminant reading. I find that when nitrate contaminant readings are greater than 50 percent of the nitrate MCL, a utility is 0.5 percentage points more likely to fail to self-report water tests for nitrates in the following year and 0.2 percentage points more likely to fail to monitor and report nitrate water tests within six months. The failures after a nitrate reading has exceeded 50 percent occur during a time of enhanced nitrate monitoring at the utility since these results are from 1997 to 2005. This suggests that utilities are more likely to fail to keep up with marginal increases in monitoring and reporting schedules. Enforcement does not increase. 
 
 \section{Regulator responses to increased utility self-reporting violations}
 
@@ -713,7 +713,7 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 % Local copy: notes text differs from the pipeline version in output/reg/.
 % Re-point to \outreg once the pipeline regenerates matching notes.
 \input{reg/6yr_huc02fe_inorg_ravalli_2005}\clearpage
-\outreg{mr_concentration_lag}\clearpage
+\outreg{mr_concentration_lag_ols}\clearpage
 \outreg{mr_concentration_lag_national_downstream_states}\clearpage
 %\outsum{sanitary_visit_timing_formal_enforcement_rate}\clearpage
 

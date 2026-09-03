@@ -788,7 +788,7 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
   # \cline under the superheader).
   panel_ols <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
-    "\\hline\\hline",
+    "\\toprule",
     superheader_lines,
     header_row,
     colnum_row,
@@ -814,7 +814,7 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     title_row("RF"),
     coef_line(rf_cells, instr_lab),
     se_line(rf_cells),
-    "\\hline\\hline",
+    "\\bottomrule",
     "\\end{tabular}"
   ))
 

@@ -258,7 +258,7 @@ total_w         <- if (needs_scale) "\\linewidth" else paste0(round(natural_w_cm
 
 tabular_lines <- c(
   paste0("\\begin{tabular}{", col_spec, "}"),
-  "\\hline\\hline",
+  "\\toprule",
   depvar_header,
   header_row,
   "\\hline",
@@ -272,7 +272,7 @@ tabular_lines <- c(
   paste0("Balanced panel & & $\\checkmark$ \\\\"),
   paste0("Utilities & ", format(n_cws_col1, big.mark = ","), " & ", format(n_cws_col2, big.mark = ","), " \\\\"),
   paste0("Observations & ", format(n_obs_col1, big.mark = ","), " & ", format(n_obs_col2, big.mark = ","), " \\\\"),
-  "\\hline\\hline",
+  "\\bottomrule",
   "\\end{tabular}"
 )
 

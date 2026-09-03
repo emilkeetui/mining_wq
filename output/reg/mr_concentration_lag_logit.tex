@@ -1,0 +1,22 @@
+
+\begin{table}[htbp]
+\caption{Nitrate MR violations following a reading above 50\% of the MCL (downstream-of-mine sample)}\label{tab:mr_concentration_lag_logit}
+\centering
+\begin{adjustbox}{width = \textwidth, center}
+   \begin{tabular}{lrrrr}
+      \toprule    
+       & \multicolumn{2}{c}{OLS} & \multicolumn{2}{c}{Logit} \\ \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+                      & Nitrate MR (1-yr) & Nitrate MR (6-mon)  & Nitrate MR (1-yr) & Nitrate MR (6-mon) \\   
+                      & (1)               & (2)                 & (3)               & (4)\\  
+      \midrule 
+      Concen. $>$ 50\% MCL       & 58.9693$^{**}$    & 26.1081$^{**}$      & 16.3047$^{***}$   & -0.4745\\   
+                      & (24.6040)         & (10.5298)           & (0.3296)          & (1.6820)\\   
+      Mean concen. (z-score)   & 1.2804$^{\phantom{**}}$            & 0.0482$^{\phantom{**}}$              & 6.2793$^{*\phantom{**}}$      & 1.6195\\   
+                      & (1.4274)          & (0.8741)            & (3.2100)          & (2.6141)\\   
+       \\
+      Observations    & 851               & 851                 & 88                & 40\\  
+      \bottomrule
+   \end{tabular}
+\end{adjustbox}
+{\tiny\linespread{1}\selectfont \par \raggedright \textit{Notes:} SYR2 sample restricted to community water systems strictly downstream of a coal mine (1998--2005), nitrate only. Outcome: nitrate MR (monitoring/reporting) violation in the forward window (1--365 days for the 1-yr column; 1--182 days for the 6-mon column) following the sample date. Concen. $>$ 50\% MCL = reading at 50--100\% of the MCL, the quarterly-monitoring trigger. Mean concentration = CWS-year mean reading, z-scored within chemical. Cols 1--2 are linear probability models, coefficients and standard errors in percentage points; cols 3--4 are logit models on the underlying 0/1 outcome. All specifications include CWS and year fixed effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level.}
+\end{table}
