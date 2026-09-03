@@ -216,6 +216,8 @@ Emissions were capped in two phases. In phase I, the EPA issued emission permits
 	Utilities face $N$ required self-reporting events per year. Given negligence $a$, each self-reporting event would reveal an MCL exceedance with a probability $q(a)$, with $q(0)=0$, $q'>0$, and $q'' \ge 0$. I modify the penalty structure from \textcite{kaplow1994optimal} by assuming that self-reporting is costly. A utility's self-reporting costs $c \sim G(\cdot\,;m)$ are drawn from a strictly increasing and continuously differentiable cumulative distribution function with density $g(\cdot\,;m)$. Regulators require utilities to increase sampling with rising contamination so that the distribution $G()$ depends on upstream contamination $m$ where $\partial G(c;m)/\partial m \le 0$ for every $c$. Raising $m$ weakly lowers the probability that a utility's self-reporting cost is at or below any given level. 
 	
 	Regulators perfectly observe under reporting. Unlike \textcite{mookherjee1994marginal}, I assume regulators do not observe MCL violations unless utilities self report water quality or the regulator conducts an inspection. Regulators use penalties and investigations for under-reporting and for exceeding regulatory standards for water quality. Utilities receive a sanction $r$ if they self-report a contamination level above the MCL and a penalty $t$ for an MR violation. Regulators investigate under-reporting utilities with a probability $p$ and issue a sanction $s$ for a discovered MCL violation, where $s>r$.
+
+	I maintain two assumptions on the sanctions throughout. First, $r > ps$: the certain sanction a utility bears for disclosing an exceedance exceeds the expected sanction it bears for concealing one, which is what gives a utility a reason to conceal in the first place. Together with $s>r$ this requires the investigation probability to satisfy $p < r/s$. Second, $t \ge (r-ps)\,q(\bar{a})$, which keeps the self-reporting threshold defined below non-negative at every negligence level. Without it, $(r-ps)q(a)$ could exceed $t$ at high negligence, and since self-reporting costs satisfy $c \ge 0$, a negative threshold would mean no utility with any cost draw self-reports.
 	
 	%(The number of true exceedances is then Binomial $(N, q(a)) \approx$ Poisson with mean $Nq(a)$, so Section 1's Poisson structure is recovered with intensity $Nq(a)$ in place of $a$.) For the empirically relevant range, $q(a)$ is small: mining degrades source water \emph{within} the MCL for most systems.
 	%the sanctions $(r,s,t)$ and enforcement intensity $p$ do not depend on $m$.
@@ -244,7 +246,7 @@ Emissions were capped in two phases. In phase I, the EPA issued emission permits
 		\theta b'(a) &= N r\, q'(a) & \text{(self-reporting region, } c \le \hat{c}(a)) \\
 		\theta b'(a) &= N ps\, q'(a) & \text{(do not self-report (MR) region, } c > \hat{c}(a))
 	\end{align}
-	Assuming $r > ps$, the marginal penalty is lower when the utility is in the MR region than when it is in the self-reporting region. 
+	Because $r > ps$, the marginal penalty is lower when the utility is in the MR region than when it is in the self-reporting region.
     
     An exogenous decrease in $\hat{c}(a)$ increases the size of the MR region. Utilities that draw a higher self-reporting cost c are more likely to fall in the MR region. An increase in the population's cost distribution raises the share of utilities in that region without moving the boundary $\hat{c}(a)$ itself.
 	
@@ -252,17 +254,20 @@ Emissions were capped in two phases. In phase I, the EPA issued emission permits
 	
 	The model predicts that when water quality deteriorates due to increased contamination, self-reporting rates fall.
 	
-	\textbf{Proposition 1:} Negligence is globally increasing in compliance costs, 
-    \[\frac{\partial a}{\partial\theta} = \frac{b'(a)}{-\theta b''(a) + N\rho\, q''(a)} > 0\]
-    within each region, where $\rho \in \{r, ps\}$ is the region's sanction, and where the denominator is assumed positive to satisfy the second-order condition of maximizing the utility's negligence problem.
+	\textbf{Proposition 1:} Negligence is increasing in compliance costs. Within each reporting region,
+    \[\frac{\partial a}{\partial\theta} = \frac{b'(a)}{-\theta b''(a) + N\rho\, q''(a)} > 0,\]
+    where $\rho \in \{r, ps\}$ is the region's sanction. The denominator is positive because $b'' < 0$ and $q'' \ge 0$, which is also the second-order condition for the negligence problem within a region. Since $r > ps$, a utility that switches from self-reporting to under-reporting faces a lower marginal sanction and moves to a higher negligence level, so negligence rises with $\theta$ overall, with an upward jump at the switch.
 	
 	\textbf{Proposition 2:} The number of under-reporting utilities increases as contamination increases $\partial MR/\partial m \ge 0$.
 
-    For a given compliance-cost type $\theta$, the negligence choice $a_{SR}(\theta)$ in the self-reporting region solves $\theta b'(a) = Nr\,q'(a)$. This gives the type specific switching cost
+    For a compliance-cost type $\theta$ facing a marginal sanction $\rho > 0$, let $a(\rho;\theta)$ denote the negligence level solving $\theta b'(a) = N\rho\,q'(a)$. The negligence a self-reporting utility chooses is $a_{SR}(\theta) \equiv a(r;\theta)$ and the negligence an under-reporting utility chooses is $a_{MR}(\theta) \equiv a(ps;\theta)$, with $a_{SR}(\theta) < a_{MR}(\theta)$ since $r > ps$.
+
+	The utility's objective is not globally concave. The marginal penalty drops from $Nr\,q'(a)$ to $Nps\,q'(a)$ at the negligence level where $\hat{c}(a) = c$, so both $a_{SR}(\theta)$ and $a_{MR}(\theta)$ can satisfy the first-order condition in their own region, and the utility takes whichever delivers the higher payoff. That comparison has a unique solution in $c$. Writing $W(\rho;\theta) \equiv \max_{a \in [0,\bar{a}]} \{\theta b(a) - N\rho\, q(a)\}$, the payoff from self-reporting is $W(r;\theta) - \theta b(\bar{a}) - Nc$ and the payoff from under-reporting is $W(ps;\theta) - \theta b(\bar{a}) - Nt$. The former falls in $c$ at the constant rate $N$ and the latter does not involve $c$ at all, so their difference is strictly decreasing in $c$ and crosses zero exactly once. Cancelling $\theta b(\bar{a})$ and applying the envelope theorem, $\partial W(\rho;\theta)/\partial\rho = -N q(a(\rho;\theta))$, the crossing point is the type specific switching cost
 	\begin{equation}\label{eq:cstar}
-		c^*(\theta) \equiv \hat{c}(a_{SR}(\theta)) = t - (r-ps)\,q(a_{SR}(\theta)).
+		c^*(\theta) \equiv t + \frac{W(r;\theta) - W(ps;\theta)}{N} = t - \int_{ps}^{r} q\big(a(\rho;\theta)\big)\, d\rho.
 	\end{equation}
-	
+	Since $q(a(\rho;\theta)) \le q(\bar{a})$ for every $\rho$, the maintained assumption $t \ge (r-ps)q(\bar{a})$ delivers $c^*(\theta) \ge 0$. When negligence carries no exceedance risk, $q \equiv 0$, the integral vanishes and the cutoff is simply the under-reporting penalty $t$. The cutoff depends only on the sanctions and on the utility's own compliance-cost type, not on contamination $m$.
+
 	A type-$\theta$ utility under-reports if and only if its cost draw exceeds this cutoff, $c > c^*(\theta)$, so the aggregate number of utilities under-reporting and receiving an MR violation is
 	\begin{equation}\label{eq:MRm}
 		MR(m) = \int_0^{\bar\theta} \big[\,1 - G(c^*(\theta);m)\,\big]\, f(\theta;m)\, d\theta \;\equiv\; \int_0^{\bar\theta} h(\theta,m)\, f(\theta;m)\, d\theta.
@@ -302,11 +307,11 @@ Emissions were capped in two phases. In phase I, the EPA issued emission permits
 	\end{equation}
 	%Integration by parts has moved the derivative off of $f$ (unsigned) and onto $h$ (now $h'(\theta)$, which can be signed) — this is what makes the assumption $\partial F/\partial m \le 0$ usable at all. 
     
-    Signing \eqref{eq:channelB} therefore requires the slope of $h$ in $\theta$. Differentiating \eqref{eq:cstar},
+    Signing \eqref{eq:channelB} therefore requires the slope of $h$ in $\theta$. Differentiating \eqref{eq:cstar} and applying the envelope theorem in $\theta$, $\partial W(\rho;\theta)/\partial\theta = b(a(\rho;\theta))$,
 	\[
-	c^{*\prime}(\theta) = -(r-ps)\,q'(a_{SR}(\theta))\,a_{SR}'(\theta) < 0,
+	c^{*\prime}(\theta) = \frac{b(a_{SR}(\theta)) - b(a_{MR}(\theta))}{N} < 0,
 	\]
-	since $a_{SR}'(\theta) > 0$ by Proposition 1, $q' > 0$, and $r > ps$. Then
+	since $a_{SR}(\theta) < a_{MR}(\theta)$ and $b' > 0$. Then
 	\[
 	h'(\theta) = -g(c^*(\theta);m)\,c^{*\prime}(\theta) \ge 0,
 	\]
@@ -338,21 +343,23 @@ Emissions were capped in two phases. In phase I, the EPA issued emission permits
 	\[
 	\frac{\partial a}{\partial \lambda} = \frac{N\rho\,q'(a)}{\theta b''(a) - \lambda N\rho\, q''(a)}.
 	\]
-	The second-order condition invoked in Proposition 1, $\lambda N\rho\,q''(a) - \theta b''(a) \ge 0$, required for $a$ to be a maximum, makes the denominator non-positive, so $\partial a/\partial\lambda \le 0$: negligence is weakly decreasing in the enforcement scale, within each region.
+	The second-order condition invoked in Proposition 1, $\lambda N\rho\,q''(a) - \theta b''(a) \ge 0$, makes the denominator non-positive, so $\partial a/\partial\lambda \le 0$: negligence is weakly decreasing in the penalty scale, within each region.
 	
-	The self-reporting cutoff scales by $\lambda$. The self-report condition with the scaled penalties, $c + \lambda r\,q(a) \le \lambda\big[t+ps\,q(a)\big]$ rearranges to
+	The per-event reporting rule scales by $\lambda$. The self-report condition with the scaled penalties, $c + \lambda r\,q(a) \le \lambda\big[t+ps\,q(a)\big]$ rearranges to
 	\begin{equation}\label{eq:chat_lambda}
 		c \le \hat{c}_\lambda(a) \equiv \lambda\big[\,t - (r-ps)\,q(a)\,\big] = \lambda\,\hat{c}(a).
 	\end{equation}
 	Unlike $\hat{c}(a)$ itself, the self-report cost $c$ does not scale with $\lambda$ since it is a technology/labor cost, not a legal penalty, so scaling $\lambda$ up moves the threshold $\hat{c}_\lambda(a)$ relative to a fixed distribution of $c$.
 	
-	Assume $t \ge (r-ps)\,q(\bar a).$ Then $\hat{c}(a)\ge 0 \text{ for all } a \in [0,\bar a]$. Without this assumption, it is possible for $(r-ps)q(a) > t$ to lead to $\hat{c}(a)\le 0$ at large $a$. When $\hat{c}(a)\le 0$, since self-report cost $c \ge 0$, a negative threshold means no utility with any cost draw would self-report.
-	
-	Evaluating $\hat{c}(.)$ at the negligence $a_\lambda$ from Step 2, the self-reporting threshold is $C^*(\lambda) \equiv \hat{c}_\lambda(a_\lambda) = \lambda\,\hat{c}(a_\lambda)$. Its total derivative is
+	Scaling the sanctions replaces the marginal sanction pair $(r, ps)$ with $(\lambda r, \lambda ps)$ and the under-reporting penalty $t$ with $\lambda t$, so the switching cost of \eqref{eq:cstar} becomes
 	\[
-	\frac{dC^*}{d\lambda} = \hat{c}(a_\lambda) + \lambda\,\hat{c}'(a_\lambda)\,\frac{da_\lambda}{d\lambda}.
+	C^*(\lambda) = \lambda t - \int_{\lambda ps}^{\lambda r} q\big(a(u;\theta)\big)\, du,
 	\]
-	The first term is $\ge 0$ by step 4. The second term is also $\ge 0$: $\hat{c}'(a) = -(r-ps)q'(a) < 0$ and $da_\lambda/d\lambda \le 0$ from Step 2, so their product is non-negative, and $\lambda>0$. Raising the enforcement scale raises the self-report threshold at the optimal negligence level, holding the population's cost draws fixed, increasing the number of utilities with $c \le C^*(\lambda)$, and expanding the self-reporting region. Higher enforcement intensity reduces negligence and increases self-reporting.
+	with total derivative
+	\[
+	\frac{dC^*}{d\lambda} = t - \Big[\, r\, q\big(a(\lambda r;\theta)\big) - ps\, q\big(a(\lambda ps;\theta)\big) \Big] \;\ge\; t - (r-ps)\, q(\bar{a}) \;\ge\; 0.
+	\]
+	The first inequality uses $a(\lambda r;\theta) \le a(\lambda ps;\theta)$, so that $q(a(\lambda r;\theta)) \le q(a(\lambda ps;\theta))$ and the bracketed term is at most $(r-ps)\,q(a(\lambda r;\theta)) \le (r-ps)\,q(\bar{a})$. The second is the maintained assumption on $t$. Raising the penalty scale therefore raises the switching cost, holding the population's cost draws fixed, increasing the number of utilities with $c \le C^*(\lambda)$ and expanding the self-reporting region. A higher penalty scale reduces negligence and increases self-reporting.
 
 \section{Data}
 
