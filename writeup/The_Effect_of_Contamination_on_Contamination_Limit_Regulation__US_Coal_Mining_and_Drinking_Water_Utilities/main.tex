@@ -217,20 +217,6 @@ Emissions were capped in two phases. In phase I, the EPA issued emission permits
 	
 	Utilities face $N$ required self-reporting events per year. Given negligence $a$, each self-reporting event would reveal an MCL exceedance with a probability $q(a)$, with $q(0)=0$, $q'>0$, and $q'' \ge 0$. I modify the penalty structure from \textcite{kaplow1994optimal} by assuming that self-reporting is costly. A utility's self-reporting costs $c \sim G(\cdot\,;m)$ are drawn from a strictly increasing and continuously differentiable cumulative distribution function with density $g(\cdot\,;m)$. Regulators require utilities to increase sampling with rising contamination so that the distribution $G()$ depends on upstream contamination $m$ where $\partial G(c;m)/\partial m \le 0$ for every $c$. Raising $m$ weakly lowers the probability that a utility's self-reporting cost is at or below any given level. 
 	
-	I place three restrictions on the exceedance technology and on the distribution of self-reporting costs.
-
-	\textbf{Assumption 1:} The probability that a self-reporting event reveals an MCL exceedance is small even at maximum negligence, $q(\bar a) \le \kappa$ for a small $\kappa>0$.
-
-	Maximum contaminant levels are set above the concentrations utilities ordinarily treat their water to, which leaves a utility headroom between the water it delivers and the water the regulation requires. A utility can allow its water quality to deteriorate substantially and still return a test below the MCL. Assumption 1 states that this headroom is wide enough that even a utility abandoning every requirement it faces is unlikely to produce a test result above the MCL. Since $q$ is increasing, the assumption bounds the exceedance probability at every negligence level, $q(a) \le \kappa$ for all $a \in [0,\bar a]$. For a utility, negligence is comparatively safe, since reducing treatment expenditure seldom produces the test result that becomes an MCL violation. For a regulator, the sanction $s$ it holds for a concealed exceedance is seldom triggered, so investigating an under-reporting utility rarely recovers a violation to sanction. Contamination entering a utility's source water raises the concentrations it must treat without necessarily consuming the headroom that separates those concentrations from the MCL.
-
-	\textbf{Assumption 2:} At maximum negligence the marginal expected penalty from negligence exceeds its marginal benefit for every compliance-cost type, $\bar\theta\, b'(\bar a) < N ps\, q'(\bar a)$.
-
-	Assumption 2 keeps every utility's negligence choice interior. Without it the marginal benefit of negligence would exceed its marginal cost throughout $[0,\bar a]$, every utility would abandon every requirement whatever its compliance cost, and compliance cost would no longer sort utilities by negligence. I state the assumption with $ps$ rather than $r$ because $ps<r$ makes the non-self-reporting region the binding case, and satisfying it there satisfies it in the self-reporting region as well. The assumption restricts the slope of $q$ at $\bar a$ rather than its level, so it does not conflict with Assumption 1. Because $q'' \ge 0$, $q$ is convex and can remain below $\kappa$ across most of $[0,\bar a]$ while rising steeply as negligence approaches $\bar a$. Taking $q(a) = \kappa (a/\bar a)^n$, for instance, holds $q(\bar a)=\kappa$ fixed while $q'(\bar a) = n\kappa/\bar a$ grows without bound in $n$, so Assumption 2 can be met for any $\kappa$ however small. Read together, the two assumptions describe an exceedance technology in which a utility's treatment headroom absorbs moderate negligence and is exhausted only as negligence approaches its maximum. It is the steepness of detection risk at high negligence, and not the level of exceedance risk, that keeps a utility from abandoning treatment altogether.
-
-	\textbf{Assumption 3:} The density of self-reporting costs and its response to contamination are bounded, $g(c;m) \le \bar g$ and $\left|\partial g(c;m)/\partial m\right| \le \bar g$ for every $c$ and $m$.
-
-	Self-reporting costs are not concentrated at a single value. Utilities differ in the technical and administrative staff they employ and in their access to certified laboratories, so the cost of a round of testing and reporting is spread across utilities rather than common to them, and rising contamination does not shift that distribution discontinuously at any particular cost.
-
 	Regulators perfectly observe under reporting. Unlike \textcite{mookherjee1994marginal}, I assume regulators do not observe MCL violations unless utilities self report water quality or the regulator conducts an inspection. Regulators use penalties and investigations for under-reporting and for exceeding regulatory standards for water quality. Utilities receive a sanction $r$ if they self-report a contamination level above the MCL and a penalty $t$ for an MR violation. Regulators investigate under-reporting utilities with a probability $p$ and issue a sanction $s$ for a discovered MCL violation, where $s>r$.
 	
 	%(The number of true exceedances is then Binomial $(N, q(a)) \approx$ Poisson with mean $Nq(a)$, so Section 1's Poisson structure is recovered with intensity $Nq(a)$ in place of $a$.) For the empirically relevant range, $q(a)$ is small: mining degrades source water \emph{within} the MCL for most systems.
@@ -331,34 +317,8 @@ Emissions were capped in two phases. In phase I, the EPA issued emission permits
     
     Contamination from mining can raise MR violations by increasing self-reporting costs relative to each type's fixed cutoff and by shifting the population toward higher-cost types who are already structurally closer to their own cutoff.
 
-	Assumption 1 bounds the second of these two channels. The wedge between disclosing an exceedance and hiding it is $(r-ps)q(a)$, so for every type the distance between its switching cutoff and the penalty for not reporting is
-	\begin{equation}\label{eq:cutoffbound}
-		\big|\,c^*(\theta) - t\,\big| \;=\; (r-ps)\,q(a_{SR}(\theta)) \;\le\; (r-ps)\,\kappa,
-	\end{equation}
-	since $q$ is increasing and $a_{SR}(\theta) \le \bar a$. The cutoff is close to $t$ for every compliance-cost type, and the spread of cutoffs across types is no wider than $(r-ps)\kappa$. Leibniz's rule gives
-	\[
-	\int_0^{\bar\theta} \frac{\partial f(\theta;m)}{\partial m}\, d\theta = \frac{d}{dm}\left[\int_0^{\bar\theta} f(\theta;m)\, d\theta\right] = \frac{d}{dm}[1] = 0,
-	\]
-	since the limits $0,\bar\theta$ do not depend on $m$ and $f(\cdot\,;m)$ is a density for every $m$. Subtracting the constant $1-G(t;m)$ from Channel B therefore leaves its value unchanged,
-	\[
-	\text{Channel B} = \int_0^{\bar\theta} \big[\,G(t;m) - G(c^*(\theta);m)\,\big]\,\frac{\partial f(\theta;m)}{\partial m}\, d\theta,
-	\]
-	and applying the mean value theorem to $G$ in its first argument together with Assumption 3,
-	\[
-	\big|\,G(t;m) - G(c^*(\theta);m)\,\big| \;\le\; \bar g\,\big|\,t - c^*(\theta)\,\big| \;\le\; \bar g\,(r-ps)\,\kappa,
-	\]
-	so that
-	\begin{equation}\label{eq:channelBbound}
-		\big|\,\text{Channel B}\,\big| \;\le\; \bar g\,(r-ps)\,\kappa \int_0^{\bar\theta} \left|\frac{\partial f(\theta;m)}{\partial m}\right| d\theta.
-	\end{equation}
-	The same argument applied to $\partial G(c^*(\theta);m)/\partial m$ in Channel A, using $\int_0^{\bar\theta} f(\theta;m)\, d\theta = 1$, gives
-	\begin{equation}\label{eq:MRkappa}
-		\frac{\partial MR}{\partial m} = -\frac{\partial G(t;m)}{\partial m} + O(\kappa) \;\ge\; 0.
-	\end{equation}
 
-	When the exceedance probability is small the composition channel contributes little and the rise in MR violations is almost entirely the cost channel. A utility deciding whether to report compares the cost of a round of testing against the penalty for skipping it, and the prospect of concealing an exceedance barely enters that comparison because there is seldom an exceedance to conceal. The regulator's investigation probability $p$ and its sanction $s$ for a discovered exceedance reach the reporting decision only through $q$, so when $q$ is small neither instrument moves the reporting threshold appreciably. The penalty $t$ for failing to report is the instrument that does, and it is the value the switching cutoff collapses toward.
-
-	\textbf{Proposition 3:} Increasing all penalties increases the number of utilities self-reporting.
+	\textbf{Proposition 3:} Increasing all penalties increases the number of utilities self-reporting. 
 	
 	Consider scaling every sanction by a common factor $\lambda>0$: $(r,s,t) \to \lambda(r,s,t)$, holding $q(\cdot)$, $b(\cdot)$, $N$, $p$, and the cost draws $\theta,c$ fixed. Per-event penalties $e(a)$ become
     \begin{align*}
@@ -384,7 +344,7 @@ Emissions were capped in two phases. In phase I, the EPA issued emission permits
 	\end{equation}
 	Unlike $\hat{c}(a)$ itself, the self-report cost $c$ does not scale with $\lambda$ since it is a technology/labor cost, not a legal penalty, so scaling $\lambda$ up moves the threshold $\hat{c}_\lambda(a)$ relative to a fixed distribution of $c$.
 	
-	Assumption 1 delivers $t \ge (r-ps)\,q(\bar a)$ whenever $\kappa$ is small relative to the penalty for not reporting, so $\hat{c}(a)\ge 0 \text{ for all } a \in [0,\bar a]$. Without this, it is possible for $(r-ps)q(a) > t$ to lead to $\hat{c}(a)\le 0$ at large $a$. When $\hat{c}(a)\le 0$, since self-report cost $c \ge 0$, a negative threshold means no utility with any cost draw would self-report.
+	Assume $t \ge (r-ps)\,q(\bar a).$ Then $\hat{c}(a)\ge 0 \text{ for all } a \in [0,\bar a]$. Without this assumption, it is possible for $(r-ps)q(a) > t$ to lead to $\hat{c}(a)\le 0$ at large $a$. When $\hat{c}(a)\le 0$, since self-report cost $c \ge 0$, a negative threshold means no utility with any cost draw would self-report.
 	
 	Evaluating $\hat{c}(.)$ at the negligence $a_\lambda$ from Step 2, the self-reporting threshold is $C^*(\lambda) \equiv \hat{c}_\lambda(a_\lambda) = \lambda\,\hat{c}(a_\lambda)$. Its total derivative is
 	\[
@@ -600,10 +560,6 @@ There is suggestive evidence that nitrate violations are more likely to occur wh
 I estimate the effect of SYR2 contaminant concentrations of nitrates on the likelihood of nitrate self-reporting violations. After 1991, the cost of self-reporting rose with contaminant concentrations. Nitrate self-reporting requirements required increased monitoring if nitrate concentrations were detected at 50 percent of the nitrate MCL.
 
 Table \ref{tab:mr_concentration_lag_logit} reports regressions of linear probability models of the likelihood of a utility failing to monitor and report their water for nitrate levels within 6 months and a year of a contaminant reading. I find that when nitrate contaminant readings are greater than 50 percent of the nitrate MCL, a utility is 0.5 percentage points more likely to fail to self-report water tests for nitrates in the following year and 0.2 percentage points more likely to fail to monitor and report nitrate water tests within six months. The failures after a nitrate reading has exceeded 50 percent occur during a time of enhanced nitrate monitoring at the utility since these results are from 1997 to 2005. This suggests that utilities are more likely to fail to keep up with marginal increases in monitoring and reporting schedules. Enforcement does not increase. 
-
-Coal mining does not raise the likelihood of violating an MCL despite raising the contamination level. Since there are no MCL violations in the SYR2 sample, the probability that a round of testing returns a result above the MCL is small at these utilities, and it is small across the range of negligence they choose. Utility negligence varies across the sample due to differing compliance costs at the utilities. Utility characteristics, such as the number of facilities the utility maintains, differ and require different compliance costs to operate each facility. The variation in upstream coal production also creates variation in compliance costs. The theoretical model predicts that utilities respond to rising compliance costs by increasing negligence, since the benefits associated with each level of negligence are scaled by the compliance costs. Observing no exceedances across utilities that differ this much in their compliance costs, and therefore in their negligence, is what Assumption 1 describes: the exceedance probability is bounded by a small $\kappa$ even at the negligence levels the least careful utilities in the sample choose. Coal mining raises contaminant concentrations at utilities without consuming the headroom that separates those concentrations from the MCL. 
-
-A small $\kappa$ bounds the wedge $(r-ps)q(a)$ between disclosing an exceedance and hiding it, and with it the distance between a utility's self-reporting cutoff and the penalty $t$ for not reporting. A utility deciding whether to report is then weighing the cost of a round of testing against the penalty for skipping it, with little to conceal on either side of that comparison. Coal mining raises the cost of that round of testing, since regulators require utilities with impaired source water to sample more often, and under-reporting rises for that reason rather than because mining has produced exceedances that under-reporting then hides. This is not because concealment would be unprofitable. The sanction $s$ for a concealed exceedance exceeds the sanction $r$ for a disclosed one, but it is applied only with the probability $p$ that the regulator investigates and finds the exceedance, and the enforcement results indicate that $p$ is low, since sanitary visits rise with upstream mining while formal enforcement falls. Concealment would pay if there were exceedances to conceal, and the evidence is that there are not.
 
 The behavior of the utilities in response to penalties and enforcement suggests that the penalties for utilities not self-reporting are too low to deter the reduction in self-reporting that occurs from self-reporting cost increases. The result is that regulators are required to increase sanitary visits to utilities to determine the health risk of an underreporting utility. The welfare effects of this are not a priori clear. The regulators may be able to monitor with economies of scale that are lower than the utilities' cost of self-reporting. However, the economies of scale would have to overcome the large amount of resources the regulator would have to devote to monitoring all utilities in a timely manner.
 
