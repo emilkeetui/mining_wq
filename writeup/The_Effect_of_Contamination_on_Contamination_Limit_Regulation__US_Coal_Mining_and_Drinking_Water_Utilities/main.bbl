@@ -159,12 +159,12 @@
     \endentry
     \entry{angrist1994identification}{article}{}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=71a74466a85192690bb7668576e4f2f3}{%
+        {{un=1,uniquepart=given,hash=71a74466a85192690bb7668576e4f2f3}{%
            family={Angrist},
            familyi={A\bibinitperiod},
            given={Joshua},
            giveni={J\bibinitperiod},
-           givenun=0}}%
+           givenun=1}}%
         {{un=0,uniquepart=base,hash=f74fd63923a56fa58b8687fdf1cc7ff2}{%
            family={Imbens},
            familyi={I\bibinitperiod},
@@ -189,6 +189,41 @@
       \field{journaltitle}{Econometrica}
       \field{title}{Estimation and identification of local average treatment effects}
       \field{year}{1994}
+    \endentry
+    \entry{angrist2009mostly}{book}{}{}
+      \name{author}{2}{}{%
+        {{un=1,uniquepart=given,hash=ee326f34eea24952d04c41cef1771bfc}{%
+           family={Angrist},
+           familyi={A\bibinitperiod},
+           given={Joshua\bibnamedelima D},
+           giveni={J\bibinitperiod\bibinitdelim D\bibinitperiod},
+           givenun=1}}%
+        {{un=0,uniquepart=base,hash=a371aa94a6e25bcbee7d55da6003fbe6}{%
+           family={Pischke},
+           familyi={P\bibinitperiod},
+           given={Jörn-Steffen},
+           giveni={J\bibinithyphendelim S\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Princeton university press}%
+      }
+      \strng{namehash}{3a5c15818fc709fb8d1d7a4e9b97e05e}
+      \strng{fullhash}{3a5c15818fc709fb8d1d7a4e9b97e05e}
+      \strng{fullhashraw}{3a5c15818fc709fb8d1d7a4e9b97e05e}
+      \strng{bibnamehash}{3a5c15818fc709fb8d1d7a4e9b97e05e}
+      \strng{authorbibnamehash}{3a5c15818fc709fb8d1d7a4e9b97e05e}
+      \strng{authornamehash}{3a5c15818fc709fb8d1d7a4e9b97e05e}
+      \strng{authorfullhash}{3a5c15818fc709fb8d1d7a4e9b97e05e}
+      \strng{authorfullhashraw}{3a5c15818fc709fb8d1d7a4e9b97e05e}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Mostly harmless econometrics: An empiricist's companion}
+      \field{year}{2009}
     \endentry
     \entry{anton2004incentives}{article}{}{}
       \name{author}{3}{}{%
@@ -2114,6 +2149,91 @@
       \field{year}{2018}
       \field{pages}{31\bibrangedash 47}
       \range{pages}{17}
+    \endentry
+    \entry{epaInspectionFactsheet2024}{misc}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=8233d83a5e663161d707a62961f8f66f}{%
+           family={{U.S. Environmental Protection Agency}},
+           familyi={U\bibinitperiod}}}%
+      }
+      \strng{namehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{fullhash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{fullhashraw}{8233d83a5e663161d707a62961f8f66f}
+      \strng{bibnamehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authorbibnamehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authornamehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authorfullhash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authorfullhashraw}{8233d83a5e663161d707a62961f8f66f}
+      \field{extraname}{1}
+      \field{sortinit}{U}
+      \field{sortinithash}{6901a00e45705986ee5e7ca9fd39adca}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://www.epa.gov/compliance/fact-sheet-what-expect-during-public-water-system-inspection}}
+      \field{month}{9}
+      \field{note}{Accessed September 2, 2026}
+      \field{title}{Fact Sheet: What to Expect During a Public Water System Inspection}
+      \field{year}{2024}
+    \endentry
+    \entry{epaSanitarySurveys}{misc}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=8233d83a5e663161d707a62961f8f66f}{%
+           family={{U.S. Environmental Protection Agency}},
+           familyi={U\bibinitperiod}}}%
+      }
+      \strng{namehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{fullhash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{fullhashraw}{8233d83a5e663161d707a62961f8f66f}
+      \strng{bibnamehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authorbibnamehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authornamehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authorfullhash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authorfullhashraw}{8233d83a5e663161d707a62961f8f66f}
+      \field{extraname}{2}
+      \field{sortinit}{U}
+      \field{sortinithash}{6901a00e45705986ee5e7ca9fd39adca}
+      \field{extradate}{1}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://www.epa.gov/dwreginfo/sanitary-surveys}}
+      \field{note}{Drinking Water Requirements for States and Public Water Systems; accessed September 2, 2026}
+      \field{title}{Sanitary Surveys}
+      \field{year}{2026}
+    \endentry
+    \entry{epaSDWAEchoDownload}{misc}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=8233d83a5e663161d707a62961f8f66f}{%
+           family={{U.S. Environmental Protection Agency}},
+           familyi={U\bibinitperiod}}}%
+      }
+      \list{organization}{2}{%
+        {ECHO -- Enforcement}%
+        {Compliance History Online}%
+      }
+      \strng{namehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{fullhash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{fullhashraw}{8233d83a5e663161d707a62961f8f66f}
+      \strng{bibnamehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authorbibnamehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authornamehash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authorfullhash}{8233d83a5e663161d707a62961f8f66f}
+      \strng{authorfullhashraw}{8233d83a5e663161d707a62961f8f66f}
+      \field{extraname}{3}
+      \field{sortinit}{U}
+      \field{sortinithash}{6901a00e45705986ee5e7ca9fd39adca}
+      \field{extradate}{2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://echo.epa.gov/tools/data-downloads/sdwa-download-summary}}
+      \field{note}{Accessed September 2, 2026}
+      \field{title}{{SDWA} Data Download Summary and Data Element Dictionary}
+      \field{year}{2026}
     \endentry
     \entry{Trump2025EO14260}{article}{}{}
       \name{author}{1}{}{%
