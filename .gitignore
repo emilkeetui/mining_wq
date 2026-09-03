@@ -13,6 +13,18 @@ Rplots.pdf
 writeup/*.aux
 writeup/*.log
 writeup/*.pdf
+writeup/**/*.aux
+writeup/**/*.bcf
+writeup/**/*.blg
+writeup/**/*.bbl
+writeup/**/*.fdb_latexmk
+writeup/**/*.fls
+writeup/**/*.log
+writeup/**/*.run.xml
+writeup/**/*.out
+writeup/**/*.nav
+writeup/**/*.snm
+writeup/**/*.toc
 
 # Python artifacts
 __pycache__/
