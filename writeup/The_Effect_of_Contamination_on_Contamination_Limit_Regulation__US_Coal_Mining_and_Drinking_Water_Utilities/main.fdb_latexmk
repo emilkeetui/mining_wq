@@ -1,12 +1,12 @@
 # Fdb version 4
-["biber main"] 1788368184.66189 "main.bcf" "main.bbl" "main" 1788407453.97798 0
-  "citation.bib" 1788367405.76066 38978 f1cedb121b6ed1489680de92b9ced63b ""
-  "main.bcf" 1788407447.85541 113852 37fd0de4787ca3ab0dbbdf2aa6556c24 "pdflatex"
+["biber main"] 1788456343.76874 "main.bcf" "main.bbl" "main" 1788456458.81876 0
+  "citation.bib" 1788408111.84579 40351 a2087948afde39a45825d29be54b37ec ""
+  "main.bcf" 1788456452.03545 114464 cc2e8bc3b9668c3afe419cde4daa77c1 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1788407434.23907 "main.tex" "main.pdf" "main" 1788407454.13786 0
+["pdflatex"] 1788456436.12447 "main.tex" "main.pdf" "main" 1788456458.97694 0
   "../../output/fig/first_stage_scatter_dwnstrm.png" 1787604159.39448 416232 08e2c7c8ec7597ebf7fd06da9dac3927 ""
   "../../output/fig/map_huc12_main_sample.png" 1788217455.14764 369740 fd6b5e0cf14478e2aa92857aa9a17aa9 ""
   "../../output/fig/mineviolengthhist_downstream.png" 1773946325.12318 82878 3e735a86a309ecb709c192b127a7de2b ""
@@ -170,10 +170,10 @@
   "C:/Users/ek559/AppData/Roaming/MiKTeX/tex/latex/ulem/ulem.sty" 1578651445 15682 94f55b803e160cf7fb6e4d77d07cfe1d ""
   "C:/Users/ek559/AppData/Roaming/MiKTeX/tex/latex/varwidth/varwidth.sty" 1238469540 10894 d359a13923460b2a73d4312d613554c8 ""
   "img/WBD_Base_HUStructure_small.png" 1787942204 111064 f79ed6ac21e975d353e8977b6ae6b171 ""
-  "main.aux" 1788407447.80364 23777 f71324d804f27434bc6d3a4a9486e40a "pdflatex"
-  "main.bbl" 1788374271.60632 105135 bb5fe38fc0db889bac7c31da75957137 "biber main"
-  "main.run.xml" 1788407447.91216 2309 1aabc36396c0c8c78ab6350ebd11e844 "pdflatex"
-  "main.tex" 1788407416.56136 119905 96b15303193cf2d556437d03906288c5 ""
+  "main.aux" 1788456451.9787 24511 b1efcd06e5827d191accffe46aacd57a "pdflatex"
+  "main.bbl" 1788456379.5687 110807 06d2c0f2678dcd0823bd32703a50a92e "biber main"
+  "main.run.xml" 1788456452.10315 2309 1aabc36396c0c8c78ab6350ebd11e844 "pdflatex"
+  "main.tex" 1788456323.07524 125691 6906f1cc293b5ea505c1e6997a981c9a ""
   "plots/coal_summary_plot.png" 1788154568.76218 173006 74b14126dce96117fd65641472a61113 ""
   "plots/data_cleaning/eia_msha_mine_huc12s.png" 1787942202 1786558 622e40e9c7ae6e3b0fb559d2b3f42cd9 ""
   "reg/6yr_huc02fe_inorg_ravalli_2005.tex" 1788374272.37821 1644 8b7d61cfd87af6a95101c64b98e11459 ""
