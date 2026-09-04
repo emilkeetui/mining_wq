@@ -69,7 +69,7 @@ make_row <- function(i) {
 table_lines <- c(
   "\\begin{table}[htbp]",
   "\\centering",
-  "\\caption{Incidence of MR and MCL Violations, Downstream 2SLS CWS-Year Sample, 1985--2005}",
+  "\\caption{Incidence of MR and MCL Violations, Downstream 2SLS Utility-Year Sample, 1985--2005}",
   "\\label{tab:mr_mcl_incidence_summary}",
   "\\small",
   "\\begin{tabular}{lrrr}",
@@ -84,9 +84,9 @@ table_lines <- c(
   "\\footnotesize",
   "\\raggedright",
   paste0(
-    "\\textit{Notes:} Sample restricted to community water systems strictly downstream of a coal mine, ",
+    "\\textit{Notes:} Sample restricted to utilities strictly downstream of a coal mine, ",
     "years 1985--2005. ",
-    "Rate is the share of CWS-year observations with a nonzero violation share for that ",
+    "Rate is the share of utility-year observations with a nonzero violation share for that ",
     "category, in percent. ",
     "MR = monitoring and reporting violation; MCL = maximum contaminant level violation. ",
     "Inorganic chemicals encompasses nitrates and arsenic as sub-contaminants."
@@ -100,9 +100,9 @@ header <- c(
   "% Table: MR/MCL Violation Incidence Summary, Downstream 2SLS Sample, 1985--2005",
   "% Purpose: Rate (share of obs with any violation days), count, and N for",
   "%          arsenic, inorganic chemicals, and nitrates MR/MCL violations.",
-  "% Sample:  Downstream 2SLS CWS-year sample (minehuc_downstream_of_mine=1, minehuc_mine=0,",
+  "% Sample:  Downstream 2SLS utility-year sample (minehuc_downstream_of_mine=1, minehuc_mine=0,",
   "%          1985-2005, excluding PWSID WV3303401)",
-  paste0("% N:       ", fn(nrow(dat)), " CWS-year observations"),
+  paste0("% N:       ", fn(nrow(dat)), " utility-year observations"),
   "% ============================================================"
 )
 

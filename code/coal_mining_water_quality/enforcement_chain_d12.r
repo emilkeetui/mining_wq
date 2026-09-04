@@ -679,6 +679,98 @@ fmt_col <- function(ols_t, rf_t, iv_t, digits = 2) {
 
 fmt_single <- function(x, digits = 2) sprintf(paste0("%.", digits, "f"), x)
 
+# Set to TRUE to compute Anderson-Rubin confidence sets and print them
+# beneath the 2SLS standard errors in the panel tables.
+show_ar <- FALSE
+
+# ── Anderson-Rubin confidence set, just-identified IV, cluster-robust ────────
+# Inverts the AR test: the set of null values b0 for which the excluded
+# instrument has no partial correlation with (y - b0*d) once controls and
+# fixed effects are removed. Its coverage does not depend on first-stage
+# strength, so it stays valid where the conventional Wald interval does not.
+#
+# By Frisch-Waugh-Lovell, write tilde-variables as residuals on (controls,
+# FE). For cluster g let A_g = z'y, B_g = z'd, S_g = z'z be within-cluster
+# sums of residualised products and A, B, S their totals. The AR statistic at
+# b0 is
+#     AR(b0) = (A - b0*B)^2 / sum_g (a_g - b0*b_g)^2,
+# with a_g = A_g - S_g*A/S and b_g = B_g - S_g*B/S, so the confidence set
+# {b0 : AR(b0) <= crit} is the solution set of a quadratic inequality and can
+# be found in closed form. A non-positive leading coefficient means the set is
+# unbounded (the instrument is too weak to bound the parameter).
+#
+# Residualisation goes through demean() + qr.resid() rather than resid(feols())
+# so that the residual vectors stay row-aligned with the data even when a
+# control is collinear within a subsample, and so rank-deficient control
+# matrices are handled by pivoting instead of erroring.
+ar_ci <- function(data, y, d, z_str, controls, fe, cluster = "PWSID",
+                  level = 0.95) {
+  fe_vars <- all.vars(stats::as.formula(paste("~", fe)))
+  z_parts <- strsplit(z_str, ":", fixed = TRUE)[[1]]
+  df <- data.frame(
+    .y = as.numeric(data[[y]]),
+    .d = as.numeric(data[[d]]),
+    .z = Reduce(`*`, lapply(z_parts, function(p) as.numeric(data[[p]]))),
+    data[, unique(c(controls, cluster, fe_vars)), drop = FALSE],
+    check.names = FALSE
+  )
+  df <- df[stats::complete.cases(df), , drop = FALSE]
+  if (nrow(df) < 3L) return(c(lo = NA_real_, hi = NA_real_))
+
+  fe_df <- df[, fe_vars, drop = FALSE]
+  res   <- fixest::demean(as.matrix(df[, c(".y", ".d", ".z")]), fe_df)
+  if (length(controls)) {
+    ctrl_d <- fixest::demean(as.matrix(df[, controls, drop = FALSE]), fe_df)
+    qr_c   <- qr(ctrl_d)
+    if (qr_c$rank > 0L) res <- qr.resid(qr_c, res)
+  }
+  ry <- res[, 1]; rd <- res[, 2]; rz <- res[, 3]
+
+  g   <- as.factor(df[[cluster]])
+  A_g <- tapply(rz * ry, g, sum); B_g <- tapply(rz * rd, g, sum)
+  S_g <- tapply(rz * rz, g, sum)
+  A <- sum(A_g); B <- sum(B_g); S <- sum(S_g)
+  if (!is.finite(S) || S <= 0) return(c(lo = NA_real_, hi = NA_real_))
+  a_g <- A_g - S_g * A / S
+  b_g <- B_g - S_g * B / S
+  Saa <- sum(a_g^2); Sab <- sum(a_g * b_g); Sbb <- sum(b_g^2)
+
+  # fixest's small-sample and cluster corrections scale the statistic by a
+  # constant. Recover that constant as the ratio of adjusted to unadjusted
+  # variance on one auxiliary regression, which is exact and does not depend
+  # on the two fits using identical rows.
+  rhs   <- if (length(controls)) paste(controls, collapse = " + ") else "1"
+  m_cal <- fixest::feols(stats::as.formula(paste0(".y ~ .z + ", rhs, " | ", fe)),
+                         data = df, cluster = stats::as.formula(paste0("~", cluster)),
+                         warn = FALSE, notes = FALSE)
+  v_adj <- stats::vcov(m_cal)[".z", ".z"]
+  v_raw <- stats::vcov(m_cal, ssc = fixest::ssc(adj = FALSE, cluster.adj = FALSE))[".z", ".z"]
+  phi   <- v_raw / v_adj
+  crit  <- stats::qt(1 - (1 - level) / 2,
+                     fixest::degrees_freedom(m_cal, type = "t"))^2 / phi
+
+  # Solve p*b0^2 + q*b0 + r <= 0.
+  p    <- B^2    - crit * Sbb
+  q    <- -2*A*B + 2 * crit * Sab
+  r    <- A^2    - crit * Saa
+  disc <- q^2 - 4 * p * r
+  if (p > 0 && disc >= 0) {
+    roots <- sort(c((-q - sqrt(disc)) / (2*p), (-q + sqrt(disc)) / (2*p)))
+    c(lo = roots[1], hi = roots[2])            # bounded interval
+  } else if (p > 0) {
+    c(lo = NA_real_, hi = NA_real_)            # empty set
+  } else {
+    c(lo = -Inf, hi = Inf)                     # unbounded
+  }
+}
+
+# Formats an AR confidence set for display, matching the table's digits.
+fmt_ar <- function(ci, digits = 2) {
+  if (is.null(ci) || any(is.na(ci))) return("")
+  if (any(is.infinite(ci))) return("unbounded")
+  sprintf(paste0("[%.", digits, "f, %.", digits, "f]"), ci[["lo"]], ci[["hi"]])
+}
+
 get_term <- function(model, term) {
   ct <- fixest::coeftable(model)
   row <- if (term %in% rownames(ct)) term else paste0("fit_", term)
@@ -757,6 +849,16 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     paste0(" & ", paste(sapply(cells, `[[`, "se"), collapse = " & "), " \\\\")
   }
 
+  # Weak-instrument-robust interval, printed beneath the 2SLS standard error.
+  # Set one size smaller than the table body so the bracketed pair fits the
+  # fixed column width without wrapping.
+  ar_cells <- vapply(y_vec, function(y) fmt_ar(result[[y]]$ar), character(1))
+  has_ar   <- show_ar && any(nzchar(ar_cells))
+  ar_line  <- paste0(
+    "\\hspace{1em}\\footnotesize 95\\% Anderson--Rubin interval & ",
+    paste(paste0("\\footnotesize ", ar_cells), collapse = " & "), " \\\\"
+  )
+
   # Physical width of the tabular exceeds the sum of the p{} column widths by
   # the \tabcolsep padding LaTeX inserts around every column (measured
   # empirically: sum(col widths) + 2*(ncols)*tabcolsep). When that exceeds the
@@ -805,6 +907,7 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     title_row("2SLS"),
     coef_line(iv_cells, coal_lab),
     se_line(iv_cells),
+    if (has_ar) ar_line,
     "\\end{tabular}"
   ))
 
@@ -817,6 +920,21 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     "\\bottomrule",
     "\\end{tabular}"
   ))
+
+  # Explain the bracketed row wherever it appears. Inserted ahead of the stars
+  # legend so the legend stays last.
+  if (has_ar) {
+    stars <- "*** p$<$0.01"
+    ar_sentence <- paste0(
+      "Brackets beneath the 2SLS standard errors report 95 percent ",
+      "Anderson--Rubin confidence intervals. These collect every value of the ",
+      "effect that cannot be rejected by a test of whether the instrument ",
+      "still predicts the outcome once that value of the effect has been ",
+      "subtracted from it, and their coverage does not rely on the first ",
+      "stage being strong. "
+    )
+    notes <- sub(stars, paste0(ar_sentence, stars), notes, fixed = TRUE)
+  }
 
   table_lines <- c(
     "\\begin{table}[htbp]",
@@ -887,7 +1005,10 @@ result_b <- lapply(names(visit_outcomes), function(oc) {
   list(OLS = models_b[[paste0(oc, "_ols")]],
        RF  = models_b[[paste0(oc, "_rf")]],
        IV  = models_b[[paste0(oc, "_iv")]],
-       f_clustered = f_cl_b)
+       f_clustered = f_cl_b,
+       ar  = if (show_ar) ar_ci(panel_d1, oc, "num_coal_mines_upstream_sum",
+                               "post95:sulfur_unified_mean", "num_facilities",
+                               "PWSID + year") else NULL)
 })
 names(result_b) <- names(visit_outcomes)
 
@@ -1052,10 +1173,19 @@ dict_enf <- c(
   "PWSID"                           = "CWS"
 )
 
+ar_h3 <- function(oc) {
+  if (!show_ar) return(NULL)
+  ar_ci(panel_d1, oc, "num_coal_mines_upstream_sum",
+        "post95:sulfur_unified_mean", "num_facilities", "PWSID + year")
+}
+
 result_h3_inf <- list(
-  any_informal = list(OLS = ols_id1,  RF = rf_id1,  IV = iv_id1,  f_clustered = f_cl_d1),
-  any_formal   = list(OLS = ols_fd1,  RF = rf_fd1,  IV = iv_fd1,  f_clustered = f_cl_d1),
-  no_enf       = list(OLS = ols_ned1, RF = rf_ned1, IV = iv_ned1, f_clustered = f_cl_d1)
+  any_informal = list(OLS = ols_id1,  RF = rf_id1,  IV = iv_id1,  f_clustered = f_cl_d1,
+                      ar = ar_h3("any_informal")),
+  any_formal   = list(OLS = ols_fd1,  RF = rf_fd1,  IV = iv_fd1,  f_clustered = f_cl_d1,
+                      ar = ar_h3("any_formal")),
+  no_enf       = list(OLS = ols_ned1, RF = rf_ned1, IV = iv_ned1, f_clustered = f_cl_d1,
+                      ar = ar_h3("no_enf"))
 )
 
 notes_h3_inf <- paste0("\\textit{Notes:} Sample restricted to utilities strictly ",

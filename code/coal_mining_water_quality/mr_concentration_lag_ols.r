@@ -217,10 +217,10 @@ note_main <- paste0(
   "(monitoring/reporting) violation in the forward window (1--365 days for the 1-yr ",
   "column; 1--182 days for the 6-mon column) following the sample date. Concen. $>$ ",
   "50\\% MCL = reading at 50--100\\% of the MCL, the quarterly-monitoring trigger. ",
-  "Mean concentration = CWS-year mean reading, z-scored within chemical. ",
+  "Mean concentration = utility-year mean reading, z-scored within chemical. ",
   "Coefficients and standard errors are in percentage points. ",
-  "All specifications include CWS and year fixed effects. ",
-  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the CWS level."
+  "All specifications include utility and year fixed effects. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the utility level."
 )
 
 # LaTeX label kept as tab:mr_concentration_lag_logit (not renamed to match this
@@ -254,8 +254,8 @@ if (file.exists(out_tex) && file.info(out_tex)$size > 0) {
 
 # -- Presentation companion: notes stripped to FE + clustering + stars only.
 note_main_present <- paste0(
-  "\\textit{Notes:} All specifications include CWS and year fixed effects. ",
-  "SEs clustered at the CWS level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+  "\\textit{Notes:} All specifications include utility and year fixed effects. ",
+  "SEs clustered at the utility level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 out_tex_present <- sub("\\.tex$", "_present.tex", out_tex)
 etable(fwd, fwd6mon,

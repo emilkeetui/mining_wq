@@ -153,9 +153,15 @@ tsls_reg_output_main <- function(dset, varlist, coalvar, regoutname, title, labe
         f_clustered <- round(t_cl^2, 2)
       }
     }
+    # Weak-instrument-robust 95% confidence set for the endogenous coefficient.
+    ar <- NULL
+    if (show_ar && !is.null(iv) && length(coalvar) == 1L) {
+      ar <- tryCatch(ar_ci(dset_y, y, coalvar, instr_str, controls, fe_str),
+                     error = function(e) { cat("  AR error", y, "-", conditionMessage(e), "\n"); NULL })
+    }
     # Only include outcome if all three models succeeded
     if (!is.null(ols) && !is.null(rf) && !is.null(iv)) {
-      result[[y]] <- list(OLS = ols, RF = rf, IV = iv, f_clustered = f_clustered)
+      result[[y]] <- list(OLS = ols, RF = rf, IV = iv, f_clustered = f_clustered, ar = ar)
     } else {
       cat("  Dropping", y, "- not all three models succeeded\n")
     }
@@ -382,6 +388,98 @@ fmt_col <- function(ols_t, rf_t, iv_t, digits = 2) {
 
 fmt_single <- function(x, digits = 2) sprintf(paste0("%.", digits, "f"), x)
 
+# Set to TRUE to compute Anderson-Rubin confidence sets and print them
+# beneath the 2SLS standard errors in the panel tables.
+show_ar <- FALSE
+
+# ── Anderson-Rubin confidence set, just-identified IV, cluster-robust ────────
+# Inverts the AR test: the set of null values b0 for which the excluded
+# instrument has no partial correlation with (y - b0*d) once controls and
+# fixed effects are removed. Its coverage does not depend on first-stage
+# strength, so it stays valid where the conventional Wald interval does not.
+#
+# By Frisch-Waugh-Lovell, write tilde-variables as residuals on (controls,
+# FE). For cluster g let A_g = z'y, B_g = z'd, S_g = z'z be within-cluster
+# sums of residualised products and A, B, S their totals. The AR statistic at
+# b0 is
+#     AR(b0) = (A - b0*B)^2 / sum_g (a_g - b0*b_g)^2,
+# with a_g = A_g - S_g*A/S and b_g = B_g - S_g*B/S, so the confidence set
+# {b0 : AR(b0) <= crit} is the solution set of a quadratic inequality and can
+# be found in closed form. A non-positive leading coefficient means the set is
+# unbounded (the instrument is too weak to bound the parameter).
+#
+# Residualisation goes through demean() + qr.resid() rather than resid(feols())
+# so that the residual vectors stay row-aligned with the data even when a
+# control is collinear within a subsample, and so rank-deficient control
+# matrices are handled by pivoting instead of erroring.
+ar_ci <- function(data, y, d, z_str, controls, fe, cluster = "PWSID",
+                  level = 0.95) {
+  fe_vars <- all.vars(stats::as.formula(paste("~", fe)))
+  z_parts <- strsplit(z_str, ":", fixed = TRUE)[[1]]
+  df <- data.frame(
+    .y = as.numeric(data[[y]]),
+    .d = as.numeric(data[[d]]),
+    .z = Reduce(`*`, lapply(z_parts, function(p) as.numeric(data[[p]]))),
+    data[, unique(c(controls, cluster, fe_vars)), drop = FALSE],
+    check.names = FALSE
+  )
+  df <- df[stats::complete.cases(df), , drop = FALSE]
+  if (nrow(df) < 3L) return(c(lo = NA_real_, hi = NA_real_))
+
+  fe_df <- df[, fe_vars, drop = FALSE]
+  res   <- fixest::demean(as.matrix(df[, c(".y", ".d", ".z")]), fe_df)
+  if (length(controls)) {
+    ctrl_d <- fixest::demean(as.matrix(df[, controls, drop = FALSE]), fe_df)
+    qr_c   <- qr(ctrl_d)
+    if (qr_c$rank > 0L) res <- qr.resid(qr_c, res)
+  }
+  ry <- res[, 1]; rd <- res[, 2]; rz <- res[, 3]
+
+  g   <- as.factor(df[[cluster]])
+  A_g <- tapply(rz * ry, g, sum); B_g <- tapply(rz * rd, g, sum)
+  S_g <- tapply(rz * rz, g, sum)
+  A <- sum(A_g); B <- sum(B_g); S <- sum(S_g)
+  if (!is.finite(S) || S <= 0) return(c(lo = NA_real_, hi = NA_real_))
+  a_g <- A_g - S_g * A / S
+  b_g <- B_g - S_g * B / S
+  Saa <- sum(a_g^2); Sab <- sum(a_g * b_g); Sbb <- sum(b_g^2)
+
+  # fixest's small-sample and cluster corrections scale the statistic by a
+  # constant. Recover that constant as the ratio of adjusted to unadjusted
+  # variance on one auxiliary regression, which is exact and does not depend
+  # on the two fits using identical rows.
+  rhs   <- if (length(controls)) paste(controls, collapse = " + ") else "1"
+  m_cal <- fixest::feols(stats::as.formula(paste0(".y ~ .z + ", rhs, " | ", fe)),
+                         data = df, cluster = stats::as.formula(paste0("~", cluster)),
+                         warn = FALSE, notes = FALSE)
+  v_adj <- stats::vcov(m_cal)[".z", ".z"]
+  v_raw <- stats::vcov(m_cal, ssc = fixest::ssc(adj = FALSE, cluster.adj = FALSE))[".z", ".z"]
+  phi   <- v_raw / v_adj
+  crit  <- stats::qt(1 - (1 - level) / 2,
+                     fixest::degrees_freedom(m_cal, type = "t"))^2 / phi
+
+  # Solve p*b0^2 + q*b0 + r <= 0.
+  p    <- B^2    - crit * Sbb
+  q    <- -2*A*B + 2 * crit * Sab
+  r    <- A^2    - crit * Saa
+  disc <- q^2 - 4 * p * r
+  if (p > 0 && disc >= 0) {
+    roots <- sort(c((-q - sqrt(disc)) / (2*p), (-q + sqrt(disc)) / (2*p)))
+    c(lo = roots[1], hi = roots[2])            # bounded interval
+  } else if (p > 0) {
+    c(lo = NA_real_, hi = NA_real_)            # empty set
+  } else {
+    c(lo = -Inf, hi = Inf)                     # unbounded
+  }
+}
+
+# Formats an AR confidence set for display, matching the table's digits.
+fmt_ar <- function(ci, digits = 2) {
+  if (is.null(ci) || any(is.na(ci))) return("")
+  if (any(is.infinite(ci))) return("unbounded")
+  sprintf(paste0("[%.", digits, "f, %.", digits, "f]"), ci[["lo"]], ci[["hi"]])
+}
+
 get_term <- function(model, term) {
   ct <- fixest::coeftable(model)
   # fixest's 2SLS models report the endogenous regressor's coefficient under
@@ -472,6 +570,16 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     paste0(" & ", paste(sapply(cells, `[[`, "se"), collapse = " & "), " \\\\")
   }
 
+  # Weak-instrument-robust interval, printed beneath the 2SLS standard error.
+  # Set one size smaller than the table body so the bracketed pair fits the
+  # fixed column width without wrapping.
+  ar_cells <- vapply(y_vec, function(y) fmt_ar(result[[y]]$ar), character(1))
+  has_ar   <- show_ar && any(nzchar(ar_cells))
+  ar_line  <- paste0(
+    "\\hspace{1em}\\footnotesize 95\\% Anderson--Rubin interval & ",
+    paste(paste0("\\footnotesize ", ar_cells), collapse = " & "), " \\\\"
+  )
+
   # Physical width of the tabular exceeds the sum of the p{} column widths by
   # the \tabcolsep padding LaTeX inserts around every column (measured
   # empirically: sum(col widths) + 2*(ncols)*tabcolsep). When that exceeds the
@@ -520,6 +628,7 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     title_row("2SLS"),
     coef_line(iv_cells, coal_lab),
     se_line(iv_cells),
+    if (has_ar) ar_line,
     "\\end{tabular}"
   ))
 
@@ -556,11 +665,27 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     "during the year, 0 otherwise; coefficients and standard errors multiplied by 100 to show ",
     "percentage point change. The instrument interacts an indicator for the post-1995 period with ",
     "the sum of coal sulfur content across upstream watersheds. All specifications include ",
-    "utilities and year fixed effects. Standard errors clustered at the utilities level. ",
+    "utilities and year fixed effects. Standard errors clustered at the utility level. ",
     f_note, " ",
     "Sample period 1985--2005. ", n_note, " ",
     "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
   )
+
+  # Explain the bracketed row wherever it appears, including in tables that
+  # supply their own notes text. Inserted ahead of the stars legend so the
+  # legend stays last.
+  if (has_ar) {
+    stars <- "*** p$<$0.01"
+    ar_sentence <- paste0(
+      "Brackets beneath the 2SLS standard errors report 95 percent ",
+      "Anderson--Rubin confidence intervals. These collect every value of the ",
+      "effect that cannot be rejected by a test of whether the instrument ",
+      "still predicts the outcome once that value of the effect has been ",
+      "subtracted from it, and their coverage does not rely on the first ",
+      "stage being strong. "
+    )
+    note_text <- sub(stars, paste0(ar_sentence, stars), note_text, fixed = TRUE)
+  }
 
   table_lines <- c(
     "\\begin{table}[htbp]",
@@ -593,7 +718,7 @@ std_note <- paste0(
   "Dependent variable is days out of the year in violation. ",
   "Instrument is post95 interacted with mean coal sulfur content of the intake watershed ",
   "(post95 x sulfur_unified_mean). ",
-  "All regressions include CWS and year fixed effects. ",
+  "All regressions include utility and year fixed effects. ",
   "Standard errors clustered at CWS level. ",
   "Sample period 1985--2005."
 )
@@ -603,7 +728,7 @@ std_note_ivsum <- paste0(
   "Dependent variable is days out of the year in violation. ",
   "Instrument is post95 interacted with sum of coal sulfur content across upstream HUC12s ",
   "(post95 x sulfur_unified_sum). ",
-  "All regressions include CWS and year fixed effects. ",
+  "All regressions include utility and year fixed effects. ",
   "Standard errors clustered at CWS level. ",
   "Sample period 1985--2005."
 )
@@ -623,8 +748,8 @@ nonmine_note_ivsum <- paste0(
 )
 
 sample_specs <- list(
-  list(sample="dwnstrm",        suffix="",       dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most one HUC12 down-stream",                notesamp="community water systems at most one watershed downstream of a coal mine"),
-  list(sample="dwnstrm",        suffix="_ivsum", dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_sum",  instr="post95:sulfur_unified_sum",  titlesamp="CWSs at most one HUC12 down-stream",                notesamp="community water systems at most one watershed downstream of a coal mine"),
+  list(sample="dwnstrm",        suffix="",       dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="utilities at most one HUC12 downstream",                notesamp="utilities at most one watershed downstream of a coal mine"),
+  list(sample="dwnstrm",        suffix="_ivsum", dset=full[(full$minehuc_downstream_of_mine==1)&(full$minehuc_mine==0),],            coalvar="num_coal_mines_upstream_sum",  instr="post95:sulfur_unified_sum",  titlesamp="utilities at most one HUC12 downstream",                notesamp="utilities at most one watershed downstream of a coal mine"),
   list(sample="dwnstrmcolocate",suffix="",       dset=full[full$minehuc_upstream_of_mine=="Colocated/Downstream of mining",], coalvar="num_coal_mines_unified_mean",  instr="post95:sulfur_unified_mean", titlesamp="downstream and colocated PWS's",                    notesamp="community water systems colocated with or downstream of a coal mine"),
   list(sample="dwnstrm2step",   suffix="",       dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream_mean", instr="post95:sulfur_unified_mean", titlesamp="CWSs at most two HUC12's downstream of coal mines", notesamp="community water systems at most two watersheds downstream of a coal mine"),
   list(sample="dwnstrm2step",   suffix="_ivsum", dset=full_expanded[(full_expanded$minehuc_downstream_of_mine==1)&(full_expanded$minehuc_mine==0),], coalvar="num_coal_mines_upstream_sum",  instr="post95:sulfur_unified_sum",  titlesamp="CWSs at most two HUC12's downstream of coal mines", notesamp="community water systems at most two watersheds downstream of a coal mine")
@@ -638,11 +763,11 @@ fs_note <- function(is_sum, notesamp) {
                      "averaged across upstream watersheds"
   paste0(
     "\\textit{Notes:} The dependent variable is the number of coal mines in watersheds upstream ",
-    "of the community water system's intake, ", dep, ". ",
+    "of the utility's intake, ", dep, ". ",
     "The instrument interacts an indicator for the post-1995 period with the ", agg, ". ",
     "The sample is ", notesamp, ". ",
-    "All specifications include CWS and year fixed effects. ",
-    "Standard errors clustered at the CWS level. ",
+    "All specifications include utility and year fixed effects. ",
+    "Standard errors clustered at the utility level. ",
     "Sample period 1985--2005. ",
     "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
   )
@@ -687,8 +812,8 @@ for (sp in sample_specs) {
     # main.tex (fs_dwnstrm_minevio_ivsum) — see
     # .claude/logs/2026-08-31-presentation-notes-tables.md.
     fs_notes_present <- if (fs_outfile == "fs_dwnstrm_minevio_ivsum") {
-      paste0("\\textit{Notes:} All specifications include CWS and year fixed effects. ",
-             "Standard errors clustered at the CWS level. ",
+      paste0("\\textit{Notes:} All specifications include utility and year fixed effects. ",
+             "Standard errors clustered at the utility level. ",
              "*** p$<$0.01, ** p$<$0.05, * p$<$0.1.")
     } else NULL
     first_stage_table(
@@ -749,8 +874,8 @@ std_note_ivsum_bin <- paste0(
   "coefficients and standard errors are in percentage points. ",
   "The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content ",
   "across upstream watersheds. ",
-  "All specifications include CWS and year fixed effects. ",
-  "Standard errors clustered at the CWS level. ",
+  "All specifications include utility and year fixed effects. ",
+  "Standard errors clustered at the utility level. ",
   "Sample period 1985--2005. ",
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
@@ -765,8 +890,8 @@ vio_specs_bin <- list(
 
 bin_sample_specs <- list(
   list(sample="dwnstrm", suffix="_ivsum", coalvar="num_coal_mines_upstream_sum",
-       instr="post95:sulfur_unified_sum", titlesamp="CWSs at most one HUC12 down-stream",
-       notesamp="community water systems at most one watershed downstream of a coal mine",
+       instr="post95:sulfur_unified_sum", titlesamp="utilities at most one HUC12 downstream",
+       notesamp="utilities at most one watershed downstream of a coal mine",
        dset=full[(full$minehuc_downstream_of_mine==1) & (full$minehuc_mine==0), ])
 )
 
@@ -797,8 +922,8 @@ for (sp in bin_sample_specs) {
       # Presentation companion: notes stripped to FE + clustering + stars
       # only (see .claude/logs/2026-08-31-presentation-notes-tables.md).
       bin_notes_present <- paste0(
-        "\\textit{Notes:} All specifications include utilities and year fixed effects. ",
-        "Standard errors clustered at the utilities level. ",
+        "\\textit{Notes:} All specifications include utility and year fixed effects. ",
+        "Standard errors clustered at the utility level. ",
         "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
       )
       tsls_reg_output_main(dset=sp$dset, varlist=varlist, coalvar=sp$coalvar,
@@ -846,8 +971,8 @@ std_note_ivsum_bin_sw <- paste0(
   "The instrument interacts an indicator for the post-1995 period with the sum of coal sulfur content ",
   "across upstream watersheds. ",
   "Sample further restricted to community water systems whose primary water source is surface water. ",
-  "All specifications include CWS and year fixed effects. ",
-  "Standard errors clustered at the CWS level. ",
+  "All specifications include utility and year fixed effects. ",
+  "Standard errors clustered at the utility level. ",
   "Sample period 1985--2005. ",
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
@@ -869,7 +994,7 @@ for (cp in cat_specs) {
 
   fname     <- paste0("2sls_dwnstrm_minevio_", cp$name, "_ivsum_binvio_surfacewater")
   tab_title <- paste0("Effect of coal mines on ", vp$titlevio, " (", cp$titlecat,
-                      ", CWSs at most one HUC12 down-stream, surface water systems)")
+                      ", utilities at most one HUC12 downstream, surface water systems)")
   cat("\nRunning:", fname, "\n")
   tsls_reg_output_main(dset = dset_sw, varlist = varlist,
                        coalvar   = "num_coal_mines_upstream_sum",
