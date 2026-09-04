@@ -790,8 +790,8 @@ for (sp in bin_sample_specs) {
       # restricted to; it spans just the outcome columns underneath it.
       tab_superheader <- switch(cp$name,
         allcat = "Any violation",
-        mcl    = "Any MCL violation",
-        mr     = "Any MR violation"
+        mcl    = "Maximum contaminant level (MCL) violation",
+        mr     = "Monitoring and reporting (MR) violation"
       )
       cat("\nRunning:", fname, "\n")
       # Presentation companion: notes stripped to FE + clustering + stars
