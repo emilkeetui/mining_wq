@@ -94,3 +94,49 @@ Deliberately left out of scope (flagged in the audit, not fixed):
 ## Next Steps
 - Decide whether to restore the small-κ Corollary 1 to `main.tex` or rewrite the
   Discussion so it does not depend on an unstated result; sync `job_talk.tex` either way.
+
+## Addendum (2026-09-04): why single-crossing holds, and why it matters
+
+Follow-up question after the fix: does the paper prove the self-report/under-report
+payoff difference crosses zero exactly once (rather than checking it numerically), and
+what does single-crossing actually buy the argument. Folded the proof into `main.tex`
+(the `\max_a \min\{\cdot,\cdot\} = \min\{\max_a(\cdot), \max_a(\cdot)\}` step, ~line 267);
+this addendum keeps the economic interpretation, which does not belong in the paper body
+but would otherwise only live in chat history.
+
+**The proof (non-numerical).** Rewrite the utility's problem as a maximization by pulling
+the $\min$ over branches outside the $\max$ over $a$:
+$\max_a \min\{c+rq(a),\,t+ps\,q(a)\} = \min\{\max_a[\theta b(a)-c-rq(a)],\ \max_a[\theta
+b(a)-t-ps\,q(a)]\}$, valid because neither branch's maximizer depends on the other
+branch's value. Each per-branch objective is strictly concave ($b''<0$, $q''\ge 0$), so
+each has a unique maximizer $a(\rho;\theta)$, $\rho \in \{r,ps\}$ — this is what rules out
+every negligence level besides $a_{SR}(\theta)$ and $a_{MR}(\theta)$ as ever being
+optimal, for any $c$ (the gap in the pre-addendum text: it asserted these two "can
+satisfy the FOC" without showing no third candidate exists). Writing
+$W(\rho;\theta)=\max_a\{\theta b(a)-\rho q(a)\}$, the self-report payoff is
+$W(r;\theta)-\theta b(\bar a)-c$ and the under-report payoff is $W(ps;\theta)-\theta
+b(\bar a)-t$. Their difference $\Delta(c) = N[c^*(\theta)-c]$ is affine in $c$ with
+nonzero slope, so it has exactly one root — no distributional assumption on $c$ needed,
+just that $c$ enters the self-report payoff linearly and does not enter the under-report
+payoff at all (a utility that skips testing never pays the testing cost, and neither
+branch's negligence choice depends on $c$).
+
+**What "crosses zero once" means.** The reporting decision is a threshold rule in $c$:
+one cutoff $c^*(\theta)$ splits the cost distribution, everyone below self-reports,
+everyone above under-reports, nobody switches back. If $\Delta$ crossed more than once,
+the under-reporting set would be a union of disjoint intervals rather than an upper set,
+and three things break:
+- Eq. (6)'s $h(\theta,m) = 1-G(c^*(\theta);m)$ representation requires exactly one
+  boundary; a union of intervals needs $\sum_k[G(b_k)-G(a_k)]$ and no single $c^*(\theta)$
+  to differentiate.
+- Channel A's sign, $\partial h/\partial m = -\partial G/\partial m \ge 0$, uses only FOSD
+  ($\partial G/\partial m \le 0$) across *one* boundary. FOSD says nothing about how mass
+  redistributes across a union of intervals moving in different directions.
+- Channel B's sign, $h'(\theta) = -g(c^*)c^{*\prime}(\theta)$, presumes one boundary
+  moving one way as $\theta$ rises.
+
+So single-crossing is what lets Channel A and Channel B be signed using only the
+maintained FOSD assumption on $G$ and $F$ — without it the model would need to know the
+shape of $g$, not just its direction of shift. It is also what removes any need for an
+ad hoc selection rule when the utility is indifferent: with a unique crossing there is at
+most one $c$ where that occurs, a measure-zero event.
