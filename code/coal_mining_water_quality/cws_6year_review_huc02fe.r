@@ -654,7 +654,10 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
                                add_panel_b_above_median = FALSE,
                                sumstats_exclude_chems = character(0),
                                include_sample_sentence = TRUE,
-                               also_present = FALSE) {
+                               also_present = FALSE,
+                               sumstats_title = paste0(
+                                 "Summary statistics: mean concentration for inorganic ",
+                                 "chemicals and cumulative upstream coal production")) {
   cat("\n=== INORGANIC CHEMICALS --- MEAN CONCENTRATION", file_sfx, "===\n")
 
   grp_inorg <- chem_groups[[1]]  # inorganic chemicals
@@ -905,8 +908,7 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
   tex_ss <- c(
     "",
     "\\begin{table}[htbp]",
-    paste0("   \\caption{\\label{", tab_label, "} ",
-           "Summary statistics: mean concentration for inorganic chemicals and cumulative upstream coal production}"),
+    paste0("   \\caption{\\label{", tab_label, "} ", sumstats_title, "}"),
     "   \\bigskip",
     "   \\centering",
     panel_a_lines,
@@ -931,8 +933,7 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
     tex_ss_present <- c(
       "",
       "\\begin{table}[htbp]",
-      paste0("   \\caption{\\label{", tab_label, "} ",
-             "Summary statistics: mean concentration for inorganic chemicals and cumulative upstream coal production}"),
+      paste0("   \\caption{\\label{", tab_label, "} ", sumstats_title, "}"),
       "   \\bigskip",
       "   \\centering",
       panel_a_lines,
@@ -1114,7 +1115,10 @@ run_inorg_val_table(df6r_2005, file_sfx = "_ravalli_2005",
                     add_panel_b_above_median = TRUE,
                     sumstats_exclude_chems = "chromium",
                     include_sample_sentence = FALSE,
-                    also_present = TRUE)
+                    also_present = TRUE,
+                    sumstats_title = paste0(
+                      "Utility contaminant concentrations (1998-2005) and ",
+                      "cumulative upstream coal production exposure (since 1985)"))
 
 # ---------------------------------------------------------------------------
 # Scatter plot: beta particle mean concentration vs cumulative upstream coal
