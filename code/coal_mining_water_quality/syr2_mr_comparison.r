@@ -96,7 +96,8 @@ pws_outcomes <- panel_grp |>
     ever_mr_8505  = as.integer(any(any_mr  & year >= 1985 & year <= 2005, na.rm = TRUE)),
     ever_mcl_9705 = as.integer(any(any_mcl & year >= 1997 & year <= 2005, na.rm = TRUE)),
     ever_mcl_8505 = as.integer(any(any_mcl & year >= 1985 & year <= 2005, na.rm = TRUE)),
-    mean_num_vio  = mean(vio_count[year >= 1997 & year <= 2005], na.rm = TRUE),
+    mean_num_vio_9705 = mean(vio_count[year >= 1997 & year <= 2005], na.rm = TRUE),
+    mean_num_vio_8505 = mean(vio_count[year >= 1985 & year <= 2005], na.rm = TRUE),
     .groups = "drop"
   )
 
@@ -104,12 +105,13 @@ pws_outcomes <- panel_grp |>
 group_means <- pws_outcomes |>
   group_by(group) |>
   summarise(
-    n_cws         = n(),
-    ever_mr_9705  = mean(ever_mr_9705,  na.rm = TRUE),
-    ever_mr_8505  = mean(ever_mr_8505,  na.rm = TRUE),
-    ever_mcl_9705 = mean(ever_mcl_9705, na.rm = TRUE),
-    ever_mcl_8505 = mean(ever_mcl_8505, na.rm = TRUE),
-    mean_num_vio  = mean(mean_num_vio,  na.rm = TRUE),
+    n_cws             = n(),
+    ever_mr_9705      = mean(ever_mr_9705,      na.rm = TRUE),
+    ever_mr_8505      = mean(ever_mr_8505,      na.rm = TRUE),
+    ever_mcl_9705     = mean(ever_mcl_9705,     na.rm = TRUE),
+    ever_mcl_8505     = mean(ever_mcl_8505,     na.rm = TRUE),
+    mean_num_vio_9705 = mean(mean_num_vio_9705, na.rm = TRUE),
+    mean_num_vio_8505 = mean(mean_num_vio_8505, na.rm = TRUE),
     .groups = "drop"
   )
 
@@ -121,11 +123,12 @@ g1 <- filter(pws_outcomes, group == 1)
 g2 <- filter(pws_outcomes, group == 2)
 
 pvals <- list(
-  ever_mr_9705  = t.test(g1$ever_mr_9705,  g2$ever_mr_9705)$p.value,
-  ever_mr_8505  = t.test(g1$ever_mr_8505,  g2$ever_mr_8505)$p.value,
-  ever_mcl_9705 = t.test(g1$ever_mcl_9705, g2$ever_mcl_9705)$p.value,
-  ever_mcl_8505 = t.test(g1$ever_mcl_8505, g2$ever_mcl_8505)$p.value,
-  mean_num_vio  = t.test(g1$mean_num_vio,  g2$mean_num_vio)$p.value
+  ever_mr_9705      = t.test(g1$ever_mr_9705,      g2$ever_mr_9705)$p.value,
+  ever_mr_8505      = t.test(g1$ever_mr_8505,      g2$ever_mr_8505)$p.value,
+  ever_mcl_9705     = t.test(g1$ever_mcl_9705,     g2$ever_mcl_9705)$p.value,
+  ever_mcl_8505     = t.test(g1$ever_mcl_8505,     g2$ever_mcl_8505)$p.value,
+  mean_num_vio_9705 = t.test(g1$mean_num_vio_9705, g2$mean_num_vio_9705)$p.value,
+  mean_num_vio_8505 = t.test(g1$mean_num_vio_8505, g2$mean_num_vio_8505)$p.value
 )
 
 cat("\np-values for group differences:\n")
@@ -142,42 +145,48 @@ g1_row <- filter(group_means, group == 1)
 g2_row <- filter(group_means, group == 2)
 
 diffs <- c(
-  ever_mr_9705  = g1_row$ever_mr_9705  - g2_row$ever_mr_9705,
-  ever_mr_8505  = g1_row$ever_mr_8505  - g2_row$ever_mr_8505,
-  ever_mcl_9705 = g1_row$ever_mcl_9705 - g2_row$ever_mcl_9705,
-  ever_mcl_8505 = g1_row$ever_mcl_8505 - g2_row$ever_mcl_8505,
-  mean_num_vio  = g1_row$mean_num_vio  - g2_row$mean_num_vio
+  ever_mr_9705      = g1_row$ever_mr_9705      - g2_row$ever_mr_9705,
+  ever_mr_8505      = g1_row$ever_mr_8505      - g2_row$ever_mr_8505,
+  ever_mcl_9705     = g1_row$ever_mcl_9705     - g2_row$ever_mcl_9705,
+  ever_mcl_8505     = g1_row$ever_mcl_8505     - g2_row$ever_mcl_8505,
+  mean_num_vio_9705 = g1_row$mean_num_vio_9705 - g2_row$mean_num_vio_9705,
+  mean_num_vio_8505 = g1_row$mean_num_vio_8505 - g2_row$mean_num_vio_8505
 )
 
-rows <- list(
-  list(label = "Ever MR violation, 1997--2005",
+rows_9705 <- list(
+  list(label = "Ever MR violation",
        g1 = fmt_pct(g1_row$ever_mr_9705), g2 = fmt_pct(g2_row$ever_mr_9705),
        diff = fmt_pct(diffs["ever_mr_9705"]), p = pvals$ever_mr_9705),
-  list(label = "Ever MR violation, 1985--2005",
-       g1 = fmt_pct(g1_row$ever_mr_8505), g2 = fmt_pct(g2_row$ever_mr_8505),
-       diff = fmt_pct(diffs["ever_mr_8505"]), p = pvals$ever_mr_8505),
-  list(label = "Ever MCL violation, 1997--2005",
+  list(label = "Ever MCL violation",
        g1 = fmt_pct(g1_row$ever_mcl_9705), g2 = fmt_pct(g2_row$ever_mcl_9705),
        diff = fmt_pct(diffs["ever_mcl_9705"]), p = pvals$ever_mcl_9705),
-  list(label = "Ever MCL violation, 1985--2005",
-       g1 = fmt_pct(g1_row$ever_mcl_8505), g2 = fmt_pct(g2_row$ever_mcl_8505),
-       diff = fmt_pct(diffs["ever_mcl_8505"]), p = pvals$ever_mcl_8505),
-  list(label = "Mean annual violations (count, 0--6), 1997--2005",
-       g1 = fmt_mean(g1_row$mean_num_vio), g2 = fmt_mean(g2_row$mean_num_vio),
-       diff = fmt_mean(diffs["mean_num_vio"]), p = pvals$mean_num_vio)
+  list(label = "Mean annual violations (count, 0--6)",
+       g1 = fmt_mean(g1_row$mean_num_vio_9705), g2 = fmt_mean(g2_row$mean_num_vio_9705),
+       diff = fmt_mean(diffs["mean_num_vio_9705"]), p = pvals$mean_num_vio_9705)
 )
 
-build_table <- function(rows, n1, n2) {
+rows_8505 <- list(
+  list(label = "Ever MR violation",
+       g1 = fmt_pct(g1_row$ever_mr_8505), g2 = fmt_pct(g2_row$ever_mr_8505),
+       diff = fmt_pct(diffs["ever_mr_8505"]), p = pvals$ever_mr_8505),
+  list(label = "Ever MCL violation",
+       g1 = fmt_pct(g1_row$ever_mcl_8505), g2 = fmt_pct(g2_row$ever_mcl_8505),
+       diff = fmt_pct(diffs["ever_mcl_8505"]), p = pvals$ever_mcl_8505),
+  list(label = "Mean annual violations (count, 0--6)",
+       g1 = fmt_mean(g1_row$mean_num_vio_8505), g2 = fmt_mean(g2_row$mean_num_vio_8505),
+       diff = fmt_mean(diffs["mean_num_vio_8505"]), p = pvals$mean_num_vio_8505)
+)
+
+build_panel <- function(panel_title, rows) {
   header <- paste0(
-    "\\begin{table}[htbp]\n",
-    "\\centering\n",
-    "\\caption{MR and MCL violation rates by SYR2 contaminant reporting status}\n",
-    "\\label{tab:syr2_mr_comparison}\n",
+    "\\textbf{", panel_title, "}\\\\[2pt]\n",
     "\\begin{adjustbox}{max width=\\textwidth}\n",
     "\\begin{tabular}{lrrrr}\n",
     "\\toprule\n",
-    " & \\multicolumn{1}{c}{(1)} & \\multicolumn{1}{c}{(2)} & \\multicolumn{1}{c}{Diff.} & \\multicolumn{1}{c}{$p$-value} \\\\\n",
-    " & Has SYR2 reading & No SYR2 reading & (1)$-$(2) & \\\\\n",
+    " & \\multicolumn{2}{c}{Utility appears in SYR2} & & \\\\\n",
+    "\\cmidrule(lr){2-3}\n",
+    " & Yes & No & Diff. & $p$-value \\\\\n",
+    " & \\multicolumn{1}{c}{(1)} & \\multicolumn{1}{c}{(2)} & \\multicolumn{1}{c}{(3)} & \\multicolumn{1}{c}{(4)} \\\\\n",
     "\\hline\n"
   )
 
@@ -197,7 +206,27 @@ build_table <- function(rows, n1, n2) {
   footer <- paste0(
     "\\bottomrule\n",
     "\\end{tabular}\n",
-    "\\end{adjustbox}\n",
+    "\\end{adjustbox}\n"
+  )
+
+  paste0(header, body, footer)
+}
+
+build_table <- function(rows_9705, rows_8505, n1, n2) {
+  header <- paste0(
+    "\\begin{table}[htbp]\n",
+    "\\centering\n",
+    "\\caption{MR and MCL violation rates and counts by SYR2 contaminant reporting status}\n",
+    "\\label{tab:syr2_mr_comparison}\n"
+  )
+
+  panels <- paste0(
+    build_panel("Panel A: 1997--2005", rows_9705),
+    "\\vspace{8pt}\n",
+    build_panel("Panel B: 1985--2005", rows_8505)
+  )
+
+  footer <- paste0(
     "\\begin{minipage}{\\linewidth}\n",
     "\\vspace{4pt}\n",
     "\\footnotesize\n",
@@ -218,23 +247,18 @@ build_table <- function(rows, n1, n2) {
     "\\end{table}\n"
   )
 
-  # Presentation companion: same tabular, notes block omitted entirely
+  # Presentation companion: same panels, notes block omitted entirely
   # (summary statistics carry no clustering/FE; only the diff-stars legend
   # would apply, but the note text itself is dropped per the "no notes"
   # convention for summary tables) -- see
   # .claude/logs/2026-08-31-presentation-notes-tables.md.
-  footer_present <- paste0(
-    "\\bottomrule\n",
-    "\\end{tabular}\n",
-    "\\end{adjustbox}\n",
-    "\\end{table}\n"
-  )
+  footer_present <- "\\end{table}\n"
 
-  list(main = paste0(header, body, footer),
-       present = paste0(header, body, footer_present))
+  list(main = paste0(header, panels, footer),
+       present = paste0(header, panels, footer_present))
 }
 
-tex_variants <- build_table(rows, g1_row$n_cws, g2_row$n_cws)
+tex_variants <- build_table(rows_9705, rows_8505, g1_row$n_cws, g2_row$n_cws)
 tex <- tex_variants$main
 
 out_path <- "output/sum/syr2_mr_comparison.tex"
