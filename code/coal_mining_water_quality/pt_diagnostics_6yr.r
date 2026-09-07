@@ -65,7 +65,27 @@ right_align_tabular <- function(x) {
   x
 }
 
-postprocess_bal_table <- function(x) right_align_tabular(move_notes_below_adjustbox(x))
+# Center-justify just the auto-generated "(1) (2) (3) (4)" column-index row,
+# leaving the data columns right-aligned (decimal alignment) via a per-cell
+# \multicolumn override -- the tabular column spec itself must stay uniform.
+center_col_numbers <- function(x) {
+  lines <- strsplit(paste(x, collapse = "\n"), "\n")[[1]]
+  is_numrow <- function(line) {
+    cells <- strsplit(line, "&", fixed = TRUE)[[1]]
+    cells <- trimws(gsub("\\\\\\\\.*$", "", cells))
+    cells <- cells[cells != ""]
+    length(cells) > 0 && all(grepl("^\\(\\d+\\)$", cells))
+  }
+  idx <- which(vapply(lines, is_numrow, logical(1)))
+  for (i in idx) {
+    lines[i] <- gsub("(\\(\\d+\\))", "\\\\multicolumn{1}{c}{\\1}", lines[i])
+  }
+  paste(lines, collapse = "\n")
+}
+
+postprocess_bal_table <- function(x) {
+  center_col_numbers(right_align_tabular(move_notes_below_adjustbox(x)))
+}
 
 # ---------------------------------------------------------------------------
 # Load
@@ -234,10 +254,7 @@ dict_bal <- c(
 )
 
 note_bal <- paste0(
-  "\\textit{Notes:} Cross-sectional balance test on the 6-Year Review ",
-  "estimation sample (1998--2005, Ravalli et al.~(2022) cleaning). ",
-  "One observation per CWS. ",
-  "The dependent variable is measured over 1998--2005. ",
+  "\\textit{Notes:} ",
   "Covariates differ in timing, and only population pre-dates the dose window. ",
   "Backcast population served in 1997 is constructed from decennial census ",
   "geography and interpolated between the 1990 and 2000 census anchors; it is ",
@@ -246,47 +263,37 @@ note_bal <- paste0(
   "The remaining covariates (population served, number of intake facilities, number ",
   "of source HUC12s, primary source type, ownership, wholesaler status, and source ",
   "water protection) are drawn from the SDWIS/SYR2 inventory and are recorded ",
-  "contemporaneously with the dose window: each CWS contributes its first observed ",
-  "record, which falls between 1998 and 2005 (41 CWSs in 1998, the remainder later). ",
-  "These attributes are perfectly time-invariant within CWS over 1998--2005 --- no ",
-  "system records more than one distinct value for any of them --- so the specific ",
-  "year of the record does not affect the measured value. They are nonetheless not ",
-  "verifiably pre-determined: a characteristic reported after mining occurred could ",
-  "in principle respond to it, which is most relevant for the number of intake ",
-  "facilities. No pre-1998 SDWIS attributes other than population are available. ",
-  "The test therefore asks whether observable CWS characteristics predict treatment ",
-  "intensity, and should be read as a comparability check rather than a strict ",
-  "test of selection on pre-determined characteristics. ",
-  "Columns 1 and 3 use cumulative upstream coal production (10 million short tons); ",
-  "columns 2 and 4 use an indicator for any positive upstream production. ",
-  "The reported $F$-statistic is a joint test of all covariates. ",
-  "Of the 122 CWSs, 27 have positive upstream production over 1998--2005, so the ",
-  "extensive-margin columns are identified off a small number of onsets. ",
+  "contemporaneously with the dose window. ",
   "Heteroskedasticity-robust standard errors. ",
-  "A jointly insignificant $F$-statistic indicates that observable CWS ",
-  "characteristics do not predict treatment intensity, which is consistent with ",
-  "the conditional parallel trends assumption. ",
-  "Sample: CWSs at most one HUC12 downstream of a coal mine. ",
+  "Sample: utilities downstream of a coal mine 1998--2005. ",
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 
+# Reorder columns so the two cumulative-dose specs (no-FE, HUC02 FE) sit
+# side by side, followed by the two any-mining specs (no-FE, HUC02 FE).
+col_order  <- c(1, 3, 2, 4)
+m_bal_ord  <- m_bal[col_order]
+wald_f_ord <- wald_f[col_order]
+wald_p_ord <- wald_p[col_order]
+
 out_bal <- file.path(OUT_REG, "pt_balance_6yr.tex")
 etable(
-  m_bal,
+  m_bal_ord,
   headers = list(
-    " " = list("No HUC02 FE" = 2, "HUC02 FE" = 2),
-    "  " = c("Cumul. dose", "Any mining", "Cumul. dose", "Any mining")
+    " " = list("Cumul. upstream coal prod. (10M ST)" = 2,
+               "Any upstream coal mining"             = 2)
   ),
-  fitstat = ~ n + r2,
+  depvar = FALSE,
+  fitstat = ~ n,
   extralines = list(
-    "Joint $F$-test (all covariates)" = wald_f,
-    "\\hspace{1em} $p$-value"         = wald_p
+    "Joint $F$-test (all covariates)" = wald_f_ord,
+    "\\hspace{1em} $p$-value"         = wald_p_ord
   ),
   style.tex = style.tex("aer", adjustbox = TRUE),
   tex = TRUE,
   digits = "r4",
-  title = paste0("Balance test: pre-determined CWS characteristics and ",
-                 "subsequent upstream coal production"),
+  title = paste0("Balance test of utility characteristics and upstream ",
+                 "coal production 1998--2005"),
   label = "tab:pt_balance_6yr",
   dict = dict_bal,
   notes = note_bal,
