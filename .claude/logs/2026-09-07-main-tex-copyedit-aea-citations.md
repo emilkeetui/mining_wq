@@ -42,16 +42,29 @@ Branch: `copyedit-main-tex-aea-citations`
 - [x] All eight numeric corrections confirmed in the rendered PDF
 
 ## Open Questions / Blockers
-- `naylor5537637strategic`: year was absent (rendered "n.d." + empty "()").
-  Set to 2025 — needs confirming against the SSRN posting date.
+- [RESOLVED 2026-09-07] `naylor5537637strategic` was actually a University of
+  Guelph PhD dissertation (Jamie Naylor, Sept. 2024), not an SSRN working
+  paper — B. James Deaton is the advisor, not a co-author. Re-entered as
+  `@phdthesis` (author, title, school, year, url); source confirmed by
+  fetching the title/abstract pages at the Atrium bitstream URL. Rebuilt
+  with `latexmk -pdf`: 0 undefined refs/citations, entry now renders with a
+  proper year.
 - `parfitt2024there`: author field read "Parfitt, Parfitt"; given name removed
-  rather than guessed. Needs the first name.
+  rather than guessed. Needs the first name. [Note: found already corrected
+  to "Parfitt, Rafael" / `@article` / AEJ:EP conditionally-accepted on disk
+  during this session — not changed by this task, flagging since it wasn't
+  part of the git status at session start.]
 - SYR2 excludes Pennsylvania, but Pennsylvania holds the most sample
   watersheds. Concentration section does not address this.
-- `output/reg/mr_concentration_lag_ols.tex` carries the label
-  `tab:mr_concentration_lag_logit` (filename/label mismatch, resolves fine).
-- `output/reg/exclusion_test_num_facilities.tex` label lacks the `tab:` prefix
-  used everywhere else.
+- [RESOLVED 2026-09-07] `output/reg/mr_concentration_lag_ols.tex` label
+  renamed `tab:mr_concentration_lag_logit` → `tab:mr_concentration_lag_ols`
+  in `mr_concentration_lag_ols.r`; `main.tex` `\ref{}` updated to match.
+  Re-ran the script and recompiled — resolves cleanly.
+- [RESOLVED 2026-09-07] `output/reg/exclusion_test_num_facilities.tex` label
+  renamed `exclusion_test_num_facilities` → `tab:exclusion_test_num_facilities`
+  in `exclusion_test_num_facilities.r`, matching the `tab:` prefix used
+  elsewhere; `main.tex` `\ref{}` updated to match. Re-ran the script and
+  recompiled — resolves cleanly.
 
 ## Next Steps
 - Author to review the suggestion list (prose, structure, unsupported claims).

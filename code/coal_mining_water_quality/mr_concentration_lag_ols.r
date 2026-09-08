@@ -8,9 +8,8 @@
 #          nitrate spec, same measurement-level downstream-only mining
 #          sample, same aesthetics as mr_concentration_lag_logit.r
 #          minus the Logit columns.
-#          Keeps LaTeX \label{tab:mr_concentration_lag_logit} so the
-#          existing \ref{} in main.tex's prose continues to resolve
-#          without an edit to that prose (per user instruction).
+#          Uses LaTeX \label{tab:mr_concentration_lag_ols}, matching this
+#          file's own name; main.tex's \ref{} was updated to match.
 # Inputs:  clean_data/mr_concentration_lag_measurement.parquet
 # Outputs: output/reg/mr_concentration_lag_ols.tex
 #          output/reg/mr_concentration_lag_ols_present.tex
@@ -223,10 +222,6 @@ note_main <- paste0(
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the utility level."
 )
 
-# LaTeX label kept as tab:mr_concentration_lag_logit (not renamed to match this
-# file's name) so the existing \ref{} in main.tex's prose keeps resolving
-# without editing that prose -- this table replaces the logit version in the
-# paper via the \outreg{} call, not via a new label.
 out_tex <- file.path(ROOT, "output/reg/mr_concentration_lag_ols.tex")
 etable(fwd, fwd6mon,
        headers      = c("Nitrate MR (1-yr)", "Nitrate MR (6-mon)"),
@@ -242,7 +237,7 @@ right_align_tabular(out_tex)
 pad_stars_for_decimal_align(out_tex)
 wrap_table_float(out_tex,
   "Nitrate MR violations following a reading above 50\\% of the MCL (downstream-of-mine sample)",
-  label = "tab:mr_concentration_lag_logit")
+  label = "tab:mr_concentration_lag_ols")
 reformat_notes_tiny(out_tex)
 cat(sprintf("\nTable saved to: %s\n", out_tex))
 
@@ -272,7 +267,7 @@ right_align_tabular(out_tex_present)
 pad_stars_for_decimal_align(out_tex_present)
 wrap_table_float(out_tex_present,
   "Nitrate MR violations following a reading above 50\\% of the MCL (downstream-of-mine sample)",
-  label = "tab:mr_concentration_lag_logit")
+  label = "tab:mr_concentration_lag_ols")
 reformat_notes_tiny(out_tex_present)
 cat(sprintf("Presentation table saved to: %s\n", out_tex_present))
 
