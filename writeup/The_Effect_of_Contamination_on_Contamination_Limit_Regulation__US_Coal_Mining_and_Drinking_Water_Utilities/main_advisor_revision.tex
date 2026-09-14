@@ -5,8 +5,7 @@
 authordate,
 backend=biber,
 maxbibnames=99,
-dashed=false,
-ibidtracker=false
+dashed=false
 ]{biblatex-chicago}
 \addbibresource{citation.bib}
 \usepackage{graphicx}             % Required for inserting images (duplicate removed)
@@ -126,100 +125,321 @@ ibidtracker=false
 % bracing.
 \hypersetup{
   pdfauthor = {Emil Kee-Tui},
-  pdftitle  = {When Pollution Rises, Reporting Falls: Coal Mining and Self-Monitoring under the Safe Drinking Water Act}
+  pdftitle  = {When Pollution Rises, Reporting Falls -- Introduction restructured to reviewer ordering (reading copy)}
 }
 
 \newcommand{\outputdir}{../../output}
 \newcommand{\outsum}[1]{\input{\outputdir/sum/#1}}
 \newcommand{\outreg}[1]{\input{\outputdir/reg/#1}}
 \newcommand{\outfig}[2][\linewidth]{\includegraphics[width=#1]{\outputdir/fig/#2}}
+
+% ============================================================
+% BUS-READING REVISION COPY -- annotation machinery
+% ------------------------------------------------------------
+% This file is main.tex with the Introduction restructured to follow the
+% reviewer's suggested ordering. Everything from Section 2 onward is
+% identical to main.tex except for two paragraphs relocated out of the old
+% introduction, each flagged with a \moved tag. The commands below exist
+% only in this copy.
+% ============================================================
+\definecolor{annotcol}{RGB}{150,45,15}
+\definecolor{movedcol}{RGB}{25,85,55}
+\definecolor{boxrule}{RGB}{170,170,170}
+
+% Paragraph tag printed above each new introduction paragraph.
+\newcommand{\annot}[1]{%
+  \par\nobreak\vspace{0.35em}%
+  {\footnotesize\sffamily\color{annotcol}\raggedright #1\par}%
+  \nobreak\vspace{-0.35em}\nobreak}
+
+% Tag marking a paragraph moved down out of the introduction.
+\newcommand{\moved}[1]{%
+  \par\nobreak\vspace{0.35em}%
+  {\footnotesize\sffamily\color{movedcol}\raggedright #1\par}%
+  \nobreak\vspace{-0.35em}\nobreak}
+
+% Ruled box used for the editorial front matter and appendix.
+\newenvironment{editnote}[1]{%
+  \par\medskip\noindent
+  \begin{minipage}{\linewidth}%
+  {\color{boxrule}\hrule height 0.8pt}\smallskip
+  {\sffamily\bfseries\small #1\par}\smallskip
+  \small\singlespacing\raggedright
+  \setlength{\parindent}{0pt}\setlength{\parskip}{0.5em}\ignorespaces
+}{%
+  \par\smallskip{\color{boxrule}\hrule height 0.8pt}%
+  \end{minipage}\par\medskip
+}
+
 \begin{document}
-\title{When Pollution Rises, Reporting Falls:\\ Coal Mining and Self-Monitoring under the Safe Drinking Water Act}
-\author{Emil Kee-Tui\thanks{%
-% ------------------------------------------------------------------
-% ACKNOWLEDGMENTS -- fill in before circulating.
-% Advisors and committee; colleagues who read drafts; seminar and
-% conference audiences; data providers; funding sources; disclaimer.
-% ------------------------------------------------------------------
-I am grateful to Nicholas Sanders, Sheila Olmstead, Catherine Kling, and Wendong Zhang for their guidance, and to
-Tal Frieden, Violette Kee-Tui, Katya Kee-Tui, Shyam Raman, Anthony Ponce, Luc Esprabens, Nicholas Ramkumar, and Nicholas Grandstaff for helpful comments and conversations. I thank participants at CSQIEP, the Ecosystems Services Guild, TWIPS, and at SEERE for valuable feedback. All remaining errors are my own.}}
+\title{When Pollution Rises, Reporting Falls:\\ Coal Mining and Self-Monitoring under the Safe Drinking Water Act\\[0.6em]
+{\large\normalfont\itshape Introduction restructured to the reviewer's suggested ordering\\ --- reading copy, September 2026 ---}}
+\author{Emil Kee-Tui}
 	\affil{\small \emph{Charles H. Dyson School of Applied Economics and Management, Cornell University}}
-    
-\date{September 2026}
+\date{August 2026}
 \maketitle
 \thispagestyle{empty}
 \singlespacing
+\vspace{-1.5em}
 
-% Tighten the gap between the title block and the abstract: \maketitle's
-% trailing skip and the center environment's \topsep together leave about an
-% inch of dead space here, which is what pushes the keywords/JEL block off
-% the title page.
-\vspace{-3.6em}
-\begin{center}\begin{abstract}
-		\noindent One regulatory model requires firms to self-report their own compliance, placing the cost of monitoring on the firm and creating an incentive to shirk reporting. That incentive grows as monitoring costs rise, so if costs rise precisely in states of regulatory concern, firms under-report exactly when reporting is most valuable to the regulator. I document this perverse incentive among drinking water utilities in the United States. Coal mining is a source of water contamination, and sulfur emission regulation under the Acid Rain Program (ARP) drove exogenous shifts in the geography of coal extraction, altering contamination from upstream mining and raising the costs of both self-reporting and treating. To measure utility exposure to mining, I adapt an instrument for coal production based on the reallocation of coal supply across high- and low-sulfur mines following the ARP. Utilities with more upstream mining show higher arsenic, selenium, and barium concentrations, yet no increase in recorded contaminant limit violations. Instead, self-reporting of water quality falls by seven to ten percentage points, even as reporting requirements increase with contamination. Regulators conduct sanitary visits to substitute for utilities' under-reporting: an additional upstream mine raises the likelihood of a regulator visit by 14 percentage points, yet those visits do not uncover contaminant limit violations. Sanctions do not rise to deter under-reporting; an additional upstream mine reduces the likelihood of formal enforcement by 5.7 percentage points. Regulators could therefore increase self-reporting by increasing penalties for under-reporting.
-\end{abstract}\end{center}
+\begin{editnote}{How to read this document}
+This is the full paper with one change: the Introduction has been rewritten to follow
+the ordering the reviewer proposed --- hook, question, antecedents, value added,
+roadmap --- rather than the current hook--results--literature--methods--results
+ordering. Everything from Section~\ref{sec:background} onward is word-for-word
+identical to the current draft, except for two paragraphs that were lifted out of the
+old introduction and set down in the body; each is flagged in
+{\sffamily\color{movedcol}green} where it now sits.
 
-\begingroup
-\centering\footnotesize
-See \href{https://www.emilkeetui.com/files/keetui-jmp.pdf}{here} for the latest version.\par
-\endgroup
+Each paragraph of the new Introduction carries a small
+{\sffamily\color{annotcol}rust-coloured} tag naming its role in the formula and saying
+which paragraphs of the current draft it is built from. Read the new Introduction
+straight through first, ignoring the tags; then use the tags and the crosswalk in the
+editorial appendix immediately after Section~1 to see what moved where.
 
-% Keywords/JEL block is set tight so that the title, abstract, keywords, JEL
-% codes and acknowledgment footnote all fit on the title page. \centering is
-% used in place of the center environment because center adds \topsep above
-% and below, which is enough on its own to push this block onto page 2.
-\begingroup
-\vspace{0.5em}
-\centering
-\begin{minipage}{0.85\textwidth}
-\singlespacing\footnotesize
-\noindent\textbf{Keywords:} self-reporting; monitoring and enforcement; environmental regulation; drinking water quality; Safe Drinking Water Act; coal mining; water pollution; Acid Rain Program.
-\par\smallskip
-\noindent\textbf{JEL classification:} D82; H83; K23; K42; L51; L95; Q48; Q53; Q58.
-\end{minipage}
-\par
-\endgroup
+Three things worth watching for as you read:
+\emph{(i)}~the headline numbers no longer appear until the value-added paragraph, so
+the first two pages now pose a problem rather than answer one;
+\emph{(ii)}~nine paragraphs of methodology and results have left the introduction, and
+the appendix records for each one whether the body already said it (seven of the nine
+did) or whether it had to be relocated (two);
+\emph{(iii)}~the value-added paragraph is untouched, per the reviewer's note that it is
+already strong.
+\end{editnote}
 
-\newpage
+\begin{editnote}{The reviewer's prescription, and what was done with it}
+\textbf{Hook / \P1.} \emph{Asked:} 9--34m Americans; environmental regulation leans on
+honest and accurate self-reporting; use the paragraph for the social-planner tension
+--- when contamination and monitoring costs rise together, utilities face a perverse
+incentive to under-report. \emph{Done:} the new \P1 keeps the Allaire count as its
+opening sentence and spends the rest of the paragraph on that tension. The three
+sentences of findings that used to close \P1 are gone. The framing material in the
+current \P3 was folded in here, since it was making the same point one paragraph too
+late.
+
+\textbf{The question / \P2.} \emph{Asked:} state the research question plainly and
+introduce the setting. \emph{Done:} the question is now the paragraph's first sentence,
+followed by the setting and one sentence on why upstream coal mining separates
+contamination from the utility's own choices.
+
+\textbf{Antecedents / \P3--4.} \emph{Asked:} condense the current \P4--7 into a
+paragraph or two, and name the gap --- prior work assumes under-reporting is driven
+purely by the desire to conceal violations, whereas this paper shows the rising cost of
+reporting can itself drive evasion. \emph{Done:} four paragraphs condensed to two. The
+new \P3 covers the self-reporting literature and closes on the gap; the new \P4 covers
+enforcement and then the applied drinking-water and coal literatures. Roughly 40 percent
+of the words are gone and no citation was dropped.
+
+\textbf{Value added / \P5.} \emph{Asked:} keep the current \P8 as it stands; tie results
+to the literature; emphasise that this is the first study to isolate the cost of
+self-reporting. \emph{Done:} reproduced verbatim, no edits.
+
+\textbf{Roadmap.} \emph{Asked:} cut the methodology and results walk-through
+(\P9--17) and move straight to the roadmap. \emph{Done:} all nine are out and the
+roadmap paragraph is unchanged. The introduction is now five paragraphs plus a roadmap,
+running to just over two pages of body text --- it begins on page three in this copy
+only because of the two pages of editorial matter in front of it.
+\end{editnote}
+
+\clearpage
 \onehalfspacing
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-Between 9 and 34 million Americans each year are served by a drinking water utility that violated a health-based drinking water standard \parencite{allaire2018national}. Like other environmental regulations in the United States, the Safe Drinking Water Act (``SDWA'') delegates compliance monitoring to the regulated firm: the utility samples its own water, pays for the analysis, and self-reports the results to the regulator. Self-reporting makes regulation more affordable to administer because it shifts the cost of gathering information from a resource-constrained regulator onto the tens of thousands of utilities being regulated. As with other environmental regulations that involve self-reported compliance, utilities have an incentive to under-report in order to reduce the cost of self-reporting or to conceal a contaminant violation. This leads to a perverse incentive to under-report when contamination increases since, as water quality deteriorates, monitoring requirements rise and the likelihood of a contaminant exceedance increases. In this state, a utility's incentives to under-report increase when the regulator's need for monitoring increases. Whether those incentives reduce self-reporting is an empirical question that has implications for maintaining and assessing American drinking water quality. 
+\annot{[\P1 \textbullet{} HOOK --- built from the current \P1 (first two sentences) and
+the current \P3. The findings that closed the current \P1 have been removed; they now
+appear for the first time in \P5.]}
+Between 9 and 34 million Americans each year are served by a drinking water utility that
+violated a health-based drinking water standard \parencite{allaire2018national}. That
+count is not assembled from independent measurement of the nation's tap water. It is
+assembled from what utilities report about themselves. Like most environmental
+regulation in the United States, the Safe Drinking Water Act (``SDWA'') delegates
+compliance monitoring to the regulated firm: the utility samples its own water, pays for
+the analysis, and tells the regulator what it found. Self-reporting is what makes a
+regulation on this scale affordable to administer, because it shifts the cost of
+gathering information off a resource-constrained regulator and onto the tens of
+thousands of utilities being regulated. It also builds in a tension the regulator cannot
+design away. The event that makes a utility's water worse --- more contamination
+arriving at its intakes --- is the same event that makes reporting more expensive,
+because monitoring requirements tighten as source water deteriorates, and it is the same
+event that raises the cost of the treatment a report would document. A utility's
+incentive to stay silent is therefore strongest in precisely the states of the world
+where the regulator most needs to hear from it. Whether that incentive binds is an
+empirical question, and the answer determines how much of what is known about American
+drinking water quality should be believed.
 
-How do firms and regulators respond to an increase in contamination under a contamination control regulation that is monitored through self-reported compliance? Compliance monitoring is the first step in enforcing regulation, so first-order questions are what happens to self-monitoring when contamination rises and what regulators do in response. I answer these in the context of US drinking water utilities exposed to an exogenous increase in water contamination from upstream coal mining between 1985 and 2005. I find that contamination increases under-reporting primarily by raising the cost of self-reporting rather than concealing contaminant violations. The separation between the source of contamination and the regulated firm in this setting helps identify the effect of contamination. In most industries, a firm's contamination cannot be separated from its production choices, since a firm can contaminate less by producing less. By contrast, utilities are contaminated by coal mining through an upstream pollution externality. Coal mining releases inorganic chemicals (``IOCs'') such as arsenic and nitrates into surface and groundwater, and where mining occurs is largely determined by the geology of coal seams and national energy policy rather than by the decisions of downstream drinking water utilities.
+\annot{[\P2 \textbullet{} THE QUESTION --- the current \P2, with the setting brought
+forward and one sentence borrowed from the current \P9 on why this setting separates
+contamination from the firm's own output choices.]}
+How do firms and regulators respond to an increase in contamination under a
+contamination control regulation that is monitored through self-reported compliance?
+Compliance monitoring is the first step in enforcing any such regulation, so the
+first-order question is what happens to self-monitoring when contamination rises, and
+what regulators do in response. I answer it in the setting of US drinking water
+utilities, which supply 85 percent of American households, exposed to an exogenous
+increase in water contamination from upstream coal mining between 1985 and 2005. The
+setting has an unusual property. In most industries a firm's contamination cannot be
+separated from its own choices, because a firm can always contaminate less by producing
+less; the contamination a drinking water utility faces, by contrast, arrives at its
+intakes as an externality of a production process it does not control. Coal mining
+releases arsenic, selenium, and barium into surface and ground water, and where that
+mining happens is determined by the geology of coal seams and by national energy policy
+rather than by anything about the utility downstream.
 
-The literature has modeled under-reporting as concealment where a firm withholds information to hide a violation. In work on water utilities, under-reporting is attributed to hiding a contaminant exceedance \parencite{bennear2009sampling, naylor5537637strategic, andarge2025quantifying, wallsten2008effects}, and the same motive is assigned to oil and gas firms \parencite{lee2020essays}. A closely related literature finds that regulated entities exploit gaps in monitoring coverage rather than misstating measurements. Ambient air quality deteriorates on days when monitors are not scheduled to operate \parencite{zou2021unwatched}, firms shut pollution monitors down strategically during times of increased output \parencite{10.1162/rest_a_01477}, and small cement plants exempt from air quality reporting go unmonitored despite causing large health damages \parencite{zirogiannis2023polluting}. Work on how to induce self-reporting asks what combination of audit frequency and penalty makes reporting incentive-compatible against the payoff from concealing a violation \parencite{innes1999remediation, foster2013informational, anton2004incentives}, with \textcite{malik1993self} finding that infrequent visits paired with high penalties induce better self-reporting. Across this literature, the cost of self-reporting to the firm is not modeled, nor is the way self-reporting costs change with contamination. I relax these assumptions in this paper. Monitoring requirements under the SDWA tighten as water quality deteriorates, so the price of complying with self-reporting rules rises with contamination, and a utility can under-report solely to avoid self-reporting costs. The cost-of-reporting channel has been identified in tax compliance, where filing costs deter reporting independently of liability \parencite{tazhitdinova2018reducing}, but not in environmental compliance monitoring.
+\annot{[\P3 \textbullet{} ANTECEDENTS, 1 of 2 --- condensed from the current \P6 and
+closing on the gap. The gap sentences are new: prior work treats the cost of producing a
+report as fixed, so under-reporting can only be concealment.]}
+Economists have modelled under-reporting as concealment: a firm withholds information
+because the information would reveal a violation. In work on water utilities,
+under-reporting is attributed to hiding a contaminant exceedance
+\parencite{bennear2009sampling, naylor5537637strategic, andarge2025quantifying,
+wallsten2008effects, foster2019arsenic}, and the same motive is assigned to oil and gas
+firms \parencite{lee2020essays}. A closely related literature finds that regulated
+entities exploit gaps in monitoring coverage rather than misstating what is measured:
+ambient air quality deteriorates on days when monitors are not scheduled to operate
+\parencite{zou2021unwatched}, firms shut pollution monitors down strategically
+\parencite{10.1162/rest_a_01477}, and small cement plants exempt from air quality
+reporting go unmonitored despite causing large health damages
+\parencite{zirogiannis2023polluting}. Work on how to induce disclosure takes the same
+view of the firm's problem, asking what combination of audit frequency and penalty makes
+reporting incentive-compatible against the payoff from concealing a violation
+\parencite{innes1999remediation, foster2013informational, anton2004incentives}, with
+\textcite{malik1993self} finding that infrequent visits paired with high penalties induce
+better self-reporting. Across this literature the cost of producing the report is treated
+as a fixed feature of the environment rather than as something the regulation itself
+moves with contamination. That is the assumption this paper relaxes. Monitoring
+requirements under the SDWA tighten as source water deteriorates, so the price of
+complying with the reporting rule rises with contamination, and a utility can go silent
+with nothing to hide. The cost-of-reporting channel has been identified in tax
+compliance, where filing costs deter reporting independently of liability
+\parencite{tazhitdinova2018reducing}, but not in environmental compliance monitoring.
 
-Under-reporting undermines several effective enforcement strategies based on violation history that the enforcement literature has identified. Enforcement of environmental regulation improves compliance when larger violations draw harsher sanctions \parencite{shimshack2014economics, harford1987self}; when regulators escalate against repeat offenders \parencite{blundell2020escalation, blundell2020threats}; and \textcite{duflo2018value} find that regulators use inspections selectively to target the worst polluters, raising future abatement. These approaches to enforcement need recorded violations, but when contamination rises and utilities under-report, the regulator lacks the information to direct enforcement. Moreover, I show evidence that some of these enforcement strategies, in particular, inspections without penalties, are insufficient to induce compliance. Under-reporting presents the risk that measurements of water quality are unreliable. US drinking water quality has improved substantially since the SDWA \parencite{keiser2026water}, with notable exceptions such as the crisis in Flint, Michigan \parencite{christensen2023flint}, and significant remaining health costs from contaminated water \parencite{hill2017shale, keiser2019us, disalvo2024drinking, marcus2025testing}. However, much of this evidence comes from utility self-reports and is therefore unable to measure water quality that was never reported. A related literature argues that US water quality regulation has improved to the point where the remaining gains from abating point-source pollution are small, since eliminating point-source emissions entirely would improve only 10 percent of US rivers and streams in EPA quality ladder rankings \parencite{bingham2000}, though the benefits of surface water regulation may be undervalued due to the difficulty of measuring contamination --- a problem instrumental variables can address \parencite{keiser2019missing}. My findings suggest that even small amounts of point-source pollution can lead to large negative impacts on drinking water quality. On the impact of coal mining on water quality, the geochemistry linking coal mining to water contamination is well established \parencite{skousen2019acid, akcil2006acid}, and economic work has documented coal mining's effects on air quality, greenhouse gas emissions, and health \parencite{muller2011environmental, parfitt2024there}; however, this work has not established whether mining contamination reaches treated water at drinking water utilities and, through them, to households. The question is not only historical since US federal energy policy has expanded mining access on federal lands and intervened to prevent planned coal-fired power plant retirements \parencite{Trump2025EO14260, Trump2025EO14261, Trump2025Proc10914, Daly2025CoalMining}.
+\annot{[\P4 \textbullet{} ANTECEDENTS, 2 of 2 --- condensed from the current \P7
+(enforcement), then the current \P4 (drinking water) and \P5 (coal mining). Every
+citation in those three paragraphs is retained.]}
+The gap matters for enforcement, because the enforcement literature conditions on an
+observed violation. Enforcement of environmental regulation works when its severity is
+non-linear and larger violations draw harsher sanctions
+\parencite{shimshack2014economics, harford1987self}; compliance improves when regulators
+escalate against repeat offenders \parencite{blundell2020escalation, blundell2020threats},
+and \textcite{duflo2018value} find that regulators use inspections selectively to target
+the worst polluters, raising future abatement. Each of these instruments needs a recorded
+violation to act on. When contamination rises but the reading is never taken, there is
+nothing to escalate against. The applied literature on drinking water inherits the same
+blind spot. US drinking water quality has improved substantially since the SDWA
+\parencite{keiser2019consequences}, with notable exceptions such as the crisis in Flint,
+Michigan \parencite{christensen2023flint}, and large remaining health costs from
+contaminated water \parencite{hill2017shale, keiser2019us, disalvo2024drinking,
+marcus2025testing}; but much of this evidence is built on utility self-reports and is
+therefore silent on the water quality that was never reported. A related literature holds
+that the remaining gains from abating point-source pollution are small, since eliminating
+point-source emissions entirely would improve only 10 percent of US rivers and streams in
+EPA quality ladder rankings \parencite{bingham2000}, though the benefits of surface water
+regulation may be undervalued simply because they are difficult to measure --- a problem
+instrumental variables can address \parencite{keiser2019missing}. On the source side, the
+geochemistry linking coal mining to water contamination is well established
+\parencite{skousen2019acid, akcil2006acid}, and economic work has documented coal mining's
+effects on air quality, greenhouse gas emissions, and health
+\parencite{muller2011environmental, parfitt2024there}, but this work has not established
+whether mining contamination reaches treated water at drinking water utilities and,
+through them, households. The question is not only historical: US federal energy policy
+has expanded mining access on federal lands and intervened to prevent planned coal-fired
+power plant retirements \parencite{Trump2025EO14260, Trump2025EO14261,
+Trump2025Proc10914, Daly2025CoalMining}.
 
-This paper makes three contributions. First, this is the first study to identify the cost of self-reporting, rather than the concealment of a contaminant exceedance, as a cause of under-reporting by drinking water utilities. Utilities face a mandated increase in testing frequency when nitrate levels cross half of the contaminant limit. Under-reporting jumps immediately after that threshold is crossed, even when readings are still below the limit and there is no exceedance to conceal. Second, this is the first study to identify the effect of contamination itself on firm self-reporting and regulator enforcement. Enforcement does not intensify at the utilities that reduce self-reporting when contamination rises; instead, regulators replace the utilities' self-reporting obligations with their own sanitary visits, absorbing the monitoring cost that self-reporting was designed to shift onto the regulated. Despite regulators increasing the frequency of visits to under-reporting utilities, they do not discover concealed contaminant exceedances. This provides additional evidence that under-reporting is driven by self-reporting costs. Third, I provide the first causal estimates of coal mining's effect on drinking water quality at treated utilities in the United States, identifying that coal mining pollution contaminates piped household water. Methodologically, I adapt the instrument for coal production from \textcite{stratford2015coalprod}, who use the change in demand preferences for coal based on its sulfur content driven by the Acid Rain Program to predict production at coal mines, and apply it for the first time to instrument a drinking water utility's exposure to coal mining through its water intakes. The results are applicable beyond drinking water. Self-reported compliance underpins regulations as diverse as the income tax and public company finances, and wherever the cost of reporting rises with an outcome being reported, monitoring weakens precisely when it matters most.
+\annot{[\P5 \textbullet{} VALUE ADDED --- the current \P8, verbatim and unedited, per the
+reviewer's note that it is already strong. This is now the first place in the paper where
+a result appears.]}
+This paper makes three contributions. First, this is the first study to identify the cost of self-reporting, rather than the concealment of a contaminant exceedance, as a cause of under-reporting by drinking water utilities. Utilities face a mandated increase in testing frequency when nitrate levels cross half of the contaminant limit. Under-reporting jumps immediately after that threshold is crossed, where readings are still below the limit, and there is no exceedance to conceal. Second, this is the first study to identify the effect of contamination itself on firm self-reporting and regulator enforcement. Enforcement does not intensify at the utilities that reduce self-reporting as contamination rises; regulators substitute their own sanitary visits for the utility's self-reporting obligations, absorbing the monitoring cost that self-reporting was designed to shift onto the regulated. Despite regulators increasing the frequency of visits to under-reporting utilities, they do not discover concealed contaminant exceedances. This provides additional evidence that under-reporting is driven by self-reporting costs. Third, it provides the first causal estimates of coal mining's effect on drinking water quality at treated utilities in the United States, identifying that coal mining pollution contaminates piped household water. Methodologically, I adapt the instrument for coal production of \textcite{stratford2015coalprod}, who use the sulfur-driven reallocation of coal demand under the Acid Rain Program to predict production at coal mines, and apply it for the first time to instrument a drinking water utility's exposure to coal mining through their water intakes. The results are applicable beyond drinking water. Self-reported compliance underpins regulations as diverse as the income tax, and wherever the cost of reporting rises with the quantity being reported, monitoring weakens precisely when it matters most.
 
+\annot{[ROADMAP --- the current \P18, unchanged. It now follows \P5 directly; the current
+\P9--17 have been removed, and the editorial appendix overleaf records where each of them
+went.]}
 The rest of the paper proceeds as follows. Section \ref{sec:background} describes the SDWA, the self-reporting and enforcement institutions it creates, and the Acid Rain Program. Section \ref{sec:model} sets out the model of negligence and self-reporting and derives its three propositions. Section \ref{sec:data} describes the data. Section \ref{sec:concentration} estimates the effect of coal mining on measured contaminant concentrations. Section \ref{sec:iv} constructs the instrument and assesses its validity. Sections \ref{sec:violations} and \ref{sec:enforcement} report the effects of coal mining on utility self-reporting and contaminant limit exceedances, and on regulator visits and enforcement. Section \ref{sec:discussion} discusses the mechanisms and Section \ref{sec:conclusion} concludes.
 
-%I can look at whether firms are hiding them by seeing the probability of MR violation conditional on the rain upstream for surface water utilities (more rain increases the contamination downstream, increasing the need/likelihood of under-reporting)
+\clearpage
+\section*{Editorial appendix: what left the introduction}
+\addcontentsline{toc}{section}{Editorial appendix}
+\singlespacing
 
-%When self-reporting becomes onerous self-reporting falls. Coal mining upstream makes utilities lives harder and the epa has to visit and everything is ok wasting everyones time. More stringent self-reporting does not always lead to more accurate results.
+\begin{editnote}{Paragraph crosswalk}
+\begin{tabular}{@{}p{0.13\linewidth}p{0.25\linewidth}p{0.55\linewidth}@{}}
+\hline
+\textbf{Current} & \textbf{New location} & \textbf{Note} \\
+\hline
+\P1 & New \P1, first two sentences & Findings in the remaining sentences deleted from the introduction \\
+\P2 & New \P2 & Question moved to the first sentence \\
+\P3 & New \P1 & Folded into the hook as the social-planner tension \\
+\P4 & New \P4 & Condensed \\
+\P5 & New \P4 & Condensed \\
+\P6 & New \P3 & Condensed; gap statement added at the end \\
+\P7 & New \P4, opening & Condensed \\
+\P8 & New \P5 & Verbatim, unedited \\
+\P9 & Section~\ref{sec:background} & Relocated; one sentence retained in new \P2 \\
+\P10 & Section~\ref{sec:iv} & Relocated \\
+\P11 & Cut & Section~\ref{sec:iv} already states the instrument in full \\
+\P12 & Cut & Section~\ref{sec:model} already states the setup and the three propositions \\
+\P13 & Cut & Section~\ref{sec:concentration} already reports these magnitudes \\
+\P14 & Cut & Section~\ref{sec:violations} already reports these magnitudes \\
+\P15 & Cut & Section~\ref{sec:discussion} already reports the 26 and 59 point estimates \\
+\P16 & Cut & Section~\ref{sec:enforcement} already reports the 14 point estimate \\
+\P17 & Cut & Section~\ref{sec:enforcement} already reports the 5.7 and 3.7 point estimates \\
+\P18 & Roadmap & Unchanged \\
+\hline
+\end{tabular}
+\end{editnote}
 
-%A closely related result is that regulated entities exploit gaps in monitoring coverage rather than the reported values themselves. \textcite{zou2021unwatched} shows that ambient air quality deteriorates on days when monitors are not scheduled to operate, and \textcite{10.1162/rest_a_01477} document strategic shutdowns of pollution monitors. In both cases the manipulated object is the existence of an observation, not its content. The monitoring and reporting (MR) violations studied in this paper are the SDWA analogue of an unwatched interval: periods in which the regulator holds no contaminant reading at all.
+\begin{editnote}{The two paragraphs that had to be relocated rather than cut}
+Seven of the nine removed paragraphs (\P11--\P17) were summaries of material the body
+already states in full, so deleting them from the introduction loses nothing. Two were
+not: they made arguments that appeared nowhere else in the paper, and cutting them
+outright would have lost content. They have been moved into the body and are marked
+{\sffamily\color{movedcol}green} where they now sit.
 
-%Regulators can use voluntary self-reporting firms to identify firms self policing themselves and take resources to other people who arent self-reporting \parencite{toffel2011coming}.
+\smallskip
+\textbf{Current \P9} --- the argument that this setting is unusual because a firm's
+contamination is normally inseparable from its own output choices, illustrated with the
+Toxics Release Inventory. Its final claim (that upstream mining arrives as an externality
+the utility does not control) is the strongest sentence in the paragraph and belongs in
+the introduction, so it has been kept in the new \P2. The rest, including the TRI
+example, now opens Section~\ref{sec:background}.
 
-%, and \parencite{helland1998enforcement, duflo2013truth, duflo2018value, naylor5537637strategic}. I document a case in which regulatory attention does not produce deterrence. I also show that sanitary visits are not necessarily effective deterrent enforcement mechanisms. The literature has found other enforcement types to be effective. \textcite{bennear2008impacts} show that public notification requirements deter drinking water violations. \textcite{shimshack2005regulator} show that regulator reputation shapes compliance beyond the directly sanctioned firm.
+\smallskip
+\textbf{Current \P10} --- the two sources of endogeneity, mine siting on geology and
+transport corridors, and the possibility that vulnerable utilities receive source-water
+protection that blocks mine siting, together with the EPA Source Water Protection
+footnote. Section~\ref{sec:iv} previously gave only the second of these two threats and
+did not carry the footnote. The paragraph now opens Section~\ref{sec:iv}, ahead of the
+existing discussion.
+\end{editnote}
 
+\begin{editnote}{Three judgement calls to check}
+\emph{One.} The reviewer asked for the finding to be withheld from \P1 but did not say
+how long to withhold it. In this draft nothing quantitative appears until \P5, on page
+two. That is the aggressive reading of the advice; a softer version would put a single
+sentence of results at the end of \P2. The current \P5 is doing all the work of paying
+off the puzzle, which is why keeping it verbatim matters.
 
-%\parencite{elbakidze2021state} find that state water quality rules are significantly associated with compliance, the year a state introduces a rule violations increase but then normalize. This is literature encouraging including state fixed effects in some robustness tests more than literature I'm contributing to.
+\emph{Two.} The abstract has not been touched, so it still gives away every headline
+number in the first six lines. That is normal for an abstract and probably right, but it
+does mean a reader who reads the abstract first will not experience \P1--\P4 as a puzzle.
+Worth deciding deliberately rather than by default.
 
-% \parencite{shimshack2008enforcement} find that regulators induce over-compliance with fines because they create credible enforcement expectations - the effect also causes firms already in compliance to abate more. My work shows the opposite perhaps that low enforcement encourages low compliance - maybe not directly the most appropriate since their results are about overcompliance (complying even below the threshold required) and spillovers to other firms none of which I directly address.
+\emph{Three.} Condensing the current \P4--\P7 into two paragraphs kept every citation but
+compressed the drinking-water and coal-mining literatures into roughly half their former
+space. Those two literatures are the ones a water or energy economist on a committee will
+look for. If the target audience skews applied rather than theory, the new \P4 may be the
+paragraph to expand back out.
+\end{editnote}
 
-%I identify that variable penalties can reduce self-reporting and self-reporting can fall just from the incentive to avoid the cost of self-reporting. I identify that a portion of the avoidance comes from cost avoidance but since it is only a portion it is suggestive evidence that strategic avoidance is the reason why. I identify that not the entire the effect is cost avoidance and some of it is suggestively avoidance. And enforcement visits and sanitary visits are not sufficient to uncover violations. This can be because the contaminant increases in the system seasonally and by the time regulators visit the contaminant is gone - essentially giving the firm discretion over the time to do testing.
-
+\onehalfspacing
+\clearpage
 \section{Institutional background}\label{sec:background}
 
+\moved{[MOVED HERE from the current introduction, \P9. Its closing claim --- that
+contamination reaches a utility as an externality of a process it does not control ---
+was kept in the new introduction, \P2; the rest, including the Toxics Release Inventory
+example, sits here.]}
 Empirically identifying the impact of contamination on firm behavior requires separating the firm's choices over output and contamination. Separating a firm's output and contamination in most industries is challenging since firms can reduce contamination by reducing output. For example, in the US, the Toxics Release Inventory requires firms to report emissions, handling, and use of chemicals above a reportable quantity. Firms can avoid the reporting requirement by emitting less or producing less \parencite{zou2021unwatched, 10.1162/rest_a_01477}. The contamination of drinking water at utilities from coal mining is the ideal setting to study the effect of contamination on self-reporting since the main source of water contamination that utilities face arises upstream as an externality of a production process that the utility does not directly control.
 
 \subsection{Drinking water utilities, regulators, and the Safe Drinking Water Act}
@@ -407,6 +627,9 @@ Coal is associated with increases in contaminant concentrations at utilities dow
 
 \section{An instrumental variable for upstream coal mining}\label{sec:iv}
 
+\moved{[MOVED HERE from the current introduction, \P10. This section previously gave
+only the second of the two endogeneity threats and did not carry the Source Water
+Protection footnote.]}
 Two sources of endogeneity need to be addressed to identify the causal effect of upstream coal mining on utilities. First, coal mines are located in areas with particular geological characteristics, such as coal seam accessibility and transportation corridors, that may also independently predict water quality and utility characteristics. Second, vulnerable utilities may receive regulator support to protect their source water and block upstream mine siting. Utilities that successfully resist upstream mines may be worse at maintaining compliance, generating a negative correlation between upstream mining and utility ability that understates the true contamination from mining.\footnote{For example, the EPA Source Water Protection program can designate areas where drinking water is sourced, especially for utilities with poor water quality performance, and take an inventory of pollution from human activities or natural sources that pose the greatest threat to source water, making it difficult to site pollution-producing activities in these areas.}
 
 I have demonstrated that coal production raises water contamination levels at drinking water utilities. I will use an IV for coal production to investigate the effect of contamination on utility self-reporting, contaminant limit exceedances, and regulatory enforcement. An IV is necessary to address the ability of utility characteristics to affect the spatial and temporal distribution of coal mines and drinking water utilities which, if estimated with OLS, would lead to biased coefficient estimates due to omitted variable bias. Utility characteristics that determine performance are likely correlated with the number of mines a utility is exposed to upstream. For example, a utility with inferior water treatment infrastructure that has limited ability to improve raw water may receive extra regulator support to protect its source water from coal mining. A utility with inferior water treatment infrastructure is more likely to violate water quality regulations than one with advanced water treatment infrastructure. This results in the number of upstream coal mines being negatively correlated with violations. A utility's ability is likely to change over the 20 year time span I study and cannot be controlled with utility fixed effects. Without data on utility ability, an OLS regression of utility behavior on coal production leads to an underestimate of the true effect of coal mining on utility behavior. 
@@ -515,7 +738,7 @@ The combined evidence that coal mining causes regulators to conduct more sanitar
 
 \section{Conclusion}\label{sec:conclusion}
 
-I present evidence that under a self-reporting regulatory framework designed to monitor a quality target, self-reporting falls if contamination increases, even if that quality does not fall below regulatory standards. I show this in the context of coal mining and utilities: utility SDWA self-reporting of water quality falls as water quality exogenously deteriorates. An additional active coal mine upstream raises the likelihood of under-reporting water quality for inorganic chemicals, arsenic, and nitrates by seven to ten percentage points, while leaving the likelihood of a contaminant limit violation unchanged. Utility under-reporting increases as self-reporting becomes costlier as coal mining impairs water quality at utilities, and raises the amount of self-reporting utilities are required. Consistent with that cost channel, a nitrate reading above half the contaminant limit, the level at which the regulator requires more frequent testing, is followed by a large increase in the likelihood of a nitrate self-reporting violation. I do not detect contaminant concentration levels increasing above maximum contaminant levels and cannot conclude that upstream coal mining is increasing pollution to the extent that utilities need to install improved abatement technology to meet SDWA maximum contaminant level compliance. 
+I present evidence that under a self-reporting regulatory framework designed to monitor a quality target, self-reporting falls if contamination increases, even if that quality does not fall below regulatory standards. I show this in the context of coal mining and utilities: utility SDWA self-reporting of water quality falls as water quality exogenously deteriorates. An additional active coal mine upstream raises the likelihood of a monitoring and reporting violation for inorganic chemicals, arsenic, and nitrates by seven to ten percentage points, while leaving the likelihood of a contaminant limit violation unchanged. Utility SDWA self-reporting becomes costlier as coal mining increases since an increase in coal mining leads to increases in IOC water contamination at utilities, which raises the cost of self-monitoring. Consistent with that cost channel, a nitrate reading above half the contaminant limit, the level at which the regulator requires more frequent testing, is followed by a large increase in the likelihood of a nitrate self-reporting violation. I do not detect contaminant concentration levels increasing above maximum contaminant levels and cannot conclude that upstream coal mining is increasing pollution to the extent that utilities need to install improved abatement technology to meet SDWA maximum contaminant level compliance. 
 
 I find that penalties for not self-reporting are not high enough to induce utilities to self-report as self-reporting costs rise. Regulators respond to upstream mining with attention rather than sanction: an additional upstream mine raises the likelihood of a sanitary visit by 14 percentage points and of an enforcement visit by 3.7 percentage points, while lowering the likelihood of formal enforcement by 5.7 percentage points. That regulators visit these utilities so much more often without formal enforcement following suggests the visits find nothing to sanction, and that utilities are not under-reporting in order to conceal a contaminant exceedance. The regulator can use sanitary visits to assess the threat posed to public health by an MR violation and can implement a less costly type of enforcement when the threat is discovered to be low. However, without punishing non-self-reporting at high levels, regulators will have to conduct more sanitary visits to ensure that contaminant concentration levels do not exceed health limits.
 
@@ -763,9 +986,11 @@ This appendix contains the derivation of the utility's negligence choice and the
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{img/WBD_Base_HUStructure_small.png}
-\caption{\raggedright Hierarchical structure of USGS hydrologic unit codes. Illustrates how a hydrologic region is nested into progressively smaller watershed units, from two-digit units covering large multi-state regions down to twelve-digit units covering a few square miles. Each smaller unit is fully contained within the boundaries of the larger unit above it.}
+\includegraphics[width=0.5\linewidth]{img/WBD_Base_HUStructure_small.png}
+\caption{Hierarchical structure of USGS hydrologic unit codes}
 \label{img:WBD_Base_HUStructure_small}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} Illustrates how a hydrologic region is nested into progressively smaller watershed units, from two-digit units covering large multi-state regions down to twelve-digit units covering a few square miles. Each smaller unit is fully contained within the boundaries of the larger unit above it.}
 \end{figure}
 \clearpage
 
@@ -784,7 +1009,7 @@ This appendix contains the derivation of the utility's negligence choice and the
 \begin{figure}
 \centering
 \outfig{map_huc12_main_sample.png}
-\caption{\raggedright Shading distinguishes HUC12 watersheds that lie directly upstream of a water utility intake and contain a coal mine from HUC12 watersheds containing a coal mine with no water utility located downstream.}
+\caption{Shading distinguishes HUC12 watersheds that lie directly upstream of a water utility intake and contain a coal mine from HUC12 watersheds containing a coal mine with no water utility located downstream.}
 \label{map:map_huc12_main_sample}
 \end{figure}
 \clearpage
@@ -792,7 +1017,7 @@ This appendix contains the derivation of the utility's negligence choice and the
 \begin{figure}
 \centering
 \includegraphics[width=0.8\linewidth]{plots/coal_summary_plot.png}
-\caption{\raggedright Coal production trends by HUC12 watershed sulfur content, 1983 to 2005.}
+\caption{Coal production trends by HUC12 watershed sulfur content, 1983 to 2005.}
 \label{plot:coal_summary_plot}
 \end{figure}
 \clearpage
@@ -805,37 +1030,45 @@ This appendix contains the derivation of the utility's negligence choice and the
 \end{figure}
 \clearpage
 
-\begin{landscape}\vspace*{\fill}
+\begin{landscape}\null\vfill
 \begin{figure}
 \centering
 \outfig[0.85\linewidth]{proportionatecircleprod_diff_allminehuc12_1985_2005.png}
-\caption{\raggedright Change in coal production by watershed, 1985 to 2005. Circles are centered on watersheds with at least one active coal mine between 1985 and 2005 and are sized proportionate to the change in total coal production over the period. Red circles indicate an increase in production and blue circles indicate a decrease.}
+\caption{Change in coal production by watershed, 1985 to 2005}
 \label{map:proportionatecircleprod_diff_allminehuc12_1985_2005}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} Circles are centered on watersheds with at least one active coal mine between 1985 and 2005 and are sized proportionate to the change in total coal production over the period. Red circles indicate an increase in production and blue circles indicate a decrease.}
 \end{figure}
-\vspace*{\fill}\end{landscape}
+\vfill\null\end{landscape}
 
-\begin{landscape}\vspace*{\fill}
+\begin{landscape}\null\vfill
 \begin{figure}
 \centering
 \outfig[0.85\linewidth]{proportionatecircle_upstream_mines_huc12_1985_2005.png}
-\caption{\raggedright Change in upstream coal production weighted by downstream population. Circles are centered on coal-mining watersheds located directly upstream of a water utility intake and are sized proportionate to the population served by the downstream utility. Red circles indicate an increase in production and blue circles indicate a decrease. Watersheds with no water utility directly downstream are omitted. The total population one watershed downstream of an active coal mine was 1,257,836 in 1985 and 218,874 in 2005, a net decrease of 1,038,962.}
+\caption{Change in upstream coal production weighted by downstream population}
 \label{map:proportionatecircle_upstream_mines_huc12_1985_2005}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} Circles are centered on coal-mining watersheds located directly upstream of a water utility intake and are sized proportionate to the population served by the downstream utility. Red circles indicate an increase in production and blue circles indicate a decrease. Watersheds with no water utility directly downstream are omitted. The total population one watershed downstream of an active coal mine was 1,257,836 in 1985 and 218,874 in 2005, a net decrease of 1,038,962.}
 \end{figure}
-\vspace*{\fill}\end{landscape}
+\vfill\null\end{landscape}
 
 \begin{figure}
 \centering
 \outfig{scatterhuccoalsulfur_pooled.png}
-\caption{\raggedright Coal mines and coal sulfur content, before and after 1995. Each point is a watershed-year observation. Lines are separate linear fits of the number of coal mines on coal sulfur content for the periods before and after 1995.}
+\caption{Coal mines and coal sulfur content, before and after 1995}
 \label{fig:scatterhuccoalsulfur}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} Each point is a watershed-year observation. Lines are separate linear fits of the number of coal mines on coal sulfur content for the periods before and after 1995.}
 \end{figure}
 \clearpage
 
 \begin{figure}
 \centering
 \outfig{first_stage_scatter_dwnstrm.png}
-\caption{\raggedright Residualized first-stage relationship. Each point is a utility by year observation for the sample strictly downstream of a coal mine, 1985 to 2005. Both axes show residuals from separate regressions of each variable on utility and year fixed effects, retaining only within-utility variation over time. The vertical axis residualizes the number of upstream coal mines; the horizontal axis residualizes the instrument, the post-1995 indicator interacted with the sulfur content of upstream coal. By the Frisch-Waugh-Lovell theorem, the slope of the fitted line equals the first-stage coefficient from the two-stage least squares specification.}
+\caption{Residualized first-stage relationship}
 \label{fig:first_stage_scatter_dwnstrm}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} Each point is a utility by year observation for the sample strictly downstream of a coal mine, 1985 to 2005. Both axes show residuals from separate regressions of each variable on utility and year fixed effects, retaining only within-utility variation over time. The vertical axis residualizes the number of upstream coal mines; the horizontal axis residualizes the instrument, the post-1995 indicator interacted with the sulfur content of upstream coal. By the Frisch-Waugh-Lovell theorem, the slope of the fitted line equals the first-stage coefficient from the two-stage least squares specification.}
 \end{figure}
 \clearpage
 
