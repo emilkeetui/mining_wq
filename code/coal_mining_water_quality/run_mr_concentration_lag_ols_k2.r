@@ -14,7 +14,9 @@
 #   clean_data/cws_data/step_instruments.parquet
 #   clean_data/cws_6year_review_measurement_level_syr2.parquet
 #   Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.parquet
-# Outputs: terminal printout only
+# Outputs: terminal printout, and (as of 2026-09-14, extending the original
+#          terminal-only diagnostic per the k2 main.tex table plan)
+#          output/reg/mr_concentration_lag_ols_k2.tex
 # Author: EK  Date: 2026-09-14
 # ============================================================
 
@@ -107,5 +109,174 @@ if (!is.null(fwd6mon)) { cat("\n--- Nitrate MR (6-mon fwd window) ---\n"); print
 cat("\nFor comparison, published (national downstream-of-mine, N=851):\n")
 cat("  1-yr:  near_mcl 58.97** (24.60) | mean_conc_z 1.28 (1.43)\n")
 cat("  6-mon: near_mcl 26.11** (10.53) | mean_conc_z 0.05 (0.87)\n")
+
+# ── Step 5: LaTeX table (extends the original terminal-only diagnostic per
+# the k2 main.tex table plan; helpers copied from mr_concentration_lag_ols.r,
+# with the "utility" wording from k2's Step 0.6 in place of the original's
+# "CWS" substitutions) ──────────────────────────────────────────────────────
+wrap_table_float <- function(path, caption_text, label = NULL) {
+  lines <- readLines(path)
+  bg_line   <- grep("^\\\\begingroup\\s*$", lines)[1]
+  eg_line   <- grep("^\\\\par\\\\endgroup\\s*$", lines)
+  eg_line   <- eg_line[length(eg_line)]
+  adj_start <- grep("^\\s*\\\\begin\\{adjustbox\\}", lines)[1]
+  adj_end   <- grep("^\\s*\\\\end\\{adjustbox\\}", lines)
+  adj_end   <- adj_end[length(adj_end)]
+  tab_end   <- grep("^\\s*\\\\end\\{tabular\\}", lines)
+  tab_end   <- tab_end[length(tab_end)]
+  note_lines <- trimws(lines[(tab_end + 1):(adj_end - 1)])
+  note_lines <- note_lines[note_lines != ""]
+  cap_line <- if (!is.null(label)) {
+    sprintf("\\caption{%s}\\label{%s}", caption_text, label)
+  } else {
+    sprintf("\\caption{%s}", caption_text)
+  }
+  new_body <- c(
+    "\\begin{table}[htbp]", cap_line, "\\centering",
+    lines[adj_start], lines[(adj_start + 1):tab_end], "\\end{adjustbox}", "",
+    note_lines, "\\par", "\\end{table}"
+  )
+  before <- if (bg_line > 1) lines[seq_len(bg_line - 1)] else character(0)
+  after  <- if (eg_line < length(lines)) lines[(eg_line + 1):length(lines)] else character(0)
+  writeLines(c(before, new_body, after), path)
+}
+
+rename_tex_k2 <- function(path) {
+  txt <- paste(readLines(path), collapse = "\n")
+  subs <- list(
+    c("near\\_mcl",           "Concen. $>$ 50\\% MCL"),
+    c("mean\\_conc\\_z",      "Mean concen. (z-score)"),
+    c("PWSID fixed-effects",   "Utility fixed-effects"),
+    c("PWSID fixed effects",   "Utility fixed effects"),
+    c("Clustered \\(PWSID\\) standard-errors in parentheses",
+      "Clustered (Utility) standard-errors in parentheses"),
+    c("mr\\_same\\_fwd6mon",   ""),
+    c("mr\\_same\\_fwd",       "")
+  )
+  for (s in subs) txt <- gsub(s[[1]], s[[2]], txt, fixed = TRUE)
+  txt <- gsub("(?<![a-zA-Z])ratio(?![a-zA-Z])", "Concen./MCL", txt, perl = TRUE)
+  txt <- gsub("[ \t]*Dependent Variables:.*?\\\\\\\\\n", "", txt)
+  txt <- gsub("\n[ \t]*&[ \t]*&[ \t]*\\\\\\\\", "", txt)
+  writeLines(strsplit(txt, "\n")[[1]], path)
+}
+
+right_align_tabular_k2 <- function(path) {
+  lines <- readLines(path)
+  txt   <- paste(lines, collapse = "\n")
+  m     <- regmatches(txt, regexpr("\\\\begin\\{tabular\\}\\{l+c+\\}", txt))
+  if (length(m) == 1 && nzchar(m)) {
+    txt <- sub(m, gsub("c", "r", m), txt, fixed = TRUE)
+    writeLines(strsplit(txt, "\n")[[1]], path)
+  }
+}
+
+pad_stars_for_decimal_align_k2 <- function(path) {
+  lines <- readLines(path)
+  mid_line  <- grep("^\\s*\\\\midrule\\s*$", lines)[1]
+  blank_row <- grep("^\\s*\\\\\\\\\\s*$", lines)
+  blank_row <- blank_row[blank_row > mid_line][1]
+  if (is.na(mid_line) || is.na(blank_row)) return(invisible(NULL))
+  block_idx <- (mid_line + 1):(blank_row - 1)
+  block     <- lines[block_idx]
+  cell_lists  <- lapply(block, function(l) strsplit(l, "&", fixed = TRUE)[[1]])
+  is_coef_row <- vapply(cell_lists, function(cells) nzchar(trimws(cells[1])), logical(1))
+  star_pat <- "\\$\\^\\{(\\*+)\\}\\$"
+  star_count <- function(cell) {
+    if (!grepl(star_pat, cell)) return(0)
+    m <- regmatches(cell, regexpr(star_pat, cell))
+    nchar(gsub("[^*]", "", m))
+  }
+  n_col     <- max(vapply(cell_lists, length, integer(1)))
+  max_stars <- rep(0, n_col)
+  for (i in which(is_coef_row)) {
+    cells <- cell_lists[[i]]
+    for (j in 2:length(cells)) max_stars[j] <- max(max_stars[j], star_count(cells[j]))
+  }
+  pad_cell <- function(cell, target) {
+    if (target == 0) return(cell)
+    if (grepl(star_pat, cell)) {
+      n <- star_count(cell)
+      if (n >= target) return(cell)
+      phantom <- strrep("*", target - n)
+      pos     <- regexpr(star_pat, cell)
+      start   <- pos[1]; len <- attr(pos, "match.length")
+      new_sup <- paste0("$^{", strrep("*", n), "\\phantom{", phantom, "}}$")
+      paste0(substr(cell, 1, start - 1), new_sup, substr(cell, start + len, nchar(cell)))
+    } else {
+      num_pat <- "^\\s*-?[0-9][0-9,]*\\.?[0-9]*"
+      pos     <- regexpr(num_pat, cell)
+      start   <- pos[1]; len <- attr(pos, "match.length")
+      phantom <- strrep("*", target)
+      insert  <- paste0("$^{\\phantom{", phantom, "}}$")
+      paste0(substr(cell, 1, start + len - 1), insert, substr(cell, start + len, nchar(cell)))
+    }
+  }
+  for (i in which(is_coef_row)) {
+    cells <- cell_lists[[i]]
+    for (j in 2:length(cells)) if (max_stars[j] > 0) cells[j] <- pad_cell(cells[j], max_stars[j])
+    block[i] <- paste(cells, collapse = "&")
+  }
+  lines[block_idx] <- block
+  writeLines(lines, path)
+}
+
+reformat_notes_tiny_k2 <- function(path) {
+  lines <- readLines(path)
+  adj_end   <- grep("^\\s*\\\\end\\{adjustbox\\}\\s*$", lines)
+  end_table <- grep("^\\\\end\\{table\\}\\s*$", lines)
+  if (length(adj_end) == 0 || length(end_table) == 0) return(invisible(NULL))
+  adj_end   <- adj_end[length(adj_end)]
+  end_table <- end_table[length(end_table)]
+  note_raw  <- lines[(adj_end + 1):(end_table - 1)]
+  drop_pat  <- "^\\s*(\\\\par(\\\\endgroup|\\s*(\\\\raggedright)?)?|\\\\begingroup|\\\\raggedright)?\\s*$"
+  note_text <- paste(trimws(note_raw[!grepl(drop_pat, note_raw)]), collapse = " ")
+  new_lines <- c(
+    lines[1:adj_end],
+    sprintf("{\\tiny\\linespread{1}\\selectfont \\par \\raggedright %s}", note_text),
+    "\\end{table}"
+  )
+  writeLines(new_lines, path)
+}
+
+if (!is.null(fwd) && !is.null(fwd6mon)) {
+  dir.create("Z:/ek559/mining_wq/output/reg", showWarnings = FALSE, recursive = TRUE)
+  note_k2_tex <- paste0(
+    "\\textit{Notes:} SYR2 sample restricted to utilities with a coal mine within two ",
+    "flow steps upstream of their intake and no coal mine colocated with their intake ",
+    "(1998--2005), nitrate only. Outcome: nitrate MR (monitoring/reporting) violation ",
+    "in the forward window (1--365 days for the 1-yr column; 1--182 days for the ",
+    "6-mon column) following the sample date. Concen. $>$ 50\\% MCL = reading at ",
+    "50--100\\% of the MCL, the quarterly-monitoring trigger. Mean concentration = ",
+    "utility-year mean reading, z-scored within chemical. Coefficients and standard ",
+    "errors are in percentage points. All specifications include utility and year ",
+    "fixed effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the ",
+    "utility level."
+  )
+  out_tex_k2 <- "Z:/ek559/mining_wq/output/reg/mr_concentration_lag_ols_k2.tex"
+  etable(fwd, fwd6mon,
+         headers      = c("Nitrate MR (1-yr)", "Nitrate MR (6-mon)"),
+         notes        = note_k2_tex,
+         fitstat      = ~n,
+         digits       = "r4",
+         drop.section = "fixef",
+         style.tex    = style.tex("aer", adjustbox = TRUE),
+         file         = out_tex_k2,
+         replace      = TRUE)
+  rename_tex_k2(out_tex_k2)
+  right_align_tabular_k2(out_tex_k2)
+  pad_stars_for_decimal_align_k2(out_tex_k2)
+  wrap_table_float(out_tex_k2,
+    "Nitrate MR violations following a reading above 50\\% of the MCL, two-step upstream watershed linkage",
+    label = "tab:mr_concentration_lag_ols_k2")
+  reformat_notes_tiny_k2(out_tex_k2)
+  cat(sprintf("\nTable saved to: %s\n", out_tex_k2))
+  if (file.exists(out_tex_k2) && file.info(out_tex_k2)$size > 0) {
+    cat(sprintf("Output verified: %s exists and is non-zero.\n", out_tex_k2))
+  } else {
+    cat(sprintf("[ERROR] %s missing or empty.\n", out_tex_k2))
+  }
+} else {
+  cat("\n[ERROR] fwd or fwd6mon model failed -- skipping .tex render.\n")
+}
 
 cat("\nDone.\n")
