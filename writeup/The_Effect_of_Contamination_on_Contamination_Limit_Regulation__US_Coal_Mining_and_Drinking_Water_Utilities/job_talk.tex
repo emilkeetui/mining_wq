@@ -315,12 +315,12 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
 % ---------------------------------------------------------------- 17
 \begin{frame}{Design: cumulative production, measured concentrations}
 \begin{equation*}
-\textit{Concen}_{ct}= \beta\cdot\!\!\sum_{\tau=1985}^{t}\!\!\text{UpstreamCoalProd}_{c\tau} + \rho_c + State_c\cdot\tau_t + \epsilon_{ct}
+\textit{Concen}_{ct}= \beta\cdot\!\!\sum_{\tau=1985}^{t}\!\!\text{UpstreamCoalProd}_{c\tau} + \rho_c + HUC02_c\cdot\tau_t + \epsilon_{ct}
 \end{equation*}
 \begin{itemize}\small
     \item $\textit{Concen}_{ct}$: mean annual concentration at utility $c$, year $t$ (SYR2, 1998--2005).
     \item $\beta$: effect of 10 million additional cumulative short tons mined upstream since 1985.
-    \item $\rho_c$: utility fixed effects. $State_c\cdot\tau_t$: state-specific year effects, absorbing region-wide industrial trends.
+    \item $\rho_c$: utility fixed effects. $HUC02_c\cdot\tau_t$: watershed-region-specific year effects, absorbing region-wide industrial trends.
     \item SEs clustered at the utility level.
 \end{itemize}
 \medskip

@@ -9,11 +9,12 @@
 #          (post95 is identically 1 on every non-missing VALUE obs <=
 #          2005), so these report OLS (matching
 #          run_step_top3_outcomes.r's build_dose_sample(2)/fml_state, which
-#          reproduces the published k=1 anchor). FE: PWSID + STATE_CODE^year
-#          (published tables use PWSID + huc02^year). Sources k2_common.r.
+#          reproduces the published k=1 anchor). FE: PWSID + huc02^year,
+#          matching the published k=1 table. Sources k2_common.r.
 # Inputs:
 #   clean_data/cws_data/step_instruments.parquet (via k2_common.r)
 #   clean_data/cws_6year_review_ravalli.parquet
+#   clean_data/cws_data/pwsid_huc02.parquet
 #   clean_data/cws_data/cws_geopop_annual.parquet
 #   clean_data/cws_data/prod_vio_sulfur.parquet (main 2SLS sample, read-only,
 #     for syr2_mr_comparison_k2's SYR2-reporting-status comparison)
@@ -37,6 +38,15 @@ stopifnot(is.character(si$PWSID))
 d6r <- read_parquet(file.path(ROOT, "clean_data/cws_6year_review_ravalli.parquet"))
 stopifnot(is.character(d6r$PWSID), "STATE_CODE" %in% names(d6r))
 d6r <- d6r %>% dplyr::filter(year >= 1985, PWSID != "WV3303401")
+
+# huc02 lookup, joined in so the k2 table can use the same PWSID + huc02^year
+# FE as the published k=1 table (cws_6year_review_huc02fe.r:91-105), rather
+# than the coarser STATE_CODE^year stand-in used elsewhere in this script for
+# the RF/2SLS grid specs (where the instrument is degenerate on this sample).
+huc02_lookup <- read_parquet(file.path(ROOT, "clean_data/cws_data/pwsid_huc02.parquet"))
+stopifnot(is.character(huc02_lookup$PWSID), is.character(huc02_lookup$huc02))
+d6r <- d6r %>% dplyr::left_join(huc02_lookup %>% dplyr::select(PWSID, huc02), by = "PWSID")
+cat("Rows with missing huc02 after merge:", sum(is.na(d6r$huc02)), "\n")
 
 CHEMS <- c("arsenic", "nitrate", "barium", "selenium")
 nice_chem <- c(arsenic = "Arsenic", nitrate = "Nitrate", barium = "Barium", selenium = "Selenium")
@@ -82,7 +92,7 @@ cat(sprintf("Coverage: %d of %d k2 main-arm utilities have SYR2 concentration co
             dplyr::n_distinct(dose2$PWSID), n_a2_main_k2,
             100 * dplyr::n_distinct(dose2$PWSID) / n_a2_main_k2))
 
-fml_state <- VALUE ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + STATE_CODE^year
+fml_huc02 <- VALUE ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
 
 # ── 6yr_huc02fe_inorg_ravalli_2005_k2.tex ────────────────────────────────
 models_val <- list()
@@ -91,7 +101,7 @@ for (chem in CHEMS) {
   d_chem <- dose2[dose2$CHEMID_name == chem, ]
   cat("  Chemical:", chem, "| n rows:", nrow(d_chem), "\n")
   if (nrow(d_chem) < 30) { cat("  Skipping -- too few obs.\n"); next }
-  m <- tryCatch(fixest::feols(fml_state, data = d_chem, cluster = ~PWSID, warn = FALSE, notes = FALSE),
+  m <- tryCatch(fixest::feols(fml_huc02, data = d_chem, cluster = ~PWSID, warn = FALSE, notes = FALSE),
                 error = function(e) { cat("  ERROR:", conditionMessage(e), "\n"); NULL })
   if (!is.null(m)) {
     models_val <- c(models_val, list(m))
@@ -108,7 +118,7 @@ note_reg <- paste0(
   "1985 (in 10 million short tons) in watersheds within two flow steps upstream of the ",
   "utility's intake. Sample: utilities with a coal mine within two flow steps upstream ",
   "of their intake and no coal mine colocated with their intake. Standard errors ",
-  "clustered at the utility level. All specifications include utility and state ",
+  "clustered at the utility level. All specifications include utility and HUC02 ",
   "$\\times$ year fixed effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 out_reg <- "Z:/ek559/mining_wq/output/reg/6yr_huc02fe_inorg_ravalli_2005_k2.tex"
@@ -134,7 +144,7 @@ cat("Written:", out_reg, "\n")
 # stars only (table has no FE checkmark rows -- drop.section = "fixef") --
 # .claude/logs/2026-08-31-presentation-notes-tables.md.
 note_reg_present <- paste0(
-  "\\textit{Notes:} All specifications include utility and state $\\times$ year ",
+  "\\textit{Notes:} All specifications include utility and HUC02 $\\times$ year ",
   "fixed effects. Standard errors clustered at the utility level. ",
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
