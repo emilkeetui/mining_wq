@@ -46,6 +46,7 @@ nice_chem <- c(arsenic = "Arsenic", nitrate = "Nitrate", barium = "Barium", sele
 # that reproduces the published k=1 anchor). ─────────────────────────────
 build_dose_sample <- function(kk) {
   arm_k <- si %>% dplyr::filter(arm == "main", k == kk, n_mine_hucs_linked >= 1) %>%
+    apply_a2() %>%
     dplyr::select(PWSID, year, production_linked_sum)
 
   linked_pwsids <- unique(arm_k$PWSID)
@@ -74,13 +75,12 @@ build_dose_sample <- function(kk) {
 }
 
 dose2 <- build_dose_sample(2)
+n_a2_main_k2 <- dplyr::n_distinct(main_dat$PWSID)
 cat(sprintf("k2 dose sample: %d rows, %d utilities, %d distinct chemicals\n",
             nrow(dose2), dplyr::n_distinct(dose2$PWSID), dplyr::n_distinct(dose2$CHEMID_name)))
 cat(sprintf("Coverage: %d of %d k2 main-arm utilities have SYR2 concentration coverage (%.1f%%)\n",
-            dplyr::n_distinct(dose2$PWSID),
-            dplyr::n_distinct((si %>% dplyr::filter(arm=="main", k==2, n_mine_hucs_linked>=1))$PWSID),
-            100 * dplyr::n_distinct(dose2$PWSID) /
-              dplyr::n_distinct((si %>% dplyr::filter(arm=="main", k==2, n_mine_hucs_linked>=1))$PWSID)))
+            dplyr::n_distinct(dose2$PWSID), n_a2_main_k2,
+            100 * dplyr::n_distinct(dose2$PWSID) / n_a2_main_k2))
 
 fml_state <- VALUE ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + STATE_CODE^year
 

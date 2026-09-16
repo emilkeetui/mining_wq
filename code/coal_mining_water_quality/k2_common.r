@@ -9,13 +9,14 @@
 #          table renderer, and the table-notes string builder. Read-only
 #          against step_instruments.parquet / cws_covariates_steps.parquet
 #          / sdwa_vio_agg_steps.parquet / sdwa_visit_agg_k2.parquet /
-#          sdwa_enf_agg_k2.parquet.
+#          sdwa_enf_agg_k2.parquet / step_purity_flags.parquet.
 # Inputs:
 #   clean_data/cws_data/step_instruments.parquet
 #   clean_data/cws_data/cws_covariates_steps.parquet
 #   clean_data/cws_data/sdwa_vio_agg_steps.parquet
 #   clean_data/cws_data/sdwa_visit_agg_k2.parquet
 #   clean_data/cws_data/sdwa_enf_agg_k2.parquet
+#   clean_data/cws_data/step_purity_flags.parquet
 # Outputs: none (sourced by run_k2_*.r scripts)
 # Author: EK  Date: 2026-09-14
 # ============================================================
@@ -27,13 +28,27 @@ library(dplyr)
 
 ROOT <- "Z:/ek559/mining_wq"
 
+# ── 0. A2 intake-purity screen ───────────────────────────────────────────
+# A utility enters only if every intake HUC is correctly classified in that
+# arm's direction (downstream-only for main; mirror upstream-only for
+# placebo) at the given flow-step depth k. Replaces "at least one
+# qualifying intake" (n_mine_hucs_linked >= 1) as the estimation sample,
+# per plan a2-intake-purity-sample-pipeline.md.
+step_purity <- read_parquet(file.path(ROOT, "clean_data/cws_data/step_purity_flags.parquet"))
+apply_a2 <- function(df) df %>%
+  dplyr::inner_join(dplyr::filter(step_purity, a2_pure == 1) %>%
+                      dplyr::select(PWSID, arm, k), by = c("PWSID", "arm", "k"))
+
 # ── 1. Panel construction ────────────────────────────────────────────────
 # Builds the joined, zero-filled, x100-scaled k=2 A-full panel for one arm.
 # Mirrors run_step_instrument_grid.r:38-64, with the visit/enforcement
 # sources swapped for the k2 caches (5 visit flags + any_enf, vs. the
 # 2-flag/no-any_enf `_steps` caches) and the sample restricted to k=2,
 # A-full (n_mine_hucs_linked >= 1, no n_hucs_covered filter), per plan 0.1.
-build_k2_panel <- function(arm_choice = c("main", "placebo")) {
+# `a2_only = TRUE` (default) additionally screens to the A2 intake-purity
+# sample; `compare_k2_intake_purity.r` passes FALSE to keep its
+# status-quo baseline column meaningful.
+build_k2_panel <- function(arm_choice = c("main", "placebo"), a2_only = TRUE) {
   arm_choice <- match.arg(arm_choice)
 
   si     <- read_parquet(file.path(ROOT, "clean_data/cws_data/step_instruments.parquet"))
@@ -77,6 +92,9 @@ build_k2_panel <- function(arm_choice = c("main", "placebo")) {
 
   full <- si %>% dplyr::inner_join(panel, by = c("PWSID", "year"))
 
+  # Disjointness subtraction always uses the unscreened main set, never the
+  # A2-screened one, so impure utilities cannot leak into the placebo arm
+  # (the A2-placebo condition already excludes them; this is belt-and-braces).
   main_k2 <- full %>% dplyr::filter(arm == "main", k == 2, n_mine_hucs_linked >= 1)
   if (arm_choice == "main") {
     out <- main_k2
@@ -85,6 +103,7 @@ build_k2_panel <- function(arm_choice = c("main", "placebo")) {
     out <- full %>% dplyr::filter(arm == "placebo", k == 2, n_mine_hucs_linked >= 1,
                                    !(PWSID %in% main_ids))
   }
+  if (a2_only) out <- apply_a2(out)
   cat(sprintf("k2 %s panel: %d rows, %d utilities\n",
               arm_choice, nrow(out), dplyr::n_distinct(out$PWSID)))
   out

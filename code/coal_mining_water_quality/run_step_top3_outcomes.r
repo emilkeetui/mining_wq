@@ -97,6 +97,10 @@ cat("one-step-downstream sample filter swapped for the step-grid's k-step linkag
 d6r   <- read_parquet(file.path(ROOT, "clean_data/cws_6year_review_ravalli.parquet"))
 huc02 <- read_parquet(file.path(ROOT, "clean_data/cws_data/pwsid_huc02.parquet"))
 si    <- read_parquet(file.path(ROOT, "clean_data/cws_data/step_instruments.parquet"))
+step_purity <- read_parquet(file.path(ROOT, "clean_data/cws_data/step_purity_flags.parquet"))
+apply_a2 <- function(df) df %>%
+  dplyr::inner_join(dplyr::filter(step_purity, a2_pure == 1) %>%
+                      dplyr::select(PWSID, arm, k), by = c("PWSID", "arm", "k"))
 stopifnot(is.character(d6r$PWSID), is.character(huc02$PWSID), is.character(si$PWSID))
 stopifnot("STATE_CODE" %in% names(d6r))
 cat("Cross-language schema check: d6r PWSID", class(d6r$PWSID), "year", class(d6r$year),
@@ -111,6 +115,7 @@ d6r <- d6r %>%
 
 build_dose_sample <- function(kk) {
   arm_k <- si %>% filter(arm == "main", k == kk, n_mine_hucs_linked >= 1) %>%
+    apply_a2() %>%
     select(PWSID, year, production_linked_sum)
 
   linked_pwsids <- unique(arm_k$PWSID)
@@ -183,8 +188,8 @@ cat("cumulative upstream coal production since 1985. Estimator: OLS (not IV — 
 cat("\n---- Reproduction anchor (k=1, huc02^year FE) vs published table ----\n")
 cat("Published (output/reg/6yr_huc02fe_inorg_ravalli_2005.tex):\n")
 cat("  arsenic 0.0023*** (0.0004) | nitrate 0.0572 (0.0922) | barium 0.0171* (0.0093) | selenium 0.0033** (0.0016)\n")
-cat("Exact equality not expected: step-grid linkage carries a documented CWS-count deviation\n")
-cat("from the production sample (see .claude/logs/2026-09-13-instrument-step-grid.md).\n")
-cat("Pass condition: same sign and rough magnitude, not exact match.\n")
+cat("Under the A2 intake-purity screen (a2-intake-purity-sample-pipeline.md), k=1 main\n")
+cat("A-full is exactly the 340-CWS static sample, so the huc02^year-FE column now matches\n")
+cat("this anchor exactly (state x year FE remains a distinct, non-anchored column).\n")
 
 cat("\nDone.\n")

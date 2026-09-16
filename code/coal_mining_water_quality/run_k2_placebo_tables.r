@@ -36,8 +36,8 @@ sample_clause <- paste0(
 # Terminal-only diagnostic: placebo first-stage F. A null placebo result
 # under a weak placebo first stage is uninformative, not a pass (plan Step 5).
 f_plac <- f_clustered(plac_dat, fe_state_yr)
-cat(sprintf("\nPlacebo first-stage F (state x year FE): %.2f [want ~53.17]\n", f_plac))
-stopifnot(abs(f_plac - 53.17) < 0.01)
+cat(sprintf("\nPlacebo first-stage F (state x year FE): %.2f [want ~53.53]\n", f_plac))
+stopifnot(abs(f_plac - 53.53) < 0.01)
 if (f_plac < 10) {
   cat("WARNING: placebo first stage is WEAK (F < 10) -- placebo nulls below are UNINFORMATIVE, not a pass.\n")
 } else {
@@ -66,12 +66,13 @@ r_mr <- render_panel_k2(
   superheader = "Monitoring and reporting (MR) violation"
 )
 
-# Anchor check (plan Step 5): all three placebo MR outcomes null under
-# state x year FE, matching the grid log (p = .42, .26, .17).
+# Anchor check: all three placebo MR outcomes null under state x year FE,
+# matching the grid log (p = .21, .46, .33) under the A2 intake-purity
+# sample (a2-intake-purity-sample-pipeline.md).
 p_nit <- get_term(r_mr$iv_list[[2]], "num_coal_mines_linked_sum")$pval
 p_ars <- get_term(r_mr$iv_list[[4]], "num_coal_mines_linked_sum")$pval
 p_ioc <- get_term(r_mr$iv_list[[6]], "num_coal_mines_linked_sum")$pval
-cat(sprintf("\nPlacebo MR p-values (state x year FE): nitrates %.2f [want ~.17], arsenic %.2f [want ~.42], inorganic %.2f [want ~.26]\n",
+cat(sprintf("\nPlacebo MR p-values (state x year FE): nitrates %.2f [want ~.21], arsenic %.2f [want ~.46], inorganic %.2f [want ~.33]\n",
             p_nit, p_ars, p_ioc))
 stopifnot(p_nit > 0.1, p_ars > 0.1, p_ioc > 0.1)
 cat("Placebo MR null gate PASSED (all p > 0.1).\n")

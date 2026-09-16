@@ -29,10 +29,13 @@ ROOT <- "Z:/ek559/mining_wq"
 VIOL_PATH <- "Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.parquet"
 NITRATE_CODE <- "1040"
 
-# ── Step 1: k=2 main-arm PWSID universe ─────────────────────────────────
+# ── Step 1: k=2 main-arm PWSID universe (A2 intake-purity screened) ──────
 si <- read_parquet(file.path(ROOT, "clean_data/cws_data/step_instruments.parquet"))
 stopifnot(is.character(si$PWSID))
+step_purity <- read_parquet(file.path(ROOT, "clean_data/cws_data/step_purity_flags.parquet"))
 k2_pwsids <- si %>% filter(arm == "main", k == 2, n_mine_hucs_linked >= 1) %>%
+  inner_join(filter(step_purity, arm == "main", k == 2, a2_pure == 1) %>% select(PWSID),
+             by = "PWSID") %>%
   pull(PWSID) %>% unique()
 cat(sprintf("k=2 main-arm PWSID universe: %d CWSs\n", length(k2_pwsids)))
 

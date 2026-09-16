@@ -74,8 +74,8 @@ panel$post95 <- as.integer(panel$year >= 1995)
 full <- si %>% dplyr::inner_join(panel, by = c("PWSID", "year"))
 cat(sprintf("Full joined table (arm x k x PWSID x year): %d rows\n", nrow(full)))
 
-# ── Panel builder: per (k, arm) A-full sample, purity-screened placebo ──────
-# Mirrors build_k2_panel() (k2_common.r:80-87) with k==2 replaced by k==kk.
+# ── Panel builder: per (k, arm) A-full sample, A2 intake-purity screened ───
+# Mirrors build_k2_panel() (k2_common.r:80-91) with k==2 replaced by k==kk.
 build_kgrid_panel <- function(arm_choice, kk) {
   main_k <- full %>% dplyr::filter(arm == "main", k == kk, n_mine_hucs_linked >= 1)
   if (arm_choice == "main") {
@@ -85,7 +85,7 @@ build_kgrid_panel <- function(arm_choice, kk) {
     out <- full %>% dplyr::filter(arm == "placebo", k == kk, n_mine_hucs_linked >= 1,
                                    !(PWSID %in% main_ids))
   }
-  out
+  apply_a2(out)
 }
 
 # ── Constants ────────────────────────────────────────────────────────────
@@ -210,17 +210,18 @@ cat("Gate 2 PASSED.\n")
 # ── Verification gate 3: k=2 anchors for the 4 new outcomes (h2/h3 .tex) ───
 cat("\n==================== Verification gate 3: k=2 anchors (h2/h3 .tex, 4 new outcomes) ====================\n")
 # Hand-transcribed 2SLS coef(SE) from output/reg/h2_snsv_d12_k2[placebo].tex
-# and h3_inf_formal_d12_k2[placebo].tex (verified read during exploration).
+# and h3_inf_formal_d12_k2[placebo].tex, regenerated under the A2 intake-purity
+# sample (a2-intake-purity-sample-pipeline.md).
 anchors <- tibble::tribble(
   ~k, ~arm,      ~outcome,       ~coef_ref, ~se_ref,
-   2, "main",    "any_tech",        -0.10,     0.98,
-   2, "main",    "any_smpl",         0.08,     0.50,
-   2, "main",    "any_insp",         2.10,     1.15,
-   2, "main",    "no_enf",           0.68,     2.26,
-   2, "placebo", "any_tech",         1.81,     1.43,
-   2, "placebo", "any_smpl",         2.52,     1.16,
-   2, "placebo", "any_insp",         3.03,     1.68,
-   2, "placebo", "no_enf",           1.23,     3.71
+   2, "main",    "any_tech",         0.67,     0.95,
+   2, "main",    "any_smpl",         0.48,     0.50,
+   2, "main",    "any_insp",         2.13,     1.07,
+   2, "main",    "no_enf",          -0.42,     2.25,
+   2, "placebo", "any_tech",         0.85,     1.24,
+   2, "placebo", "any_smpl",         1.58,     0.90,
+   2, "placebo", "any_insp",         2.62,     1.58,
+   2, "placebo", "no_enf",           2.81,     3.59
 )
 cmp3 <- coef_df %>%
   dplyr::filter(model == "2SLS", k == 2, outcome %in% anchors$outcome) %>%

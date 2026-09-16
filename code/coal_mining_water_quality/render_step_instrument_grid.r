@@ -170,10 +170,10 @@ cat(sprintf("k=1 main B:      %d CWSs, F=%s  (anchor: 253 / F~=12.29)\n",
 chk_b_state <- fs_df %>% filter(k == 1, arm == "main", column == "B", fe == "PWSID+year+state x year")
 cat(sprintf("k=1 main B (+state x year): F=%s  (anchor: F~=17.20)\n",
             ifelse(nrow(chk_b_state)==1, fmt(chk_b_state$f_clustered), "NA")))
-cat("NOTE: 45 extra CWSs appear in this diagnostic's A-full k=1 sample relative to the\n")
-cat("340-CWS anchor (385 vs 340) — traced to a legacy sdwismatch exclusion (drops PWSIDs\n")
-cat("mixing an unclassified-HUC facility with a non-upstream-classified one) that this\n")
-cat("simpler linkage does not replicate; see session log for detail. The 6,232 existing\n")
-cat("rows/PWSIDs are all exactly reproduced within this broader sample.\n")
+cat("NOTE: the A2 intake-purity screen (a2-intake-purity-sample-pipeline.md) now closes\n")
+cat("the CWS-count gap exactly: A-full k=1 main is 340 CWSs, matching the anchor. A small\n")
+cat("residual gap remains in obs/F (6242 vs 6232, F=31.88 vs ~27.52), from this\n")
+cat("diagnostic's simpler linkage vs. the legacy sdwismatch production pipeline; not a\n")
+cat("PWSID-count divergence any more.\n")
 
 cat("\nDone.\n")

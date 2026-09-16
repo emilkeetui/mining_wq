@@ -72,16 +72,16 @@ r42 <- render_panel_k2(
 anchor_terms <- get_term(r42$iv_list[[2]], "num_coal_mines_linked_sum")  # nitrates, state x year
 anchor_ars   <- get_term(r42$iv_list[[4]], "num_coal_mines_linked_sum")  # arsenic, state x year
 anchor_ioc   <- get_term(r42$iv_list[[6]], "num_coal_mines_linked_sum")  # inorganic, state x year
-cat(sprintf("\nAnchor check (state x year FE): nitrates %.2f (%.2f) [want 3.28 (1.73)]\n",
+cat(sprintf("\nAnchor check (state x year FE): nitrates %.2f (%.2f) [want 3.94 (1.75)]\n",
             anchor_terms$est, anchor_terms$se))
-cat(sprintf("Anchor check (state x year FE): arsenic %.2f (%.2f) [want 3.11 (1.52)]\n",
+cat(sprintf("Anchor check (state x year FE): arsenic %.2f (%.2f) [want 3.78 (1.56)]\n",
             anchor_ars$est, anchor_ars$se))
-cat(sprintf("Anchor check (state x year FE): inorganic %.2f (%.2f) [want 2.00 (1.60)]\n",
+cat(sprintf("Anchor check (state x year FE): inorganic %.2f (%.2f) [want 3.06 (1.66)]\n",
             anchor_ioc$est, anchor_ioc$se))
 stopifnot(
-  abs(round(anchor_terms$est, 2) - 3.28) < 0.01, abs(round(anchor_terms$se, 2) - 1.73) < 0.01,
-  abs(round(anchor_ars$est, 2)   - 3.11) < 0.01, abs(round(anchor_ars$se, 2)   - 1.52) < 0.01,
-  abs(round(anchor_ioc$est, 2)   - 2.00) < 0.01, abs(round(anchor_ioc$se, 2)   - 1.60) < 0.01
+  abs(round(anchor_terms$est, 2) - 3.94) < 0.01, abs(round(anchor_terms$se, 2) - 1.75) < 0.01,
+  abs(round(anchor_ars$est, 2)   - 3.78) < 0.01, abs(round(anchor_ars$se, 2)   - 1.56) < 0.01,
+  abs(round(anchor_ioc$est, 2)   - 3.06) < 0.01, abs(round(anchor_ioc$se, 2)   - 1.66) < 0.01
 )
 cat("MR anchor gate PASSED.\n")
 
@@ -106,8 +106,8 @@ fs_m <- fixest::feols(
   data = main_dat, cluster = ~PWSID, warn = FALSE, notes = FALSE
 )
 f_val_main <- f_clustered(main_dat, fe_state_yr)
-cat(sprintf("\nFirst-stage F (main, state x year FE): %.2f [want ~50.01]\n", f_val_main))
-stopifnot(abs(f_val_main - 50.01) < 0.01)
+cat(sprintf("\nFirst-stage F (main, state x year FE): %.2f [want ~49.10]\n", f_val_main))
+stopifnot(abs(f_val_main - 49.10) < 0.01)
 cat("First-stage F gate PASSED.\n")
 
 el_fs <- list(

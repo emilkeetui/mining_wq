@@ -66,10 +66,12 @@ build_dose_sample <- function(kk, arm_choice) {
 
   if (arm_choice == "main") {
     arm_k <- si %>% dplyr::filter(arm == "main", k == kk, n_mine_hucs_linked >= 1) %>%
+      apply_a2() %>%
       dplyr::select(PWSID, year, production_linked_sum)
   } else {
     arm_k <- si %>% dplyr::filter(arm == "placebo", k == kk, n_mine_hucs_linked >= 1,
                                    !(PWSID %in% main_k_ids)) %>%
+      apply_a2() %>%
       dplyr::select(PWSID, year, production_linked_sum)
   }
 

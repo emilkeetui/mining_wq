@@ -31,17 +31,21 @@ HUC_CSV   = ROOT / "clean_data/huc_coal_charac_geom_match.csv"
 DIST_PQ   = ROOT / "clean_data/huc_step_distance.parquet"
 INTAKE_XL = Path("Z:/ek559/water_instrument/cws_intake_hucs/PWS_Loctations_HUC12_A_I_2022Q2.xlsx")
 SDWA_DIR  = Path("Z:/ek559/sdwa_violations/SDWA_latest_downloads")
+PURITY_PQ = ROOT / "clean_data/cws_data/step_purity_flags.parquet"
 OUT_PATH  = ROOT / "clean_data/cws_data/step_huc_links_k2.parquet"
 K = 2
 
 if OUT_PATH.exists():
     print(f"WARNING: {OUT_PATH} already exists — overwriting")
 
-# ── k=2 main-arm PWSID universe ──────────────────────────────────────────
+# ── k=2 main-arm PWSID universe (A2 intake-purity screened) ─────────────
 si = pd.read_parquet(ROOT / "clean_data/cws_data/step_instruments.parquet", engine="pyarrow")
-main_k2 = si[(si["arm"] == "main") & (si["k"] == K) & (si["n_mine_hucs_linked"] >= 1)]
+purity = pd.read_parquet(PURITY_PQ, engine="pyarrow")
+a2_main_k2 = set(purity.loc[(purity["arm"] == "main") & (purity["k"] == K) & (purity["a2_pure"] == 1), "PWSID"])
+main_k2 = si[(si["arm"] == "main") & (si["k"] == K) & (si["n_mine_hucs_linked"] >= 1)
+             & (si["PWSID"].isin(a2_main_k2))]
 main_k2_pwsids = set(main_k2["PWSID"].unique())
-print(f"k=2 main-arm universe: {len(main_k2_pwsids):,} PWSIDs")
+print(f"k=2 main-arm universe (A2 intake-purity screened): {len(main_k2_pwsids):,} PWSIDs")
 
 # ── HUC network attrs (tohuc walk; cheap, attrs only) ────────────────────
 print("Reading HUC network attrs (huc12, tohuc only)...")
