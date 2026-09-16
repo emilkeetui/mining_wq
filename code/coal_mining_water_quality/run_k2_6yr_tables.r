@@ -19,10 +19,10 @@
 #     for syr2_mr_comparison_k2's SYR2-reporting-status comparison)
 #   clean_data/cws_6year_review.parquet (SYR2 reporting-status universe)
 # Outputs:
-#   output/reg/6yr_huc02fe_inorg_ravalli_2005_k2.tex
-#   output/sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex
+#   output/reg/6yr_huc02fe_inorg_ravalli_2005_k2.tex (+ _present.tex)
+#   output/sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex (+ _present.tex)
 #   output/reg/pt_balance_6yr_k2.tex
-#   output/sum/syr2_mr_comparison_k2.tex
+#   output/sum/syr2_mr_comparison_k2.tex (+ _present.tex)
 # Author: EK  Date: 2026-09-14
 # ============================================================
 
@@ -129,6 +129,33 @@ etable(
   file            = out_reg
 )
 cat("Written:", out_reg, "\n")
+
+# Presentation companion: same table body, notes = FE sentence + clustering +
+# stars only (table has no FE checkmark rows -- drop.section = "fixef") --
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+note_reg_present <- paste0(
+  "\\textit{Notes:} All specifications include utility and state $\\times$ year ",
+  "fixed effects. Standard errors clustered at the utility level. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+out_reg_present <- sub("\\.tex$", "_present.tex", out_reg)
+etable(
+  models_val,
+  headers         = hdr_val,
+  fitstat         = ~n,
+  style.tex       = style.tex("aer", adjustbox = TRUE),
+  tex             = TRUE,
+  digits          = "r4",
+  drop            = "Number of intake facilities",
+  drop.section    = "fixef",
+  title           = "Effect of cumulative upstream coal production on Inorganic Chemicals, SYR2 1998--2005",
+  label           = "tab:6yr_huc02fe_inorg_ravalli_2005_k2",
+  dict            = k2_dict,
+  notes           = note_reg_present,
+  postprocess.tex = move_notes_below_adjustbox,
+  file            = out_reg_present
+)
+cat("Written:", out_reg_present, "\n")
 
 # ── 6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex ───────────────────
 mcl_labels <- c(
@@ -245,6 +272,20 @@ tex_ss <- c(
 out_ss <- "Z:/ek559/mining_wq/output/sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex"
 writeLines(tex_ss, out_ss)
 cat("Written:", out_ss, "\n")
+
+# Presentation companion: same table body, trailing notes minipage dropped
+# entirely (summary statistics carry no clustering/FE/stars) --
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+tex_ss_present <- c(
+  "", "\\begin{table}[htbp]",
+  paste0("   \\caption{\\label{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2} Utility contaminant concentrations (1998-2005) and cumulative upstream coal production exposure (since 1985), two-step upstream watershed linkage}"),
+  "   \\bigskip", "   \\centering",
+  panel_a_lines_ss, panel_b_lines_ss,
+  "\\end{table}", ""
+)
+out_ss_present <- sub("\\.tex$", "_present.tex", out_ss)
+writeLines(tex_ss_present, out_ss_present)
+cat("Written:", out_ss_present, "\n")
 
 # ── pt_balance_6yr_k2.tex ─────────────────────────────────────────────────
 # Cross-sectional balance test: dose (cumulative upstream production by
@@ -541,5 +582,20 @@ tex_c <- paste0(
 out_c <- "Z:/ek559/mining_wq/output/sum/syr2_mr_comparison_k2.tex"
 writeLines(tex_c, out_c)
 cat("Written:", out_c, "\n")
+
+# Presentation companion: same table body, trailing notes minipage dropped
+# entirely -- .claude/logs/2026-08-31-presentation-notes-tables.md.
+tex_c_present <- paste0(
+  "\\begin{table}[htbp]\n\\centering\n",
+  "\\caption{MR and MCL violation rates and counts by SYR2 contaminant reporting status, two-step upstream watershed linkage}\n",
+  "\\label{tab:syr2_mr_comparison_k2}\n",
+  build_panel_c("Panel A: 1997--2005", rows_9705),
+  "\\vspace{8pt}\n",
+  build_panel_c("Panel B: 1985--2005", rows_8505),
+  "\\end{table}\n"
+)
+out_c_present <- sub("\\.tex$", "_present.tex", out_c)
+writeLines(tex_c_present, out_c_present)
+cat("Written:", out_c_present, "\n")
 
 cat("\n=== run_k2_6yr_tables.r DONE ===\n")

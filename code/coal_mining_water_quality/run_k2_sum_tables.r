@@ -18,8 +18,8 @@
 #   clean_data/cws_data/sdwa_visit_agg_k2.parquet (via k2_common.r)
 #   clean_data/cws_data/sdwa_enf_agg_k2.parquet (via k2_common.r)
 # Outputs:
-#   output/sum/violation_binary_days_panels_k2.tex
-#   output/sum/enforcement_visit_type_panels_k2.tex
+#   output/sum/violation_binary_days_panels_k2.tex (+ _present.tex)
+#   output/sum/enforcement_visit_type_panels_k2.tex (+ _present.tex)
 # Author: EK  Date: 2026-09-14
 # ============================================================
 
@@ -160,6 +160,23 @@ out_path_1 <- "Z:/ek559/mining_wq/output/sum/violation_binary_days_panels_k2.tex
 writeLines(table_lines_1, out_path_1)
 cat("\nWritten:", out_path_1, "\n")
 
+# Presentation companion: same table body, trailing notes minipage dropped
+# entirely (summary statistics carry no clustering/FE/stars) --
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+table_lines_1_present <- c(
+  "\\begin{table}[htbp]",
+  "\\raggedright",
+  "\\caption{Coal Mining Exposed Utilities' Inorganic Chemical Water Violations, Two-Step Upstream Watershed Linkage, 1985--2005}",
+  "\\label{tab:violation_binary_days_panels_k2}",
+  "\\small",
+  panel_a_lines,
+  panel_b_lines,
+  "\\end{table}"
+)
+out_path_1_present <- sub("\\.tex$", "_present.tex", out_path_1)
+writeLines(table_lines_1_present, out_path_1_present)
+cat("Written:", out_path_1_present, "\n")
+
 # ── 2. enforcement_visit_type_panels_k2.tex ─────────────────────────────
 # Reference 2SLS sample: drop FE-singleton rows relative to
 # inorganic_chemicals_MR_bin ~ num_facilities | PWSID + year, re-derived
@@ -291,5 +308,22 @@ table_lines_2 <- c(
 out_path_2 <- "Z:/ek559/mining_wq/output/sum/enforcement_visit_type_panels_k2.tex"
 writeLines(table_lines_2, out_path_2)
 cat("Written:", out_path_2, "\n")
+
+# Presentation companion: same table body, trailing notes minipage dropped
+# entirely (summary statistics carry no clustering/FE/stars) --
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+table_lines_2_present <- c(
+  "\\begin{table}[htbp]",
+  "\\raggedright",
+  "\\caption{Enforcement Actions and Site Visits, Coal Mining Exposed Utilities, Two-Step Upstream Watershed Linkage, 1985--2005}",
+  "\\label{tab:enforcement_visit_type_panels_k2}",
+  "\\small",
+  panel_a_lines2,
+  panel_b_lines2,
+  "\\end{table}"
+)
+out_path_2_present <- sub("\\.tex$", "_present.tex", out_path_2)
+writeLines(table_lines_2_present, out_path_2_present)
+cat("Written:", out_path_2_present, "\n")
 
 cat("\n=== run_k2_sum_tables.r DONE ===\n")

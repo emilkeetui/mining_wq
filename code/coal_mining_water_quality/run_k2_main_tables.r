@@ -13,13 +13,13 @@
 #   clean_data/cws_data/sdwa_visit_agg_k2.parquet (via k2_common.r)
 #   clean_data/cws_data/sdwa_enf_agg_k2.parquet (via k2_common.r)
 # Outputs:
-#   output/reg/2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2.tex
-#   output/reg/2sls_dwnstrm_minevio_mr_ivsum_binvio_k2.tex
-#   output/reg/2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2.tex
-#   output/reg/fs_dwnstrm_minevio_ivsum_k2.tex
-#   output/reg/exclusion_test_num_facilities_k2.tex
-#   output/reg/h2_snsv_d12_k2.tex
-#   output/reg/h3_inf_formal_d12_k2.tex
+#   output/reg/2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2.tex (+ _present.tex)
+#   output/reg/2sls_dwnstrm_minevio_mr_ivsum_binvio_k2.tex (+ _present.tex)
+#   output/reg/2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2.tex (+ _present.tex)
+#   output/reg/fs_dwnstrm_minevio_ivsum_k2.tex (+ _present.tex)
+#   output/reg/exclusion_test_num_facilities_k2.tex (+ _present.tex)
+#   output/reg/h2_snsv_d12_k2.tex (+ _present.tex)
+#   output/reg/h3_inf_formal_d12_k2.tex (+ _present.tex)
 # Author: EK  Date: 2026-09-14
 # ============================================================
 
@@ -38,6 +38,11 @@ depvar_vio <- paste0(
   "two flow steps upstream of their intake and no coal mine colocated with their intake."
 )
 
+# Presentation companions: same table bodies, notes stripped to clustering +
+# stars only (all render_panel_k2 outputs already show FE checkmark rows in
+# panel_rf) -- .claude/logs/2026-08-31-presentation-notes-tables.md.
+notes_present_panel <- "\\textit{Notes:} Standard errors clustered at the utility level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+
 # ── 4.1 Any-category violations ──────────────────────────────────────────
 render_panel_k2(
   dat        = main_dat,
@@ -49,7 +54,8 @@ render_panel_k2(
   label      = "tab:2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2",
   outfile    = "2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2",
   depvar_sentence = depvar_vio,
-  superheader = "Any violation"
+  superheader = "Any violation",
+  notes_present = notes_present_panel
 )
 
 # ── 4.2 MR violations ────────────────────────────────────────────────────
@@ -63,7 +69,8 @@ r42 <- render_panel_k2(
   label      = "tab:2sls_dwnstrm_minevio_mr_ivsum_binvio_k2",
   outfile    = "2sls_dwnstrm_minevio_mr_ivsum_binvio_k2",
   depvar_sentence = depvar_vio,
-  superheader = "Monitoring and reporting (MR) violation"
+  superheader = "Monitoring and reporting (MR) violation",
+  notes_present = notes_present_panel
 )
 
 # Anchor check (plan Step 4.2): state x year FE columns are 2, 4, 6 (2nd FE
@@ -96,7 +103,8 @@ render_panel_k2(
   label      = "tab:2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2",
   outfile    = "2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2",
   depvar_sentence = depvar_vio,
-  superheader = "Maximum contaminant level (MCL) violation"
+  superheader = "Maximum contaminant level (MCL) violation",
+  notes_present = notes_present_panel
 )
 
 # ── 4.4 First stage ───────────────────────────────────────────────────────
@@ -140,6 +148,26 @@ etable(
   file            = "Z:/ek559/mining_wq/output/reg/fs_dwnstrm_minevio_ivsum_k2.tex"
 )
 cat("  Written: output/reg/fs_dwnstrm_minevio_ivsum_k2.tex\n")
+
+# Presentation companion: same table body, notes stripped to clustering +
+# stars only (FE checkmark rows already shown via el_fs) --
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+etable(
+  fs_m,
+  style.tex       = style.tex("aer", adjustbox = TRUE),
+  tex             = TRUE,
+  digits          = "r4",
+  drop            = "Number of intake facilities",
+  drop.section    = "fixef",
+  title           = "First stage: effect of the Acid Rain Program on the number of upstream coal mines (summed across watersheds within two flow steps upstream)",
+  label           = "tab:fs_dwnstrm_minevio_ivsum_k2",
+  extralines      = el_fs,
+  dict            = k2_dict,
+  notes           = notes_present_panel,
+  postprocess.tex = function(x) right_align_tabular(move_notes_below_adjustbox(x)),
+  file            = "Z:/ek559/mining_wq/output/reg/fs_dwnstrm_minevio_ivsum_k2_present.tex"
+)
+cat("  Written: output/reg/fs_dwnstrm_minevio_ivsum_k2_present.tex\n")
 
 # ── 4.5 Exclusion-restriction falsification test ─────────────────────────
 m1 <- fixest::feols(num_facilities ~ post95:sulfur_mean0 | PWSID + year + STATE_CODE^year,
@@ -268,6 +296,30 @@ table_lines_et <- c(
 writeLines(table_lines_et, "Z:/ek559/mining_wq/output/reg/exclusion_test_num_facilities_k2.tex")
 cat("  Written: output/reg/exclusion_test_num_facilities_k2.tex\n")
 
+# Presentation companion: same table body, notes stripped to clustering +
+# stars only (FE checkmark rows already shown in tabular_lines_et) --
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+table_lines_et_present <- c(
+  "\\begin{table}[htbp]",
+  "\\raggedright",
+  paste0("\\begin{minipage}{", total_w_et, "}"),
+  paste0("\\caption{\\label{tab:exclusion_test_num_facilities_k2} Effect of instrument on utility characteristics}"),
+  "\\end{minipage}",
+  "\\small",
+  "{\\setlength{\\tabcolsep}{4pt}%",
+  tabular_lines_et,
+  "}",
+  paste0("\\begin{minipage}{", total_w_et, "}"),
+  "\\vspace{4pt}",
+  "\\footnotesize",
+  "\\raggedright",
+  notes_present_panel,
+  "\\end{minipage}",
+  "\\end{table}"
+)
+writeLines(table_lines_et_present, "Z:/ek559/mining_wq/output/reg/exclusion_test_num_facilities_k2_present.tex")
+cat("  Written: output/reg/exclusion_test_num_facilities_k2_present.tex\n")
+
 # ── 4.6 Visit types ────────────────────────────────────────────────────────
 depvar_visit <- paste0(
   "Dependent variable equals 1 if the utility received a regulator visit of that type ",
@@ -288,7 +340,8 @@ render_panel_k2(
   title      = "Effect of coal mining on regulator visit probability by visit type",
   label      = "tab:h2_snsv_d12_k2",
   outfile    = "h2_snsv_d12_k2",
-  depvar_sentence = depvar_visit
+  depvar_sentence = depvar_visit,
+  notes_present = notes_present_panel
 )
 
 # ── 4.7 Enforcement types ──────────────────────────────────────────────────
@@ -304,13 +357,14 @@ depvar_enf <- paste0(
 render_panel_k2(
   dat        = main_dat,
   outcomes   = c(any_informal = "Informal", any_formal = "Formal", no_enf = "None"),
-  fe_specs   = fe_state_yr,
+  fe_specs   = FE_TWO,
   dict       = k2_dict,
   title      = "Effect of coal mining on enforcement actions by type",
   label      = "tab:h3_inf_formal_d12_k2",
   outfile    = "h3_inf_formal_d12_k2",
   depvar_sentence = depvar_enf,
-  superheader = "Any enforcement"
+  superheader = "Any enforcement",
+  notes_present = notes_present_panel
 )
 
 cat("\n=== run_k2_main_tables.r DONE ===\n")
