@@ -92,46 +92,43 @@ citestyle=bwl-FU
 \titlepage
 \end{frame}
 
-% ---------------------------------------------------------------- 2
-\begin{frame}{Coal is not going away, and ``clean'' coal is not clean}
-\begin{columns}[T]
-\begin{column}{0.52\textwidth}
-\begin{itemize}\small
-    \item Coal supplied 16\% of US electricity in 2025 (\cite{IEA2025GER}).
-    \item Federal policy is expanding mining access and delaying plant retirements (\cite{Trump2025EO14260}; \cite{Daly2025CoalMining}).
-    \item ``Clean'' coal $\equiv$ low sulfur coal $\equiv$ less acid rain.
-    \item Coal mining contaminates water quality by leaching inorganic chemicals into surface and ground water (\cite{skousen2019acid}).
-    \item 85\% of US households drink water from a utility that must treat and self-report its water quality.
+\begin{frame}{US drinking water is monitored through self-reports}
+\begin{itemize}
+    \item Drinking water utilities provide treated water from groundwater and/or surface water sources to twenty five to millions of customers, publicly or privately owned.
+    \item 85\% of US households obtain water from a utility required to treat and self-report water quality.
+    \begin{itemize}
+        \item Testing requires technical staff, administrative tracking, and laboratories.
+        \item Self-reporting is a larger burden than the MCL (\cite{oleckno1982national}).
+        \item Testing \textbf{requirements increase with assessed source-water impairment}.
+    \end{itemize}
+    \item 9 to 34 million US households obtain water from a utility violating a health standard \parencite{allaire2018national}.
 \end{itemize}
-\end{column}
-\begin{column}{0.46\textwidth}
-\begin{center}
-\includegraphics[width=\textwidth]{img/president_clean_coal.PNG}
-\par\medskip{\scriptsize ``Clean'' coal $\equiv$ $\leq 2\%$ sulfur by weight.\par}
-\end{center}
-\end{column}
-\end{columns}
 \end{frame}
 
-% ---------------------------------------------------------------- 3
 \begin{frame}{Self-reported compliance}
 \begin{itemize}
-    \item Personal income taxes, Healthcare HIPAA violation disclosure, energy firms'self-disclosure to the Federal Energy Regulatory Commission, public companies' SOX (Sarbanes‑Oxley Act) self-reports, Toxic Release Inventories, and drinking water utilities.
-    \item The regulator learns of an exceedance if the firm self-reports.
+    \item Personal income taxes, Healthcare HIPAA violation disclosure, energy firms self-report anti-competitiveness/negligence to the Federal Energy Regulatory Commission, public companies' Sarbanes‑Oxley Act self-report financial statement accuracy, Toxic Release Inventories, and drinking water utilities.
+    \item The regulator learns of a violation if the firm self-reports.
     \item Water quality violations:
     \begin{itemize}
         \item \textbf{MCL} --- reported contamination above the limit. Formally enforced.
-        \item \textbf{MR} --- under-reporting. Saves self-reporting costs and conceals MCL.
+        \item \textbf{MR} --- under-reporting. Lower penalty compared to MCL.
     \end{itemize}
-    \item Under-reporting incentives increase with contamination:
+    \item States main enforcers, have wide discretion. Enforcement is remedial before punitive: 
     \begin{itemize}
-        \item testing requirements, and so \textbf{reporting costs}, rise with contamination;
-        \item the need to \textbf{conceal} an exceedance rises.
+        \item Informal (letters, notices, compliance plans)
+        \item Formal (consent decrees, fines, prosecution)
+        \item Visits (sanitary, sampling, technical assistance)
+    \end{itemize}
+    \item No self-report $\Rightarrow$ no MCL violation can be issued.
+    \item MR saves self-reporting costs.
+    \begin{itemize}
+        \item $\uparrow$ contamination $\rightarrow \uparrow$ testing requirements ($\uparrow$ \textbf{reporting costs})
+        \item $\uparrow$ contamination $\rightarrow \uparrow$ probability MCL ($\uparrow$ \textbf{need to conceal}).
     \end{itemize}
     \item If penalties for under-reporting do not rise with contamination, self-reporting falls.
 \end{itemize}
 \end{frame}
-
 
 % ---------------------------------------------------------------- 4
 \begin{frame}{Research question}
@@ -148,6 +145,21 @@ citestyle=bwl-FU
 \end{itemize}
 \end{frame}
 
+\begin{frame}{Coal mining contaminates water and is not going}
+\begin{itemize}
+    \item Coal mining contaminates water quality by leaching inorganic chemicals into surface and ground water (\cite{skousen2019acid}).
+\begin{itemize}\small
+    \item Coal supplied 16\% of US electricity in 2025 (\cite{IEA2025GER}).
+    \item Federal policy is expanding mining access and delaying plant retirements (\cite{Trump2025EO14260}; \cite{Daly2025CoalMining}).
+\end{itemize}
+    \item \textbf{Acid mine drainage}: exposed sulfide rock oxidizes, forms sulfuric acid, dissolves metal ions and sulfates, which travel into surface and ground water (\cite{skousen2019acid}).
+    \item \textbf{Coal wash slurry}: impurities stored in retaining ponds seep through porous rock, or the ponds fail.
+    \item Both increase with the \textbf{sulfur content} of the coal seam.
+    \item Contaminants: \textbf{arsenic, nitrate, barium, selenium} --- inorganic chemicals with stable utility MCL's 1985--2005.
+    \item Costly to remove: replacing one small system's arsenic filtration cost \$192,000 plus \$60/day to run (US EPA, 2011).
+\end{itemize}
+\end{frame}
+    
 % ---------------------------------------------------------------- 5
 \begin{frame}{What I do, and what is new}
 \begin{itemize}
@@ -156,11 +168,11 @@ citestyle=bwl-FU
         \item Contamination is \textbf{upstream externality} --- the firm cannot reduce by cutting output.
         \item Separation aids identifying the effect of contamination.
     \end{itemize}
-    \item Instrument coal production: upstream coal sulfur \% $\times$ post-1995, the Acid Rain Program Phase I deadline.
+    \item Instrument coal production using sulfur percentage content of coal and the Acid Rain Program Phase 1 deadline \parencite{stratford2015coalprod}.
     \item Contributions:
     \begin{itemize}
         \item First causal estimates of effect of coal mining on \textbf{treated} drinking water at US utilities.
-        \item First evidence that \textbf{the cost of self-reporting}, not only concealment, causes under-reporting (cf.\ \cite{bennear2009sampling}; \cite{zou2021unwatched}).
+        \item First evidence that \textbf{the cost of self-reporting}, not only concealment, causes under-reporting (\cite{bennear2009sampling}; \cite{zou2021unwatched}).
         \item Causal evidence of effect of \textbf{contamination itself} on contamination control effectiveness.
     \end{itemize}
 \end{itemize}
@@ -193,30 +205,7 @@ Contamination shifts monitoring from the firm onto the regulator.
 % ================================================================
 
 % ---------------------------------------------------------------- 8
-\begin{frame}{The Safe Drinking Water Act (SDWA) monitors through self-reports}
-\begin{itemize}
-    \item Drinking water utilities with $\geq$ 25 people, $\geq$ 15 connections, year-round.
-    \item The utility tests its own water on a schedule and files results with the state.
-    \begin{itemize}
-        \item Testing needs technical staff, administrative tracking, and laboratories.
-        \item Surveyed managers named reporting as the SDWA's single largest burden (\cite{oleckno1982national}).
-        \item Schedules \textbf{tighten with assessed source-water impairment}.
-    \end{itemize}
-    \item States hold primacy and wide discretion. Enforcement is remedial before punitive: informal (letters, notices, compliance plans), formal (consent decrees, fines, prosecution), and visits (sanitary, sampling, technical assistance).
-    \item No self-report $\Rightarrow$ no MCL violation can be issued.
-\end{itemize}
-\end{frame}
 
-% ---------------------------------------------------------------- 9
-\begin{frame}{Mining puts inorganic chemicals in the water}
-\begin{itemize}
-    \item \textbf{Acid mine drainage}: exposed sulfide rock oxidises, forms sulfuric acid, dissolves metal ions and sulfates, which travel into surface and ground water (\cite{skousen2019acid}).
-    \item \textbf{Coal wash slurry}: impurities stored in retaining ponds seep through porous rock, or the ponds fail.
-    \item Both increase with the \textbf{sulfur content} of the coal seam.
-    \item Contaminants: \textbf{arsenic, nitrate, barium, selenium} --- all inorganic chemicals, all with MCLs unchanged over 1985--2005.
-    \item Costly to remove: replacing one small system's arsenic filtration cost \$192,000 plus \$60/day to run (US EPA, 2011).
-\end{itemize}
-\end{frame}
 
 % ---------------------------------------------------------------- 10
 \begin{frame}{The Acid Rain Program moved coal, not for water reasons}
