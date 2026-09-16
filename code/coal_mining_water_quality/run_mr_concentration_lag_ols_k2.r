@@ -16,7 +16,7 @@
 #   Z:/ek559/sdwa_violations/SDWA_latest_downloads/SDWA_VIOLATIONS_ENFORCEMENT.parquet
 # Outputs: terminal printout, and (as of 2026-09-14, extending the original
 #          terminal-only diagnostic per the k2 main.tex table plan)
-#          output/reg/mr_concentration_lag_ols_k2.tex
+#          output/reg/mr_concentration_lag_ols_k2.tex (+ _present.tex)
 # Author: EK  Date: 2026-09-14
 # ============================================================
 
@@ -277,6 +277,38 @@ if (!is.null(fwd) && !is.null(fwd6mon)) {
     cat(sprintf("Output verified: %s exists and is non-zero.\n", out_tex_k2))
   } else {
     cat(sprintf("[ERROR] %s missing or empty.\n", out_tex_k2))
+  }
+
+  # Presentation companion: same table body, notes = FE sentence + clustering
+  # + stars only (table has no FE checkmark rows -- drop.section = "fixef"),
+  # mirroring mr_concentration_lag_ols_present.tex wording --
+  # .claude/logs/2026-08-31-presentation-notes-tables.md.
+  note_k2_tex_present <- paste0(
+    "\\textit{Notes:} All specifications include utility and year fixed effects. ",
+    "SEs clustered at the utility level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+  )
+  out_tex_k2_present <- sub("\\.tex$", "_present.tex", out_tex_k2)
+  etable(fwd, fwd6mon,
+         headers      = c("Nitrate MR (1-yr)", "Nitrate MR (6-mon)"),
+         notes        = note_k2_tex_present,
+         fitstat      = ~n,
+         digits       = "r4",
+         drop.section = "fixef",
+         style.tex    = style.tex("aer", adjustbox = TRUE),
+         file         = out_tex_k2_present,
+         replace      = TRUE)
+  rename_tex_k2(out_tex_k2_present)
+  right_align_tabular_k2(out_tex_k2_present)
+  pad_stars_for_decimal_align_k2(out_tex_k2_present)
+  wrap_table_float(out_tex_k2_present,
+    "Nitrate MR violations following a reading above 50\\% of the MCL, two-step upstream watershed linkage",
+    label = "tab:mr_concentration_lag_ols_k2")
+  reformat_notes_tiny_k2(out_tex_k2_present)
+  cat(sprintf("Table saved to: %s\n", out_tex_k2_present))
+  if (file.exists(out_tex_k2_present) && file.info(out_tex_k2_present)$size > 0) {
+    cat(sprintf("Output verified: %s exists and is non-zero.\n", out_tex_k2_present))
+  } else {
+    cat(sprintf("[ERROR] %s missing or empty.\n", out_tex_k2_present))
   }
 } else {
   cat("\n[ERROR] fwd or fwd6mon model failed -- skipping .tex render.\n")

@@ -251,7 +251,8 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
                              coalvar = "num_coal_mines_linked_sum",
                              instr_str = "post95:sulfur_mean0",
                              title, label, outfile,
-                             depvar_sentence, extra_note = NULL, superheader = NULL) {
+                             depvar_sentence, extra_note = NULL, superheader = NULL,
+                             notes_present = NULL) {
   n_oc  <- length(outcomes)
   n_fe  <- length(fe_specs)
   n_col <- n_oc * n_fe
@@ -400,7 +401,7 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
   }
   note_text <- notes_k2(depvar_sentence, f_note = f_note, extra = extra_note)
 
-  table_lines <- c(
+  build_table_lines <- function(note_text_val) c(
     "\\begin{table}[htbp]",
     "\\raggedright",
     paste0("\\begin{minipage}{", total_w, "}"),
@@ -416,14 +417,27 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
     "\\vspace{4pt}",
     "\\footnotesize",
     "\\raggedright",
-    note_text,
+    note_text_val,
     "\\end{minipage}",
     "\\end{table}"
   )
 
+  table_lines <- build_table_lines(note_text)
   out_path <- file.path(ROOT, "output/reg", paste0(outfile, ".tex"))
   writeLines(table_lines, out_path)
   cat("  k2 panel table written to:", out_path, "\n")
+
+  # Presentation companion: same panels, notes stripped to clustering + stars
+  # only (FE checkmark rows already shown in panel_rf, so per
+  # table-notes-conventions.md Rule 7 the present notes say nothing about FE
+  # either -- see .claude/logs/2026-08-31-presentation-notes-tables.md).
+  if (!is.null(notes_present)) {
+    table_lines_present <- build_table_lines(notes_present)
+    out_path_present <- file.path(ROOT, "output/reg", paste0(outfile, "_present.tex"))
+    writeLines(table_lines_present, out_path_present)
+    cat("  k2 panel presentation table written to:", out_path_present, "\n")
+  }
+
   invisible(list(f_vals = f_vals, n_utils = n_utils, n_obs = n_obs,
                  iv_list = iv_list, rf_list = rf_list, ols_list = ols_list))
 }

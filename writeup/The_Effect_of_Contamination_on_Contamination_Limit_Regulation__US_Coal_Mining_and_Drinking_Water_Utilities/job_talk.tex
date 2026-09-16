@@ -181,10 +181,10 @@ citestyle=bwl-FU
 % ---------------------------------------------------------------- 6
 \begin{frame}{What I find}
 \begin{itemize}\small
-    \item $\uparrow$ mining $\rightarrow$ $\uparrow$ contaminant concentrations. 10M cumulative tons upstream raises mean arsenic by 0.0023 mg/L, about 100\% of its sample mean; selenium $+$69\%, barium $+$24\%. All stay below the MCL.
-    \item $\uparrow$ mining $\rightarrow$ $\uparrow$ \textbf{under-reporting}. One more upstream mine raises MR violations by 7--10 pp, more than doubling the base rate.
-    \item $\uparrow$ mining $\rightarrow$ \textbf{no change} in MCL violations.
-    \item $\uparrow$ mining $\rightarrow$ $\uparrow$ \textbf{enforcement visits} ($+$3.8 pp) and \textbf{sanitary visits} ($+$14 pp) but $\downarrow$ \textbf{formal enforcement} ($-$5.7 pp).
+    \item $\uparrow$ mining $\rightarrow$ $\uparrow$ contaminant concentrations. 10M cumulative tons upstream raises mean nitrate by 12.9\% of its sample mean (***) and selenium by 8.5\% (**); arsenic and barium show no significant change. All stay below the MCL.
+    \item $\uparrow$ mining $\rightarrow$ $\uparrow$ \textbf{under-reporting}. One more upstream mine raises MR violations by 3--5 pp, against base rates of roughly 4--6\%.
+    \item $\uparrow$ mining $\rightarrow$ \textbf{no significant change} in MCL violations for nitrates or IOCs; a small but significant arsenic increase ($+$0.08 to $+$0.22 pp).
+    \item $\uparrow$ mining $\rightarrow$ $\uparrow$ \textbf{inspection visits} ($+$2.1 pp); sanitary visits, enforcement visits, and formal enforcement lose significance once state $\times$ year fixed effects are added (formal enforcement: $-$3.4 pp with utility and year fixed effects alone).
     \item \textbf{Self-reporting costs, not concealment}: 
     \begin{itemize}
         \item when nitrate readings cross 50\% of the MCL and monitoring requirements step up --- reporting cost up --- increase under-reporting.
@@ -281,7 +281,7 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
     \item \textbf{Mines} --- MSHA locations merged to EIA annual production, mine level.
     \item \textbf{Coal sulfur \%} --- USGS COALQUAL samples, averaged within 20 km of each watershed.
     \item \textbf{Hydrology} --- NHDPlus HUC12 watershed boundaries and inflow/outflow.
-    \item Sample: Utilities with an intake \textbf{strictly one HUC12 downstream} of a mine watershed. 6,225 utility-years, 333 utilities.
+    \item Sample: Utilities with a coal mine \textbf{within two flow steps upstream} of their intake and no coal mine colocated with their intake. 10,641 utility-years, 565 utilities.
 \end{itemize}
 \end{frame}
 
@@ -291,7 +291,7 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
 \begin{column}{0.5\textwidth}
 \begin{itemize}\small
     \item HUC12 is the finest watershed mapped for the continental US ($>$87,000 units).
-    \item Exposure = mines and tons coal in the HUC12s \textbf{directly upstream} of the utility's intakes.
+    \item Exposure = mines and tons coal in the HUC12s \textbf{within two flow steps upstream} of the utility's intakes.
     \item Intakes \textbf{colocated} with a mine are excluded.
     \item Multiple intakes: sum production, average sulfur.
 \end{itemize}
@@ -304,8 +304,8 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
 
 % ---------------------------------------------------------------- 15
 \begin{frame}{MR violations are common; MCL violations barely exist}
-\pressum{violation_binary_days_panels}
-\takeaway{Nitrate MR 6.1\%, arsenic 4.0\%, IOC 4.6\% of utility-years. MCL violations: 4, 2, and 20 events across twenty years.}
+\pressum{violation_binary_days_panels_k2}
+\takeaway{Nitrate MR 5.7\%, arsenic 3.7\%, IOC 4.3\% of utility-years. MCL violations: 12, 5, and 32 events across 1985--2005.}
 \end{frame}
 
 % ================================================================
@@ -315,12 +315,12 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
 % ---------------------------------------------------------------- 17
 \begin{frame}{Design: cumulative production, measured concentrations}
 \begin{equation*}
-\textit{Concen}_{cht}= \beta\cdot\!\!\sum_{\tau=1985}^{t}\!\!\text{UpstreamCoalProd}_{c\tau} + \rho_c + HUC02_h\cdot\tau_t + \epsilon_{cht}
+\textit{Concen}_{ct}= \beta\cdot\!\!\sum_{\tau=1985}^{t}\!\!\text{UpstreamCoalProd}_{c\tau} + \rho_c + State_c\cdot\tau_t + \epsilon_{ct}
 \end{equation*}
 \begin{itemize}\small
-    \item $\textit{Concen}_{cht}$: mean annual concentration at utility $c$ in basin $h$, year $t$ (SYR2, 1998--2005).
+    \item $\textit{Concen}_{ct}$: mean annual concentration at utility $c$, year $t$ (SYR2, 1998--2005).
     \item $\beta$: effect of 10 million additional cumulative short tons mined upstream since 1985.
-    \item $\rho_c$: utility fixed effects. $HUC02_h\cdot\tau_t$: basin-specific year effects, absorbing region-wide industrial trends.
+    \item $\rho_c$: utility fixed effects. $State_c\cdot\tau_t$: state-specific year effects, absorbing region-wide industrial trends.
     \item SEs clustered at the utility level.
 \end{itemize}
 \medskip
@@ -332,8 +332,8 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
 
 % ---------------------------------------------------------------- 18
 \begin{frame}{Mining raises contaminant levels --- but not above the limit}
-\presreg{6yr_huc02fe_inorg_ravalli_2005}
-\takeaway{Arsenic $+$0.0023 mg/L per 10M tons: about 100\% of its mean, and 4.6\% of the pre-2006 MCL. Selenium $+$69\% and barium $+$24\% of their means. Nitrate is positive but imprecise. \textbf{Every reading in the sample stays under its MCL.}}
+\presreg{6yr_huc02fe_inorg_ravalli_2005_k2}
+\takeaway{Nitrate $+$0.10 mg/L per 10M tons (***): 12.9\% of its mean. Selenium $+$0.0004 mg/L (**): 8.5\% of its mean. Arsenic and barium show no significant change. \textbf{Every reading in the sample stays under its MCL.}}
 \end{frame}
 
 % ================================================================
@@ -367,7 +367,7 @@ Second stage:
 
 % ---------------------------------------------------------------- 22
 \begin{frame}{First stage: high sulfur watersheds lost their mines}
-\presreg[width=1.3\textwidth]{fs_dwnstrm_minevio_ivsum}
+\presreg[width=1.3\textwidth]{fs_dwnstrm_minevio_ivsum_k2}
 %\takeaway{$F = 27.5$, above the 23.1 critical value of \cite{montielolea2013robust} for a 5\% test against 10\% worst-case bias, and well above the rule of thumb of 10 (\cite{staigerstock1997instrumental}).}
 \end{frame}
 
@@ -375,7 +375,7 @@ Second stage:
 \begin{frame}{Instrument validity}
 \begin{itemize}\small
     \item \textbf{Independence.} The ARP is national clean-\emph{air} law. Its scope, stringency, and 1995 date were set by national energy and emissions politics, not by any downstream utility's water quality or its influence over mine siting. Time-invariant sulfur exposure is absorbed by utility fixed effects.
-    \item \textbf{Exclusion.} The threat is a post-1995 SDWA change hitting high- and low-sulfur utilities differently. National rule changes are absorbed by year effects. Directly testable: regress the number of intake facilities --- the observable proxy for the model's negligence type --- on the instrument. The coefficient is $-0.0016$ (s.e.\ 0.0016), with and without a balanced panel.
+    \item \textbf{Exclusion.} The threat is a post-1995 SDWA change hitting high- and low-sulfur utilities differently. National rule changes are absorbed by year effects. Directly testable: regress the number of intake facilities --- the observable proxy for the model's negligence type --- on the instrument. The coefficient is 0.05--0.06 (s.e.\ $\approx$0.04), with and without a balanced panel, and not statistically significant.
     \item \textbf{Monotonicity.} A defier is a high-sulfur watershed that expanded \emph{because} its coal was high sulfur. Scrubber adoption costs more likely leading to lost market share rather than gain; low-cost high-sulfur regions that expand anyway are never-takers. 
     %Monotonicity is pairwise in sulfur, so low- and high-sulfur areas may respond in opposite directions (\cite{angrist1994identification}).
 \end{itemize}
@@ -383,14 +383,14 @@ Second stage:
 
 % ---------------------------------------------------------------- 24
 \begin{frame}{Mining makes utilities stop reporting}
-\presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio}
-\takeaway{One more upstream mine: nitrate MR $+$9.9 pp, arsenic $+$7.4 pp, IOC $+$7.1 pp, against base rates of 6.1\%, 4.0\%, and 4.6\%. OLS is roughly five times smaller --- negative omitted variable bias, as expected if utilities that can keep mines out are also better at compliance.}
+\presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}
+\takeaway{One more upstream mine raises MR violations by 3.9--4.9 pp for nitrates, 3.8--4.7 pp for arsenic, and 3.1--4.5 pp for IOC (across utility-year and utility-year-by-state-year fixed effects), against base rates of 5.7\%, 3.7\%, and 4.3\%. OLS estimates are far smaller --- consistent with negative omitted variable bias, as expected if utilities that can keep mines out are also better at compliance.}
 \end{frame}
 
 % ---------------------------------------------------------------- 25
-\begin{frame}{And no record of exceedances}
-\presreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio}
-\takeaway{MCL effects are economically and statistically indistinguishable from zero. This is not evidence that the water stayed clean: without a self-report, the regulator cannot issue an MCL violation at all. It is also the wrong prediction for concealment --- hiding is worth paying for when an exceedance is at stake, and measured concentrations never get there.}
+\begin{frame}{Little record of exceedances}
+\presreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2}
+\takeaway{Nitrate and IOC MCL effects are statistically indistinguishable from zero. Arsenic rises by a small but significant $+$0.08 to $+$0.22 pp. This is not strong evidence the water stayed clean: without a self-report, the regulator cannot issue an MCL violation at all, and the arsenic result shows an exceedance can still surface. It is also the wrong prediction for concealment --- hiding is worth paying for when an exceedance is at stake, and measured concentrations are almost always below that threshold.}
 \end{frame}
 
 % ---------------------------------------------------------------- 26
@@ -399,7 +399,7 @@ Second stage:
     \item Nitrate rules require \textbf{more frequent monitoring} once a reading exceeds 50\% of the MCL --- a discrete jump in $c$, with no jump in the penalty for under-reporting and no exceedance yet: a reading at half the limit is still a reading under the limit.
     \item Exceedance risk is held fixed (Channel B = 0), reporting cost increases (Channel A $\geq 0$).
 \end{itemize}
-\presreg{mr_concentration_lag}
+\presreg{mr_concentration_lag_ols_k2}
 \takeaway{Crossing 50\% of the nitrate MCL raises the probability of failing to report within six months by 26 pp, and within a year by 59 pp. Descriptive, not causal --- read the sign not magnitude. Utilities under-report when self-reporting gets expensive, not hiding.}
 \end{frame}
 
@@ -409,14 +409,14 @@ Second stage:
 
 % ---------------------------------------------------------------- 28
 \begin{frame}{Enforcement does not counteract under-reporting}
-\presreg{h3_inf_formal_d12}
-\takeaway{One more upstream mine reduces formal enforcement by 5.7 pp against a base rate of 3.5\%; informal enforcement is flat.}
+\presreg{h3_inf_formal_d12_k2}
+\takeaway{One more upstream mine reduces formal enforcement by 3.4 pp with utility and year fixed effects alone (significant), but the effect loses significance once state $\times$ year fixed effects are added; informal enforcement is not significant in either specification.}
 \end{frame}
 
 % ---------------------------------------------------------------- 29
-\begin{frame}{The regulator substitutes its own monitoring instead}
-\presreg{h2_snsv_d12}
-\takeaway{Sanitary visits $+$14.1 pp against a base rate of 14.6\%; enforcement visits $+$3.7 pp. Regulators show up --- and then do not sanction. Either there are no hidden exceedances, or visits do not find them (\cite{mi2026technology}); I cannot separate the two but concealment is unlikely. Either way the penalty for under-reporting does not increase which Proposition 3 says would work.}
+\begin{frame}{The regulator increases inspections, not enforcement}
+\presreg{h2_snsv_d12_k2}
+\takeaway{Only inspection visits rise significantly ($+$2.1 pp); sanitary and enforcement visits are not statistically distinguishable from zero. Regulators do not systematically step up the visit types tied to sanctions. Either there are no hidden exceedances, or visits do not find them (\cite{mi2026technology}); I cannot separate the two, but concealment is unlikely given the MCL results. Either way the penalty for under-reporting does not increase, which Proposition 3 says would work.}
 \end{frame}
 
 % ---------------------------------------------------------------- 30
@@ -424,7 +424,7 @@ Second stage:
 \begin{itemize}\small
     \item Exogenous contamination raises the cost of self-reporting, and self-reporting falls --- \textbf{even where the quality standard is never breached}.
     \item The evidence points to cost avoidance, not concealment. Corollary 1 makes the two separable: with exceedance risk held fixed, only the cost channel can move under-reporting ---  I find flat exceedance and increasing self-reporting costs.
-    \item Enforcement does not keep pace. Formal action falls as contamination rises, and the regulator absorbs the monitoring burden through sanitary visits instead.
+    \item Enforcement response is mixed and fixed-effects-sensitive: formal action falls with baseline fixed effects but loses significance once state $\times$ year effects are added, and only inspection visits rise significantly --- the regulator's response does not robustly keep pace with contamination.
     \item \textbf{Policy.} Tightening MCLs does nothing if nobody tests. Self-reporting penalties are a lever to reduce under-reporting.
     %\item \textbf{Policy.} Tightening MCLs does nothing if nobody tests. By Proposition 3 the binding lever is the price of \emph{not} reporting where source water is impaired, and it is not currently being pulled (\cite{malik1993self}; \cite{harford1987self}).
     \item Open question: if regulator monitoring is more efficient than self-reporting.
@@ -446,30 +446,26 @@ Second stage:
 \end{frame}
 
 \begin{frame}{Appendix: combined MR and MCL violations}
-\presreg{2sls_dwnstrm_minevio_allcat_ivsum_binvio}
-\takeaway{The combined effect is the MR effect: nitrate $+$9.9 pp, arsenic $+$7.5 pp, IOC $+$6.3 pp.}
+\presreg{2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2}
+\takeaway{The combined effect mirrors the MR effect: nitrate 3.9--4.9 pp, arsenic 4.0--4.8 pp, IOC 3.1--4.4 pp across the two fixed-effects specifications.}
 \end{frame}
 
 \begin{frame}{Appendix: instrument balance on intake facilities}
-\presreg{exclusion_test_num_facilities}
+\presreg{exclusion_test_num_facilities_k2}
 \end{frame}
 
 \begin{frame}{Appendix: concentration summary statistics}
-\pressum{6yr_huc02fe_inorg_val_sumstats_ravalli_2005}
+\pressum{6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2}
 \end{frame}
 
 \begin{frame}{Appendix: who appears in the Six-Year Review}
-\pressum{syr2_mr_comparison}
-\takeaway{Utilities with SYR2 readings are 18--23 pp more likely to ever incur an MR violation. The concentration sample over-represents the more negligent utilities, so it is not selected toward clean systems.}
+\pressum{syr2_mr_comparison_k2}
+\takeaway{Utilities with SYR2 readings are 7--14 pp more likely to ever incur an MR violation. The concentration sample over-represents the more negligent utilities, so it is not selected toward clean systems.}
 \end{frame}
 
 \begin{frame}{Appendix: enforcement and visits in the panel}
-\pressum{enforcement_visit_type_panels}
+\pressum{enforcement_visit_type_panels_k2}
 \takeaway{Enforcement responds to violations --- any enforcement rises from 21\% overall to 71\% in MR years --- but sanitary visits are no more likely in MR years than in any other year.}
-\end{frame}
-
-\begin{frame}{Appendix: reporting lag, national downstream states}
-\presreg{mr_concentration_lag_national_downstream_states}
 \end{frame}
 
 \begin{frame}{Appendix: where coal production moved, 1985--2005}
