@@ -1,0 +1,52 @@
+\begin{table}[htbp]
+\raggedright
+\begin{minipage}{\linewidth}
+\caption{\label{tab:2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2} Effect of coal mines on inorganic chemical violations at utilities}
+\end{minipage}
+\small
+{\setlength{\tabcolsep}{4pt}%
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\toprule
+ & \multicolumn{6}{c}{Maximum contaminant level (MCL) violation} \\
+\cline{2-7}
+ & \multicolumn{2}{c}{Nitrates} & \multicolumn{2}{c}{Arsenic} & \multicolumn{2}{c}{Inorganic chemicals} \\
+\cline{2-3} \cline{4-5} \cline{6-7}
+ & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(3)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(4)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(5)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(6)} \\
+\hline
+\multicolumn{7}{l}{OLS} \\
+Upstream coal mines (sum) & \phantom{(}-0.01$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.00$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.02$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.01$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.05$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.05$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}0.01)\phantom{$^{***}$} & (\phantom{-}0.02)\phantom{$^{***}$} & (\phantom{-}0.03)\phantom{$^{***}$} & (\phantom{-}0.04)\phantom{$^{***}$} & (\phantom{-}0.07)\phantom{$^{***}$} & (\phantom{-}0.07)\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\hline
+\multicolumn{7}{l}{2SLS} \\
+Upstream coal mines (sum) & \phantom{(}-0.08$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.11$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.08$^{*\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.22$^{**\phantom{*}}$ & \phantom{(}-0.16$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.20$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}0.07)\phantom{$^{***}$} & (\phantom{-}0.17)\phantom{$^{***}$} & (\phantom{-}0.04)\phantom{$^{***}$} & (\phantom{-}0.10)\phantom{$^{***}$} & (\phantom{-}0.27)\phantom{$^{***}$} & (\phantom{-}0.26)\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\hline
+\multicolumn{7}{l}{RF} \\
+Post-1995 $\times$ Upstream sulfur \% & \phantom{(}\phantom{-}0.04$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.05$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.03$^{**\phantom{*}}$ & \phantom{(}-0.11$^{**\phantom{*}}$ & \phantom{(}\phantom{-}0.07$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.10$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}0.03)\phantom{$^{***}$} & (\phantom{-}0.09)\phantom{$^{***}$} & (\phantom{-}0.02)\phantom{$^{***}$} & (\phantom{-}0.05)\phantom{$^{***}$} & (\phantom{-}0.11)\phantom{$^{***}$} & (\phantom{-}0.13)\phantom{$^{***}$} \\
+\hline
+Utility fixed effects & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Year fixed effects & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+State $\times$ year fixed effects &  & $\checkmark$ &  & $\checkmark$ &  & $\checkmark$ \\
+Utilities & 573 & 565 & 573 & 565 & 573 & 565 \\
+Utility-years & 10,773 & 10,641 & 10,773 & 10,641 & 10,773 & 10,641 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\raggedright
+\textit{Notes:} Dependent variable equals 1 if the utility had a violation of that type during the year, 0 otherwise; coefficients and standard errors are multiplied by 100 to show percentage point change. The instrument interacts an indicator for the post-1995 period with the average coal sulfur content of watersheds within two flow steps upstream of the utility's intake. The sample is utilities with a coal mine within two flow steps upstream of their intake and no coal mine colocated with their intake. Standard errors clustered at the utility level. The first-stage F-statistic (clustered at the utility level) for the instrumented variable, Upstream coal mines (sum), ranges from 40.24 to 49.10 across columns. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
+\end{minipage}
+\end{table}
