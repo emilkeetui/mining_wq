@@ -108,7 +108,7 @@ citestyle=bwl-FU
         \item $\uparrow$ contamination $\rightarrow \uparrow$ testing requirements ($\uparrow$ \textbf{reporting costs})
         \item $\uparrow$ contamination $\rightarrow \uparrow$ probability contamination violation ($\uparrow$ \textbf{need to conceal}).
     \end{itemize}
-    \item Firms under-report exactly when reporting is most valuable to the regulator.
+    \item Firms under-report when reporting is most valuable to the regulator.
 \end{itemize}
 \end{frame}
 
@@ -157,7 +157,7 @@ citestyle=bwl-FU
 \begin{itemize}
     \item Setting: drinking water utilities downstream of coal mines, 1985--2005.
     \begin{itemize}
-        \item Contamination is \textbf{upstream externality} --- the firm cannot reduce by cutting output.
+        \item Contamination is \textbf{upstream externality} --- the firm cannot reduce by cutting output \parencite{bennear2005strategic}.
         \item Separation aids identifying the effect of contamination.
     \end{itemize}
     \item Adapt \textcite{stratford2015coalprod} instrument for coal production to address two sources of endogeneity:
@@ -168,7 +168,7 @@ citestyle=bwl-FU
     \item Contributions:
     \begin{itemize}
         \item First causal estimates of effect of coal mining on \textbf{treated} drinking water at US utilities.
-        \item First evidence that \textbf{the cost of self-reporting}, not only concealment, causes under-reporting (\cite{bennear2009sampling}; \cite{zou2021unwatched}).
+        \item First evidence that \textbf{the cost of self-reporting}, not only concealment, causes environmental under-reporting \parencite{naylor5537637strategic, zou2021unwatched,bennear2009sampling}.
         \item Causal evidence of effect of \textbf{contamination itself} on contamination control effectiveness.
     \end{itemize}
 \end{itemize}
@@ -235,7 +235,7 @@ Utility draws compliance cost type $\theta \sim F(\cdot\,;m)$ and self-reporting
 \]
 \begin{itemize}
     \item A system with \textbf{zero} exceedance risk still stops reporting once $c > t$.
-    \item Assume $ps < r$ to give utility a reason to under-report.
+    \item Assume $ps < r$ to give utility a reason to conceal.
 \end{itemize}
 \end{frame}
 
@@ -298,18 +298,18 @@ Differentiating (9) splits into two channels:
 % ---------------------------------------------------------------- 17
 \begin{frame}{Design: cumulative production, measured concentrations}
 \begin{equation*}
-\textit{Concen}_{ct}= \beta\cdot\!\!\sum_{\tau=1985}^{t}\!\!\text{UpstreamCoalProd}_{c\tau} + \rho_c + State_c\cdot\tau_t + \epsilon_{ct}
+\textit{Concen}_{ct}= \beta\cdot\!\!\sum_{\tau=1985}^{t}\!\!\text{UpstreamCoalProd}_{c\tau} + \rho_c + HUC02_c\cdot\tau_t + \epsilon_{ct}
 \end{equation*}
 \begin{itemize}\small
     \item $\textit{Concen}_{ct}$: mean annual concentration at utility $c$, year $t$ (SYR2, 1998--2005).
     \item $\beta$: effect of 10 million additional cumulative short tons mined upstream since 1985.
-    \item $\rho_c$: utility fixed effects. $State_c\cdot\tau_t$: state-specific year effects, absorbing region-wide industrial trends.
+    \item $\rho_c$: utility fixed effects. $HUC02_c\cdot\tau_t$: HUC02-specific year effects, absorbing watershed-wide industrial trends.
     \item SEs clustered at the utility level.
 \end{itemize}
 \medskip
 \begin{itemize}
     \item Continuous treatment, \textbf{no control}: identification comes from relative exposure.
-    \item Assumption: utility with large upstream production changes would have trended like those with small ones.[LINK ROBUSTNESS CHECK]
+    \item Assumption: utility with large upstream production changes would have trended like those with small ones.[LINK ROBUSTNESS CHECK pt_balance_6yr.tex]
 \end{itemize}
 \end{frame}
 
@@ -318,7 +318,7 @@ Differentiating (9) splits into two channels:
 \presreg{6yr_huc02fe_inorg_ravalli_2005_k2}
 \takeaway{Nitrate $+$0.10 mg/L per 10M tons (***): 12.9\% of its mean. Selenium $+$0.0004 mg/L (**): 8.5\% of its mean. Arsenic and barium show no significant change. \textbf{Every reading in the sample stays under its MCL.}}
 
-[LINK ROBUSTNESS TEST]
+[LINK ROBUSTNESS TEST kgrid_syr2_downstream_of_mine_coefs.png]
 \end{frame}
 
 % ================================================================
@@ -329,6 +329,14 @@ Differentiating (9) splits into two channels:
 \begin{columns}[T]
 \begin{column}{0.44\textwidth}
 \begin{itemize}\small
+
+\item Adapt Douglas and Wiggins (2015) ARP instrument for coal production to
+address two sources of endogeneity of an OLS of mining on utility behavior and characteristics:
+\begin{itemize}
+    \item Coal mines are near coal seams and transportation that independently
+predict water quality and utility characteristics.
+\item Regulators block upstream mining for vulnerable utilities.
+\end{itemize}
     \item 1990 Clean Air Act amendments cap SO$_2$ from power plants; Phase I deadline \textbf{1995}.
     \item Power plants were 90\% of coal demand; switching to low sulfur coal was the main compliance response \parencite{lattanzio2022clean}.
     \item Demand shifts \textbf{toward low sulfur}, \textbf{away from high sulfur} coal beds.
@@ -341,6 +349,13 @@ Differentiating (9) splits into two channels:
 \end{columns}
 \end{frame}
 
+\begin{frame}{Map of huc12 sulfur}
+map_huc12_sulfur.tex
+\end{frame}
+
+\begin{frame}{Map of change in coal production}
+proportionatecircleprod_diff_allminehuc12_1985_2005.png
+\end{frame}
 % ---------------------------------------------------------------- 20
 \begin{frame}{IV design: the ARP as a shifter of where coal is mined}
 First stage:
@@ -370,24 +385,17 @@ Second stage:
 \begin{frame}{First stage: high sulfur watersheds lost their mines}
 \presreg[width=1.3\textwidth]{fs_dwnstrm_minevio_ivsum_k2}
 %\takeaway{$F = 27.5$, above the 23.1 critical value of \cite{montielolea2013robust} for a 5\% test against 10\% worst-case bias, and well above the rule of thumb of 10 (\cite{staigerstock1997instrumental}).}
-[LINK ROBUSTNESS TEST]
-\end{frame}
-
-\begin{frame}{Map of huc12 sulfur}
-    
-\end{frame}
-
-\begin{frame}{Map of change in coal production}
-    
+[LINK ROBUSTNESS TEST kgrid_first_stage.tex]
 \end{frame}
 
 % ---------------------------------------------------------------- 23
 \begin{frame}{Instrument validity}
 \begin{itemize}\small
     \item \textbf{Independence.} The ARP is national clean-\emph{air} law. Its scope, stringency, and 1995 date were set by national energy and emissions politics, not by any downstream utility's water quality or its influence over mine siting. Time-invariant sulfur exposure is absorbed by utility fixed effects.
-    \item \textbf{Exclusion.} Main exclusion test is to look at effect of mining downstream of utility on utility outcomes. [LINK ROBUSTNESS TEST]
+    \item \textbf{Exclusion.} Main exclusion test is to look at effect of mining downstream of utility on utility behavior. [LINK ROBUSTNESS TEST kgrid_mr_coefs_upstream.png kgrid_visits_coefs_upstream.png
+    kgrid_enf_coefs_upstream.png]
     
-    The threat is a post-1995 SDWA change hitting high- and low-sulfur utilities differently. National rule changes are absorbed by year effects. Directly testable: regress the number of intake facilities --- the observable proxy for the model's negligence type --- on the instrument. The coefficient is 0.05--0.06 (s.e.\ $\approx$0.04), with and without a balanced panel, and not statistically significant.
+    The threat is a post-1995 SDWA change hitting high- and low-sulfur utilities differently. National rule changes are absorbed by year effects. Directly testable: regress the number of intake facilities --- the observable proxy for the model's negligence type --- on the instrument. The coefficient is 0.05--0.06 (s.e.\ $\approx$0.04), with and without a balanced panel, and not statistically significant [ROBUSTNESS TEST exclusion_test_num_facilities_k2].
     \item \textbf{Monotonicity.} A defier is a high-sulfur watershed that expanded \emph{because} its coal was high sulfur. Scrubber adoption costs more likely leading to lost market share rather than gain; low-cost high-sulfur regions that expand anyway are never-takers. 
     %Monotonicity is pairwise in sulfur, so low- and high-sulfur areas may respond in opposite directions (\cite{angrist1994identification}).
 \end{itemize}
@@ -397,7 +405,7 @@ Second stage:
 \begin{frame}{Mining makes utilities stop reporting}
 \presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}
 \takeaway{One more upstream mine raises MR violations by 3.9--4.9 pp for nitrates, 3.8--4.7 pp for arsenic, and 3.1--4.5 pp for IOC (across utility-year and utility-year-by-state-year fixed effects), against base rates of 5.7\%, 3.7\%, and 4.3\%. OLS estimates are far smaller --- consistent with negative omitted variable bias, as expected if utilities that can keep mines out are also better at compliance.}
-[LINK ROBUSTNESS TEST]
+[LINK ROBUSTNESS TEST kgrid_mr_coefs_downstream.png]
 \end{frame}
 
 % ---------------------------------------------------------------- 25
@@ -425,14 +433,14 @@ Second stage:
 \presreg{h3_inf_formal_d12_k2}
 \takeaway{One more upstream mine reduces formal enforcement by 3.4 pp with utility and year fixed effects alone (significant), but the effect loses significance once state $\times$ year fixed effects are added; informal enforcement is not significant in either specification.}
 
-[LINK ROBUSTNESS TEST]
+[LINK ROBUSTNESS TEST kgrid_enf_coefs.png]
 \end{frame}
 
 % ---------------------------------------------------------------- 29
 \begin{frame}{The regulator increases inspections, not enforcement}
 \presreg{h2_snsv_d12_k2}
 \takeaway{Only inspection visits rise significantly ($+$2.1 pp); sanitary and enforcement visits are not statistically distinguishable from zero. Regulators do not systematically step up the visit types tied to sanctions. Either there are no hidden exceedances, or visits do not find them (\cite{mi2026technology}); I cannot separate the two, but concealment is unlikely given the MCL results. Either way the penalty for under-reporting does not increase, which Proposition 3 says would work.}
-[LINK ROBUSTNESS TEST]
+[LINK ROBUSTNESS TEST kgrid_visit_coefs]
 \end{frame}
 
 % ---------------------------------------------------------------- 30
