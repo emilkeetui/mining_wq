@@ -258,7 +258,7 @@ tabular_lines_et <- c(
   "State $\\times$ year fixed effects & $\\checkmark$ & \\\\",
   "Balanced panel & & $\\checkmark$ \\\\",
   paste0("Utilities & ", format(n_utils_col1, big.mark = ","), " & ", format(n_utils_col2, big.mark = ","), " \\\\"),
-  paste0("Utility-years & ", format(n_obs_col1, big.mark = ","), " & ", format(n_obs_col2, big.mark = ","), " \\\\"),
+  paste0("Observations & ", format(n_obs_col1, big.mark = ","), " & ", format(n_obs_col2, big.mark = ","), " \\\\"),
   "\\bottomrule",
   "\\end{tabular}"
 )

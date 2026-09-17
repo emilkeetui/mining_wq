@@ -337,7 +337,7 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
   fe_row_year  <- paste0("Year fixed effects & ", chk_all, " \\\\")
   fe_row_state <- paste0("State $\\times$ year fixed effects & ", chk_state, " \\\\")
   n_util_row   <- paste0("Utilities & ", paste(format(n_utils, big.mark = ","), collapse = " & "), " \\\\")
-  n_obs_row    <- paste0("Utility-years & ", paste(format(n_obs, big.mark = ","), collapse = " & "), " \\\\")
+  n_obs_row    <- paste0("Observations & ", paste(format(n_obs, big.mark = ","), collapse = " & "), " \\\\")
 
   tabcolsep_pt    <- 4
   cm_per_pt       <- 2.54 / 72.27
