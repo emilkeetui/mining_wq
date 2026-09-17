@@ -5,7 +5,10 @@
 #          enforcement-type), plus a combined first-stage figure. Error
 #          bars show 90% confidence intervals (coef +/- 1.645*se). Reads
 #          only the tidy Step-2 output parquets -- no estimation here, so
-#          figure tweaks never re-run regressions.
+#          figure tweaks never re-run regressions. For each outcome
+#          family, also renders a downstream-of-mine-only (main arm) and
+#          upstream-of-mine-only (placebo arm) version so each arm can be
+#          inspected on its own.
 # Inputs:
 #   clean_data/cws_data/kgrid_coefs.parquet
 #   clean_data/cws_data/kgrid_firststage.parquet
@@ -14,6 +17,14 @@
 #   output/fig/kgrid_mcl_coefs.png
 #   output/fig/kgrid_visit_coefs.png
 #   output/fig/kgrid_enf_coefs.png
+#   output/fig/kgrid_mr_downstream_of_mine_coefs.png
+#   output/fig/kgrid_mr_upstream_of_mine_coefs.png
+#   output/fig/kgrid_mcl_downstream_of_mine_coefs.png
+#   output/fig/kgrid_mcl_upstream_of_mine_coefs.png
+#   output/fig/kgrid_visit_downstream_of_mine_coefs.png
+#   output/fig/kgrid_visit_upstream_of_mine_coefs.png
+#   output/fig/kgrid_enf_downstream_of_mine_coefs.png
+#   output/fig/kgrid_enf_upstream_of_mine_coefs.png
 #   output/fig/kgrid_first_stage.png
 # Author: EK  Date: 2026-09-15
 # ============================================================
@@ -93,6 +104,52 @@ for (fam in names(fig_specs)) {
   if (file.exists(out_path)) cat("WARNING: overwriting existing", out_path, "\n")
   ggsave(out_path, p, width = 9, height = 8, dpi = 300)
   cat("Wrote", out_path, "\n")
+}
+
+# ── Per-arm figures: same family, single arm, faceted by model only ──
+# "main" arm (coal mine upstream of intake) means the CWS intake sits
+# downstream of the mine, so it is labelled "downstream_of_mine"; "placebo"
+# arm (coal mine downstream of intake) means the intake sits upstream of the
+# mine, labelled "upstream_of_mine" -- matching the naming convention in
+# plot_kgrid_syr2_coefs.r.
+plot_family_arm <- function(fam, arm_val) {
+  meta <- FAMILY_META[[fam]]
+  dat <- coef_df %>%
+    dplyr::filter(family == fam, arm == arm_val) %>%
+    dplyr::mutate(
+      model = factor(model, levels = c("OLS", "RF", "2SLS")),
+      outcome_label = factor(outcome_label, levels = meta$order)
+    )
+
+  y_span <- max(dat$coef + CI90 * dat$se, na.rm = TRUE) - min(dat$coef - CI90 * dat$se, na.rm = TRUE)
+  accuracy <- if (y_span < 1) 0.01 else 0.1
+
+  dodge <- position_dodge(width = 0.6)
+
+  ggplot(dat, aes(x = k, y = coef, colour = outcome_label)) +
+    geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+    geom_errorbar(aes(ymin = coef - CI90 * se, ymax = coef + CI90 * se), width = 0, position = dodge) +
+    geom_point(position = dodge, size = 1.8) +
+    facet_grid(model ~ ., scales = "free_y", labeller = labeller(model = model_labels)) +
+    scale_x_continuous(breaks = 1:8, name = "Flow steps from intake (k)") +
+    scale_y_continuous(labels = scales::label_number(accuracy = accuracy), name = "Coefficient (percentage points)") +
+    scale_colour_manual(values = OKABE_ITO, name = meta$legend) +
+    theme_kgrid
+}
+
+ARM_COMBINED_META <- list(main = "downstream_of_mine", placebo = "upstream_of_mine")
+ARM_SPLIT_FAMILIES <- c("mr", "mcl", "visit", "enf")
+
+for (fam in ARM_SPLIT_FAMILIES) {
+  base_name <- sub("_coefs$", "", tools::file_path_sans_ext(fig_specs[[fam]]))
+  for (arm_val in names(ARM_COMBINED_META)) {
+    p_arm <- plot_family_arm(fam, arm_val)
+    out_path <- file.path(ROOT, "output/fig",
+                           paste0(base_name, "_", ARM_COMBINED_META[[arm_val]], "_coefs.png"))
+    if (file.exists(out_path)) cat("WARNING: overwriting existing", out_path, "\n")
+    ggsave(out_path, p_arm, width = 6, height = 8, dpi = 300)
+    cat("Wrote", out_path, "\n")
+  }
 }
 
 # ── First-stage figure: coefficient panel + F-statistic panel (patchwork) ──

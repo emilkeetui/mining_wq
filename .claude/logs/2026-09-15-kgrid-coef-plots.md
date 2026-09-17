@@ -138,3 +138,16 @@ set (MR, MCL, visit-type, enforcement-type), with ±1 SE error bars, per plan
   skips. Re-ran `plot_kgrid_syr2_coefs.r`: all 4 PNGs regenerated. Barium k=1 main-arm point is now
   positive, matching the published table; effect decays smoothly with flow distance k across all 4
   figures under the new FE spec, no other regressions observed on visual inspection.
+
+## Revision 5 2026-09-17 (combined per-arm 2x2 figures)
+- User asked to combine the 4 per-chemical SYR2 figures into one figure for the downstream-of-mine
+  (main) arm and one for the upstream-of-mine (placebo) arm.
+- `plot_kgrid_syr2_coefs.r`: added `plot_chem_arm()` (single-chemical, single-arm panel with a
+  capitalized chemical title) and combined the 4 panels per arm via `patchwork::wrap_plots(ncol=2)`
+  rather than `facet_wrap(scales="free_y")`, since ggplot's facet labeller can't vary the
+  decimal-accuracy formatter by facet and coefficient magnitudes differ ~1000x across chemicals
+  (matches the reasoning behind the original 4-separate-figures decision in Revision 2).
+  New outputs: `kgrid_syr2_downstream_of_mine_coefs.png`, `kgrid_syr2_upstream_of_mine_coefs.png`.
+- Re-ran the script: all 6 PNGs regenerated (4 original + 2 combined), visually verified — no sci
+  notation, capitalized panel titles, per-panel decimal accuracy, panel borders, zero line;
+  downstream panels show the expected decaying-with-k pattern, upstream panels center near zero.

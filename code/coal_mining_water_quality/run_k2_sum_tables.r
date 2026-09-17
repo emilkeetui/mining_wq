@@ -156,7 +156,11 @@ make_panelc_row <- function(rs) {
          " \\\\")
 }
 
-col_c <- paste0(">{\\raggedright\\arraybackslash}p{6.5cm} *{4}{>{\\centering\\arraybackslash}p{", w_b, "}}")
+# Label column matches col_a/col_b's w_label (not a wider 6.5cm) so the
+# Mean/SD/P90/P99 columns start at the same x-position as, and are the same
+# width as, Panel B's MR supercolumn -- i.e. Panel C's Mean sits under
+# Panel B's MR Mean, SD under SD, etc.
+col_c <- paste0(">{\\raggedright\\arraybackslash}p{", w_label, "} *{4}{>{\\centering\\arraybackslash}p{", w_b, "}}")
 
 panel_c_lines <- c(
   paste0("\\begin{tabular}{", col_c, "}"),
