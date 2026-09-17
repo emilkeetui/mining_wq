@@ -232,16 +232,16 @@ Utility draws compliance cost type $\theta \sim F(\cdot\,;m)$ and self-reporting
 
 % ---------------------------------------------------------------- 12
 \begin{frame}{Model: why the utility under reports}
-\begin{block}{Proposition 1}
-Negligence rises in compliance cost: $\partial a/\partial\theta > 0$.
-\end{block}
 \begin{block}{Proposition 2}
-Under-reporting rises with contamination, $\partial MR/\partial m \ge 0$, through \textbf{(A) self reporting cost} and \textbf{(B) concealment} --- the population shifts toward high-negligence types whose self-reporting cutoff is already lower.
+A type-$\theta$ utility under-reports if and only if its cost draw exceeds this cutoff, $c > c^*(\theta)$, so the share of utilities under-reporting and receiving an MR violation is:
+\[
+MR(m) = \int_0^{\bar\theta} \big[\,1 - G(c^*(\theta);m)\,\big]\, f(\theta;m)\, d\theta \;\equiv\; \int_0^{\bar\theta} h(\theta,m)\, f(\theta;m)\, d\theta.
+\]
+Differentiating (9) splits into two channels:
+\[
+\frac{\partial MR}{\partial m} = \underbrace{\int_0^{\bar\theta} \frac{\partial h(\theta,m)}{\partial m}\, f(\theta;m)\, d\theta}_{\text{Channel A: cost-distribution shift}} \;+\; \underbrace{\int_0^{\bar\theta} h(\theta,m)\, \frac{\partial f(\theta;m)}{\partial m}\, d\theta}_{\text{Channel B: type-distribution shift}}.
+\]
 \end{block}
-\begin{block}{Corollary 1}
-Hold exceedance risk fixed, $q(a) \equiv \bar q$. The cutoff is type-invariant, Channel B integrates to 0, and \emph{all} of $\partial MR/\partial m \ge 0$ through Channel A.
-\end{block}
-\takeaway{If contamination raises under reporting without raising exceedance, it is self-reporting cost, not concealment.}
 \end{frame}
 
 % ---------------------------------------------------------------- 12b
