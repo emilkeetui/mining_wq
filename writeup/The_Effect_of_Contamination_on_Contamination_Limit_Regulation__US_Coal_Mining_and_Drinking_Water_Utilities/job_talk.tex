@@ -100,7 +100,7 @@ citestyle=bwl-FU
     \end{itemize}
     \item Incentive to shirk reporting. Consider drinking water utilities federal water quality regulation:
     \begin{itemize}
-        \item No self-report (Monitoring and reporting (MR) violation) $\Rightarrow$ no Maximum Contaminant Level (MCL) violation issued.
+        \item No self-report $\Rightarrow$ no contamination exceedance violation issued.
         \item No self-report saves self-reporting costs \parencite{oleckno1982national}.
     \end{itemize}
     \item \textbf{Incentives rise with contamination}
@@ -120,14 +120,8 @@ citestyle=bwl-FU
     \end{itemize}
     \item Public health implications of self-report/under-reporting.
     \item 9 to 34 million US households obtain water from a utility violating a health standard \parencite{allaire2018national}.
-    \item States are Safe Drinking Water Act (SDWA) enforcers, have wide discretion over enforcement. 
-    \item Enforcement while remedial before punitive is still costly: 
-    \begin{itemize}
-        \item Informal (letters, notices, compliance plans)
-        \item Formal (consent decrees, fines, prosecution)
-        \item Visits (sanitary, sampling, technical assistance)
-    \end{itemize}
-    \item MR violations are punished less severely than MCL violations.
+    \item Whether it is self-reporting costs or concealment has different policy implications for improving reporting.
+    
 \end{itemize}
 \end{frame}
 
@@ -159,7 +153,7 @@ citestyle=bwl-FU
 \end{frame}
     
 % ---------------------------------------------------------------- 5
-\begin{frame}{What I do, and what is new}
+\begin{frame}{What I do}
 \begin{itemize}
     \item Setting: drinking water utilities downstream of coal mines, 1985--2005.
     \begin{itemize}
@@ -203,7 +197,7 @@ Contamination shifts monitoring from the firm onto the regulator.
 \end{frame}
 
 % ================================================================
-\section{Setting and data}
+\section{Self-reporting model}
 % ================================================================
 
 % ---------------------------------------------------------------- 8
@@ -211,8 +205,23 @@ Contamination shifts monitoring from the firm onto the regulator.
 
 % ---------------------------------------------------------------- 10
 
+\begin{frame}{Institutional setting}
+\begin{itemize}
+\item Maximum contaminant level (MCL)
+\item Monitoring and reporting violation (MR)
+    \item States are Safe Drinking Water Act (SDWA) enforcers, have wide discretion over enforcement. 
+    \item Enforcement while remedial before punitive is still costly: 
+    \begin{itemize}
+        \item Informal (letters, notices, compliance plans)
+        \item Formal (consent decrees, fines, prosecution)
+        \item Visits (sanitary, sampling, technical assistance)
+    \end{itemize}
+    \item MR violations are punished less severely than MCL violations.
+\end{itemize}
+\end{frame}
+
 % ---------------------------------------------------------------- 11
-\begin{frame}{Model: the utility's two decisions}
+\begin{frame}{Model: the utility's decisions to self-report or under-report}
 Utility draws compliance cost type $\theta \sim F(\cdot\,;m)$ and self-reporting cost $c \sim G(\cdot\,;m)$, both worsening in upstream contamination $m$.
 \begin{itemize}\small
     \item Chooses negligence $a$, unobserved by regulator, with benefit $\theta b(a)$, $b'>0$, $b''<0$.
@@ -244,19 +253,6 @@ Hold exceedance risk fixed, $q(a) \equiv \bar q$. The cutoff is type-invariant, 
 \takeaway{If contamination raises under reporting without raising exceedance, it is self-reporting cost, not concealment.}
 \end{frame}
 
-% ---------------------------------------------------------------- 12b
-\begin{frame}{Model: the regulator has a lever}
-\begin{block}{Proposition 3}
-Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting threshold, $C^*(\lambda) = \lambda\,\hat c(a_\lambda)$.
-\end{block}
-\begin{itemize}\small
-    \item Under reporting driven by Channel A is \textbf{correctable}: raising the price of under reporting reduces the relative costs of under reporting penalties compared to rising reporting costs.
-    \item Tightening the MCL does not. That increases the incentive to conceal exceedance.
-
-\end{itemize}
-%\takeaway{Proposition 2 and Corollary 1 are the test of the mechanism. Proposition 3 is the the lever is the price of silence, which makes the observed enforcement response the thing to measure.}
-\end{frame}
-
 % ---------------------------------------------------------------- 13
 \begin{frame}{Data}
 \begin{itemize}\small
@@ -268,7 +264,7 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
     \item \textbf{Mines} --- MSHA locations merged to EIA annual production, mine level.
     \item \textbf{Coal sulfur \%} --- USGS COALQUAL samples, averaged within 20 km of each watershed.
     \item \textbf{Hydrology} --- NHDPlus HUC12 watershed boundaries and inflow/outflow.
-    \item Sample: Utilities with a coal mine \textbf{within two flow steps upstream} of their intake and no coal mine colocated with their intake. 10,641 utility-years, 565 utilities.
+    \item \textbf{Sample}: Utilities with a coal mine \textbf{within two watersheds upstream} of their intake and no coal mine colocated with their intake. 10,641 utility-years, 565 utilities.
 \end{itemize}
 \end{frame}
 
@@ -278,7 +274,7 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
 \begin{column}{0.5\textwidth}
 \begin{itemize}\small
     \item HUC12 is the finest watershed mapped for the continental US ($>$87,000 units).
-    \item Exposure = mines and tons coal in the HUC12s \textbf{within two flow steps upstream} of the utility's intakes.
+    \item Exposure = mines and tons coal in the HUC12s \textbf{within two watersheds upstream} of the utility's intakes.
     \item Intakes \textbf{colocated} with a mine are excluded.
     \item Multiple intakes: sum production, average sulfur.
 \end{itemize}
@@ -313,7 +309,7 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
 \medskip
 \begin{itemize}
     \item Continuous treatment, \textbf{no control}: identification comes from relative exposure.
-    \item Assumption: utility with large upstream production changes would have trended like those with small ones.
+    \item Assumption: utility with large upstream production changes would have trended like those with small ones.[LINK ROBUSTNESS CHECK]
 \end{itemize}
 \end{frame}
 
@@ -321,6 +317,8 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
 \begin{frame}{Mining raises contaminant levels --- but not above the limit}
 \presreg{6yr_huc02fe_inorg_ravalli_2005_k2}
 \takeaway{Nitrate $+$0.10 mg/L per 10M tons (***): 12.9\% of its mean. Selenium $+$0.0004 mg/L (**): 8.5\% of its mean. Arsenic and barium show no significant change. \textbf{Every reading in the sample stays under its MCL.}}
+
+[LINK ROBUSTNESS TEST]
 \end{frame}
 
 % ================================================================
@@ -372,13 +370,24 @@ Second stage:
 \begin{frame}{First stage: high sulfur watersheds lost their mines}
 \presreg[width=1.3\textwidth]{fs_dwnstrm_minevio_ivsum_k2}
 %\takeaway{$F = 27.5$, above the 23.1 critical value of \cite{montielolea2013robust} for a 5\% test against 10\% worst-case bias, and well above the rule of thumb of 10 (\cite{staigerstock1997instrumental}).}
+[LINK ROBUSTNESS TEST]
+\end{frame}
+
+\begin{frame}{Map of huc12 sulfur}
+    
+\end{frame}
+
+\begin{frame}{Map of change in coal production}
+    
 \end{frame}
 
 % ---------------------------------------------------------------- 23
 \begin{frame}{Instrument validity}
 \begin{itemize}\small
     \item \textbf{Independence.} The ARP is national clean-\emph{air} law. Its scope, stringency, and 1995 date were set by national energy and emissions politics, not by any downstream utility's water quality or its influence over mine siting. Time-invariant sulfur exposure is absorbed by utility fixed effects.
-    \item \textbf{Exclusion.} The threat is a post-1995 SDWA change hitting high- and low-sulfur utilities differently. National rule changes are absorbed by year effects. Directly testable: regress the number of intake facilities --- the observable proxy for the model's negligence type --- on the instrument. The coefficient is 0.05--0.06 (s.e.\ $\approx$0.04), with and without a balanced panel, and not statistically significant.
+    \item \textbf{Exclusion.} Main exclusion test is to look at effect of mining downstream of utility on utility outcomes. [LINK ROBUSTNESS TEST]
+    
+    The threat is a post-1995 SDWA change hitting high- and low-sulfur utilities differently. National rule changes are absorbed by year effects. Directly testable: regress the number of intake facilities --- the observable proxy for the model's negligence type --- on the instrument. The coefficient is 0.05--0.06 (s.e.\ $\approx$0.04), with and without a balanced panel, and not statistically significant.
     \item \textbf{Monotonicity.} A defier is a high-sulfur watershed that expanded \emph{because} its coal was high sulfur. Scrubber adoption costs more likely leading to lost market share rather than gain; low-cost high-sulfur regions that expand anyway are never-takers. 
     %Monotonicity is pairwise in sulfur, so low- and high-sulfur areas may respond in opposite directions (\cite{angrist1994identification}).
 \end{itemize}
@@ -388,6 +397,7 @@ Second stage:
 \begin{frame}{Mining makes utilities stop reporting}
 \presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}
 \takeaway{One more upstream mine raises MR violations by 3.9--4.9 pp for nitrates, 3.8--4.7 pp for arsenic, and 3.1--4.5 pp for IOC (across utility-year and utility-year-by-state-year fixed effects), against base rates of 5.7\%, 3.7\%, and 4.3\%. OLS estimates are far smaller --- consistent with negative omitted variable bias, as expected if utilities that can keep mines out are also better at compliance.}
+[LINK ROBUSTNESS TEST]
 \end{frame}
 
 % ---------------------------------------------------------------- 25
@@ -414,12 +424,15 @@ Second stage:
 \begin{frame}{Enforcement does not counteract under-reporting}
 \presreg{h3_inf_formal_d12_k2}
 \takeaway{One more upstream mine reduces formal enforcement by 3.4 pp with utility and year fixed effects alone (significant), but the effect loses significance once state $\times$ year fixed effects are added; informal enforcement is not significant in either specification.}
+
+[LINK ROBUSTNESS TEST]
 \end{frame}
 
 % ---------------------------------------------------------------- 29
 \begin{frame}{The regulator increases inspections, not enforcement}
 \presreg{h2_snsv_d12_k2}
 \takeaway{Only inspection visits rise significantly ($+$2.1 pp); sanitary and enforcement visits are not statistically distinguishable from zero. Regulators do not systematically step up the visit types tied to sanctions. Either there are no hidden exceedances, or visits do not find them (\cite{mi2026technology}); I cannot separate the two, but concealment is unlikely given the MCL results. Either way the penalty for under-reporting does not increase, which Proposition 3 says would work.}
+[LINK ROBUSTNESS TEST]
 \end{frame}
 
 % ---------------------------------------------------------------- 30
