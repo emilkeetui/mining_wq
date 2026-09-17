@@ -61,18 +61,29 @@ extent = box(bounds[0], bounds[1], bounds[2], bounds[3])
 states_clip = states.clip(extent)
 
 # ── 4. Plot ───────────────────────────────────────────────────────────────────
+# Sulfur is heavily right-skewed (p75 ~= 2.3, max = 6.8 from a single outlier
+# HUC12), so a linear 0-max color scale crushes almost all watersheds into the
+# pale end of the ramp. Cap the scale at the 95th percentile and route the
+# remaining tail into the colorbar's "extend" arrow so the bulk of the
+# variation is visible.
+VMIN = 0.0
+VMAX = round(mine_geom["mean_sulfur"].quantile(0.95), 1)
+n_clipped = (mine_geom["mean_sulfur"] > VMAX).sum()
+print(f"Color scale: {VMIN:.1f}-{VMAX:.1f}% sulfur ({n_clipped} HUC12s above cap, shown via colorbar arrow)")
+
 fig, ax = plt.subplots(figsize=(10, 7))
 
 states_clip.plot(ax=ax, color="#f5f5f5", edgecolor="#bbbbbb", linewidth=0.4, zorder=1)
 
 mine_geom.plot(
-    ax=ax, column="mean_sulfur", cmap="OrRd", edgecolor="none",
-    linewidth=0, zorder=2,
+    ax=ax, column="mean_sulfur", cmap="YlOrRd", edgecolor="#4d4d4d",
+    linewidth=0.2, vmin=VMIN, vmax=VMAX, zorder=2,
     legend=True,
     legend_kwds={
         "label": "Mean Sulfur (% of Coal Weight)",
         "shrink": 0.6,
         "format": FormatStrFormatter("%.1f"),
+        "extend": "max",
     },
 )
 
