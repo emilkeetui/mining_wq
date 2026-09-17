@@ -92,41 +92,42 @@ citestyle=bwl-FU
 \titlepage
 \end{frame}
 
-\begin{frame}{US drinking water is monitored through self-reports}
+\begin{frame}{Self-reported compliance and US drinking water monitoring}
 \begin{itemize}
-    \item Drinking water utilities provide treated water from groundwater and/or surface water sources to twenty five to millions of customers, publicly or privately owned.
-    \item 85\% of US households obtain water from a utility required to treat and self-report water quality.
+    \item Regulatory models requiring entities to self-report compliance:
     \begin{itemize}
-        \item Testing requires technical staff, administrative tracking, and laboratories.
-        \item Self-reporting is a larger burden than the MCL (\cite{oleckno1982national}).
-        \item Testing \textbf{requirements increase with assessed source-water impairment}.
+        \item Personal income taxes; Healthcare HIPAA violation disclosure; Energy firms self-report anti-competitiveness/negligence to the Federal Energy Regulatory Commission; Public companies' SOX self-report financial statement accuracy; Toxic Release Inventories; Drinking water utilities.
     \end{itemize}
-    \item 9 to 34 million US households obtain water from a utility violating a health standard \parencite{allaire2018national}.
+    \item Incentive to shirk reporting. Consider drinking water utilities federal water quality regulation:
+    \begin{itemize}
+        \item No self-report (Monitoring and reporting (MR) violation) $\Rightarrow$ no Maximum Contaminant Level (MCL) violation issued.
+        \item No self-report saves self-reporting costs \parencite{oleckno1982national}.
+    \end{itemize}
+    \item \textbf{Incentives rise with contamination}
+    \begin{itemize}
+        \item $\uparrow$ contamination $\rightarrow \uparrow$ testing requirements ($\uparrow$ \textbf{reporting costs})
+        \item $\uparrow$ contamination $\rightarrow \uparrow$ probability contamination violation ($\uparrow$ \textbf{need to conceal}).
+    \end{itemize}
+    \item Firms under-report exactly when reporting is most valuable to the regulator.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Self-reported compliance}
+\begin{frame}{Self-reported compliance of drinking water quality}
 \begin{itemize}
-    \item Personal income taxes, Healthcare HIPAA violation disclosure, energy firms self-report anti-competitiveness/negligence to the Federal Energy Regulatory Commission, public companies' Sarbanes‑Oxley Act self-report financial statement accuracy, Toxic Release Inventories, and drinking water utilities.
-    \item The regulator learns of a violation if the firm self-reports.
-    \item Water quality violations:
+    \item Drinking water utilities provide treated water to 85\% of US households.
     \begin{itemize}
-        \item \textbf{MCL} --- reported contamination above the limit. Formally enforced.
-        \item \textbf{MR} --- under-reporting. Lower penalty compared to MCL.
+        \item Utilities source from groundwater and/or surface water, serve twenty five to millions of customers, publicly or privately owned.
     \end{itemize}
-    \item States main enforcers, have wide discretion. Enforcement is remedial before punitive: 
+    \item Public health implications of self-report/under-reporting.
+    \item 9 to 34 million US households obtain water from a utility violating a health standard \parencite{allaire2018national}.
+    \item States are Safe Drinking Water Act (SDWA) enforcers, have wide discretion over enforcement. 
+    \item Enforcement while remedial before punitive is still costly: 
     \begin{itemize}
         \item Informal (letters, notices, compliance plans)
         \item Formal (consent decrees, fines, prosecution)
         \item Visits (sanitary, sampling, technical assistance)
     \end{itemize}
-    \item No self-report $\Rightarrow$ no MCL violation can be issued.
-    \item MR saves self-reporting costs.
-    \begin{itemize}
-        \item $\uparrow$ contamination $\rightarrow \uparrow$ testing requirements ($\uparrow$ \textbf{reporting costs})
-        \item $\uparrow$ contamination $\rightarrow \uparrow$ probability MCL ($\uparrow$ \textbf{need to conceal}).
-    \end{itemize}
-    \item If penalties for under-reporting do not rise with contamination, self-reporting falls.
+    \item MR violations are punished less severely than MCL violations.
 \end{itemize}
 \end{frame}
 
@@ -145,13 +146,10 @@ citestyle=bwl-FU
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Coal mining contaminates water and is not going}
+\begin{frame}{Coal mining contaminates water and is not gone}
 \begin{itemize}
-    \item Coal mining contaminates water quality by leaching inorganic chemicals into surface and ground water (\cite{skousen2019acid}).
-\begin{itemize}\small
     \item Coal supplied 16\% of US electricity in 2025 (\cite{IEA2025GER}).
     \item Federal policy is expanding mining access and delaying plant retirements (\cite{Trump2025EO14260}; \cite{Daly2025CoalMining}).
-\end{itemize}
     \item \textbf{Acid mine drainage}: exposed sulfide rock oxidizes, forms sulfuric acid, dissolves metal ions and sulfates, which travel into surface and ground water (\cite{skousen2019acid}).
     \item \textbf{Coal wash slurry}: impurities stored in retaining ponds seep through porous rock, or the ponds fail.
     \item Both increase with the \textbf{sulfur content} of the coal seam.
@@ -168,7 +166,11 @@ citestyle=bwl-FU
         \item Contamination is \textbf{upstream externality} --- the firm cannot reduce by cutting output.
         \item Separation aids identifying the effect of contamination.
     \end{itemize}
-    \item Instrument coal production using sulfur percentage content of coal and the Acid Rain Program Phase 1 deadline \parencite{stratford2015coalprod}.
+    \item Adapt \textcite{stratford2015coalprod} instrument for coal production to address two sources of endogeneity:
+    \begin{itemize}
+        \item Coal mines are near coal seams and transportation that independently predict water quality and utility characteristics.
+        \item Regulators block upstream mining for vulnerable utilities.
+    \end{itemize}
     \item Contributions:
     \begin{itemize}
         \item First causal estimates of effect of coal mining on \textbf{treated} drinking water at US utilities.
@@ -208,21 +210,6 @@ Contamination shifts monitoring from the firm onto the regulator.
 
 
 % ---------------------------------------------------------------- 10
-\begin{frame}{The Acid Rain Program moved coal, not for water reasons}
-\begin{columns}[T]
-\begin{column}{0.44\textwidth}
-\begin{itemize}\small
-    \item 1990 Clean Air Act amendments cap SO$_2$ from power plants; Phase I deadline \textbf{1995}.
-    \item Power plants were 90\% of coal demand; switching to low sulfur coal was the main compliance response.
-    \item Demand shifts \textbf{toward low sulfur}, \textbf{away from high sulfur} coal beds.
-    \item High sulfur mines have limited ability to wash the sulfur out --- it is bound into the coal's chemical structure.
-\end{itemize}
-\end{column}
-\begin{column}{0.54\textwidth}
-\includegraphics[width=\textwidth]{\outputdir/fig/coal_summary_plot.png}
-\end{column}
-\end{columns}
-\end{frame}
 
 % ---------------------------------------------------------------- 11
 \begin{frame}{Model: the utility's two decisions}
@@ -239,7 +226,7 @@ Utility draws compliance cost type $\theta \sim F(\cdot\,;m)$ and self-reporting
 \]
 \begin{itemize}
     \item A system with \textbf{zero} exceedance risk still stops reporting once $c > t$.
-    \item Silence is cheap at the margin: $ps < r$.
+    \item Assume $ps < r$ to give utility a reason to under-report.
 \end{itemize}
 \end{frame}
 
@@ -315,12 +302,12 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
 % ---------------------------------------------------------------- 17
 \begin{frame}{Design: cumulative production, measured concentrations}
 \begin{equation*}
-\textit{Concen}_{ct}= \beta\cdot\!\!\sum_{\tau=1985}^{t}\!\!\text{UpstreamCoalProd}_{c\tau} + \rho_c + HUC02_c\cdot\tau_t + \epsilon_{ct}
+\textit{Concen}_{ct}= \beta\cdot\!\!\sum_{\tau=1985}^{t}\!\!\text{UpstreamCoalProd}_{c\tau} + \rho_c + State_c\cdot\tau_t + \epsilon_{ct}
 \end{equation*}
 \begin{itemize}\small
     \item $\textit{Concen}_{ct}$: mean annual concentration at utility $c$, year $t$ (SYR2, 1998--2005).
     \item $\beta$: effect of 10 million additional cumulative short tons mined upstream since 1985.
-    \item $\rho_c$: utility fixed effects. $HUC02_c\cdot\tau_t$: watershed-region-specific year effects, absorbing region-wide industrial trends.
+    \item $\rho_c$: utility fixed effects. $State_c\cdot\tau_t$: state-specific year effects, absorbing region-wide industrial trends.
     \item SEs clustered at the utility level.
 \end{itemize}
 \medskip
@@ -339,6 +326,22 @@ Scaling all penalties by $\lambda>0$ lowers negligence and raises the reporting 
 % ================================================================
 \section{Do utilities keep self-reporting?}
 % ================================================================
+
+\begin{frame}{The Acid Rain Program moved coal, not for water reasons}
+\begin{columns}[T]
+\begin{column}{0.44\textwidth}
+\begin{itemize}\small
+    \item 1990 Clean Air Act amendments cap SO$_2$ from power plants; Phase I deadline \textbf{1995}.
+    \item Power plants were 90\% of coal demand; switching to low sulfur coal was the main compliance response \parencite{lattanzio2022clean}.
+    \item Demand shifts \textbf{toward low sulfur}, \textbf{away from high sulfur} coal beds.
+    \item High sulfur mines have limited ability to wash the sulfur out --- it is bound into the coal's chemical structure.
+\end{itemize}
+\end{column}
+\begin{column}{0.54\textwidth}
+\includegraphics[width=\textwidth]{\outputdir/fig/coal_summary_plot.png}
+\end{column}
+\end{columns}
+\end{frame}
 
 % ---------------------------------------------------------------- 20
 \begin{frame}{IV design: the ARP as a shifter of where coal is mined}
