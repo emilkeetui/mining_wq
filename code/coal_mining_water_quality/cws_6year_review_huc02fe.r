@@ -655,6 +655,7 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
                                sumstats_exclude_chems = character(0),
                                include_sample_sentence = TRUE,
                                also_present = FALSE,
+                               sumstats_show_coal_row = TRUE,
                                sumstats_title = paste0(
                                  "Summary statistics: mean concentration for inorganic ",
                                  "chemicals and cumulative upstream coal production")) {
@@ -775,16 +776,18 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
 
     coal_df <- unique(do.call(rbind, coal_list))
     coal_df <- coal_df[!duplicated(coal_df[, c("PWSID", "year")]), ]
-    sum_rows[["coal"]] <- data.frame(
-      variable  = "Cumul. upstream coal prod. (10M ST)",
-      mcl_label = "---",
-      mean_val  = mean(coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE),
-      max_val   = max(coal_df$coal_prod_upstream_cumsum_10mst,  na.rm = TRUE),
-      sd_val    = sd(coal_df$coal_prod_upstream_cumsum_10mst,   na.rm = TRUE),
-      n_obs     = sum(!is.na(coal_df$coal_prod_upstream_cumsum_10mst)),
-      near_mcl  = NA_real_,
-      stringsAsFactors = FALSE
-    )
+    if (sumstats_show_coal_row) {
+      sum_rows[["coal"]] <- data.frame(
+        variable  = "Cumul. upstream coal prod. (10M ST)",
+        mcl_label = "---",
+        mean_val  = mean(coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE),
+        max_val   = max(coal_df$coal_prod_upstream_cumsum_10mst,  na.rm = TRUE),
+        sd_val    = sd(coal_df$coal_prod_upstream_cumsum_10mst,   na.rm = TRUE),
+        n_obs     = sum(!is.na(coal_df$coal_prod_upstream_cumsum_10mst)),
+        near_mcl  = NA_real_,
+        stringsAsFactors = FALSE
+      )
+    }
 
     list(sum_df = do.call(rbind, sum_rows), coal_df = coal_df)
   }
@@ -809,12 +812,17 @@ run_inorg_val_table <- function(df6_arg, file_sfx, title_sfx, note_val,
   fmt_pct <- function(x) if (is.na(x)) "---" else sprintf("%.1f\\%%", 100 * x)
 
   note_ss_parts <- c(
-    paste0("\\textit{Notes:} ", trimws(note_ss_period, which = "right")),
-    paste0("Cumulative upstream coal production (10M ST) is cumulative coal production ",
-           "since 1985, in units of 10 million short tons, in the watershed immediately ",
-           "upstream of the ", entity_label, "'s intake."),
-    paste0("For cumulative upstream coal production, statistics are computed over unique ",
-           entity_label, "$\\times$year pairs that appear in at least one regression sample."),
+    paste0("\\textit{Notes:} ", trimws(note_ss_period, which = "right"))
+  )
+  if (sumstats_show_coal_row) {
+    note_ss_parts <- c(note_ss_parts,
+      paste0("Cumulative upstream coal production (10M ST) is cumulative coal production ",
+             "since 1985, in units of 10 million short tons, in the watershed immediately ",
+             "upstream of the ", entity_label, "'s intake."),
+      paste0("For cumulative upstream coal production, statistics are computed over unique ",
+             entity_label, "$\\times$year pairs that appear in at least one regression sample."))
+  }
+  note_ss_parts <- c(note_ss_parts,
     paste0("``Near MCL'' is the share of ", entity_label,
            "-year mean concentrations exceeding 50\\% of the applicable MCL.")
   )
@@ -1116,6 +1124,7 @@ run_inorg_val_table(df6r_2005, file_sfx = "_ravalli_2005",
                     sumstats_exclude_chems = "chromium",
                     include_sample_sentence = FALSE,
                     also_present = TRUE,
+                    sumstats_show_coal_row = FALSE,
                     sumstats_title = paste0(
                       "Utility contaminant concentrations (1998-2005) and ",
                       "cumulative upstream coal production exposure (since 1985)"))

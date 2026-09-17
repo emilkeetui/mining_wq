@@ -253,14 +253,6 @@ build_sumstats_k2 <- function(df_subset) {
   if (length(coal_list) == 0) return(list(sum_df = NULL, coal_df = NULL))
   coal_df <- unique(do.call(rbind, coal_list))
   coal_df <- coal_df[!duplicated(coal_df[, c("PWSID", "year")]), ]
-  sum_rows[["coal"]] <- data.frame(
-    variable = "Cumul. upstream coal prod. (10M ST)", mcl_label = "---",
-    mean_val = mean(coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE),
-    max_val  = max(coal_df$coal_prod_upstream_cumsum_10mst,  na.rm = TRUE),
-    sd_val   = sd(coal_df$coal_prod_upstream_cumsum_10mst,   na.rm = TRUE),
-    n_obs    = sum(!is.na(coal_df$coal_prod_upstream_cumsum_10mst)), near_mcl = NA_real_,
-    stringsAsFactors = FALSE
-  )
   list(sum_df = do.call(rbind, sum_rows), coal_df = coal_df)
 }
 
@@ -277,8 +269,6 @@ fmt_pct_ss <- function(x) if (is.na(x)) "---" else sprintf("%.1f\\%%", 100 * x)
 
 note_ss <- paste(c(
   "\\textit{Notes:} SYR2 sample from 1998--2005.",
-  "Cumulative upstream coal production (10M ST) is cumulative coal production since 1985, in units of 10 million short tons, in watersheds within two flow steps upstream of the utility's intake.",
-  "For cumulative upstream coal production, statistics are computed over unique utility$\\times$year pairs that appear in at least one regression sample.",
   "``Near MCL'' is the share of utility-year mean concentrations exceeding 50\\% of the applicable MCL.",
   paste0("Panel B restricts Panel A's sample to utility-year observations with cumulative upstream coal production above the sample median of ", fmt_num_ss(median_cum_prod), " (10M ST).")
 ), collapse = " ")

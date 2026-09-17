@@ -31,12 +31,19 @@ dat <- as.data.frame(
   arrow::read_parquet(
     "Z:/ek559/mining_wq/clean_data/cws_data/prod_vio_sulfur.parquet",
     col_select = c("PWSID", "year", "minehuc_downstream_of_mine", "minehuc_mine",
-                   share_vars, days_vars)))
+                   share_vars, days_vars,
+                   "num_coal_mines_upstream_sum", "production_short_tons_coal_upstream_sum",
+                   "sulfur_upstream_mean")))
 
 dat <- dat[
   dat$year > 1984 & dat$year < 2006 &
   dat$PWSID != "WV3303401" &
   dat$minehuc_downstream_of_mine == 1 & dat$minehuc_mine == 0, ]
+
+dat <- dat[order(dat$PWSID, dat$year), ]
+prod_filled <- ifelse(is.na(dat$production_short_tons_coal_upstream_sum), 0,
+                       dat$production_short_tons_coal_upstream_sum)
+dat$coal_prod_upstream_cumsum_10mst <- ave(prod_filled, dat$PWSID, FUN = cumsum) / 1e7
 
 N_obs   <- nrow(dat)
 N_pws   <- length(unique(dat$PWSID))
@@ -86,6 +93,25 @@ row_specs <- list(
   list(label = "Nitrates", s = stats_nitrate),
   list(label = "Arsenic",  s = stats_arsenic),
   list(label = "IOCs",     s = stats_ioc)
+)
+
+# ── 3b. Panel C — Mining exposure covariates ─────────────────────────────────
+panelc_stats <- function(var) {
+  list(
+    mean = mean(dat[[var]], na.rm = TRUE),
+    sd   = sd(dat[[var]],   na.rm = TRUE),
+    p90  = p_at(dat[[var]], 0.90),
+    p99  = p_at(dat[[var]], 0.99)
+  )
+}
+
+row_specs_c <- list(
+  list(label = "Number of mines upstream",
+       s = panelc_stats("num_coal_mines_upstream_sum")),
+  list(label = "Cumul. upstream coal prod. (10M ST) since 1985",
+       s = panelc_stats("coal_prod_upstream_cumsum_10mst")),
+  list(label = "Percentage of coal weight as sulfur",
+       s = panelc_stats("sulfur_upstream_mean"))
 )
 
 # ── 4. LaTeX helpers ──────────────────────────────────────────────────────────
@@ -149,6 +175,27 @@ panel_b_lines <- c(
          "\\textbf{Mean} & \\textbf{SD} & \\textbf{P90} & \\textbf{P99} \\\\"),
   "\\hline",
   sapply(row_specs, make_days_row),
+  "\\hline",
+  "\\end{tabular}"
+)
+
+# ── 6b. Panel C — Mining exposure covariates ─────────────────────────────────
+make_panelc_row <- function(rs) {
+  paste0(rs$label,
+         " & ", fp2(rs$s$mean), " & ", fp2(rs$s$sd), " & ", fp2(rs$s$p90), " & ", fp2(rs$s$p99),
+         " \\\\")
+}
+
+col_c <- paste0(">{\\raggedright\\arraybackslash}p{6.2cm} *{4}{>{\\centering\\arraybackslash}p{", w_b, "}}")
+
+panel_c_lines <- c(
+  paste0("\\begin{tabular}{", col_c, "}"),
+  "\\hline",
+  "\\multicolumn{5}{l}{\\textbf{Panel C: Mining exposure covariates}} \\\\",
+  "\\hline",
+  paste0("\\textbf{Variable} & \\textbf{Mean} & \\textbf{SD} & \\textbf{P90} & \\textbf{P99} \\\\"),
+  "\\hline",
+  sapply(row_specs_c, make_panelc_row),
   "\\bottomrule",
   "\\end{tabular}"
 )
@@ -160,6 +207,9 @@ combined_note <- paste0(
   "Panel A: \\% Non-zero is the share of utility-year observations with a nonzero violation share for ",
   "that category, in percent; Num. Violations is the corresponding count of utility-year observations. ",
   "Panel B: Mean, SD, P90, and P99 describe the number of days in a year in violation. ",
+  "Panel C reports Mean, SD, P90, and P99 for the number of coal mines upstream, cumulative coal ",
+  "production upstream since 1985 (10 million short tons), and the percentage of coal weight that ",
+  "is sulfur, for the same sample. ",
   "Number of observations = Number of utilities $\\times$ Number of years. ",
   "N\\,=\\,", fn(N_obs), " = ", fn(N_pws), " utilities $\\times$ up to ", fn(N_years),
   " years (1985--2005)."
@@ -173,6 +223,7 @@ table_lines <- c(
   "\\small",
   panel_a_lines,
   panel_b_lines,
+  panel_c_lines,
   "\\begin{minipage}{\\linewidth}",
   "\\vspace{4pt}",
   "\\footnotesize",
@@ -209,6 +260,7 @@ table_lines_present <- c(
   "\\small",
   panel_a_lines,
   panel_b_lines,
+  panel_c_lines,
   "\\end{table}"
 )
 out_path_present <- sub("\\.tex$", "_present.tex", out_path)

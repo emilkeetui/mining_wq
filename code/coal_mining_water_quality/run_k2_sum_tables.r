@@ -27,6 +27,10 @@ source("Z:/ek559/mining_wq/code/coal_mining_water_quality/k2_common.r")
 
 main_dat <- build_k2_panel("main")
 
+main_dat <- main_dat[order(main_dat$PWSID, main_dat$year), ]
+prod_filled_k2 <- ifelse(is.na(main_dat$production_linked_sum), 0, main_dat$production_linked_sum)
+main_dat$coal_prod_upstream_cumsum_10mst <- ave(prod_filled_k2, main_dat$PWSID, FUN = cumsum) / 1e7
+
 N_obs   <- nrow(main_dat)
 N_pws   <- length(unique(main_dat$PWSID))
 N_years <- length(unique(main_dat$year))
@@ -63,6 +67,25 @@ row_specs <- list(
   list(label = "Nitrates",            s = stats_nitrate),
   list(label = "Arsenic",             s = stats_arsenic),
   list(label = "Inorganic chemicals", s = stats_ioc)
+)
+
+# ── 1b. Panel C — Mining exposure covariates ────────────────────────────
+panelc_stats <- function(var) {
+  list(
+    mean = mean(main_dat[[var]], na.rm = TRUE),
+    sd   = sd(main_dat[[var]],   na.rm = TRUE),
+    p90  = p_at(main_dat[[var]], 0.90),
+    p99  = p_at(main_dat[[var]], 0.99)
+  )
+}
+
+row_specs_c <- list(
+  list(label = "Number of mines upstream",
+       s = panelc_stats("num_coal_mines_linked_sum")),
+  list(label = "Cumul. upstream coal prod. (10M ST) since 1985",
+       s = panelc_stats("coal_prod_upstream_cumsum_10mst")),
+  list(label = "Percentage of coal weight as sulfur",
+       s = panelc_stats("sulfur_mean0"))
 )
 
 fn  <- function(x) format(as.integer(x), big.mark = ",")
@@ -122,6 +145,27 @@ panel_b_lines <- c(
          "\\textbf{Mean} & \\textbf{SD} & \\textbf{P90} & \\textbf{P99} \\\\"),
   "\\hline",
   sapply(row_specs, make_days_row),
+  "\\hline",
+  "\\end{tabular}"
+)
+
+# ── 1c. Panel C — Mining exposure covariates ────────────────────────────
+make_panelc_row <- function(rs) {
+  paste0(rs$label,
+         " & ", fp2(rs$s$mean), " & ", fp2(rs$s$sd), " & ", fp2(rs$s$p90), " & ", fp2(rs$s$p99),
+         " \\\\")
+}
+
+col_c <- paste0(">{\\raggedright\\arraybackslash}p{6.5cm} *{4}{>{\\centering\\arraybackslash}p{", w_b, "}}")
+
+panel_c_lines <- c(
+  paste0("\\begin{tabular}{", col_c, "}"),
+  "\\hline",
+  "\\multicolumn{5}{l}{\\textbf{Panel C: Mining exposure covariates}} \\\\",
+  "\\hline",
+  paste0("\\textbf{Variable} & \\textbf{Mean} & \\textbf{SD} & \\textbf{P90} & \\textbf{P99} \\\\"),
+  "\\hline",
+  sapply(row_specs_c, make_panelc_row),
   "\\bottomrule",
   "\\end{tabular}"
 )
@@ -133,7 +177,10 @@ combined_note <- paste0(
   "level violation. Panel A: \\% Non-zero is the share of utility-year observations ",
   "with a nonzero violation share for that category, in percent; Num. Violations is ",
   "the corresponding count of utility-year observations. Panel B: Mean, SD, P90, and ",
-  "P99 describe the number of days in a year in violation. Number of observations = ",
+  "P99 describe the number of days in a year in violation. Panel C reports Mean, SD, ",
+  "P90, and P99 for the number of coal mines upstream, cumulative coal production ",
+  "upstream since 1985 (10 million short tons), and the percentage of coal weight ",
+  "that is sulfur, for the same sample. Number of observations = ",
   "Number of utilities $\\times$ Number of years. ",
   "N\\,=\\,", fn(N_obs), " = ", fn(N_pws), " utilities $\\times$ up to ", fn(N_years),
   " years (1985--2005)."
@@ -147,6 +194,7 @@ table_lines_1 <- c(
   "\\small",
   panel_a_lines,
   panel_b_lines,
+  panel_c_lines,
   "\\begin{minipage}{\\linewidth}",
   "\\vspace{4pt}",
   "\\footnotesize",
@@ -171,6 +219,7 @@ table_lines_1_present <- c(
   "\\small",
   panel_a_lines,
   panel_b_lines,
+  panel_c_lines,
   "\\end{table}"
 )
 out_path_1_present <- sub("\\.tex$", "_present.tex", out_path_1)
