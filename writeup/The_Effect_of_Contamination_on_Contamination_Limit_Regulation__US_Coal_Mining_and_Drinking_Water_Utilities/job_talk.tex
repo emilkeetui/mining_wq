@@ -68,6 +68,10 @@ citestyle=bwl-FU
 % the paragraph inherits the outer font's baselineskip on its first line.
 \newcommand{\takeaway}[1]{\par\medskip{\footnotesize #1\par}}
 
+% In-text link to a backup/appendix slide. #1 = \hypertarget name on the
+% backup frame, #2 = short description of what the link shows.
+\newcommand{\backuplink}[2]{\hyperlink{#1}{\footnotesize(#2 $\rightarrow$)}}
+
 \AtBeginSection[]{
   \begin{frame}
   \vfill
@@ -291,6 +295,12 @@ Differentiating (9) splits into two channels:
 \takeaway{Nitrate MR 5.7\%, arsenic 3.7\%, IOC 4.3\% of utility-years. MCL violations: 12, 5, and 32 events across 1985--2005.}
 \end{frame}
 
+% ---------------------------------------------------------------- 16
+\begin{frame}{Mining exposure in the sample}
+\pressum{mining_exposure_covariates_k2}
+\takeaway{On average 1.1 mines upstream and 1.1\% sulfur by weight; cumulative upstream production reaches 5.2 (10M ST) at the 99th percentile.}
+\end{frame}
+
 % ================================================================
 \section{Does coal mining contaminate utility water?}
 % ================================================================
@@ -309,16 +319,14 @@ Differentiating (9) splits into two channels:
 \medskip
 \begin{itemize}
     \item Continuous treatment, \textbf{no control}: identification comes from relative exposure.
-    \item Assumption: utility with large upstream production changes would have trended like those with small ones.[LINK ROBUSTNESS CHECK pt_balance_6yr.tex]
+    \item Assumption: utility with large upstream production changes would have trended like those with small ones. \backuplink{balancetest}{balance test on utility characteristics}
 \end{itemize}
 \end{frame}
 
 % ---------------------------------------------------------------- 18
 \begin{frame}{Mining raises contaminant levels --- but not above the limit}
 \presreg{6yr_huc02fe_inorg_ravalli_2005_k2}
-\takeaway{Nitrate $+$0.10 mg/L per 10M tons (***): 12.9\% of its mean. Selenium $+$0.0004 mg/L (**): 8.5\% of its mean. Arsenic and barium show no significant change. \textbf{Every reading in the sample stays under its MCL.}}
-
-[LINK ROBUSTNESS TEST kgrid_syr2_downstream_of_mine_coefs.png]
+\takeaway{Nitrate $+$0.10 mg/L per 10M tons (***): 12.9\% of its mean. Selenium $+$0.0004 mg/L (**): 8.5\% of its mean. Arsenic and barium show no significant change. \textbf{Every reading in the sample stays under its MCL.} \backuplink{kgridsyr2}{effect across choice of upstream watershed radius}}
 \end{frame}
 
 % ================================================================
@@ -349,12 +357,12 @@ predict water quality and utility characteristics.
 \end{columns}
 \end{frame}
 
-\begin{frame}{Map of huc12 sulfur}
-map_huc12_sulfur.tex
+\begin{frame}{Watershed coal sulfur content}
+\presfig[0.78\textheight]{map_huc12_sulfur.png}
 \end{frame}
 
-\begin{frame}{Map of change in coal production}
-proportionatecircleprod_diff_allminehuc12_1985_2005.png
+\begin{frame}{Where coal production moved, 1985--2005}
+\presfig[0.78\textheight]{proportionatecircleprod_diff_allminehuc12_1985_2005.png}
 \end{frame}
 % ---------------------------------------------------------------- 20
 \begin{frame}{IV design: the ARP as a shifter of where coal is mined}
@@ -385,17 +393,16 @@ Second stage:
 \begin{frame}{First stage: high sulfur watersheds lost their mines}
 \presreg[width=1.3\textwidth]{fs_dwnstrm_minevio_ivsum_k2}
 %\takeaway{$F = 27.5$, above the 23.1 critical value of \cite{montielolea2013robust} for a 5\% test against 10\% worst-case bias, and well above the rule of thumb of 10 (\cite{staigerstock1997instrumental}).}
-[LINK ROBUSTNESS TEST kgrid_first_stage.tex]
+\takeaway{\backuplink{kgridfs}{first-stage strength across choice of upstream watershed radius}}
 \end{frame}
 
 % ---------------------------------------------------------------- 23
 \begin{frame}{Instrument validity}
 \begin{itemize}\small
     \item \textbf{Independence.} The ARP is national clean-\emph{air} law. Its scope, stringency, and 1995 date were set by national energy and emissions politics, not by any downstream utility's water quality or its influence over mine siting. Time-invariant sulfur exposure is absorbed by utility fixed effects.
-    \item \textbf{Exclusion.} Main exclusion test is to look at effect of mining downstream of utility on utility behavior. [LINK ROBUSTNESS TEST kgrid_mr_coefs_upstream.png kgrid_visits_coefs_upstream.png
-    kgrid_enf_coefs_upstream.png]
-    
-    The threat is a post-1995 SDWA change hitting high- and low-sulfur utilities differently. National rule changes are absorbed by year effects. Directly testable: regress the number of intake facilities --- the observable proxy for the model's negligence type --- on the instrument. The coefficient is 0.05--0.06 (s.e.\ $\approx$0.04), with and without a balanced panel, and not statistically significant [ROBUSTNESS TEST exclusion_test_num_facilities_k2].
+    \item \textbf{Exclusion.} Main exclusion test is to look at effect of mining downstream of utility on utility behavior. \backuplink{kgridmrup}{MR violations}, \backuplink{kgridvisitup}{visits}, \backuplink{kgridenfup}{enforcement} --- all placebo estimates on utilities upstream of the mine.
+
+    The threat is a post-1995 SDWA change hitting high- and low-sulfur utilities differently. National rule changes are absorbed by year effects. Directly testable: regress the number of intake facilities --- the observable proxy for the model's negligence type --- on the instrument. The coefficient is 0.05--0.06 (s.e.\ $\approx$0.04), with and without a balanced panel, and not statistically significant. \backuplink{exclfacilities}{full balance table}
     \item \textbf{Monotonicity.} A defier is a high-sulfur watershed that expanded \emph{because} its coal was high sulfur. Scrubber adoption costs more likely leading to lost market share rather than gain; low-cost high-sulfur regions that expand anyway are never-takers. 
     %Monotonicity is pairwise in sulfur, so low- and high-sulfur areas may respond in opposite directions (\cite{angrist1994identification}).
 \end{itemize}
@@ -404,8 +411,7 @@ Second stage:
 % ---------------------------------------------------------------- 24
 \begin{frame}{Mining makes utilities stop reporting}
 \presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}
-\takeaway{One more upstream mine raises MR violations by 3.9--4.9 pp for nitrates, 3.8--4.7 pp for arsenic, and 3.1--4.5 pp for IOC (across utility-year and utility-year-by-state-year fixed effects), against base rates of 5.7\%, 3.7\%, and 4.3\%. OLS estimates are far smaller --- consistent with negative omitted variable bias, as expected if utilities that can keep mines out are also better at compliance.}
-[LINK ROBUSTNESS TEST kgrid_mr_coefs_downstream.png]
+\takeaway{One more upstream mine raises MR violations by 3.9--4.9 pp for nitrates, 3.8--4.7 pp for arsenic, and 3.1--4.5 pp for IOC (across utility-year and utility-year-by-state-year fixed effects), against base rates of 5.7\%, 3.7\%, and 4.3\%. OLS estimates are far smaller --- consistent with negative omitted variable bias, as expected if utilities that can keep mines out are also better at compliance. \backuplink{kgridmrdown}{effect across choice of upstream watershed radius}}
 \end{frame}
 
 % ---------------------------------------------------------------- 25
@@ -431,16 +437,13 @@ Second stage:
 % ---------------------------------------------------------------- 28
 \begin{frame}{Enforcement does not counteract under-reporting}
 \presreg{h3_inf_formal_d12_k2}
-\takeaway{One more upstream mine reduces formal enforcement by 3.4 pp with utility and year fixed effects alone (significant), but the effect loses significance once state $\times$ year fixed effects are added; informal enforcement is not significant in either specification.}
-
-[LINK ROBUSTNESS TEST kgrid_enf_coefs.png]
+\takeaway{One more upstream mine reduces formal enforcement by 3.4 pp with utility and year fixed effects alone (significant), but the effect loses significance once state $\times$ year fixed effects are added; informal enforcement is not significant in either specification. \backuplink{kgridenf}{effect across choice of upstream watershed radius}}
 \end{frame}
 
 % ---------------------------------------------------------------- 29
 \begin{frame}{The regulator increases inspections, not enforcement}
 \presreg{h2_snsv_d12_k2}
-\takeaway{Only inspection visits rise significantly ($+$2.1 pp); sanitary and enforcement visits are not statistically distinguishable from zero. Regulators do not systematically step up the visit types tied to sanctions. Either there are no hidden exceedances, or visits do not find them (\cite{mi2026technology}); I cannot separate the two, but concealment is unlikely given the MCL results. Either way the penalty for under-reporting does not increase, which Proposition 3 says would work.}
-[LINK ROBUSTNESS TEST kgrid_visit_coefs]
+\takeaway{Only inspection visits rise significantly ($+$2.1 pp); sanitary and enforcement visits are not statistically distinguishable from zero. Regulators do not systematically step up the visit types tied to sanctions. Either there are no hidden exceedances, or visits do not find them (\cite{mi2026technology}); I cannot separate the two, but concealment is unlikely given the MCL results. Either way the penalty for under-reporting does not increase, which Proposition 3 says would work. \backuplink{kgridvisit}{effect across choice of upstream watershed radius}}
 \end{frame}
 
 % ---------------------------------------------------------------- 30
@@ -475,7 +478,62 @@ Second stage:
 \end{frame}
 
 \begin{frame}{Appendix: instrument balance on intake facilities}
+\hypertarget{exclfacilities}{}
 \presreg{exclusion_test_num_facilities_k2}
+\end{frame}
+
+\begin{frame}{Appendix: balance test on utility characteristics}
+\hypertarget{balancetest}{}
+\presreg[max width=\textwidth, max totalheight=0.68\textheight]{pt_balance_6yr_k2}
+\takeaway{Observable characteristics jointly predict continuous upstream production only without state fixed effects (p=0.029) and lose significance once state fixed effects are added (p=0.461), as in the main specification. The joint test on the binary presence of upstream mining stays significant with or without state fixed effects.}
+\end{frame}
+
+\begin{frame}{Appendix: first stage across choice of upstream watershed radius}
+\hypertarget{kgridfs}{}
+\presfig[0.62\textheight]{kgrid_first_stage.png}
+\takeaway{The first-stage coefficient and F-statistic for utilities downstream of a mine stay well above conventional weak-instrument thresholds as the upstream watershed radius $k$ varies from one to eight flow steps; the two-watershed radius used in the main specification is a conservative choice.}
+\end{frame}
+
+\begin{frame}{Appendix: exclusion placebo, MR violations across $k$}
+\hypertarget{kgridmrup}{}
+\presfig[0.76\textheight]{kgrid_mr_upstream_of_mine_coefs.png}
+\takeaway{For utilities upstream of a mine --- where mining cannot reach the intake hydrologically --- the reduced-form and 2SLS estimates on MR violations are small and not statistically distinguishable from zero at every choice of $k$.}
+\end{frame}
+
+\begin{frame}{Appendix: exclusion placebo, visits across $k$}
+\hypertarget{kgridvisitup}{}
+\presfig[0.76\textheight]{kgrid_visit_upstream_of_mine_coefs.png}
+\takeaway{Visit types show no consistent pattern for utilities upstream of a mine at any choice of $k$, unlike the significant rise in inspection visits found downstream of mining.}
+\end{frame}
+
+\begin{frame}{Appendix: exclusion placebo, enforcement across $k$}
+\hypertarget{kgridenfup}{}
+\presfig[0.76\textheight]{kgrid_enf_upstream_of_mine_coefs.png}
+\takeaway{Enforcement actions show no consistent pattern for utilities upstream of a mine at any choice of $k$, supporting the exclusion restriction.}
+\end{frame}
+
+\begin{frame}{Appendix: concentration effects across choice of upstream watershed radius}
+\hypertarget{kgridsyr2}{}
+\presfig[0.62\textheight]{kgrid_syr2_downstream_of_mine_coefs.png}
+\takeaway{The nitrate and selenium effects are largest at short radii and shrink as $k$ grows; arsenic and barium remain indistinguishable from zero throughout, consistent with the main specification.}
+\end{frame}
+
+\begin{frame}{Appendix: MR violation effect across choice of upstream watershed radius}
+\hypertarget{kgridmrdown}{}
+\presfig[0.76\textheight]{kgrid_mr_downstream_of_mine_coefs.png}
+\takeaway{The 2SLS effect on MR violations is largest at $k=1$ and declines smoothly as the upstream radius widens, but stays positive and significant across all choices of $k$.}
+\end{frame}
+
+\begin{frame}{Appendix: enforcement effect across choice of upstream watershed radius}
+\hypertarget{kgridenf}{}
+\presfig[0.68\textheight]{kgrid_enf_coefs.png}
+\takeaway{The formal-enforcement estimate is not stable in sign or significance across choices of $k$, consistent with the fixed-effects sensitivity found in the main specification.}
+\end{frame}
+
+\begin{frame}{Appendix: visit effect across choice of upstream watershed radius}
+\hypertarget{kgridvisit}{}
+\presfig[0.68\textheight]{kgrid_visit_coefs.png}
+\takeaway{The rise in inspection visits downstream of mining is present across choices of $k$, while sanitary and enforcement visits remain insignificant throughout.}
 \end{frame}
 
 \begin{frame}{Appendix: concentration summary statistics}

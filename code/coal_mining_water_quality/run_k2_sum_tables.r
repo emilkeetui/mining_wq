@@ -4,6 +4,8 @@
 #          (1) two-panel MR/MCL violation incidence and days-in-year summary
 #              for nitrates, arsenic, and inorganic chemicals (ports
 #              violation_binary_days_panels.r);
+#          (1b) standalone mining-exposure-covariates summary table (split
+#              out of (1)'s former Panel C so each table carries one theme);
 #          (2) two-panel enforcement-type and visit-type summary across the
 #              whole panel and MR-/MCL-violation-year subsets (ports
 #              enforcement_visit_type_panels.r), restricted to the k2
@@ -19,6 +21,7 @@
 #   clean_data/cws_data/sdwa_enf_agg_k2.parquet (via k2_common.r)
 # Outputs:
 #   output/sum/violation_binary_days_panels_k2.tex (+ _present.tex)
+#   output/sum/mining_exposure_covariates_k2.tex (+ _present.tex)
 #   output/sum/enforcement_visit_type_panels_k2.tex (+ _present.tex)
 # Author: EK  Date: 2026-09-14
 # ============================================================
@@ -69,7 +72,7 @@ row_specs <- list(
   list(label = "Inorganic chemicals", s = stats_ioc)
 )
 
-# ── 1b. Panel C — Mining exposure covariates ────────────────────────────
+# ── 1b. Mining exposure covariates (standalone table) ───────────────────
 panelc_stats <- function(var) {
   list(
     mean = mean(main_dat[[var]], na.rm = TRUE),
@@ -149,7 +152,7 @@ panel_b_lines <- c(
   "\\end{tabular}"
 )
 
-# ── 1c. Panel C — Mining exposure covariates ────────────────────────────
+# ── 1c. Mining exposure covariates table body ───────────────────────────
 make_panelc_row <- function(rs) {
   paste0(rs$label,
          " & ", fp2(rs$s$mean), " & ", fp2(rs$s$sd), " & ", fp2(rs$s$p90), " & ", fp2(rs$s$p99),
@@ -157,16 +160,14 @@ make_panelc_row <- function(rs) {
 }
 
 # Label column matches col_a/col_b's w_label (not a wider 6.5cm) so the
-# Mean/SD/P90/P99 columns start at the same x-position as, and are the same
-# width as, Panel B's MR supercolumn -- i.e. Panel C's Mean sits under
-# Panel B's MR Mean, SD under SD, etc.
+# Mean/SD/P90/P99 columns keep the same x-position and width as the sibling
+# violation-panels table's MR supercolumn, for a visually consistent pair
+# of tables.
 col_c <- paste0(">{\\raggedright\\arraybackslash}p{", w_label, "} *{4}{>{\\centering\\arraybackslash}p{", w_b, "}}")
 
 panel_c_lines <- c(
   paste0("\\begin{tabular}{", col_c, "}"),
-  "\\hline",
-  "\\multicolumn{5}{l}{\\textbf{Panel C: Mining exposure covariates}} \\\\",
-  "\\hline",
+  "\\toprule",
   paste0("\\textbf{Variable} & \\textbf{Mean} & \\textbf{SD} & \\textbf{P90} & \\textbf{P99} \\\\"),
   "\\hline",
   sapply(row_specs_c, make_panelc_row),
@@ -181,10 +182,7 @@ combined_note <- paste0(
   "level violation. Panel A: \\% Non-zero is the share of utility-year observations ",
   "with a nonzero violation share for that category, in percent; Num. Violations is ",
   "the corresponding count of utility-year observations. Panel B: Mean, SD, P90, and ",
-  "P99 describe the number of days in a year in violation. Panel C reports Mean, SD, ",
-  "P90, and P99 for the number of coal mines upstream, cumulative coal production ",
-  "upstream since 1985 (10 million short tons), and the percentage of coal weight ",
-  "that is sulfur, for the same sample. Number of observations = ",
+  "P99 describe the number of days in a year in violation. Number of observations = ",
   "Number of utilities $\\times$ Number of years. ",
   "N\\,=\\,", fn(N_obs), " = ", fn(N_pws), " utilities $\\times$ up to ", fn(N_years),
   " years (1985--2005)."
@@ -198,7 +196,6 @@ table_lines_1 <- c(
   "\\small",
   panel_a_lines,
   panel_b_lines,
-  panel_c_lines,
   "\\begin{minipage}{\\linewidth}",
   "\\vspace{4pt}",
   "\\footnotesize",
@@ -223,12 +220,59 @@ table_lines_1_present <- c(
   "\\small",
   panel_a_lines,
   panel_b_lines,
-  panel_c_lines,
   "\\end{table}"
 )
 out_path_1_present <- sub("\\.tex$", "_present.tex", out_path_1)
 writeLines(table_lines_1_present, out_path_1_present)
 cat("Written:", out_path_1_present, "\n")
+
+# ── 1d. mining_exposure_covariates_k2.tex (standalone, ex-Panel C) ──────
+covariates_note <- paste0(
+  "\\textit{Notes:} Sample of drinking water utilities with a coal mine within two ",
+  "flow steps upstream of their intake and no coal mine colocated with their intake, ",
+  "1985--2005. Mean, SD, P90, and P99 are reported for the number of coal mines ",
+  "upstream, cumulative coal production upstream since 1985 (10 million short tons), ",
+  "and the percentage of coal weight that is sulfur, for the same sample. Number of ",
+  "observations = Number of utilities $\\times$ Number of years. ",
+  "N\\,=\\,", fn(N_obs), " = ", fn(N_pws), " utilities $\\times$ up to ", fn(N_years),
+  " years (1985--2005)."
+)
+
+table_lines_1d <- c(
+  "\\begin{table}[htbp]",
+  "\\raggedright",
+  "\\caption{Mining Exposure Covariates, Coal Mining Exposed Utilities, Two-Step Upstream Watershed Linkage, 1985--2005}",
+  "\\label{tab:mining_exposure_covariates_k2}",
+  "\\small",
+  panel_c_lines,
+  "\\begin{minipage}{\\linewidth}",
+  "\\vspace{4pt}",
+  "\\footnotesize",
+  "\\raggedright",
+  covariates_note,
+  "\\end{minipage}",
+  "\\end{table}"
+)
+
+out_path_1d <- "Z:/ek559/mining_wq/output/sum/mining_exposure_covariates_k2.tex"
+writeLines(table_lines_1d, out_path_1d)
+cat("Written:", out_path_1d, "\n")
+
+# Presentation companion: same table body, trailing notes minipage dropped
+# entirely (summary statistics carry no clustering/FE/stars) --
+# .claude/logs/2026-08-31-presentation-notes-tables.md.
+table_lines_1d_present <- c(
+  "\\begin{table}[htbp]",
+  "\\raggedright",
+  "\\caption{Mining Exposure Covariates, Coal Mining Exposed Utilities, Two-Step Upstream Watershed Linkage, 1985--2005}",
+  "\\label{tab:mining_exposure_covariates_k2}",
+  "\\small",
+  panel_c_lines,
+  "\\end{table}"
+)
+out_path_1d_present <- sub("\\.tex$", "_present.tex", out_path_1d)
+writeLines(table_lines_1d_present, out_path_1d_present)
+cat("Written:", out_path_1d_present, "\n")
 
 # ── 2. enforcement_visit_type_panels_k2.tex ─────────────────────────────
 # Reference 2SLS sample: drop FE-singleton rows relative to
