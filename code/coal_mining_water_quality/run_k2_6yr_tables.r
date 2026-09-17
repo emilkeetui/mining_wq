@@ -152,40 +152,88 @@ for (dose_name in names(dose_list)) {
 }
 stopifnot(length(models_val) == 8)  # 2 dose defs x {arsenic, nitrate, barium, selenium}, all survive
 
-reg_headers <- list(
-  " "   = list("Within one HUC12 upstream" = 4, "Within two HUC12 upstream" = 4),
-  ":_:" = rep(unname(nice_chem[CHEMS]), 2)
-)
+# Panel layout (rather than side-by-side column groups): Panel A = within-
+# one-flow-step dose, Panel B = within-two-flow-step dose, each x {arsenic,
+# nitrate, barium, selenium}. Each panel is rendered by its own etable()
+# call (so column numbering and the adjustbox scale independently per
+# panel), then the two adjustbox+tabular blocks are stacked inside a single
+# table float -- adjustbox inside the float around each panel's tabular
+# individually, per CLAUDE.md's multi-panel-table nesting convention.
+extract_adjustbox <- function(tex_lines) {
+  x <- paste(tex_lines, collapse = "\n")
+  start_pos <- regexpr("\\\\begin\\{adjustbox\\}", x)
+  end_pos   <- regexpr("\\\\end\\{adjustbox\\}", x)
+  end_full  <- end_pos + attr(end_pos, "match.length") - 1
+  substr(x, start_pos, end_full)
+}
+
+insert_panel_title <- function(tex_str, n_col, panel_label) {
+  lines   <- strsplit(tex_str, "\n")[[1]]
+  mid_idx <- which(trimws(lines) == "\\midrule")[1]
+  title_line <- paste0("      \\multicolumn{", n_col + 1, "}{l}{\\textbf{", panel_label, "}} \\\\")
+  c(lines[seq_len(mid_idx)], title_line, lines[(mid_idx + 1):length(lines)])
+}
+
+panel_tabular <- function(models_grp) {
+  raw <- etable(
+    models_grp,
+    headers      = list(":_:" = unname(nice_chem[CHEMS])),
+    depvar       = FALSE,
+    fitstat      = ~n,
+    style.tex    = style.tex("aer", adjustbox = TRUE),
+    tex          = TRUE,
+    digits       = "r4",
+    drop         = "Number of intake facilities",
+    drop.section = "fixef",
+    dict         = k2_dict
+  )
+  extract_adjustbox(raw)
+}
+
+panel_a_lines <- insert_panel_title(panel_tabular(models_val[1:4]), 4, "Panel A: Within one HUC12 upstream")
+panel_b_lines <- insert_panel_title(panel_tabular(models_val[5:8]), 4, "Panel B: Within two HUC12 upstream")
+
+reg_title <- "Effect of cumulative upstream coal production on inorganic chemicals by upstream distance, SYR2 1998--2005"
+reg_label <- "tab:6yr_huc02fe_inorg_ravalli_2005_k2"
+
+build_two_panel_table <- function(panel_a, panel_b, title, label, notes, out_path) {
+  lines <- c(
+    "\\begin{table}[htbp]",
+    "   ",
+    paste0("   \\caption{\\label{", label, "} ", title, "}"),
+    "   \\bigskip",
+    "   ",
+    "   \\centering",
+    "   ",
+    panel_a,
+    "   ",
+    "   \\bigskip",
+    "   ",
+    panel_b,
+    "   ",
+    "   {\\tiny\\linespread{1}\\selectfont \\par \\raggedright ",
+    paste0("   ", notes, "}"),
+    "   ",
+    "\\end{table}",
+    "",
+    ""
+  )
+  writeLines(lines, out_path)
+}
 
 note_reg <- paste0(
   "\\textit{Notes:} Within each chemical, the column shows mean measured concentration ",
   "from the EPA 6-Year Review. Non-detect values replaced by MDL$/\\sqrt{2}$ following ",
   "Ravalli et al.~(2022). Explanatory variable is cumulative coal production since 1985 ",
   "(in 10 million short tons) in watersheds within one flow step upstream of the ",
-  "utility's intake (columns 1--4) or within two flow steps upstream (columns 5--8). ",
+  "utility's intake (Panel A) or within two flow steps upstream (Panel B). ",
   "Sample: utilities with a coal mine within two flow steps upstream of their intake ",
   "and no coal mine colocated with their intake. Standard errors clustered at the ",
   "utility level. All specifications include utility and HUC02 $\\times$ year fixed ",
   "effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 out_reg <- "Z:/ek559/mining_wq/output/reg/6yr_huc02fe_inorg_ravalli_2005_k2.tex"
-etable(
-  models_val,
-  headers         = reg_headers,
-  depvar          = FALSE,
-  fitstat         = ~n,
-  style.tex       = style.tex("aer", adjustbox = TRUE),
-  tex             = TRUE,
-  digits          = "r4",
-  drop            = "Number of intake facilities",
-  drop.section    = "fixef",
-  title           = "Effect of cumulative upstream coal production on inorganic chemicals by upstream distance, SYR2 1998--2005",
-  label           = "tab:6yr_huc02fe_inorg_ravalli_2005_k2",
-  dict            = k2_dict,
-  notes           = note_reg,
-  postprocess.tex = move_notes_below_adjustbox,
-  file            = out_reg
-)
+build_two_panel_table(panel_a_lines, panel_b_lines, reg_title, reg_label, note_reg, out_reg)
 cat("Written:", out_reg, "\n")
 
 # Presentation companion: same table body, notes = FE sentence + clustering +
@@ -197,23 +245,7 @@ note_reg_present <- paste0(
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 out_reg_present <- sub("\\.tex$", "_present.tex", out_reg)
-etable(
-  models_val,
-  headers         = reg_headers,
-  depvar          = FALSE,
-  fitstat         = ~n,
-  style.tex       = style.tex("aer", adjustbox = TRUE),
-  tex             = TRUE,
-  digits          = "r4",
-  drop            = "Number of intake facilities",
-  drop.section    = "fixef",
-  title           = "Effect of cumulative upstream coal production on inorganic chemicals by upstream distance, SYR2 1998--2005",
-  label           = "tab:6yr_huc02fe_inorg_ravalli_2005_k2",
-  dict            = k2_dict,
-  notes           = note_reg_present,
-  postprocess.tex = move_notes_below_adjustbox,
-  file            = out_reg_present
-)
+build_two_panel_table(panel_a_lines, panel_b_lines, reg_title, reg_label, note_reg_present, out_reg_present)
 cat("Written:", out_reg_present, "\n")
 
 # ── 6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex ───────────────────
