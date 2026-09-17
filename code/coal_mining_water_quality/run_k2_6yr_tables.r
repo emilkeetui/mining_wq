@@ -3,14 +3,16 @@
 # Purpose: SYR2 6-Year Review concentration exhibits for the k=2 A-full
 #          main arm: OLS effect of cumulative upstream coal production on
 #          mean measured concentration (arsenic/nitrate/barium/selenium),
-#          summary statistics, a balance test of utility characteristics
-#          against dose, and an SYR2-reporting-status violation-rate
-#          comparison. The grid instrument is degenerate on this sample
-#          (post95 is identically 1 on every non-missing VALUE obs <=
-#          2005), so these report OLS (matching
-#          run_step_top3_outcomes.r's build_dose_sample(2)/fml_state, which
-#          reproduces the published k=1 anchor). FE: PWSID + huc02^year,
-#          matching the published k=1 table. Sources k2_common.r.
+#          reported as one-step-upstream vs. two-step-upstream dose columns
+#          on the same k2 sample to show dose-distance decay; summary
+#          statistics, a balance test of utility characteristics against
+#          dose, and an SYR2-reporting-status violation-rate comparison.
+#          The grid instrument is degenerate on this sample (post95 is
+#          identically 1 on every non-missing VALUE obs <= 2005), so these
+#          report OLS (matching run_step_top3_outcomes.r's
+#          build_dose_sample(2)/fml_state, which reproduces the published
+#          k=1 anchor). FE: PWSID + huc02^year, matching the published k=1
+#          table. Sources k2_common.r.
 # Inputs:
 #   clean_data/cws_data/step_instruments.parquet (via k2_common.r)
 #   clean_data/cws_6year_review_ravalli.parquet
@@ -24,7 +26,7 @@
 #   output/sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex (+ _present.tex)
 #   output/reg/pt_balance_6yr_k2.tex
 #   output/sum/syr2_mr_comparison_k2.tex (+ _present.tex)
-# Author: EK  Date: 2026-09-14
+# Author: EK  Date: 2026-09-16
 # ============================================================
 
 source("Z:/ek559/mining_wq/code/coal_mining_water_quality/k2_common.r")
@@ -53,16 +55,33 @@ nice_chem <- c(arsenic = "Arsenic", nitrate = "Nitrate", barium = "Barium", sele
 
 # ── build_dose_sample(): k-step upstream cumulative dose, verbatim logic
 # from run_step_top3_outcomes.r:112-140 (already-validated OLS construction
-# that reproduces the published k=1 anchor). ─────────────────────────────
-build_dose_sample <- function(kk) {
-  arm_k <- si %>% dplyr::filter(arm == "main", k == kk, n_mine_hucs_linked >= 1) %>%
+# that reproduces the published k=1 anchor), generalized to let the dose
+# regressor be built from a different flow-step depth than the one that
+# defines the estimation sample (dose-distance decay comparison, plan
+# k2-dose-distance-columns.md Step 1). `sample_k` selects the utility-year
+# rows (via the A2 intake-purity screen, unchanged); `dose_k` selects which
+# k's cumulative production feeds the regressor. When `dose_k == sample_k`
+# this is exactly the original single-k behavior. ────────────────────────
+build_dose_sample <- function(sample_k, dose_k = sample_k) {
+  arm_k <- si %>% dplyr::filter(arm == "main", k == sample_k, n_mine_hucs_linked >= 1) %>%
     apply_a2() %>%
     dplyr::select(PWSID, year, production_linked_sum)
 
   linked_pwsids <- unique(arm_k$PWSID)
   d <- d6r %>% dplyr::filter(PWSID %in% linked_pwsids, CHEMID_name %in% CHEMS)
 
-  cum_panel <- arm_k %>%
+  if (dose_k == sample_k) {
+    dose_src <- arm_k
+  } else {
+    dose_src <- arm_k %>% dplyr::select(PWSID, year) %>%
+      dplyr::left_join(
+        si %>% dplyr::filter(arm == "main", k == dose_k) %>%
+          dplyr::select(PWSID, year, production_linked_sum),
+        by = c("PWSID", "year")
+      )
+  }
+
+  cum_panel <- dose_src %>%
     dplyr::distinct(PWSID, year, production_linked_sum) %>%
     dplyr::arrange(PWSID, year) %>%
     dplyr::group_by(PWSID) %>%
@@ -84,7 +103,21 @@ build_dose_sample <- function(kk) {
   d
 }
 
-dose2 <- build_dose_sample(2)
+dose2    <- build_dose_sample(2)              # unchanged; still used by sumstats + balance sections
+dose2_k1 <- build_dose_sample(2, dose_k = 1)  # same rows, one-step dose
+
+stopifnot(nrow(dose2) == nrow(dose2_k1))
+key_cols <- c("PWSID", "year", "CHEMID_name", "VALUE")
+dose2_sorted    <- dose2[order(dose2$PWSID, dose2$year, dose2$CHEMID_name), key_cols]
+dose2_k1_sorted <- dose2_k1[order(dose2_k1$PWSID, dose2_k1$year, dose2_k1$CHEMID_name), key_cols]
+rownames(dose2_sorted) <- NULL; rownames(dose2_k1_sorted) <- NULL
+stopifnot(identical(dose2_sorted, dose2_k1_sorted))
+
+dose2_10        <- dose2[order(dose2$PWSID, dose2$year, dose2$CHEMID_name), ]$coal_prod_upstream_cumsum_10mst
+dose2_k1_10     <- dose2_k1[order(dose2_k1$PWSID, dose2_k1$year, dose2_k1$CHEMID_name), ]$coal_prod_upstream_cumsum_10mst
+stopifnot(all(dose2_k1_10 <= dose2_10 + 1e-9))
+cat(sprintf("One-step dose is zero for %.1f%% of rows (%d of %d)\n",
+            100 * mean(dose2_k1_10 == 0), sum(dose2_k1_10 == 0), length(dose2_k1_10)))
 n_a2_main_k2 <- dplyr::n_distinct(main_dat$PWSID)
 cat(sprintf("k2 dose sample: %d rows, %d utilities, %d distinct chemicals\n",
             nrow(dose2), dplyr::n_distinct(dose2$PWSID), dplyr::n_distinct(dose2$CHEMID_name)))
@@ -95,43 +128,58 @@ cat(sprintf("Coverage: %d of %d k2 main-arm utilities have SYR2 concentration co
 fml_huc02 <- VALUE ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
 
 # ── 6yr_huc02fe_inorg_ravalli_2005_k2.tex ────────────────────────────────
+# 8 columns: within-one-flow-step dose (1-4) then within-two-flow-step dose
+# (5-8), each x {arsenic, nitrate, barium, selenium}, same k2 sample rows
+# throughout -- only the dose regressor's source k differs (plan
+# k2-dose-distance-columns.md Step 2, dose-distance decay comparison).
+dose_list  <- list(one = dose2_k1, two = dose2)
 models_val <- list()
 hdr_val    <- character(0)
-for (chem in CHEMS) {
-  d_chem <- dose2[dose2$CHEMID_name == chem, ]
-  cat("  Chemical:", chem, "| n rows:", nrow(d_chem), "\n")
-  if (nrow(d_chem) < 30) { cat("  Skipping -- too few obs.\n"); next }
-  m <- tryCatch(fixest::feols(fml_huc02, data = d_chem, cluster = ~PWSID, warn = FALSE, notes = FALSE),
-                error = function(e) { cat("  ERROR:", conditionMessage(e), "\n"); NULL })
-  if (!is.null(m)) {
-    models_val <- c(models_val, list(m))
-    hdr_val    <- c(hdr_val, nice_chem[[chem]])
-    cat("  n =", m$nobs, "| coef =", round(coef(m)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+for (dose_name in names(dose_list)) {
+  dose_df <- dose_list[[dose_name]]
+  for (chem in CHEMS) {
+    d_chem <- dose_df[dose_df$CHEMID_name == chem, ]
+    cat("  Dose:", dose_name, "| Chemical:", chem, "| n rows:", nrow(d_chem), "\n")
+    if (nrow(d_chem) < 30) { cat("  Skipping -- too few obs.\n"); next }
+    m <- tryCatch(fixest::feols(fml_huc02, data = d_chem, cluster = ~PWSID, warn = FALSE, notes = FALSE),
+                  error = function(e) { cat("  ERROR:", conditionMessage(e), "\n"); NULL })
+    if (!is.null(m)) {
+      models_val <- c(models_val, list(m))
+      hdr_val    <- c(hdr_val, nice_chem[[chem]])
+      cat("  n =", m$nobs, "| coef =", round(coef(m)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+    }
   }
 }
-stopifnot(length(models_val) == 4)  # arsenic, nitrate, barium, selenium all survive, per plan Step 7
+stopifnot(length(models_val) == 8)  # 2 dose defs x {arsenic, nitrate, barium, selenium}, all survive
+
+reg_headers <- list(
+  " "   = list("Within one HUC12 upstream" = 4, "Within two HUC12 upstream" = 4),
+  ":_:" = rep(unname(nice_chem[CHEMS]), 2)
+)
 
 note_reg <- paste0(
   "\\textit{Notes:} Within each chemical, the column shows mean measured concentration ",
   "from the EPA 6-Year Review. Non-detect values replaced by MDL$/\\sqrt{2}$ following ",
-  "Ravalli et al.~(2022). Explanatory variable is cumulative coal production since ",
-  "1985 (in 10 million short tons) in watersheds within two flow steps upstream of the ",
-  "utility's intake. Sample: utilities with a coal mine within two flow steps upstream ",
-  "of their intake and no coal mine colocated with their intake. Standard errors ",
-  "clustered at the utility level. All specifications include utility and HUC02 ",
-  "$\\times$ year fixed effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+  "Ravalli et al.~(2022). Explanatory variable is cumulative coal production since 1985 ",
+  "(in 10 million short tons) in watersheds within one flow step upstream of the ",
+  "utility's intake (columns 1--4) or within two flow steps upstream (columns 5--8). ",
+  "Sample: utilities with a coal mine within two flow steps upstream of their intake ",
+  "and no coal mine colocated with their intake. Standard errors clustered at the ",
+  "utility level. All specifications include utility and HUC02 $\\times$ year fixed ",
+  "effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 out_reg <- "Z:/ek559/mining_wq/output/reg/6yr_huc02fe_inorg_ravalli_2005_k2.tex"
 etable(
   models_val,
-  headers         = hdr_val,
+  headers         = reg_headers,
+  depvar          = FALSE,
   fitstat         = ~n,
   style.tex       = style.tex("aer", adjustbox = TRUE),
   tex             = TRUE,
   digits          = "r4",
   drop            = "Number of intake facilities",
   drop.section    = "fixef",
-  title           = "Effect of cumulative upstream coal production on Inorganic Chemicals, SYR2 1998--2005",
+  title           = "Effect of cumulative upstream coal production on inorganic chemicals by upstream distance, SYR2 1998--2005",
   label           = "tab:6yr_huc02fe_inorg_ravalli_2005_k2",
   dict            = k2_dict,
   notes           = note_reg,
@@ -151,14 +199,15 @@ note_reg_present <- paste0(
 out_reg_present <- sub("\\.tex$", "_present.tex", out_reg)
 etable(
   models_val,
-  headers         = hdr_val,
+  headers         = reg_headers,
+  depvar          = FALSE,
   fitstat         = ~n,
   style.tex       = style.tex("aer", adjustbox = TRUE),
   tex             = TRUE,
   digits          = "r4",
   drop            = "Number of intake facilities",
   drop.section    = "fixef",
-  title           = "Effect of cumulative upstream coal production on Inorganic Chemicals, SYR2 1998--2005",
+  title           = "Effect of cumulative upstream coal production on inorganic chemicals by upstream distance, SYR2 1998--2005",
   label           = "tab:6yr_huc02fe_inorg_ravalli_2005_k2",
   dict            = k2_dict,
   notes           = note_reg_present,
