@@ -24,7 +24,7 @@
 # Outputs:
 #   output/reg/6yr_huc02fe_inorg_ravalli_2005_k2.tex (+ _present.tex)
 #   output/sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex (+ _present.tex)
-#   output/reg/pt_balance_6yr_k2.tex
+#   output/reg/pt_balance_6yr_k2.tex (+ _present.tex)
 #   output/sum/syr2_mr_comparison_k2.tex (+ _present.tex)
 # Author: EK  Date: 2026-09-16
 # ============================================================
@@ -517,6 +517,36 @@ etable(
   file = out_bal, replace = TRUE
 )
 cat("Written:", out_bal, "\n")
+
+# Presentation companion: same table body (FE checkmark rows already carry
+# the fixed-effects info and differ across columns, so notes stay silent on
+# FE per table-notes-conventions.md Rule 7); notes reduced to clustering +
+# stars legend only -- .claude/logs/2026-08-31-presentation-notes-tables.md.
+note_bal_present <- paste0(
+  "\\textit{Notes:} Heteroskedasticity-robust standard errors. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+out_bal_present <- sub("\\.tex$", "_present.tex", out_bal)
+etable(
+  m_bal_ord,
+  headers = list(" " = list("Cumul. upstream coal prod. (10M ST)" = 2, "Any upstream coal mining" = 2)),
+  depvar = FALSE,
+  fitstat = ~ n,
+  extralines = list(
+    "Joint $F$-test (all covariates)" = wald_f_ord,
+    "\\hspace{1em} $p$-value"         = wald_p_ord
+  ),
+  style.tex = style.tex("aer", adjustbox = TRUE),
+  tex = TRUE,
+  digits = "r4",
+  title = "Balance test of utility characteristics and upstream coal production 1998--2005, two-step upstream watershed linkage",
+  label = "tab:pt_balance_6yr_k2",
+  dict = dict_bal,
+  notes = note_bal_present,
+  postprocess.tex = postprocess_bal_k2,
+  file = out_bal_present, replace = TRUE
+)
+cat("Written:", out_bal_present, "\n")
 
 # ── syr2_mr_comparison_k2.tex ────────────────────────────────────────────
 # Compare MR/MCL violation rates between utilities with and without SYR2
