@@ -27,6 +27,22 @@ source("Z:/ek559/mining_wq/code/coal_mining_water_quality/k2_common.r")
 
 main_dat <- build_k2_panel("main")
 
+# Stable sample across FE specs: drop utilities the state x year FE cannot
+# identify -- missing state code, or the only utility in their state (every
+# state-year cell is a singleton, so fixest would drop them from the
+# state x year columns only).
+lone_states <- main_dat %>%
+  dplyr::filter(!is.na(STATE_CODE)) %>%
+  dplyr::group_by(STATE_CODE) %>%
+  dplyr::summarise(n_util = dplyr::n_distinct(PWSID), .groups = "drop") %>%
+  dplyr::filter(n_util == 1) %>%
+  dplyr::pull(STATE_CODE)
+n_util_before <- dplyr::n_distinct(main_dat$PWSID); n_obs_before <- nrow(main_dat)
+main_dat <- main_dat %>% dplyr::filter(!is.na(STATE_CODE), !(STATE_CODE %in% lone_states))
+cat(sprintf("Stable-sample screen: dropped %d utilities / %d obs (lone-state: %s; missing state)\n",
+            n_util_before - dplyr::n_distinct(main_dat$PWSID), n_obs_before - nrow(main_dat),
+            paste(lone_states, collapse = ", ")))
+
 FE_TWO <- c("PWSID + year", "PWSID + STATE_CODE^year")
 
 depvar_vio <- paste0(
@@ -35,7 +51,8 @@ depvar_vio <- paste0(
   "percentage point change. The instrument interacts an indicator for the post-1995 ",
   "period with the average coal sulfur content of watersheds within two flow steps ",
   "upstream of the utility's intake. The sample is utilities with a coal mine within ",
-  "two flow steps upstream of their intake and no coal mine colocated with their intake."
+  "two flow steps upstream of their intake and no coal mine colocated with their intake, ",
+  "in states with at least one other such utility."
 )
 
 # Presentation companions: same table bodies, notes stripped to clustering +
@@ -92,6 +109,13 @@ stopifnot(
 )
 cat("MR anchor gate PASSED.\n")
 
+# Stable-sample gate: every column (utility+year and state x year alike)
+# must share the same N now that the unidentified utilities are screened
+# out up front.
+stopifnot(length(unique(r42$n_obs)) == 1, length(unique(r42$n_utils)) == 1)
+cat(sprintf("MR stable-sample gate PASSED: %s utilities / %s obs in every column.\n",
+            format(r42$n_utils[1], big.mark = ","), format(r42$n_obs[1], big.mark = ",")))
+
 # ── 4.3 MCL violations ───────────────────────────────────────────────────
 render_panel_k2(
   dat        = main_dat,
@@ -129,7 +153,7 @@ fs_notes <- notes_k2(paste0(
   "instrument interacts an indicator for the post-1995 period with the average coal ",
   "sulfur content of those watersheds. The sample is utilities with a coal mine ",
   "within two flow steps upstream of their intake and no coal mine colocated with ",
-  "their intake."
+  "their intake, in states with at least one other such utility."
 ))
 etable(
   fs_m,
@@ -280,7 +304,12 @@ if (needs_scale_et) {
   )
 }
 
-note_et <- notes_k2("The dependent variable is the number of active intake facilities operated by the utility in that year.")
+note_et <- notes_k2(paste0(
+  "The dependent variable is the number of active intake facilities operated by the ",
+  "utility in that year. The sample is utilities with a coal mine within two flow ",
+  "steps upstream of their intake and no coal mine colocated with their intake, in ",
+  "states with at least one other such utility."
+))
 table_lines_et <- c(
   "\\begin{table}[htbp]",
   "\\raggedright",
@@ -334,7 +363,7 @@ depvar_visit <- paste0(
   "post-1995 period with the average coal sulfur content of watersheds within two flow ",
   "steps upstream of the utility's intake. The sample is utilities with a coal mine ",
   "within two flow steps upstream of their intake and no coal mine colocated with their ",
-  "intake."
+  "intake, in states with at least one other such utility."
 )
 render_panel_k2(
   dat        = main_dat,
@@ -358,9 +387,10 @@ depvar_enf <- paste0(
   "change. The instrument interacts an indicator for the post-1995 period with the ",
   "average coal sulfur content of watersheds within two flow steps upstream of the ",
   "utility's intake. The sample is utilities with a coal mine within two flow steps ",
-  "upstream of their intake and no coal mine colocated with their intake."
+  "upstream of their intake and no coal mine colocated with their intake, in states ",
+  "with at least one other such utility."
 )
-render_panel_k2(
+r47 <- render_panel_k2(
   dat        = main_dat,
   outcomes   = c(any_informal = "Informal", any_formal = "Formal", no_enf = "None"),
   fe_specs   = FE_TWO,
@@ -372,5 +402,9 @@ render_panel_k2(
   superheader = "Any enforcement",
   notes_present = notes_present_panel
 )
+
+stopifnot(length(unique(r47$n_obs)) == 1, length(unique(r47$n_utils)) == 1)
+cat(sprintf("Enforcement stable-sample gate PASSED: %s utilities / %s obs in every column.\n",
+            format(r47$n_utils[1], big.mark = ","), format(r47$n_obs[1], big.mark = ",")))
 
 cat("\n=== run_k2_main_tables.r DONE ===\n")
