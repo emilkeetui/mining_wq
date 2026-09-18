@@ -237,12 +237,21 @@ Contamination shifts monitoring from the firm onto the regulator.
 
 % ---------------------------------------------------------------- 11
 \begin{frame}{Model: the utility's decisions to self-report or under-report}
-Utility draws compliance cost type $\theta \sim F(\cdot\,;m)$ and self-reporting cost $c \sim G(\cdot\,;m)$, both worsening in upstream contamination $m$.
+Utility draws compliance cost type $\theta \sim F(\cdot\,;m)$, worsening in upstream contamination $m$.
 \begin{itemize}\small
-    \item Choose negligence $a$, unobserved by regulator, with benefit $\theta b(a)$, opportunity cost relative to a maximum negligence $\theta b(\bar{a})$.
+    \item Choose negligence $a$, unobserved by regulator, with benefit $\theta b(a)$
+    \item Opportunity cost relative to a maximum negligence $\theta b(\bar{a})$.
+    \end{itemize}
+ Utility draws a self-reporting cost $c \sim G(\cdot\,;m)$, worsening in upstream contamination $m$.
+ \begin{itemize}
     \item A test reveals an MCL with probability $q(a)$, $q'\geq0$.
-    \item Penalties: $r$ for a self-reported exceedance, $t$ for an MR violation, $s>r$ if an inspection (probability $p$) uncovers a hidden exceedance.
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Model: the utility's decisions to self-report or under-report}
+
+Penalties: $r$ for a self-reported exceedance, $t$ for an MR violation, $s>r$ if an inspection (probability $p$) uncovers a hidden exceedance.
+
 \[
 \underbrace{c + q(a)\,r}_{\text{report}} \;\lessgtr\; \underbrace{t + p\,q(a)\,s}_{\text{under-report}}
 \;\Longrightarrow\;
@@ -250,8 +259,11 @@ Utility draws compliance cost type $\theta \sim F(\cdot\,;m)$ and self-reporting
 \]
 \begin{itemize}
     \item A system with \textbf{zero} exceedance risk still stops reporting once $c > t$.
-    \item The utility chooses $a$ to maximize $-\theta[b(\bar{a})-b(a)] - e(a; c)$.
+\end{itemize}
 
+\[e(a;c) = \min\left\{\, c + q(a)r,\;\; t + \,q(a)ps \,\right\}\]
+\begin{itemize}
+    \item The utility chooses $a$ to maximize $-\theta[b(\bar{a})-b(a)] - e(a; c)$.
 \end{itemize}
 \end{frame}
 
@@ -264,7 +276,7 @@ MR(m) = \int_0^{\bar\theta} \big[\,1 - G(c^*(\theta);m)\,\big]\, f(\theta;m)\, d
 \]
 Differentiating splits into two channels:
 \[
-\frac{\partial MR}{\partial m} = \underbrace{\int_0^{\bar\theta} \frac{\partial h(\theta,m)}{\partial m}\, f(\theta;m)\, d\theta}_{\text{Channel A: cost-distribution shift}} \;+\; \underbrace{\int_0^{\bar\theta} h(\theta,m)\, \frac{\partial f(\theta;m)}{\partial m}\, d\theta}_{\text{Channel B: type-distribution shift}}.
+\frac{\partial MR}{\partial m} = \underbrace{\int_0^{\bar\theta} \frac{\partial h(\theta,m)}{\partial m}\, f(\theta;m)\, d\theta}_{\text{Channel A: cost-distribution shift. Hold $\theta$ distribution fixed and change probability type $\theta$ utilities draw c exceeding $c^*$}} \;+\; \underbrace{\int_0^{\bar\theta} h(\theta,m)\, \frac{\partial f(\theta;m)}{\partial m}\, d\theta}_{\text{Channel B: type-distribution shift. Hold proportion of type $\theta$ utilities whose cutoff exceeds $c^*$ fixed and change the proportion of utilities of type $\theta$.}}.
 \]
 \end{block}
 \end{frame}
