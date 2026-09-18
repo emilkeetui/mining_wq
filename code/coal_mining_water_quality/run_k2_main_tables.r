@@ -401,7 +401,7 @@ r47 <- render_panel_k2(
   label      = "tab:h3_inf_formal_d12_k2",
   outfile    = "h3_inf_formal_d12_k2",
   depvar_sentence = depvar_enf,
-  superheader = "Any enforcement",
+  superheader = "Enforcement",
   notes_present = notes_present_panel
 )
 

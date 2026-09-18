@@ -102,7 +102,7 @@ citestyle=bwl-FU
     \begin{itemize}
         \item Healthcare HIPAA violation disclosure; Energy firms self-report anti-competitiveness/negligence to the Federal Energy Regulatory Commission; Public companies' SOX self-report financial statement accuracy; Drinking water utilities' water quality.
     \end{itemize}
-    \item Incentive to shirk reporting. Consider drinking water utilities federal water quality regulation:
+    \item Incentive to shirk reporting. Consider drinking water utilities' federal water quality regulation:
     \begin{itemize}
         \item No self-report $\Rightarrow$ no contamination exceedance violation issued \parencite{naylor5537637strategic, zou2021unwatched}.
         \item No self-report saves self-reporting costs \parencite{oleckno1982national}.
@@ -120,7 +120,7 @@ citestyle=bwl-FU
 \begin{itemize}
     \item Drinking water utilities provide treated water to 85\% of US households.
     \begin{itemize}
-        \item Utilities source from groundwater and/or surface water, serve twenty five to millions of customers, publicly or privately owned.
+        \item Utilities source from groundwater and/or surface water, serve from twenty-five to millions of customers, publicly or privately owned.
     \end{itemize}
     \item 9 to 34 million US households obtain water from a utility violating a health standard \parencite{allaire2018national}.
     \item \textbf{Coal mining is a source of water contamination} 
@@ -159,8 +159,8 @@ citestyle=bwl-FU
 \begin{itemize}
     \item Setting: drinking water utilities downstream of coal mines, 1985--2005.
     \begin{itemize}
-        \item Contamination is \textbf{upstream externality} --- the firm cannot reduce by cutting output \parencite{bennear2005strategic}.
-        \item Separation of utility choices over contamination help identify the effect of contamination.
+        \item Contamination is an \textbf{upstream externality} --- the firm cannot reduce it by cutting output \parencite{bennear2005strategic}.
+        \item Separating contamination from utility choices helps identify the effect of contamination.
     \end{itemize}
     \item Adapt \textcite{stratford2015coalprod} instrument for coal production to address two sources of endogeneity:
     \begin{itemize}
@@ -184,7 +184,7 @@ citestyle=bwl-FU
     \item $\uparrow$ mining $\rightarrow$ $\uparrow$ \textbf{under-reporting}. One more upstream mine raises MR violations by 3--5 pp, against base rates of roughly 4--6\%.
     \item $\uparrow$ mining $\rightarrow$ \textbf{no significant change} in MCL violations.
     \item $\uparrow$ mining $\rightarrow$ $\uparrow$ \textbf{inspection visits} ($+$2.1 pp).
-    \item formal enforcement: $-$1.8 pp against a base rate of 3\% but imprecisely measured.
+    \item Formal enforcement: $-$3.4 pp with utility and year fixed effects, $-$1.1 pp (not significant) with state $\times$ year fixed effects, against a base rate of 3\%.
     \item \textbf{Self-reporting costs, not concealment}: 
     \begin{itemize}
         \item When nitrate readings cross 50\% of the MCL $\rightarrow$ monitoring requirements $\uparrow$ (reporting cost $\uparrow$) $\rightarrow$ self-reporting $\downarrow$.
@@ -211,16 +211,16 @@ Contamination shifts monitoring from the firm onto the regulator.
 
 \begin{frame}{Institutional setting}
 \begin{itemize}
-\item Utilities federally regulated by the Safe Drinking Water Act ("SDWA``).
-\item Contaminants cannot exceed a Maximum Contaminant Level ("MCL``).
-\item Self-report to regulator or get a Monitoring and Reporting violation ("MR``).
+\item Utilities federally regulated by the Safe Drinking Water Act (``SDWA'').
+\item Contaminants cannot exceed a Maximum Contaminant Level (``MCL'').
+\item Self-report to regulator or get a Monitoring and Reporting violation (``MR'').
 \item Self-reporting requirements depend on water contamination/threats to water.
 \item States are SDWA enforcers with discretion over enforcement and visits:
 \begin{itemize}
     \item Sanitary survey - comprehensive on-site inspection
     \item Technical assistance - helps fix problem or become compliant.
     \item Sampling - prompted by suspected contamination event or violation.
-    \item Enforcement visit -triggered by suspected violation.
+    \item Enforcement visit - triggered by suspected violation.
 \end{itemize}
 
 \item Enforcement, while remedial rather than punitive, is still costly:
@@ -250,13 +250,13 @@ Utility draws compliance cost type $\theta \sim F(\cdot\,;m)$ and self-reporting
 \]
 \begin{itemize}
     \item A system with \textbf{zero} exceedance risk still stops reporting once $c > t$.
-    \item The utility chooses $a$ to minimize $-\theta[b(\bar{a})-b(a)] - e(a; c)$.
+    \item The utility chooses $a$ to maximize $-\theta[b(\bar{a})-b(a)] - e(a; c)$.
 
 \end{itemize}
 \end{frame}
 
 % ---------------------------------------------------------------- 12
-\begin{frame}{Model: why the utility under reports}
+\begin{frame}{Model: why the utility under-reports}
 \begin{block}{Proposition 2}
 A type-$\theta$ utility under-reports if and only if its cost draw exceeds this cutoff, $c > c^*(\theta)$, so the share of utilities under-reporting and receiving an MR violation is:
 \[
@@ -277,7 +277,7 @@ Differentiating splits into two channels:
         \item Under-inclusive but accurate: 95\% of the violations SDWIS holds are correctly reported (US EPA, 2000).
     \end{itemize}
     \item \textbf{Contaminant concentrations} --- EPA Six-Year Review round 2, 1998--2005. Cleaned following \cite{ravalli2022sociodemographic}; non-detects set to MDL/$\sqrt{2}$.
-    \item Contaminants: \textbf{arsenic, nitrate, barium, selenium} --- inorganic chemicals with stable utility MCL's 1985--2005.
+    \item Contaminants: \textbf{arsenic, nitrate, barium, selenium} --- inorganic chemicals with stable utility MCLs 1985--2005.
     \item \textbf{Mines} --- MSHA locations merged to EIA annual production, mine level.
     \item \textbf{Coal sulfur \%} --- USGS COALQUAL samples, averaged within 20 km of each watershed.
     \item \textbf{Hydrology} --- NHDPlus HUC12 watershed boundaries and inflow/outflow.
@@ -291,8 +291,8 @@ Differentiating splits into two channels:
 \begin{column}{0.5\textwidth}
 \begin{itemize}\small
     \item HUC12 is the finest watershed mapped for the continental US ($>$87,000 units).
-    \item Exposure = mines and tons coal in the HUC12s \textbf{within two watersheds upstream} of the utility's intakes.
-    \item Average distance between centroid of adjacent HUC12's is 11 km.
+    \item Exposure = mines and tons of coal in the HUC12s \textbf{within two watersheds upstream} of the utility's intakes.
+    \item Average distance between centroid of adjacent HUC12s is 11 km.
     \item Intakes \textbf{colocated} with a mine are excluded.
     \item Multiple intakes: sum production, average sulfur.
 \end{itemize}
@@ -337,7 +337,7 @@ Differentiating splits into two channels:
 \medskip
 \begin{itemize}
     \item Continuous treatment, \textbf{no control}: identification comes from relative exposure.
-    \item Assumption: utility with large upstream production changes would have trended like those with small ones. \backuplink{balancetest}{balance test on utility characteristics}
+    \item Assumption: utilities with large upstream production changes would have trended like those with small ones. \backuplink{balancetest}{balance test on utility characteristics}
 \end{itemize}
 \end{frame}
 
@@ -351,12 +351,12 @@ Differentiating splits into two channels:
 \section{Do utilities keep self-reporting?}
 % ================================================================
 
-\begin{frame}{The Acid Rain Program (``ARP") moved coal, not for water quality}
+\begin{frame}{The Acid Rain Program (``ARP") moved coal production for reasons unrelated to water quality}
 \begin{columns}[T]
 \begin{column}{0.44\textwidth}
 \begin{itemize}\small
 
-\item Adapt Douglas and Wiggins (2015) ARP instrument for coal production to
+\item Adapt \textcite{stratford2015coalprod} ARP instrument for coal production to
 address endogeneity of mining and utility characteristics.
 \item 1990 Clean Air Act amendments cap SO$_2$ from power plants; Phase I deadline \textbf{1995}.
 \item Power plants were 90\% of coal demand; switching to low sulfur coal was the main compliance response \parencite{lattanzio2022clean}.
@@ -390,7 +390,7 @@ Second stage:
 \text{Violation}_{vct} = \beta_0 + \beta_1\text{NumFacility}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} + State_s \cdot Y_t + C_c + \epsilon_{ct}
 \end{equation*}
 \begin{itemize}\small
-    \item $\text{Post95}_t = \mathbf{1}\{t > 1995\}$. Sulfur is time-invariant, so $C_c$ absorbs its level.
+    \item $\text{Post95}_t = \mathbf{1}\{t \geq 1995\}$. Sulfur is time-invariant, so $C_c$ absorbs its level.
     \item Outcome: 1 if utility $c$ had a violation of type $v$ at any point in year $t$. Coefficients are in percentage points.
     \item SEs clustered at the utility level.
 \end{itemize}
@@ -403,7 +403,7 @@ Second stage:
 
 % ---------------------------------------------------------------- 22
 \begin{frame}{First stage: high sulfur watersheds lost their mines}
-\presreg[width=1.3\textwidth]{fs_dwnstrm_minevio_ivsum_k2}
+\presreg[width=0.7\textwidth]{fs_dwnstrm_minevio_ivsum_k2}
 %\takeaway{$F = 27.5$, above the 23.1 critical value of \cite{montielolea2013robust} for a 5\% test against 10\% worst-case bias, and well above the rule of thumb of 10 (\cite{staigerstock1997instrumental}).}
 \takeaway{\backuplink{kgridfs}{first-stage strength across choice of upstream watershed radius}}
 \end{frame}
@@ -411,7 +411,7 @@ Second stage:
 % ---------------------------------------------------------------- 23
 \begin{frame}{Instrument validity}
 \begin{itemize}\small
-    \item \textbf{Independence.} The ARP is a national clean-air law set by national energy and emissions politics, not downstream utility's water quality.
+    \item \textbf{Independence.} The ARP is a national clean-air law set by national energy and emissions politics, not downstream utilities' water quality.
     \item \textbf{Exclusion.} Effect of instrumenting mining downstream of utility on utility behavior is not significant. \backuplink{kgridmrup}{MR violations}, \backuplink{kgridvisitup}{visits}, \backuplink{kgridenfup}{enforcement}.
 
     Utility characteristics are not predicted by instrument. \backuplink{exclfacilities}{full balance table}
@@ -423,7 +423,7 @@ Second stage:
 % ---------------------------------------------------------------- 24
 \begin{frame}{Mining makes utilities stop reporting}
 \presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}
-\takeaway{Base rates of nitrates, arsenic, and IOC are 5.7\%, 3.7\%, and 4.3\%. OLS estimates are far smaller --- consistent with negative omitted variable bias, as expected if poorly performing utilities (more MR violations) are protected from mine siting (less mines). \backuplink{kgridmrdown}{effect across choice of upstream watershed radius}}
+\takeaway{Base rates of nitrates, arsenic, and IOC are 5.7\%, 3.7\%, and 4.3\%. OLS estimates are far smaller --- consistent with negative omitted variable bias, as expected if poorly performing utilities (more MR violations) are protected from mine siting (fewer mines). \backuplink{kgridmrdown}{effect across choice of upstream watershed radius}}
 \end{frame}
 
 % ---------------------------------------------------------------- 26
@@ -433,7 +433,7 @@ Second stage:
     \item Exceedance risk is held fixed (Channel B = 0), reporting cost increases (Channel A $\geq 0$).
 \end{itemize}
 \presreg{mr_concentration_lag_ols_k2}
-\takeaway{Descriptive, not causal --- read the sign not magnitude. Utilities under-report when self-reporting gets expensive, not concealing.}
+\takeaway{Descriptive, not causal --- read the sign, not the magnitude. Utilities under-report when self-reporting gets expensive, not to conceal exceedances.}
 \end{frame}
 
 % ================================================================
@@ -457,11 +457,11 @@ Second stage:
 \begin{itemize}\small
     \item Exogenous contamination raises the cost of self-reporting, and self-reporting falls --- \textbf{even when utilities remain below MCL}.
     \item Under-reporting due to cost avoidance, rather than concealing a contamination violation.
-    \item Regulators inspection visits rise significantly --- substituting utility under-reporting.
+    \item Regulators' inspection visits rise significantly --- substituting for utility self-reporting.
     \item Enforcement response is mixed and fixed-effects-sensitive: formal action falls with baseline fixed effects but loses significance once state $\times$ year effects are added.
     \item \textbf{Policy.} Tightening MCLs does nothing if nobody tests. Raising self-reporting penalties could reduce under-reporting.
     %\item \textbf{Policy.} Tightening MCLs does nothing if nobody tests. By Proposition 3 the binding lever is the price of \emph{not} reporting where source water is impaired, and it is not currently being pulled (\cite{malik1993self}; \cite{harford1987self}).
-    \item Open question: if regulator monitoring is more efficient than self-reporting.
+    \item Open question: whether regulator monitoring is more efficient than self-reporting.
 \end{itemize}
 \vfill
 \centering \small ek559@cornell.edu
@@ -498,19 +498,19 @@ Second stage:
 \begin{frame}{Appendix: first stage across choice of upstream watershed radius}
 \hypertarget{kgridfs}{}
 \presfig[0.62\textheight]{kgrid_first_stage.png}
-\takeaway{The first-stage coefficient and F-statistic for utilities downstream of a mine stay well above conventional weak-instrument thresholds as the upstream watershed radius $k$ varies from one to eight flow steps; the two-watershed radius used in the main specification is a conservative choice.}
+\takeaway{The first-stage coefficient and F-statistic for utilities downstream of a mine stay well above conventional weak-instrument thresholds as the upstream watershed radius $k$ varies from one to eight flow steps.}
 \end{frame}
 
 \begin{frame}{Appendix: exclusion placebo, MR violations across $k$}
 \hypertarget{kgridmrup}{}
-\presfig[0.76\textheight]{kgrid_mr_upstream_of_mine_coefs.png}
-\takeaway{For utilities upstream of a mine --- where mining cannot reach the intake hydrologically --- the reduced-form and 2SLS estimates on MR violations are small and not statistically distinguishable from zero at every choice of $k$.}
+\presfig[0.66\textheight]{kgrid_mr_upstream_of_mine_coefs.png}
+\takeaway{For utilities upstream of a mine --- where mining cannot reach the intake hydrologically --- OLS estimates on MR violations are positive and significant at every $k$. In the reduced form and 2SLS, nitrate estimates are significant for $k \geq 3$, while arsenic and inorganic chemical estimates are significant only at $k=1$.}
 \end{frame}
 
 \begin{frame}{Appendix: exclusion placebo, visits across $k$}
 \hypertarget{kgridvisitup}{}
-\presfig[0.76\textheight]{kgrid_visit_upstream_of_mine_coefs.png}
-\takeaway{Visit types show no consistent pattern for utilities upstream of a mine at any choice of $k$, unlike the significant rise in inspection visits found downstream of mining.}
+\presfig[0.68\textheight]{kgrid_visit_upstream_of_mine_coefs.png}
+\takeaway{For utilities upstream of a mine, inspection visits rise significantly at nearly every $k$, sanitary visits at $k=1$ and $k \geq 4$, and sample collection visits at several radii; technical assistance and enforcement visits are mostly insignificant.}
 \end{frame}
 
 \begin{frame}{Appendix: exclusion placebo, enforcement across $k$}
@@ -522,13 +522,13 @@ Second stage:
 \begin{frame}{Appendix: concentration effects across choice of upstream watershed radius}
 \hypertarget{kgridsyr2}{}
 \presfig[0.62\textheight]{kgrid_syr2_downstream_of_mine_coefs.png}
-\takeaway{The nitrate and selenium effects are largest at short radii and shrink as $k$ grows; arsenic and barium remain indistinguishable from zero throughout, consistent with the main specification.}
+\takeaway{Arsenic and barium rise significantly only at $k=1$ and are indistinguishable from zero at larger radii. Nitrate is insignificant at $k=1$, significant from $k=2$ to $k=4$ (peaking at $k=3$), and fades beyond; selenium is significant only at $k=1$ and $k=2$.}
 \end{frame}
 
 \begin{frame}{Appendix: MR violation effect across choice of upstream watershed radius}
 \hypertarget{kgridmrdown}{}
-\presfig[0.76\textheight]{kgrid_mr_downstream_of_mine_coefs.png}
-\takeaway{The 2SLS effect on MR violations is largest at $k=1$ and declines smoothly as the upstream radius widens, but stays positive and significant across all choices of $k$.}
+\presfig[0.58\textheight]{kgrid_mr_downstream_of_mine_coefs.png}
+\takeaway{The 2SLS effect on MR violations is largest at $k=1$ and declines smoothly as the upstream radius widens. Nitrate stays positive and significant at every $k$; arsenic and inorganic chemical estimates stay positive but are borderline or insignificant at some radii of $k \geq 3$.}
 \end{frame}
 
 \begin{frame}{Appendix: enforcement effect across choice of upstream watershed radius}
@@ -539,8 +539,8 @@ Second stage:
 
 \begin{frame}{Appendix: visit effect across choice of upstream watershed radius}
 \hypertarget{kgridvisit}{}
-\presfig[0.68\textheight]{kgrid_visit_coefs.png}
-\takeaway{The rise in inspection visits downstream of mining is present across choices of $k$, while sanitary and enforcement visits remain insignificant throughout.}
+\presfig[0.62\textheight]{kgrid_visit_coefs.png}
+\takeaway{The rise in inspection visits downstream of mining is significant at every $k \geq 2$ but not at $k=1$. Sanitary visits remain insignificant throughout, while enforcement visits are significant at $k=1$ and at most radii beyond $k=2$.}
 \end{frame}
 
 \begin{frame}{Appendix: who appears in the Six-Year Review}
@@ -553,10 +553,6 @@ Second stage:
 \takeaway{Enforcement responds to violations --- any enforcement rises from 21\% overall to 71\% in MR years --- but sanitary visits are no more likely in MR years than in any other year.}
 \end{frame}
 
-\begin{frame}{Appendix: where coal production moved, 1985--2005}
-\presfig[0.72\textheight]{proportionatecircleprod_diff_allminehuc12_1985_2005.png}
-\end{frame}
-
 \begin{frame}{Appendix: residualized first stage}
 \presfig[0.72\textheight]{first_stage_scatter_dwnstrm.png}
 \end{frame}
@@ -566,7 +562,7 @@ Second stage:
 \end{frame}
 
 \begin{frame}{Appendix: Corollary 1, statement and proof}
-\footnotesize
+\scriptsize
 Write the share of types under-reporting as $h(\theta,m) = 1 - G(c^*(\theta);m)$, with cutoff $c^*(\theta) = t - (r-ps)\,q(a_{SR}(\theta))$, so that
 \[
 \frac{\partial MR}{\partial m} = \underbrace{\int_0^{\bar\theta}\!\frac{\partial h(\theta,m)}{\partial m}\,f(\theta;m)\,d\theta}_{\text{A: cost}} \;+\; \underbrace{\int_0^{\bar\theta}\! h(\theta,m)\,\frac{\partial f(\theta;m)}{\partial m}\,d\theta}_{\text{B: composition}}.
