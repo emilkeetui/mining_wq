@@ -781,7 +781,7 @@ get_term <- function(model, term) {
   }
 }
 
-render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile, notes, superheader = NULL) {
+render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, label, outfile, notes, superheader = NULL, superheader_rule = TRUE) {
   y_vec    <- names(result)
   n_y      <- length(y_vec)
   y_labels <- sapply(y_vec, function(v) if (!is.null(dict) && v %in% names(dict)) dict[[v]] else v)
@@ -825,10 +825,15 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
 
   # Superheader spans only the data columns (not the row-label column), with
   # a partial rule (\cline) underneath so the rule does not run under the
-  # label column.
+  # label column -- except where superheader_rule = FALSE (h3_inf_formal_d12
+  # tables), which omit the rule above the column-number row.
   superheader_lines <- if (!is.null(superheader)) {
-    c(paste0(" & \\multicolumn{", n_y, "}{c}{", superheader, "} \\\\"),
-      paste0("\\cline{2-", n_y + 1, "}"))
+    if (superheader_rule) {
+      c(paste0(" & \\multicolumn{", n_y, "}{c}{", superheader, "} \\\\"),
+        paste0("\\cline{2-", n_y + 1, "}"))
+    } else {
+      paste0(" & \\multicolumn{", n_y, "}{c}{", superheader, "} \\\\")
+    }
   } else {
     NULL
   }
@@ -886,8 +891,8 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
 
   # Panel order: OLS, then 2SLS, then reduced form. Each panel carries a
   # title row naming its model (rather than "Panel A/B/C"); every internal
-  # rule is a full-width \hline (the only partial rule in the table is the
-  # \cline under the superheader).
+  # rule is a full-width \hline (the only partial rule in the table, when
+  # present, is the \cline under the superheader).
   panel_ols <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\toprule",
@@ -1208,7 +1213,8 @@ render_panel_binary_table(result = result_h3_inf, dict = dict_enf,
                            label = "tab:h3_inf_formal_d12",
                            outfile = "h3_inf_formal_d12",
                            notes = notes_h3_inf,
-                           superheader = "Any enforcement")
+                           superheader = "Any enforcement",
+                           superheader_rule = FALSE)
 cat(sprintf("\nTable saved to: %s\n", out_tex_h3_inf))
 if (file.exists(out_tex_h3_inf) && file.info(out_tex_h3_inf)$size > 0) {
   cat("Output verified: file exists and is non-zero.\n")
@@ -1230,7 +1236,8 @@ render_panel_binary_table(result = result_h3_inf, dict = dict_enf,
                            label = "tab:h3_inf_formal_d12",
                            outfile = "h3_inf_formal_d12_present",
                            notes = notes_h3_inf_present,
-                           superheader = "Any enforcement")
+                           superheader = "Any enforcement",
+                           superheader_rule = FALSE)
 cat("Presentation table saved to:", file.path(ROOT, "output/reg/h3_inf_formal_d12_present.tex"), "\n")
 
 # ── Surface-water subsample: H3 informal/formal/no-enforcement table, panel_d1_sw ──

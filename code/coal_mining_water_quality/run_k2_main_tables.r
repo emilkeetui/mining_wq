@@ -27,7 +27,7 @@ source("Z:/ek559/mining_wq/code/coal_mining_water_quality/k2_common.r")
 
 main_dat <- build_k2_panel("main")
 
-FE_TWO <- c("PWSID + year", "PWSID + year + STATE_CODE^year")
+FE_TWO <- c("PWSID + year", "PWSID + STATE_CODE^year")
 
 depvar_vio <- paste0(
   "Dependent variable equals 1 if the utility had a violation of that type during the ",
@@ -81,13 +81,13 @@ anchor_ars   <- get_term(r42$iv_list[[4]], "num_coal_mines_linked_sum")  # arsen
 anchor_ioc   <- get_term(r42$iv_list[[6]], "num_coal_mines_linked_sum")  # inorganic, state x year
 cat(sprintf("\nAnchor check (state x year FE): nitrates %.2f (%.2f) [want 3.94 (1.75)]\n",
             anchor_terms$est, anchor_terms$se))
-cat(sprintf("Anchor check (state x year FE): arsenic %.2f (%.2f) [want 3.78 (1.56)]\n",
+cat(sprintf("Anchor check (state x year FE): arsenic %.2f (%.2f) [want 3.78 (1.55)]\n",
             anchor_ars$est, anchor_ars$se))
 cat(sprintf("Anchor check (state x year FE): inorganic %.2f (%.2f) [want 3.06 (1.66)]\n",
             anchor_ioc$est, anchor_ioc$se))
 stopifnot(
   abs(round(anchor_terms$est, 2) - 3.94) < 0.01, abs(round(anchor_terms$se, 2) - 1.75) < 0.01,
-  abs(round(anchor_ars$est, 2)   - 3.78) < 0.01, abs(round(anchor_ars$se, 2)   - 1.56) < 0.01,
+  abs(round(anchor_ars$est, 2)   - 3.78) < 0.01, abs(round(anchor_ars$se, 2)   - 1.55) < 0.01,
   abs(round(anchor_ioc$est, 2)   - 3.06) < 0.01, abs(round(anchor_ioc$se, 2)   - 1.66) < 0.01
 )
 cat("MR anchor gate PASSED.\n")
@@ -108,20 +108,19 @@ render_panel_k2(
 )
 
 # ── 4.4 First stage ───────────────────────────────────────────────────────
-fe_state_yr <- "PWSID + year + STATE_CODE^year"
+fe_state_yr <- "PWSID + STATE_CODE^year"
 fs_m <- fixest::feols(
-  num_coal_mines_linked_sum ~ post95:sulfur_mean0 + num_facilities | PWSID + year + STATE_CODE^year,
+  num_coal_mines_linked_sum ~ post95:sulfur_mean0 + num_facilities | PWSID + STATE_CODE^year,
   data = main_dat, cluster = ~PWSID, warn = FALSE, notes = FALSE
 )
 f_val_main <- f_clustered(main_dat, fe_state_yr)
-cat(sprintf("\nFirst-stage F (main, state x year FE): %.2f [want ~49.10]\n", f_val_main))
-stopifnot(abs(f_val_main - 49.10) < 0.01)
+cat(sprintf("\nFirst-stage F (main, state x year FE): %.2f [want ~49.20]\n", f_val_main))
+stopifnot(abs(f_val_main - 49.20) < 0.01)
 cat("First-stage F gate PASSED.\n")
 
 el_fs <- list(
   "F-test (1st stage, clustered)"      = fmt_single(f_val_main),
   "Utility fixed effects"              = "$\\checkmark$",
-  "Year fixed effects"                 = "$\\checkmark$",
   "State $\\times$ year fixed effects" = "$\\checkmark$"
 )
 fs_notes <- notes_k2(paste0(
@@ -170,7 +169,7 @@ etable(
 cat("  Written: output/reg/fs_dwnstrm_minevio_ivsum_k2_present.tex\n")
 
 # ── 4.5 Exclusion-restriction falsification test ─────────────────────────
-m1 <- fixest::feols(num_facilities ~ post95:sulfur_mean0 | PWSID + year + STATE_CODE^year,
+m1 <- fixest::feols(num_facilities ~ post95:sulfur_mean0 | PWSID + STATE_CODE^year,
                      data = main_dat, cluster = ~PWSID, warn = FALSE, notes = FALSE)
 
 n_years_expected <- length(unique(main_dat$year))
@@ -229,8 +228,15 @@ n_obs_col2   <- nobs(m2)
 n_y_et <- 2
 label_w_cm_et <- 5.5
 data_w_cm_et  <- 2.5
+# Data columns are plain right-aligned ("r"), not fixed-width raggedleft
+# p{} boxes: a p{} box's width is fixed regardless of content, so a
+# \multicolumn{1}{c}{...} header centers in the middle of that box while
+# the right-flush, phantom-padded numbers below sit at its right edge --
+# the header then floats to the left of the numbers instead of sitting
+# above them. "r" sizes the column to its (equal-width, decimal-aligned)
+# content, so the centered header lands directly above the numbers.
 col_spec_et <- paste0("p{", label_w_cm_et, "cm}",
-                       paste(rep(paste0(">{\\raggedleft\\arraybackslash}p{", data_w_cm_et, "cm}"), n_y_et), collapse = ""))
+                       paste(rep("r", n_y_et), collapse = ""))
 depvar_header_et <- " & \\multicolumn{2}{c}{Number of Intake Facilities} \\\\"
 header_row_et <- " & \\multicolumn{1}{c}{(1)} & \\multicolumn{1}{c}{(2)} \\\\"
 
@@ -254,7 +260,7 @@ tabular_lines_et <- c(
   interact_row_se,
   "\\hline",
   "Utility fixed effects & $\\checkmark$ & \\\\",
-  "Year fixed effects & $\\checkmark$ & $\\checkmark$ \\\\",
+  "Year fixed effects & & $\\checkmark$ \\\\",
   "State $\\times$ year fixed effects & $\\checkmark$ & \\\\",
   "Balanced panel & & $\\checkmark$ \\\\",
   paste0("Utilities & ", format(n_utils_col1, big.mark = ","), " & ", format(n_utils_col2, big.mark = ","), " \\\\"),

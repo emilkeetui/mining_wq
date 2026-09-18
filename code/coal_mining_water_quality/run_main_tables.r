@@ -543,12 +543,9 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
     paste0("\\multicolumn{", n_y + 1, "}{l}{", model_label, "} \\\\")
   }
 
-  # Superheader spans only the data columns (not the row-label column), with
-  # a partial rule (\cline) underneath so the rule does not run under the
-  # label column.
+  # Superheader spans only the data columns (not the row-label column).
   superheader_lines <- if (!is.null(superheader)) {
-    c(paste0(" & \\multicolumn{", n_y, "}{c}{", superheader, "} \\\\"),
-      paste0("\\cline{2-", n_y + 1, "}"))
+    paste0(" & \\multicolumn{", n_y, "}{c}{", superheader, "} \\\\")
   } else {
     NULL
   }
@@ -607,8 +604,7 @@ render_panel_binary_table <- function(result, dict, coalvar, instr_str, title, l
 
   # Panel order: OLS, then 2SLS, then reduced form. Each panel carries a
   # title row naming its model (rather than "Panel A/B/C"); every internal
-  # rule is a full-width \hline (the only partial rule in the table is the
-  # \cline under the superheader).
+  # rule is a full-width \hline.
   panel_ols <- wrap_panel(c(
     paste0("\\begin{tabular}{", col_spec, "}"),
     "\\toprule",

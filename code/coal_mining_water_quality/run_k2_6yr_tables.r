@@ -155,10 +155,11 @@ stopifnot(length(models_val) == 8)  # 2 dose defs x {arsenic, nitrate, barium, s
 # Panel layout (rather than side-by-side column groups): Panel A = within-
 # one-flow-step dose, Panel B = within-two-flow-step dose, each x {arsenic,
 # nitrate, barium, selenium}. Each panel is rendered by its own etable()
-# call (so column numbering and the adjustbox scale independently per
-# panel), then the two adjustbox+tabular blocks are stacked inside a single
-# table float -- adjustbox inside the float around each panel's tabular
-# individually, per CLAUDE.md's multi-panel-table nesting convention.
+# call (so coefficients/SEs are computed independently per panel), then the
+# two tabulars are merged into a single \begin{adjustbox}/\begin{tabular}
+# block sharing one \toprule/\bottomrule -- Panel B's own tabular-open,
+# \toprule, and duplicate (1)-(4) column-numbers row are dropped so the
+# column numbering set by the shared header carries through both panels.
 extract_adjustbox <- function(tex_lines) {
   x <- paste(tex_lines, collapse = "\n")
   start_pos <- regexpr("\\\\begin\\{adjustbox\\}", x)
@@ -190,13 +191,49 @@ panel_tabular <- function(models_grp) {
   extract_adjustbox(raw)
 }
 
-panel_a_lines <- insert_panel_title(panel_tabular(models_val[1:4]), 4, "Panel A: Within one HUC12 upstream")
-panel_b_lines <- insert_panel_title(panel_tabular(models_val[5:8]), 4, "Panel B: Within two HUC12 upstream")
+# Panel A drops its observation row (kept once, at the bottom of Panel B,
+# since both panels share the same k2 sample rows and thus identical N);
+# Panel B drops its repeated chemical-name header row and its own (1)-(4)
+# column-numbers row (the shared header above Panel A already labels and
+# numbers the columns); both panels drop the \cmidrule spanning rule under
+# the header row.
+strip_cmidrule <- function(tex_str) {
+  gsub(" *\\\\cmidrule\\(lr\\)\\{[0-9]+-[0-9]+\\}", "", tex_str)
+}
+drop_line <- function(tex_str, pattern) {
+  lines <- strsplit(tex_str, "\n", fixed = TRUE)[[1]]
+  paste(lines[!grepl(pattern, lines, fixed = TRUE)], collapse = "\n")
+}
+drop_colnum_row <- function(tex_str) {
+  lines <- strsplit(tex_str, "\n", fixed = TRUE)[[1]]
+  is_colnum <- grepl("\\(1\\)", lines) & grepl("\\(4\\)", lines)
+  paste(lines[!is_colnum], collapse = "\n")
+}
+
+panel_a_tex <- strip_cmidrule(panel_tabular(models_val[1:4]))
+panel_a_tex <- drop_line(panel_a_tex, "Observations")
+panel_a_lines <- insert_panel_title(panel_a_tex, 4, "Panel A: Within one HUC12 upstream")
+
+panel_b_tex <- strip_cmidrule(panel_tabular(models_val[5:8]))
+panel_b_tex <- drop_line(panel_b_tex, "Arsenic & Nitrate & Barium & Selenium")
+panel_b_tex <- drop_colnum_row(panel_b_tex)
+panel_b_lines <- insert_panel_title(panel_b_tex, 4, "Panel B: Within two HUC12 upstream")
+
+# Merge the two panels into a single tabular: keep Panel A's block up to but
+# not including its \bottomrule (shared toprule, header, column numbers,
+# midrule, Panel A title + rows), then append Panel B from its own \midrule
+# (now the divider between panels) through \bottomrule/\end{tabular}/
+# \end{adjustbox}.
+top_a_idx <- which(trimws(panel_a_lines) == "\\bottomrule")[1] - 1
+top_a     <- panel_a_lines[seq_len(top_a_idx)]
+mid_b_idx <- which(trimws(panel_b_lines) == "\\midrule")[1]
+bottom_b  <- panel_b_lines[mid_b_idx:length(panel_b_lines)]
+merged_panel_lines <- c(top_a, bottom_b)
 
 reg_title <- "Effect of cumulative upstream coal production on inorganic chemicals by upstream distance, SYR2 1998--2005"
 reg_label <- "tab:6yr_huc02fe_inorg_ravalli_2005_k2"
 
-build_two_panel_table <- function(panel_a, panel_b, title, label, notes, out_path) {
+build_panel_table <- function(body, title, label, notes, out_path) {
   lines <- c(
     "\\begin{table}[htbp]",
     "   ",
@@ -205,11 +242,7 @@ build_two_panel_table <- function(panel_a, panel_b, title, label, notes, out_pat
     "   ",
     "   \\centering",
     "   ",
-    panel_a,
-    "   ",
-    "   \\bigskip",
-    "   ",
-    panel_b,
+    body,
     "   ",
     "   {\\tiny\\linespread{1}\\selectfont \\par \\raggedright ",
     paste0("   ", notes, "}"),
@@ -233,7 +266,7 @@ note_reg <- paste0(
   "effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 out_reg <- "Z:/ek559/mining_wq/output/reg/6yr_huc02fe_inorg_ravalli_2005_k2.tex"
-build_two_panel_table(panel_a_lines, panel_b_lines, reg_title, reg_label, note_reg, out_reg)
+build_panel_table(merged_panel_lines, reg_title, reg_label, note_reg, out_reg)
 cat("Written:", out_reg, "\n")
 
 # Presentation companion: same table body, notes = FE sentence + clustering +
@@ -245,7 +278,7 @@ note_reg_present <- paste0(
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 out_reg_present <- sub("\\.tex$", "_present.tex", out_reg)
-build_two_panel_table(panel_a_lines, panel_b_lines, reg_title, reg_label, note_reg_present, out_reg_present)
+build_panel_table(merged_panel_lines, reg_title, reg_label, note_reg_present, out_reg_present)
 cat("Written:", out_reg_present, "\n")
 
 # ── 6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex ───────────────────
@@ -483,8 +516,26 @@ wald_p_ord <- wald_p[col_order]
 
 postprocess_bal_k2 <- function(x) {
   x <- move_notes_below_adjustbox(x)
-  x <- right_align_tabular(x)
-  lines <- strsplit(paste(x, collapse = "\n"), "\n")[[1]]
+  x <- paste(x, collapse = "\n")
+
+  # Equal-width, evenly-spaced data columns: coefficients/SEs right-justified
+  # (decimal alignment), column numbers and superheader group labels centered
+  # at the same fixed width so the header rows line up with the body below.
+  data_w_cm   <- 2.4
+  data_w      <- paste0(data_w_cm, "cm")
+  right_col   <- paste0(">{\\raggedleft\\arraybackslash}p{", data_w, "}")
+  center_col  <- paste0(">{\\centering\\arraybackslash}p{", data_w, "}")
+  center_col2 <- paste0(">{\\centering\\arraybackslash}p{", 2 * data_w_cm, "cm}")
+
+  m <- regmatches(x, regexpr("\\\\begin\\{tabular\\}\\{l+c+\\}", x))
+  if (length(m) == 1 && nzchar(m)) {
+    n_data   <- nchar(gsub("[^c]", "", m))
+    new_spec <- paste0("\\begin{tabular}{l", paste(rep(right_col, n_data), collapse = ""), "}")
+    x <- sub(m, new_spec, x, fixed = TRUE)
+    x <- gsub("\\multicolumn{2}{c}", paste0("\\multicolumn{2}{", center_col2, "}"), x, fixed = TRUE)
+  }
+
+  lines <- strsplit(x, "\n")[[1]]
   is_numrow <- function(line) {
     cells <- strsplit(line, "&", fixed = TRUE)[[1]]
     cells <- trimws(gsub("\\\\\\\\.*$", "", cells))
@@ -492,7 +543,13 @@ postprocess_bal_k2 <- function(x) {
     length(cells) > 0 && all(grepl("^\\(\\d+\\)$", cells))
   }
   idx <- which(vapply(lines, is_numrow, logical(1)))
-  for (i in idx) lines[i] <- gsub("(\\(\\d+\\))", "\\\\multicolumn{1}{c}{\\1}", lines[i])
+  # gsub's backreference replacement parser swallows lone backslashes not
+  # followed by a digit, so double every backslash in center_col before
+  # handing it to the (\1)-backreference gsub below.
+  center_col_repl <- gsub("\\", "\\\\", center_col, fixed = TRUE)
+  for (i in idx) {
+    lines[i] <- gsub("(\\(\\d+\\))", paste0("\\\\multicolumn{1}{", center_col_repl, "}{\\1}"), lines[i])
+  }
   paste(lines, collapse = "\n")
 }
 
@@ -664,7 +721,7 @@ build_panel_c <- function(panel_title, rows) {
     if (i == length(rows)) body <- paste0(body, "\\hline\n")
     body <- paste0(body, r$label, " & ", r$g1, " & ", r$g2, " & ", diff_cell, " & ", sprintf("%.3f", r$p), " \\\\\n")
   }
-  footer <- "\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
+  footer <- "\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n\\par\n"
   paste0(header, body, footer)
 }
 

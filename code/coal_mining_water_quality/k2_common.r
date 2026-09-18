@@ -244,9 +244,9 @@ right_align_tabular <- function(x) {
 # ── 6. Panel table renderer ──────────────────────────────────────────────
 # Generalizes run_main_tables.r's render_panel_binary_table (lines 495-714)
 # to a list of (outcome, FE spec) column specs, grouped by outcome with a
-# multicolumn superheader + cline when more than one FE spec is supplied
-# per outcome (collapses to the original one-column-per-outcome layout when
-# fe_specs has length 1 -- h2/h3 tables, plan Step 4.6/4.7).
+# multicolumn superheader when more than one FE spec is supplied per outcome
+# (collapses to the original one-column-per-outcome layout when fe_specs has
+# length 1 -- h2/h3 tables, plan Step 4.6/4.7).
 render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
                              coalvar = "num_coal_mines_linked_sum",
                              instr_str = "post95:sulfur_mean0",
@@ -296,22 +296,15 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
   centered_data_col <- paste0(">{\\centering\\arraybackslash}p{", data_w, "}")
 
   superheader_lines <- if (!is.null(superheader)) {
-    c(paste0(" & \\multicolumn{", n_col, "}{c}{", superheader, "} \\\\"),
-      paste0("\\cline{2-", n_col + 1, "}"))
+    paste0(" & \\multicolumn{", n_col, "}{c}{", superheader, "} \\\\")
   } else NULL
 
   if (n_fe > 1) {
     grp_header_cells <- paste0("\\multicolumn{", n_fe, "}{c}{", oc_labels, "}")
     grp_header_row   <- paste0(" & ", paste(grp_header_cells, collapse = " & "), " \\\\")
-    cline_parts <- vapply(seq_len(n_oc), function(i) {
-      start <- 2 + (i - 1) * n_fe
-      end   <- 1 + i * n_fe
-      sprintf("\\cline{%d-%d}", start, end)
-    }, character(1))
-    cline_row <- paste(cline_parts, collapse = " ")
     colnum_cells <- paste0("\\multicolumn{1}{", centered_data_col, "}{(", seq_len(n_col), ")}")
     colnum_row   <- paste0(" & ", paste(colnum_cells, collapse = " & "), " \\\\")
-    header_block <- c(grp_header_row, cline_row, colnum_row)
+    header_block <- c(grp_header_row, colnum_row)
   } else {
     header_cells <- paste0("\\multicolumn{1}{", centered_data_col, "}{", oc_labels, "}")
     header_row   <- paste0(" & ", paste(header_cells, collapse = " & "), " \\\\")
@@ -331,10 +324,12 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
   se_line   <- function(cells) paste0(" & ", paste(sapply(cells, `[[`, "se"), collapse = " & "), " \\\\")
 
   fe_state     <- vapply(col_fe, function(fe) grepl("STATE_CODE^year", fe, fixed = TRUE), logical(1))
+  fe_year      <- vapply(col_fe, function(fe) "year" %in% trimws(strsplit(fe, "\\+")[[1]]), logical(1))
   chk_all      <- paste(rep("$\\checkmark$", n_col), collapse = " & ")
   chk_state    <- paste(ifelse(fe_state, "$\\checkmark$", ""), collapse = " & ")
+  chk_year     <- paste(ifelse(fe_year, "$\\checkmark$", ""), collapse = " & ")
   fe_row_util  <- paste0("Utility fixed effects & ", chk_all, " \\\\")
-  fe_row_year  <- paste0("Year fixed effects & ", chk_all, " \\\\")
+  fe_row_year  <- paste0("Year fixed effects & ", chk_year, " \\\\")
   fe_row_state <- paste0("State $\\times$ year fixed effects & ", chk_state, " \\\\")
   n_util_row   <- paste0("Utilities & ", paste(format(n_utils, big.mark = ","), collapse = " & "), " \\\\")
   n_obs_row    <- paste0("Observations & ", paste(format(n_obs, big.mark = ","), collapse = " & "), " \\\\")
