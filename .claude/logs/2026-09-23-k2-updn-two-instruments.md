@@ -37,3 +37,13 @@ Branch: `k2-updn-two-instruments`
 
 ## Next Steps
 - User review; merge branch to master on approval. Writeup mirroring not in scope.
+
+## Follow-up (same day): user asked to drop extra F tests, add tables to main.tex
+- Removed Sanderson–Windmeijer F everywhere (fs_stats_updn, panel notes, fs table row/notes, summary).
+  Kept one clustered first-stage F per instrumented variable (Wald F of both instruments):
+  24.68 up / 18.31 down (state×yr); 19.95 / 17.50 (util+yr).
+- Renderer: label col 7cm ragged-right, data cols 2cm — labels wrapped and 2-digit coefs overflowed in main.tex's font.
+- fs table: `\par` inserted before notes group closes so `\raggedright` beats the float's `\centering`.
+  NOTE: existing fs_dwnstrm_minevio_ivsum_k2 has the same centered-notes issue (not touched).
+- main.tex: new `\subsection*{Upstream and downstream coal mines instrumented jointly}` after the k2placebo block,
+  7 `\outreg{..._k2updn}` tables. latexmk: 91 pages, 0 errors, 0 undefined refs, 0 overfull boxes from new tables.

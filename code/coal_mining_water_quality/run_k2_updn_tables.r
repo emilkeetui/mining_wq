@@ -137,29 +137,16 @@ k2_dict_updn <- c(k2_dict,
 )
 k2_dict_updn <- k2_dict_updn[!duplicated(names(k2_dict_updn), fromLast = TRUE)]
 
-# Clustered first-stage strength for each endogenous variable:
-#  - joint: clustered Wald F of (z_up, z_dn) in that variable's first stage;
-#  - sw: Sanderson-Windmeijer conditional F. Residualize x1 on x2 by 2SLS
-#    (x2 instrumented by both z's), then clustered Wald F of both z's on
-#    that residual, times L/(L - p + 1) = 2/(2 - 2 + 1) = 2.
-# fixest's `kpr` fails on this design and `ivwald` is not cluster-robust.
+# Clustered first-stage F for each endogenous variable: clustered Wald F of
+# (z_up, z_dn) in that variable's first stage (never fixest's ivf1 -- HC1).
 fs_stats_updn <- function(dat, fe) {
   endo <- c(up = UP, dn = DN)
   out <- list()
   for (nm in names(endo)) {
-    x1 <- endo[[nm]]; x2 <- endo[[setdiff(names(endo), nm)]]
-    fs <- fixest::feols(as.formula(paste0(x1, " ~ z_up + z_dn + num_facilities | ", fe)),
+    fs <- fixest::feols(as.formula(paste0(endo[[nm]], " ~ z_up + z_dn + num_facilities | ", fe)),
                         data = dat, cluster = ~PWSID, warn = FALSE, notes = FALSE)
     joint_f <- unname(fixest::wald(fs, keep = "^z_(up|dn)$", print = FALSE)$stat)
-    aux <- fixest::feols(as.formula(paste0(x1, " ~ num_facilities | ", fe, " | ", x2, " ~ z_up + z_dn")),
-                         data = dat, cluster = ~PWSID, warn = FALSE, notes = FALSE)
-    delta <- unname(coef(aux)[paste0("fit_", x2)])
-    dat_sw <- dat
-    dat_sw$sw_resid <- dat_sw[[x1]] - delta * dat_sw[[x2]]
-    sw_fs <- fixest::feols(as.formula(paste0("sw_resid ~ z_up + z_dn + num_facilities | ", fe)),
-                           data = dat_sw, cluster = ~PWSID, warn = FALSE, notes = FALSE)
-    sw_f <- 2 * unname(fixest::wald(sw_fs, keep = "^z_(up|dn)$", print = FALSE)$stat)
-    out[[nm]] <- list(fs = fs, joint_f = joint_f, sw_f = sw_f)
+    out[[nm]] <- list(fs = fs, joint_f = joint_f)
   }
   out
 }
@@ -198,7 +185,6 @@ render_panel_k2_updn <- function(dat, outcomes, fe_specs, dict,
   col_fe <- rep(fe_specs, times = n_oc)
 
   ols_list <- vector("list", n_col); rf_list <- vector("list", n_col); iv_list <- vector("list", n_col)
-  sw_up <- numeric(n_col); sw_dn <- numeric(n_col)
   jf_up <- numeric(n_col); jf_dn <- numeric(n_col)
   n_utils <- integer(n_col); n_obs <- integer(n_col)
 
@@ -212,7 +198,6 @@ render_panel_k2_updn <- function(dat, outcomes, fe_specs, dict,
     rf_list[[j]]  <- fixest::feols(f_rf,  data = dat_y, cluster = ~PWSID, warn = FALSE, notes = FALSE)
     iv_list[[j]]  <- fixest::feols(f_iv,  data = dat_y, cluster = ~PWSID, warn = FALSE, notes = FALSE)
     fsj <- fs_stats_updn(dat_y, fe)
-    sw_up[j] <- fsj$up$sw_f; sw_dn[j] <- fsj$dn$sw_f
     jf_up[j] <- fsj$up$joint_f; jf_dn[j] <- fsj$dn$joint_f
     n_utils[j] <- length(fixest::fixef(iv_list[[j]])$PWSID)
     n_obs[j]   <- nobs(iv_list[[j]])
@@ -224,12 +209,15 @@ render_panel_k2_updn <- function(dat, outcomes, fe_specs, dict,
     get_term(rf_list[[j]], "z_up"), get_term(rf_list[[j]], "z_dn"))))
   cells_k <- function(k) lapply(col_fmts, `[[`, k)
 
-  label_w_cm <- 5.5
-  max_w_cm   <- 16
+  # Wider than render_panel_k2: long row labels (e.g. "Post-1995 x Downstream
+  # sulfur %") must fit on one line, and downstream 2SLS coefs/SEs reach two
+  # integer digits. adjustbox scales the whole tabular to \linewidth.
+  label_w_cm <- 7
+  max_w_cm   <- 19
   data_w_cm  <- min(3, (max_w_cm - label_w_cm) / n_col)
   label_w    <- paste0(label_w_cm, "cm")
   data_w     <- paste0(data_w_cm, "cm")
-  col_spec   <- paste0("p{", label_w, "}",
+  col_spec   <- paste0(">{\\raggedright\\arraybackslash}p{", label_w, "}",
                         paste(rep(paste0(">{\\raggedleft\\arraybackslash}p{", data_w, "}"), n_col), collapse = ""))
   centered_data_col <- paste0(">{\\centering\\arraybackslash}p{", data_w, "}")
 
@@ -313,11 +301,10 @@ render_panel_k2_updn <- function(dat, outcomes, fe_specs, dict,
 
   f_note <- paste0(
     "Upstream and downstream coal mines are instrumented jointly using both instruments. ",
-    "The Sanderson--Windmeijer first-stage F-statistic (clustered at the utility level), ",
-    "which measures instrument strength for each instrumented variable conditional on the other, ",
-    if (n_col > 1 && (length(unique(round(sw_up, 2))) > 1 || length(unique(round(sw_dn, 2))) > 1))
+    "The first-stage F-statistic (clustered at the utility level) for both instruments ",
+    if (n_col > 1 && (length(unique(round(jf_up, 2))) > 1 || length(unique(round(jf_dn, 2))) > 1))
       "ranges across columns from " else "is ",
-    range_str(sw_up), " for upstream coal mines and ", range_str(sw_dn), " for downstream coal mines."
+    range_str(jf_up), " for upstream coal mines and ", range_str(jf_dn), " for downstream coal mines."
   )
   note_text <- notes_k2(depvar_sentence, f_note = f_note, extra = extra_note)
 
@@ -351,7 +338,7 @@ render_panel_k2_updn <- function(dat, outcomes, fe_specs, dict,
     cat("  k2updn panel presentation table written to:", out_path_present, "\n")
   }
 
-  invisible(list(sw_up = sw_up, sw_dn = sw_dn, jf_up = jf_up, jf_dn = jf_dn,
+  invisible(list(jf_up = jf_up, jf_dn = jf_dn,
                  n_utils = n_utils, n_obs = n_obs, col_oc = col_oc, col_fe = col_fe,
                  iv_list = iv_list, rf_list = rf_list, ols_list = ols_list))
 }
@@ -424,24 +411,18 @@ r43 <- render_panel_k2_updn(
 
 # 4.4 First stage (state x year FE, as in the single-instrument table)
 fs_all <- fs_stats_updn(main_dat, fe_state_yr)
-cat(sprintf("\nFirst stage (state x year FE): joint F up %.2f / down %.2f [probe 24.68 / 18.31]; SW F up %.2f / down %.2f [probe 4.03 / 3.79]\n",
-            fs_all$up$joint_f, fs_all$dn$joint_f, fs_all$up$sw_f, fs_all$dn$sw_f))
-fs_ut_yr <- fs_stats_updn(main_dat, "PWSID + year")
-cat(sprintf("First stage (utility + year FE): joint F up %.2f / down %.2f [probe 19.95 / 17.50]; SW F up %.2f / down %.2f [probe 5.75 / 5.23]\n",
-            fs_ut_yr$up$joint_f, fs_ut_yr$dn$joint_f, fs_ut_yr$up$sw_f, fs_ut_yr$dn$sw_f))
+cat(sprintf("\nFirst stage (state x year FE): joint F up %.2f / down %.2f [probe 24.68 / 18.31]\n",
+            fs_all$up$joint_f, fs_all$dn$joint_f))
 
 el_fs <- list(
-  "Joint F-test (1st stage, clustered)"            = c(fmt_single(fs_all$up$joint_f), fmt_single(fs_all$dn$joint_f)),
-  "Sanderson--Windmeijer F (1st stage, clustered)" = c(fmt_single(fs_all$up$sw_f),    fmt_single(fs_all$dn$sw_f)),
-  "Utility fixed effects"                          = c("$\\checkmark$", "$\\checkmark$"),
-  "State $\\times$ year fixed effects"             = c("$\\checkmark$", "$\\checkmark$")
+  "F-test (1st stage, clustered)"      = c(fmt_single(fs_all$up$joint_f), fmt_single(fs_all$dn$joint_f)),
+  "Utility fixed effects"              = c("$\\checkmark$", "$\\checkmark$"),
+  "State $\\times$ year fixed effects" = c("$\\checkmark$", "$\\checkmark$")
 )
 fs_notes <- notes_k2(paste0(
   "The dependent variable is the number of coal mines in watersheds within two flow ",
   "steps upstream (column 1) or downstream (column 2) of the utility's intake, summed ",
-  "across those watersheds. ", instr_clause, " The Sanderson--Windmeijer F-statistic ",
-  "measures instrument strength for each instrumented variable conditional on the ",
-  "other. ", sample_clause
+  "across those watersheds. ", instr_clause, " ", sample_clause
 ))
 fs_title <- "First stage: effect of the Acid Rain Program on the number of upstream and downstream coal mines (summed across watersheds within two flow steps)"
 for (v in c("full", "present")) {
@@ -458,7 +439,10 @@ for (v in c("full", "present")) {
     fitstat         = ~ n,
     dict            = k2_dict_updn,
     notes           = if (v == "full") fs_notes else notes_present_panel,
-    postprocess.tex = function(x) right_align_tabular(move_notes_below_adjustbox(x)),
+    # \par before the notes group closes, so its \raggedright applies instead
+    # of the float's \centering (notes must be left-justified).
+    postprocess.tex = function(x) sub("p$<$0.1.}", "p$<$0.1.\\par}",
+                                      right_align_tabular(move_notes_below_adjustbox(x)), fixed = TRUE),
     file            = file.path(ROOT, "output/reg",
                                 paste0("fs_dwnstrm_minevio_ivsum_k2updn", if (v == "present") "_present" else "", ".tex")),
     replace         = TRUE
@@ -618,7 +602,7 @@ exog_summary <- function(r, table_name) {
                dn_p = round(dn$pval, 3), dn_zero = dn$pval >= 0.1,
                up_est = round(up$est, 2), up_se = round(up$se, 2), up_p = round(up$pval, 3),
                up_single = round(up1$est, 2), up_single_se = round(up1$se, 2),
-               sw_up = round(r$sw_up[j], 2), sw_dn = round(r$sw_dn[j], 2))
+               f_up = round(r$jf_up[j], 2), f_dn = round(r$jf_dn[j], 2))
   }))
 }
 exog <- rbind(exog_summary(r41, "any"), exog_summary(r42, "MR"), exog_summary(r43, "MCL"),
@@ -628,8 +612,8 @@ cat("\n=== Exclusion test: downstream 2SLS coefficient (pass = not significant a
 print(exog, row.names = FALSE)
 cat(sprintf("\nDownstream coefficient significant at 10%% in %d of %d columns.\n",
             sum(!exog$dn_zero), nrow(exog)))
-cat(sprintf("Sanderson-Windmeijer F range: upstream %.2f-%.2f, downstream %.2f-%.2f (all < 10: %s)\n",
-            min(exog$sw_up), max(exog$sw_up), min(exog$sw_dn), max(exog$sw_dn),
-            all(c(exog$sw_up, exog$sw_dn) < 10)))
+cat(sprintf("First-stage F range: upstream %.2f-%.2f, downstream %.2f-%.2f (all > 10: %s)\n",
+            min(exog$f_up), max(exog$f_up), min(exog$f_dn), max(exog$f_dn),
+            all(c(exog$f_up, exog$f_dn) > 10)))
 
 cat("\n=== run_k2_updn_tables.r DONE ===\n")

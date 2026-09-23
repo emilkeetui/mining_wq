@@ -6,11 +6,11 @@
 \small
 {\setlength{\tabcolsep}{4pt}%
 \begin{adjustbox}{max width=\linewidth}
-\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{7cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}}
 \toprule
  & \multicolumn{6}{c}{Maximum contaminant level (MCL) violation} \\
  & \multicolumn{2}{c}{Nitrates} & \multicolumn{2}{c}{Arsenic} & \multicolumn{2}{c}{Inorganic chemicals} \\
- & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(3)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(4)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(5)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(6)} \\
+ & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{(3)} & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{(4)} & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{(5)} & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{(6)} \\
 \hline
 \multicolumn{7}{l}{OLS} \\
 Upstream coal mines (sum) & \phantom{(}-0.01$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.00$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.02$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.01$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.06$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.05$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
@@ -20,7 +20,7 @@ Downstream coal mines (sum) & \phantom{(}\phantom{-}0.00$^{\phantom{*}\phantom{*
 \end{tabular}
 \end{adjustbox}
 \begin{adjustbox}{max width=\linewidth}
-\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{7cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}}
 \hline
 \multicolumn{7}{l}{2SLS} \\
 Upstream coal mines (sum) & \phantom{(}\phantom{-}0.21$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.13$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.29$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.15$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.75$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.98$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
@@ -30,7 +30,7 @@ Downstream coal mines (sum) & \phantom{(}-1.11$^{\phantom{*}\phantom{*}\phantom{
 \end{tabular}
 \end{adjustbox}
 \begin{adjustbox}{max width=\linewidth}
-\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{7cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}}
 \hline
 \multicolumn{7}{l}{RF} \\
 Post-1995 $\times$ Upstream sulfur \% & \phantom{(}-0.02$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.01$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.03$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.04$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.10$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.09$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
@@ -51,6 +51,6 @@ Observations & 10,641 & 10,641 & 10,641 & 10,641 & 10,641 & 10,641 \\
 \vspace{4pt}
 \footnotesize
 \raggedright
-\textit{Notes:} Dependent variable equals 1 if the utility had a violation of that type during the year, 0 otherwise; coefficients and standard errors are multiplied by 100 to show percentage point change. The two instruments interact an indicator for the post-1995 period with the average coal sulfur content of watersheds within two flow steps upstream and, separately, within two flow steps downstream of the utility's intake. Downstream coal mines are the number of coal mines in watersheds within two flow steps downstream of the utility's intake, summed across those watersheds. The sample is utilities with a coal mine within two flow steps upstream of their intake and no coal mine colocated with their intake, in states with at least one other such utility. Standard errors clustered at the utility level. Upstream and downstream coal mines are instrumented jointly using both instruments. The Sanderson--Windmeijer first-stage F-statistic (clustered at the utility level), which measures instrument strength for each instrumented variable conditional on the other, ranges across columns from 4.03 to 5.75 for upstream coal mines and 3.79 to 5.23 for downstream coal mines. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
+\textit{Notes:} Dependent variable equals 1 if the utility had a violation of that type during the year, 0 otherwise; coefficients and standard errors are multiplied by 100 to show percentage point change. The two instruments interact an indicator for the post-1995 period with the average coal sulfur content of watersheds within two flow steps upstream and, separately, within two flow steps downstream of the utility's intake. Downstream coal mines are the number of coal mines in watersheds within two flow steps downstream of the utility's intake, summed across those watersheds. The sample is utilities with a coal mine within two flow steps upstream of their intake and no coal mine colocated with their intake, in states with at least one other such utility. Standard errors clustered at the utility level. Upstream and downstream coal mines are instrumented jointly using both instruments. The first-stage F-statistic (clustered at the utility level) for both instruments ranges across columns from 19.95 to 24.68 for upstream coal mines and 17.50 to 18.31 for downstream coal mines. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
 \end{minipage}
 \end{table}
