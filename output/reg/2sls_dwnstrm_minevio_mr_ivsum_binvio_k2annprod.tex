@@ -1,0 +1,50 @@
+\begin{table}[htbp]
+\raggedright
+\begin{minipage}{\linewidth}
+\caption{\label{tab:2sls_dwnstrm_minevio_mr_ivsum_binvio_k2annprod} Effect of upstream coal production on inorganic chemical violations at utilities}
+\end{minipage}
+\small
+{\setlength{\tabcolsep}{4pt}%
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\toprule
+ & \multicolumn{6}{c}{Monitoring and reporting (MR) violation} \\
+ & \multicolumn{2}{c}{Nitrates} & \multicolumn{2}{c}{Arsenic} & \multicolumn{2}{c}{Inorganic chemicals} \\
+ & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(3)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(4)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(5)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(6)} \\
+\hline
+\multicolumn{7}{l}{OLS} \\
+Upstream coal prod. (1M ST) & \phantom{(}\phantom{-}\phantom{0}0.97$^{*\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}\phantom{0}0.51$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}\phantom{0}1.36$^{**\phantom{*}}$ & \phantom{(}\phantom{-}\phantom{0}0.54$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}\phantom{0}1.23$^{*\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}\phantom{0}0.36$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}\phantom{0}0.55)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.54)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.63)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.57)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.65)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.57)\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\hline
+\multicolumn{7}{l}{2SLS} \\
+Upstream coal prod. (1M ST) & \phantom{(}\phantom{-}21.02$^{***}$ & \phantom{(}\phantom{-}19.39$^{*\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}19.93$^{***}$ & \phantom{(}\phantom{-}18.58$^{**\phantom{*}}$ & \phantom{(}\phantom{-}19.13$^{**\phantom{*}}$ & \phantom{(}\phantom{-}15.02$^{*\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}\phantom{0}7.89)\phantom{$^{***}$} & (\phantom{-}\phantom{0}9.87)\phantom{$^{***}$} & (\phantom{-}\phantom{0}7.59)\phantom{$^{***}$} & (\phantom{-}\phantom{0}9.10)\phantom{$^{***}$} & (\phantom{-}\phantom{0}7.66)\phantom{$^{***}$} & (\phantom{-}\phantom{0}8.99)\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\hline
+\multicolumn{7}{l}{RF} \\
+Post-1995 $\times$ Upstream sulfur \% & \phantom{(}-\phantom{0}2.12$^{***}$ & \phantom{(}-\phantom{0}1.95$^{**\phantom{*}}$ & \phantom{(}-\phantom{0}2.01$^{***}$ & \phantom{(}-\phantom{0}1.87$^{**\phantom{*}}$ & \phantom{(}-\phantom{0}1.93$^{***}$ & \phantom{(}-\phantom{0}1.51$^{*\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}\phantom{0}0.66)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.83)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.60)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.73)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.63)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.79)\phantom{$^{***}$} \\
+\hline
+Utility fixed effects & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Year fixed effects & $\checkmark$ &  & $\checkmark$ &  & $\checkmark$ &  \\
+State $\times$ year fixed effects &  & $\checkmark$ &  & $\checkmark$ &  & $\checkmark$ \\
+Utilities & 565 & 565 & 565 & 565 & 565 & 565 \\
+Observations & 10,641 & 10,641 & 10,641 & 10,641 & 10,641 & 10,641 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\raggedright
+\textit{Notes:} Dependent variable equals 1 if the utility had a violation of that type during the year, 0 otherwise; coefficients and standard errors are multiplied by 100 to show percentage point change. The endogenous regressor is coal production during the year, in millions of short tons, in watersheds within two flow steps upstream of the utility's intake. The instrument interacts an indicator for the post-1995 period with the average coal sulfur content of watersheds within two flow steps upstream of the utility's intake. The sample is utilities with a coal mine within two flow steps upstream of their intake and no coal mine colocated with their intake, in states with at least one other such utility. Standard errors clustered at the utility level. The first-stage F-statistic (clustered at the utility level) for the instrumented variable, Upstream coal prod. (1M ST), ranges from 11.79 to 18.05 across columns. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
+\end{minipage}
+\end{table}

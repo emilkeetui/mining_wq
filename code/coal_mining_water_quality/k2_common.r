@@ -136,7 +136,8 @@ k2_dict <- c(
   any_formal                     = "Formal",
   no_enf                         = "None",
   VALUE                          = "Mean conc.",
-  coal_prod_upstream_cumsum_10mst = "Cumul. upstream coal prod. (10M ST)"
+  coal_prod_upstream_cumsum_10mst = "Cumul. upstream coal prod. (10M ST)",
+  coal_prod_upstream_1mst         = "Upstream coal prod. (1M ST)"
 )
 
 # ── 3. Coefficient formatting helpers (verbatim, run_main_tables.r:345-393) ──
@@ -188,10 +189,11 @@ get_term <- function(model, term) {
 
 # ── 4. Clustered first stage F (never fixest's ivf1 -- HC1, wrong here) ────
 # Explicit (coef/se)^2 on post95:sulfur_mean0, exactly as
-# run_step_instrument_grid.r:88-99.
-f_clustered <- function(dat, fe_str) {
+# run_step_instrument_grid.r:88-99. `endog` is the instrumented regressor
+# (default: upstream mine count, so existing callers are unchanged).
+f_clustered <- function(dat, fe_str, endog = "num_coal_mines_linked_sum") {
   fs <- tryCatch(
-    fixest::feols(as.formula(paste0("num_coal_mines_linked_sum ~ post95:sulfur_mean0 + num_facilities | ", fe_str)),
+    fixest::feols(as.formula(paste0(endog, " ~ post95:sulfur_mean0 + num_facilities | ", fe_str)),
                   data = dat, cluster = ~PWSID, warn = FALSE, notes = FALSE),
     error = function(e) NULL
   )
@@ -277,7 +279,7 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
     ols_list[[j]] <- fixest::feols(f_ols, data = dat_y, cluster = ~PWSID, warn = FALSE, notes = FALSE)
     rf_list[[j]]  <- fixest::feols(f_rf,  data = dat_y, cluster = ~PWSID, warn = FALSE, notes = FALSE)
     iv_list[[j]]  <- fixest::feols(f_iv,  data = dat_y, cluster = ~PWSID, warn = FALSE, notes = FALSE)
-    f_vals[j]     <- f_clustered(dat_y, fe)
+    f_vals[j]     <- f_clustered(dat_y, fe, endog = coalvar)
     n_utils[j]    <- length(fixest::fixef(iv_list[[j]])$PWSID)
     n_obs[j]      <- nobs(iv_list[[j]])
   }
