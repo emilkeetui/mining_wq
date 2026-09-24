@@ -471,7 +471,7 @@ Two endogenous regressors, two instruments:
 \begin{frame}{Downstream mines do not predict MR violations}
 \hypertarget{updnmr}{}
 \presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2updn}
-\takeaway{The downstream 2SLS coefficient is insignificant in every column, and also in the combined, MCL, visit, and enforcement tables (29 of 29 columns). Confidence intervals are wide, and the upstream coefficient loses significance too. \backuplink{updnallcat}{combined}, \backuplink{updnmcl}{MCL}, \backuplink{updnvisit}{visits}, \backuplink{updnenf}{enforcement}, \backuplink{updnbal}{balance}}
+\takeaway{The downstream 2SLS coefficient is insignificant in every column, and also in the combined, MCL, visit, and enforcement tables (29 of 29 columns). Confidence intervals are wide, and the upstream coefficient loses significance too. \backuplink{updnallcat}{combined}, \backuplink{updnmcl}{MCL}, \backuplink{updnvisit}{visits}, \backuplink{updnenf}{enforcement}, \backuplink{updnbal}{balance}, \backuplink{updnmrannprod}{annual production}}
 \end{frame}
 
 % ---------------------------------------------------------------- 23d
@@ -662,16 +662,36 @@ Y_{ct} &= \sum_{s \neq 1994} \delta_s \,\mathbf{1}\{t = s\} \times \text{Upstrea
 \begin{frame}{Appendix: joint instruments, visits}
 \hypertarget{updnvisit}{}
 \presreg{h2_snsv_d12_k2updn}
+\takeaway{\backuplink{updnvisitannprod}{annual production}}
 \end{frame}
 
 \begin{frame}{Appendix: joint instruments, enforcement}
 \hypertarget{updnenf}{}
 \presreg{h3_inf_formal_d12_k2updn}
+\takeaway{\backuplink{updnenfannprod}{annual production}}
 \end{frame}
 
 \begin{frame}{Appendix: joint instruments, balance on intake facilities}
 \hypertarget{updnbal}{}
 \presreg{exclusion_test_num_facilities_k2updn}
+\end{frame}
+
+\begin{frame}{Robustness: joint instruments, MR violations and annual production}
+\hypertarget{updnmrannprod}{}
+\presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2updnannprod}
+\takeaway{Downstream production is insignificant in all six columns, but the test has low power: the joint first-stage $F$ is 5.5 for downstream production, and 11.3 (utility and year fixed effects) or 5.9 (state $\times$ year fixed effects) for upstream production.}
+\end{frame}
+
+\begin{frame}{Robustness: joint instruments, enforcement and annual production}
+\hypertarget{updnenfannprod}{}
+\presreg{h3_inf_formal_d12_k2updnannprod}
+\takeaway{Downstream production is insignificant in all six columns. Joint first-stage $F$ is 5.5 downstream, and 5.9--11.3 upstream.}
+\end{frame}
+
+\begin{frame}{Robustness: joint instruments, visits and annual production}
+\hypertarget{updnvisitannprod}{}
+\presreg{h2_snsv_d12_k2updnannprod}
+\takeaway{Downstream production is insignificant for every visit type. Joint first-stage $F$ is 5.5 downstream and 5.9 upstream.}
 \end{frame}
 
 % ---------------------------------------------------------------- event-study appendix
