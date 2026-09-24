@@ -9,9 +9,9 @@
 #          type accidents, injuries, fatalities) can be rebuilt without
 #          re-parsing.
 # Inputs:
-#   clean_data/msha_part50_raw/txt/CAIM{1985..2005}_5.txt  (coal mine operators)
-#   clean_data/msha_part50_raw/txt/CCTI{1985..2005}_5.txt  (coal contractors)
-#   clean_data/msha_part50_raw/Accidents_ogi.zip  (MSHA OGI 2000+, code labels + validation)
+#   raw_data/msha/part50/txt/CAIM{1985..2005}_5.txt       (coal mine operators)
+#   raw_data/msha/part50/txt/CCTI{1985..2005}_5.txt       (coal contractors)
+#   raw_data/msha/part50/Accidents_ogi.zip       (MSHA OGI 2000+, code labels + validation)
 #   raw_data/msha/Mines.txt                        (mine coordinates, all MSHA mine IDs)
 #   clean_data/coal_mine_prod_charac.parquet       (production-panel mine IDs, flag only)
 #   clean_data/huc_coal_charac_geom_match.csv      (minehuc classification)
@@ -37,7 +37,7 @@ import numpy as np
 import pandas as pd
 
 ROOT      = Path("Z:/ek559/mining_wq")
-RAW_DIR   = ROOT / "clean_data/msha_part50_raw"
+RAW_DIR   = ROOT / "raw_data/msha/part50"
 TXT_DIR   = RAW_DIR / "txt"
 OGI_ZIP   = RAW_DIR / "Accidents_ogi.zip"
 MINES_TXT = ROOT / "raw_data/msha/Mines.txt"

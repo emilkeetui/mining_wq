@@ -47,3 +47,27 @@ shutdown-type accidents, total injuries, fatalities).
 
 ## Next Steps
 - Choose instrument definition(s); first-stage check against upstream k=2 mine regressor.
+
+---
+**[COMPACTION NOTE � 2026-09-24T16:40:03Z]**  
+Auto-compact triggered. Active plan: `k2-updn-annual-production-robustness.md`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---
+
+## 2026-09-24 — Hook Option B + move Part 50 downloads to raw
+- User approved hook change on condition that raw files still cannot be edited/deleted without explicit permission.
+- protect-raw-data.py: added msha/part50 exemption; exempt dirs now accept NEW files only (Write/Edit of an existing
+  file, cp/redirect onto an existing file, archive overwrite flags all blocked); `..` paths resolved before the
+  exemption check; PowerShell delete/move/write verbs added. 23/23 allow/block test cases pass.
+- settings.json: hook commands use "$CLAUDE_PROJECT_DIR/.claude/hooks/..."; PreToolUse matcher now includes
+  PowerShell. Verified live from the code/ subfolder (Bash and PowerShell deletes blocked).
+- Moved clean_data/msha_part50_raw/ to raw_data/msha/part50/ (87 files, md5 identical); removed the clean_data copy.
+- build_msha_accidents.py: RAW_DIR now raw_data/msha/part50; input resolution + CAIM1995 parse (11,754 rows) verified.
+  Full rebuild not run (would overwrite the 3 clean_data outputs; inputs byte-identical so outputs would not change).
+- Known hook false positive: any shell command that mentions a raw_data path and uses a redirect (e.g. heredoc
+  into a log) is blocked. Workaround: Write/Edit tools, or Python without redirects.
+- Discussion: roof falls appear in classification 07 (49,076) and immediate-notify 08 (35,706); 34,931 overlap;
+  96% of notify-08 roof falls are accident-only (no injury). No Part 50 field records closure; test via
+  raw_data/msha/MinesProdQuarterly (hours/production by mine-quarter).
+- User position: water-related accidents are not an exclusion violation (channel is water quality). Open point:
+  regressor is mine count/production, so a spill's direct effect would load onto beta unless regressor is redefined.
