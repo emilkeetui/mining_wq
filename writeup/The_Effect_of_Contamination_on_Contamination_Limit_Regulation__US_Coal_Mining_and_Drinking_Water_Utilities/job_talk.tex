@@ -284,7 +284,7 @@ MR(m) = \int_0^{\bar\theta} \big[\,1 - G(c^*(\theta);m)\,\big]\, f(\theta;m)\, d
 \]
 Differentiating splits into two channels:
 \[
-\frac{\partial MR}{\partial m} = \ubtext{\int_0^{\bar\theta} \frac{\partial h(\theta,m)}{\partial m}\, f(\theta;m)\, d\theta}{Channel A: cost-distribution shift. Hold $\theta$ distribution fixed and change probability type $\theta$ utilities draw $c$ exceeding $c^*$} \;+\; \ubtext{\int_0^{\bar\theta} h(\theta,m)\, \frac{\partial f(\theta;m)}{\partial m}\, d\theta}{Channel B: type-distribution shift. Hold proportion of type $\theta$ utilities whose cutoff exceeds $c^*$ fixed and change the proportion of utilities of type $\theta$.}
+\frac{\partial MR}{\partial m} = \ubtext{\int_0^{\bar\theta} \frac{\partial h(\theta,m)}{\partial m}\, f(\theta;m)\, d\theta}{Channel A: cost-distribution shift. Hold $\theta$ distribution fixed and change probability type $\theta$ utilities draw $c$ exceeding $c^*$} \;+\; \ubtext{\int_0^{\bar\theta} h(\theta,m)\, \frac{\partial f(\theta;m)}{\partial m}\, d\theta}{Channel B: type-distribution shift. Hold proportion of type $\theta$ utilities whose cutoff exceeds $c^*$ fixed and change the proportion of utilities of type $\theta$.}\geq 0
 \]
 \end{block}
 \end{frame}
@@ -432,7 +432,7 @@ Second stage:
 \begin{frame}{Instrument validity}
 \begin{itemize}\small
     \item \textbf{Independence.} The ARP is a national clean-air law set by national energy and emissions politics, not downstream utilities' water quality.
-    \item \textbf{Exclusion.} Effect of instrumenting mining downstream of utility on utility behavior is not significant. \backuplink{kgridmrup}{MR violations}, \backuplink{kgridvisitup}{visits}, \backuplink{kgridenfup}{enforcement}.
+    \item \textbf{Exclusion.} Effect of instrumenting mining downstream of utility on utility behavior is not significant at up to two watersheds downstream. \backuplink{kgridmrup}{MR violations}, \backuplink{kgridvisitup}{visits}, \backuplink{kgridenfup}{enforcement}.
 
     Utility characteristics are not predicted by instrument. \backuplink{exclfacilities}{full balance table}
     \item \textbf{Monotonicity.} A defier is a high-sulfur watershed that expanded \emph{because} its coal was high sulfur. Scrubber adoption costs more likely lead to lost market share rather than gain; low-cost high-sulfur regions that expand anyway are never-takers. 
@@ -443,7 +443,7 @@ Second stage:
 % ---------------------------------------------------------------- 24
 \begin{frame}{Mining makes utilities stop reporting}
 \presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}
-\takeaway{Base rates of nitrates, arsenic, and IOC are 5.7\%, 3.7\%, and 4.3\%. OLS estimates are far smaller --- consistent with negative omitted variable bias, as expected if poorly performing utilities (more MR violations) are protected from mine siting (fewer mines). \backuplink{kgridmrdown}{effect across choice of upstream watershed radius}}
+\takeaway{Base rates of nitrates, arsenic, and IOC are 5.7\%, 3.7\%, and 4.3\%. Mining reduces self-reporting, such as proposition 2. \backuplink{kgridmrdown}{effect across choice of upstream watershed radius}}
 \end{frame}
 
 % ---------------------------------------------------------------- 26
@@ -473,6 +473,16 @@ Second stage:
 \end{frame}
 
 % ---------------------------------------------------------------- 30
+
+\begin{frame}{Model: why the utility under-reports}
+\begin{block}{Proposition 2}
+\[
+\frac{\partial MR}{\partial m} = \ubtext{\int_0^{\bar\theta} \frac{\partial h(\theta,m)}{\partial m}\, f(\theta;m)\, d\theta}{Channel A: cost-distribution shift. Hold $\theta$ distribution fixed and change probability type $\theta$ utilities draw $c$ exceeding $c^*$} \;+\; \ubtext{\int_0^{\bar\theta} h(\theta,m)\, \frac{\partial f(\theta;m)}{\partial m}\, d\theta}{Channel B: type-distribution shift. Hold proportion of type $\theta$ utilities whose cutoff exceeds $c^*$ fixed and change the proportion of utilities of type $\theta$.}\geq 0
+\]
+\end{block}
+A rise in costs without a rise in contamination exceedances suggests that $\frac{\partial MR}{\partial m}\geq 0$ is driven by channel A.
+\end{frame}
+
 \begin{frame}{Conclusion}
 \begin{itemize}\small
     \item Exogenous contamination raises the cost of self-reporting, and self-reporting falls --- \textbf{even when utilities remain below MCL}.
