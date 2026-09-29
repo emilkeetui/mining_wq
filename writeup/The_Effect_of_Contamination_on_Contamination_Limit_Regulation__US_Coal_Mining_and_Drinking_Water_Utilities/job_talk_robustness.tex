@@ -755,6 +755,50 @@ since $f(\cdot\,;m)$ is a density for every $m$. Channel A collapses to $-\,\par
 \textbf{Why it matters.} Channel B is the concealment margin: it operates only if contamination reallocates mass toward types whose exceedance risk, and hence whose cutoff, differs. Shut it down and any remaining rise in under-reporting is avoidance of the reporting technology itself. The 50\%-of-MCL nitrate step is the empirical counterpart --- monitoring frequency jumps, the sanction schedule does not, and readings are nowhere near the limit.
 \end{frame}
 
+% ================================================================
+% Mine accident instruments (run_k2_accident_iv_tables.r)
+% ================================================================
+\section{Robustness: mine accident instruments}
+
+\begin{frame}{Mine accident instruments: estimating equations}
+\hypertarget{accideq}{}
+Second stage:
+\begin{equation*}
+\begin{split}
+\text{Violation}_{vct} &= \gamma_U\,\widehat{\text{UpProd}}_{ct} + \gamma_D\,\widehat{\text{DownProd}}_{ct} \\
+&\quad + \beta_1\text{NumFacility}_{ct} + State_s \cdot Y_t + C_c + \epsilon_{ct}
+\end{split}
+\end{equation*}
+First stage, for each $P \in \{\text{UpProd}, \text{DownProd}\}$:
+\begin{equation*}
+\begin{split}
+P_{ct} &= \pi_1^P\,\text{UpAcc}_{ct} + \pi_2^P\,\text{UpSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + \pi_3^P\,\text{DownAcc}_{ct} + \pi_4^P\,\text{DownSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + \alpha_1\text{NumFacility}_{ct} + State_s \cdot Y_t + C_c + \nu_{ct}
+\end{split}
+\end{equation*}
+\begin{itemize}\small
+    \item Prod: annual coal production (1M short tons) within two watersheds upstream / downstream of the intake. Acc: MSHA accident, injury, and illness reports at those mines (units of 10).
+    \item Columns add instruments in order: (1) UpAcc; (2) $+$ UpSulfur $\times$ Post95; (3) $+$ DownAcc, with DownProd as a second endogenous regressor; (4) $+$ DownSulfur $\times$ Post95.
+    \item Outcomes are 0/1; coefficients in percentage points. SEs clustered at the utility level.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Mine accident instruments: MR violations}
+\presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2accprog}
+\takeaway{Upstream accidents strongly predict upstream production ($F = 77.0$ in column 1). With accidents in the instrument set, the upstream 2SLS estimate on MR violations is near zero and insignificant (IOC $-1.11$ to $-0.47$), well below the sulfur-only estimate of 15.02. Downstream production is insignificant; its first-stage $F$ falls to 8.5 in column 4.}
+\end{frame}
+
+\begin{frame}{Mine accident instruments: enforcement}
+\presreg{h3_inf_formal_d12_k2accprog}
+\takeaway{Upstream production raises formal enforcement only in column 1 (1.71 pp, *). No other upstream or downstream coefficient is significant.}
+\end{frame}
+
+\begin{frame}{Mine accident instruments: regulator visits}
+\presreg{h2_snsv_d12_k2accprog}
+\takeaway{Upstream production has no significant effect on any visit type. Downstream production raises inspection visits (5.01 and 4.56 pp, **) and enforcement visits in column 4 (1.66 pp, *).}
+\end{frame}
+
 \begin{frame}[allowframebreaks]{References}
 \printbibliography
 \end{frame}
