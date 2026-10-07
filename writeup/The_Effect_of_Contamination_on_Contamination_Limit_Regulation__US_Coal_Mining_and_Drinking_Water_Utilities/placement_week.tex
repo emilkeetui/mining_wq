@@ -131,19 +131,19 @@ citestyle=bwl-FU
 
 \begin{center}
 \begin{beamercolorbox}[sep=10pt,center,rounded=true,shadow=true]{block body}
-\large What happens to firm self-reporting when contamination rises?
+\large 1. What happens to firm self-reporting when contamination rises?
 \end{beamercolorbox}
 \end{center}
 
 \begin{center}
 \begin{beamercolorbox}[sep=10pt,center,rounded=true,shadow=true]{block body}
- Are changes in self-reporting due to concealment or self-reporting costs?
+ 2. Are changes in self-reporting due to concealment or self-reporting costs?
 \end{beamercolorbox}
 \end{center}
 
 \begin{center}
 \begin{beamercolorbox}[sep=10pt,center,rounded=true,shadow=true]{block body}
- Does upstream coal mining raise contamination at drinking water utilities?
+ 0. Does upstream coal mining raise contamination at drinking water utilities?
 \end{beamercolorbox}
 \end{center}
 
@@ -153,8 +153,9 @@ citestyle=bwl-FU
 Document the effect of contamination on self-reporting in the context of US drinking water utilities exposed to coal mining water contamination between 1985 and 2005.
 
     \begin{itemize}
-        \item Annual panel of drinking water utilities downstream of active coal mines.
-        \item Instrument upstream coal production. 
+        \item Annual panel of drinking water utilities on average 22 km downstream of active coal mines.
+        \item Instrument upstream coal production.
+        \item Contaminant concentrations for arsenic, nitrate, barium, selenium
         \item Estimate utility self-reporting, regulator visits, and enforcement received.
     \end{itemize}
 
@@ -189,18 +190,10 @@ Miss a test, receive monitoring and reporting (``MR'') violation and:
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Data}
-\begin{itemize}\small
-    \item \textbf{Violations, enforcement, visits} --- utility $\times$ year binary, universe of utilities 1985--2005.
-    \item 1479 arsenic, nitrate, and ioc MR violations compared to 49 mcl violations
-    \item \textbf{Contaminant concentrations for arsenic, nitrate, barium, selenium} --- 1998--2005.
-    \item \textbf{Mine level production and location}
-    \item \textbf{Coal sulfur \%} --- of each watershed.
-    \item \textbf{Watershed connectivity}.     
-    \item Average distance between centroid of adjacent watersheds is 11 km.
-    \item \textbf{Sample}: Utilities with a coal mine \textbf{within two watersheds upstream} of their intake and no coal mine colocated with their intake. 10,641 utility-years, 565 utilities.
-\end{itemize}
-\end{frame}
+
+
+    %\item 1479 arsenic, nitrate, and ioc MR violations compared to 49 mcl violations
+
 
 \begin{frame}{Does coal production raise contamination at drinking water utilities?}
 \begin{equation*}
@@ -232,6 +225,7 @@ Miss a test, receive monitoring and reporting (``MR'') violation and:
 
 \item Adapt \textcite{stratford2015coalprod} Acid Rain Program (``ARP") instrument for coal production to address the endogeneity of mining and utility characteristics.
 \item The ARP capped SO$_2$ from power plants by \textbf{1995}.
+\item Coal sulfur \% --- of each watershed.
 \item Low sulfur coal was the main compliance response \parencite{lattanzio2022clean}.
 \item High sulfur mines have limited ability to wash the sulfur out (bound to chemical structure).
 \end{itemize}
@@ -297,13 +291,13 @@ Second stage:
 % ---------------------------------------------------------------- 28
 \begin{frame}{Enforcement does not counteract under-reporting}
 \presregp{h3_inf_formal_d12_k2}
-\takeaway{One more upstream mine reduces formal enforcement by 3.4 pp with utility and year fixed effects alone (significant), but the effect loses significance once state $\times$ year fixed effects are added. \backuplink{kgridenf}{effect across choice of upstream watershed radius}}
+\takeaway{One more upstream mine reduces formal enforcement by 3.4 pp with utility and year fixed effects alone (significant), but the effect loses significance once state $\times$ year fixed effects are added.
 \end{frame}
 
 % ---------------------------------------------------------------- 29
 \begin{frame}{The regulator increases inspections, not enforcement}
 \presregp{h2_snsv_d12_k2}
-\takeaway{Inspection visits rise significantly ($+$2.1 pp). Regulators do not systematically step up the visit types tied to sanctions. Visits would reveal concealment and be associated with higher penalties. \backuplink{kgridvisit}{effect across choice of upstream watershed radius}}
+\takeaway{Inspection visits rise significantly ($+$2.1 pp). Regulators do not systematically step up the visit types tied to sanctions. Visits would reveal concealment and be associated with higher penalties.
 \end{frame}
 
 % ---------------------------------------------------------------- 30
