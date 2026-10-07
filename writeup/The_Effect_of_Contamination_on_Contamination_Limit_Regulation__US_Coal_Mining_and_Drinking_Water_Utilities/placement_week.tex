@@ -58,6 +58,7 @@ citestyle=bwl-FU
       \input{#2}%
     \end{varwidth}}}
 \newcommand{\presreg}[2][max width=\textwidth]{\slidetableinput[#1]{\outputdir/reg/#2_present}}
+\newcommand{\presregp}[2][max width=\textwidth]{\slidetableinput[#1]{\outputdir/reg/#2_placement}}
 \newcommand{\pressum}[2][max width=\textwidth]{\slidetableinput[#1]{\outputdir/sum/#2_present}}
 \newcommand{\presfig}[2][0.75\textheight]{%
   \begin{center}%
@@ -177,7 +178,7 @@ By 1992, utilities required to:
 Self-reporting requirement for nitrates:
     \begin{itemize}
         \item \textbf{Baseline}: Once a year, send one sample from every intake to a lab
-        \item \textbf{Elevated}: N mg/L $\geq$ 5 mg/L, test quarterly
+        \item \textbf{Elevated}: nitrate-N $\geq$ 5 mg/L (half the 10 mg/L MCL), test quarterly
     \end{itemize}
 
 Miss a test, receive monitoring and reporting (``MR'') violation and:
@@ -279,7 +280,7 @@ Second stage:
 
 % ---------------------------------------------------------------- 24
 \begin{frame}{Mining makes utilities stop reporting}
-\presreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}
+\presregp{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}
 \takeaway{Base rates of nitrates, arsenic, and IOC are 5.7\%, 3.7\%, and 4.3\%. OLS estimates are far smaller --- consistent with negative omitted variable bias, as expected if poorly performing utilities (more MR violations) are protected from mine siting (fewer mines). \backuplink{kgridmrdown}{effect across choice of upstream watershed radius}}
 \end{frame}
 
@@ -295,13 +296,13 @@ Second stage:
 
 % ---------------------------------------------------------------- 28
 \begin{frame}{Enforcement does not counteract under-reporting}
-\presreg{h3_inf_formal_d12_k2}
+\presregp{h3_inf_formal_d12_k2}
 \takeaway{One more upstream mine reduces formal enforcement by 3.4 pp with utility and year fixed effects alone (significant), but the effect loses significance once state $\times$ year fixed effects are added. \backuplink{kgridenf}{effect across choice of upstream watershed radius}}
 \end{frame}
 
 % ---------------------------------------------------------------- 29
 \begin{frame}{The regulator increases inspections, not enforcement}
-\presreg{h2_snsv_d12_k2}
+\presregp{h2_snsv_d12_k2}
 \takeaway{Inspection visits rise significantly ($+$2.1 pp). Regulators do not systematically step up the visit types tied to sanctions. Visits would reveal concealment and be associated with higher penalties. \backuplink{kgridvisit}{effect across choice of upstream watershed radius}}
 \end{frame}
 
@@ -323,6 +324,8 @@ Second stage:
 % ================================================================
 % Appendix
 % ================================================================
+\appendix
+\setbeamertemplate{footline}{}
 \begin{frame}
 \vfill
 \centering
@@ -330,11 +333,6 @@ Second stage:
 \usebeamerfont{title}Appendix\par
 \end{beamercolorbox}
 \vfill
-\end{frame}
-
-\begin{frame}{Appendix: combined MR and MCL violations}
-\presreg{2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2}
-\takeaway{The combined effect mirrors the MR effect: nitrate 3.9--5.1 pp, arsenic 4.0--4.9 pp, IOC 3.1--4.6 pp across the two fixed-effects specifications.}
 \end{frame}
 
 \begin{frame}{Appendix: instrument balance on intake facilities}
@@ -346,12 +344,6 @@ Second stage:
 \hypertarget{balancetest}{}
 \presreg[max width=\textwidth, max totalheight=0.68\textheight]{pt_balance_6yr_k2}
 \takeaway{Observable characteristics jointly predict continuous upstream production only without state fixed effects (p=0.029) and lose significance once state fixed effects are added (p=0.461), as in the main specification. The joint test on the binary presence of upstream mining stays significant with or without state fixed effects.}
-\end{frame}
-
-\begin{frame}{Appendix: first stage across choice of upstream watershed radius}
-\hypertarget{kgridfs}{}
-\presfig[0.62\textheight]{kgrid_first_stage.png}
-\takeaway{The first-stage coefficient and F-statistic for utilities downstream of a mine stay well above conventional weak-instrument thresholds as the upstream watershed radius $k$ varies from one to eight flow steps.}
 \end{frame}
 
 \begin{frame}{Appendix: exclusion placebo, MR violations across $k$}
@@ -394,43 +386,6 @@ Second stage:
 \hypertarget{kgridvisit}{}
 \presfig[0.62\textheight]{kgrid_visit_coefs.png}
 \takeaway{The rise in inspection visits downstream of mining is significant at every $k \geq 2$ but not at $k=1$. Sanitary visits remain insignificant throughout, while enforcement visits are significant at $k=1$ and at most radii beyond $k=2$.}
-\end{frame}
-
-\begin{frame}{Appendix: who appears in the Six-Year Review}
-\pressum{syr2_mr_comparison_k2}
-\takeaway{Utilities with SYR2 readings are 7--14 pp more likely to ever incur an MR violation. The concentration sample over-represents the more negligent utilities, so it is not selected toward clean systems.}
-\end{frame}
-
-\begin{frame}{Appendix: enforcement and visits in the panel}
-\pressum{enforcement_visit_type_panels_k2}
-\takeaway{Enforcement responds to violations --- any enforcement rises from 21\% overall to 71\% in MR years --- but sanitary visits are no more likely in MR years than in any other year.}
-\end{frame}
-
-\begin{frame}{Appendix: residualized first stage}
-\presfig[0.72\textheight]{first_stage_scatter_dwnstrm.png}
-\end{frame}
-
-\begin{frame}{Appendix: sample watersheds}
-\presfig[0.72\textheight]{map_huc12_main_sample.png}
-\end{frame}
-
-\begin{frame}{Appendix: Corollary 1, statement and proof}
-\scriptsize
-Write the share of types under-reporting as $h(\theta,m) = 1 - G(c^*(\theta);m)$, with cutoff $c^*(\theta) = t - (r-ps)\,q(a_{SR}(\theta))$, so that
-\[
-\frac{\partial MR}{\partial m} = \underbrace{\int_0^{\bar\theta}\!\frac{\partial h(\theta,m)}{\partial m}\,f(\theta;m)\,d\theta}_{\text{A: cost}} \;+\; \underbrace{\int_0^{\bar\theta}\! h(\theta,m)\,\frac{\partial f(\theta;m)}{\partial m}\,d\theta}_{\text{B: composition}}.
-\]
-\textbf{Corollary 1.} If $q(a_{SR}(\theta)) \equiv \bar q$ on $(0,\bar\theta)$, then $\partial MR/\partial m = -\,\partial G(\bar c;m)/\partial m \ge 0$, where $\bar c = t-(r-ps)\bar q$.
-\smallskip
-
-\textit{Proof.} The cutoff is then type-invariant, $c^*(\theta) \equiv \bar c$, so $h(\theta,m) = 1-G(\bar c;m)$ does not vary with $\theta$ and comes outside both integrals. The limits $0$ and $\bar\theta$ do not depend on $m$, so by Leibniz's rule
-\[
-\text{B} = \big[1-G(\bar c;m)\big]\,\frac{d}{dm}\!\left[\int_0^{\bar\theta}\! f(\theta;m)\,d\theta\right] = \big[1-G(\bar c;m)\big]\,\frac{d}{dm}[1] = 0,
-\]
-since $f(\cdot\,;m)$ is a density for every $m$. Channel A collapses to $-\,\partial G(\bar c;m)/\partial m \ge 0$, because contamination shifts reporting costs up. $\square$
-\smallskip
-
-\textbf{Why it matters.} Channel B is the concealment margin: it operates only if contamination reallocates mass toward types whose exceedance risk, and hence whose cutoff, differs. Shut it down and any remaining rise in under-reporting is avoidance of the reporting technology itself. The 50\%-of-MCL nitrate step is the empirical counterpart --- monitoring frequency jumps, the sanction schedule does not, and readings are nowhere near the limit.
 \end{frame}
 
 \begin{frame}[allowframebreaks]{References}
