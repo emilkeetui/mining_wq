@@ -107,22 +107,19 @@ citestyle=bwl-FU
 
 \begin{frame}{Self-reported compliance}
 \begin{itemize}
-    \item Self-reported regulation monitoring requires entities to demonstrate compliance to regulators.
+    \item Self-reported compliance: entity monitors and reports themselves to regulators.
     \item Incentives to shirk reporting:
     \begin{itemize}
         \item Concealing non-compliance
         \item Saving self-reporting costs
     \end{itemize}
-    \item Environmental contamination regulation (e.g. US drinking water): 
-    \begin{itemize}
-        \item $\uparrow$ contamination $\rightarrow$ $\uparrow$ shirking incentives
-    \end{itemize}
-    
+    \item Perversely, incentives to under-report increase with contamination for environmental contamination regulation (e.g. US drinking water).
     \item \textbf{Why care about self-reporting and contamination?}
     \begin{itemize}
+        \item Reporting is most valuable to regulators when contamination is rising
         \item Different fix if concealing non-compliance vs self-reporting costs
-        \item Monitoring used across industries (HIPAA violation disclosure, SOX, energy firms)
-        \item Drinking water for 85\% of households is regulated this way
+        \item 85\% of US household drinking water is regulated this way
+        \item Self-reporting used across industries (HIPAA violation disclosure, SOX, energy firms)
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -155,17 +152,14 @@ Context: US drinking water utilities exposed to water contamination from upstrea
 
     \begin{itemize}
         \item Annual panel of drinking water utilities on average 22 km downstream of active coal mines.
-        \item Contaminant concentrations for arsenic, nitrate, barium, and selenium, 1997--2005.
-        \item Utility self-reporting, regulator visits, and enforcement received.
+        \item Separation between contamination source and regulated firm helps identify the effect of contamination.
+
+        \item Coal mining $\rightarrow$ inorganic chemicals (``IOCs'') into surface and ground water.
+        \item Contaminant concentrations for several IOC's 1998--2005 link coal production to contamination.
         \item Instrument upstream coal production.
+        \item Utility self-reporting, regulator visits, and enforcement received.
     \end{itemize}
 
-Why this is appropriate
-\begin{itemize}
-    \item Separation between contamination source and regulated firm helps identify the effect of contamination.
-    \item Coal mining $\rightarrow$ inorganic chemicals (``IOCs'') into surface and ground water.
-    \item Geology of coal seams and national energy market determines mining.
-\end{itemize}
 \end{frame}
 
 \begin{frame}{Utility self-reporting nitrate contamination}
@@ -274,7 +268,7 @@ Second stage:
 % ---------------------------------------------------------------- 24
 \begin{frame}{Upstream mining reduces utilities' self-reporting}
 \presregp{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}
-\takeaway{Base rates of nitrates, arsenic, and IOC are 5.7\%, 3.7\%, and 4.3\%. The 0.56 additional mines a 1-SD lower-sulfur watershed kept after 1995 raise nitrate, arsenic, and IOC MR violations by 2.2, 2.1, and 1.7 pp (state $\times$ year fixed effects). OLS estimates are far smaller --- consistent with negative omitted variable bias, as expected if poorly performing utilities (more MR violations) are protected from mine siting (fewer mines).}
+\takeaway{Base rates of nitrates, arsenic, and IOC are 5.7\%, 3.7\%, and 4.3\%. The 0.56 additional mines a 1-SD lower-sulfur watershed kept after 1995 raise nitrate, arsenic, and IOC MR violations by 2.2, 2.1, and 1.7 pp (state $\times$ year fixed effects).}
 \end{frame}
 
 % ---------------------------------------------------------------- 26
