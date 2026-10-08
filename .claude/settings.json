@@ -2,11 +2,11 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash|Write|Edit",
+        "matcher": "Bash|PowerShell|Write|Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "\"Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe\" .claude/hooks/protect-raw-data.py"
+            "command": "\"Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/protect-raw-data.py\""
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe\" .claude/hooks/verify-reminder.py"
+            "command": "\"Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/verify-reminder.py\""
           }
         ]
       }
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe\" .claude/hooks/log-reminder.py"
+            "command": "\"Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/log-reminder.py\""
           }
         ]
       }
@@ -37,7 +37,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe\" .claude/hooks/pre-compact.py"
+            "command": "\"Z:/ek559/nys_algal_bloom/NYS algal bloom/code2/Scripts/python.exe\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.py\""
           }
         ]
       }
@@ -47,7 +47,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/notify.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/notify.sh\""
           }
         ]
       }

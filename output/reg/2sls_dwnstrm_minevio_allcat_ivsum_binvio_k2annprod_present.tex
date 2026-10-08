@@ -1,0 +1,50 @@
+\begin{table}[htbp]
+\raggedright
+\begin{minipage}{\linewidth}
+\caption{\label{tab:2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2annprod} Effect of upstream coal production on inorganic chemical violations at utilities}
+\end{minipage}
+\small
+{\setlength{\tabcolsep}{4pt}%
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\toprule
+ & \multicolumn{6}{c}{Any violation} \\
+ & \multicolumn{2}{c}{Nitrates} & \multicolumn{2}{c}{Arsenic} & \multicolumn{2}{c}{Inorganic chemicals} \\
+ & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(3)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(4)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(5)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(6)} \\
+\hline
+\multicolumn{7}{l}{OLS} \\
+Upstream coal prod. (1M ST) & \phantom{(}\phantom{-}\phantom{0}0.91$^{*\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}\phantom{0}0.48$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}\phantom{0}1.34$^{**\phantom{*}}$ & \phantom{(}\phantom{-}\phantom{0}0.55$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}\phantom{0}1.25$^{*\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}\phantom{0}0.44$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}\phantom{0}0.55)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.54)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.63)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.57)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.64)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.57)\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\hline
+\multicolumn{7}{l}{2SLS} \\
+Upstream coal prod. (1M ST) & \phantom{(}\phantom{-}20.75$^{***}$ & \phantom{(}\phantom{-}19.12$^{*\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}20.27$^{***}$ & \phantom{(}\phantom{-}19.65$^{**\phantom{*}}$ & \phantom{(}\phantom{-}18.74$^{**\phantom{*}}$ & \phantom{(}\phantom{-}15.20$^{*\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}\phantom{0}7.86)\phantom{$^{***}$} & (\phantom{-}\phantom{0}9.86)\phantom{$^{***}$} & (\phantom{-}\phantom{0}7.64)\phantom{$^{***}$} & (\phantom{-}\phantom{0}9.30)\phantom{$^{***}$} & (\phantom{-}\phantom{0}7.70)\phantom{$^{***}$} & (\phantom{-}\phantom{0}9.05)\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\hline
+\multicolumn{7}{l}{RF} \\
+Post-1995 $\times$ Upstream sulfur \% & \phantom{(}-\phantom{0}2.09$^{***}$ & \phantom{(}-\phantom{0}1.92$^{**\phantom{*}}$ & \phantom{(}-\phantom{0}2.04$^{***}$ & \phantom{(}-\phantom{0}1.97$^{***}$ & \phantom{(}-\phantom{0}1.89$^{***}$ & \phantom{(}-\phantom{0}1.53$^{*\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}\phantom{0}0.66)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.83)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.60)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.73)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.64)\phantom{$^{***}$} & (\phantom{-}\phantom{0}0.79)\phantom{$^{***}$} \\
+\hline
+Utility fixed effects & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Year fixed effects & $\checkmark$ &  & $\checkmark$ &  & $\checkmark$ &  \\
+State $\times$ year fixed effects &  & $\checkmark$ &  & $\checkmark$ &  & $\checkmark$ \\
+Utilities & 565 & 565 & 565 & 565 & 565 & 565 \\
+Observations & 10,641 & 10,641 & 10,641 & 10,641 & 10,641 & 10,641 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\raggedright
+\textit{Notes:} Standard errors clustered at the utility level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
+\end{minipage}
+\end{table}
