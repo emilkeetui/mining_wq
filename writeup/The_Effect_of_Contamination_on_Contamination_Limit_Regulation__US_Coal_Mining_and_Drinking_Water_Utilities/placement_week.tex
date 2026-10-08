@@ -151,7 +151,7 @@ Context: US drinking water utilities exposed to water contamination from upstrea
 \begin{frame}{How I answer these questions}
 
     \begin{itemize}
-        \item Annual panel of drinking water utilities on average 22 km downstream of active coal mines.
+        \item Annual panel of drinking water utilities on average 22 km downstream of active coal mines between 1985 and 2005.
         \item Separation between contamination source and regulated firm helps identify the effect of contamination.
 
         \item Coal mining $\rightarrow$ inorganic chemicals (``IOCs'') into surface and ground water.
@@ -162,7 +162,7 @@ Context: US drinking water utilities exposed to water contamination from upstrea
 
 \end{frame}
 
-\begin{frame}{Utility self-reporting nitrate contamination}
+\begin{frame}{Utility nitrate self-reporting and under-reporting incentives}
 
 \textbf{Utility manager/staff cognitive burden} \parencite{oleckno1982national}.
 
@@ -176,9 +176,9 @@ Miss a test, receive a monitoring and reporting (``MR'') violation and:
 
 \begin{itemize}
     \item Avoid an MCL (need self-report for MCL)
+    \item MR punished less severely than MCL
     \item Regulator visit
     \item Or enforcement: Informal (letters, notices, compliance plans); Formal (consent decrees, fines, prosecution)
-    \item MR punished less severely than MCL
 \end{itemize}
 \end{frame}
 
@@ -187,13 +187,13 @@ Miss a test, receive a monitoring and reporting (``MR'') violation and:
     %\item  arsenic, nitrate, and ioc MR violations compared to  mcl violations
 
 
-\begin{frame}{Does coal production raise contamination at drinking water utilities?}
+\begin{frame}{Is coal production a source of contamination at utilities?}
 \begin{equation*}
 \textit{Concen}_{ct}= \beta\cdot\!\!\sum_{\tau=1985}^{t}\!\!\text{UpstreamCoalProd}_{c\tau} + \rho_c + Watershed_c\cdot\tau_t + \epsilon_{ct}
 \end{equation*}
 \begin{itemize}\small
     \item $\textit{Concen}_{ct}$: mean annual concentration at utility $c$, year $t$ (SYR2, 1998--2005).
-    \item $\beta$: effect of 10 million additional cumulative short tons mined upstream since 1985.
+    \item $\beta$: effect of 1 million additional cumulative short tons mined upstream since 1985.
     \item $\rho_c$: utility fixed effects. $Watershed_c\cdot\tau_t$: Watershed-specific year effects, absorbing watershed-wide industrial trends.
     \item SEs clustered at the utility level.
 \end{itemize}
@@ -210,16 +210,17 @@ Miss a test, receive a monitoring and reporting (``MR'') violation and:
 \takeaway{Per sample mean tons mined upstream: nitrate $+$0.076 mg/L (***), 9.4\% of its mean; selenium $+$0.0003 mg/L (**), 6.9\% of its mean. \textbf{Every reading in the sample stays under its MCL.} In the sample, only 49 IOC MCL violations.}
 \end{frame}
 
-\begin{frame}{Coal mining \& utility behavior: instrumenting coal mining}
+\begin{frame}{Does mining increase under-reporting? Instrumenting coal mining}
 \begin{columns}[T]
 \begin{column}{0.44\textwidth}
 \begin{itemize}\small
 
-\item Adapt \textcite{stratford2015coalprod} Acid Rain Program (``ARP'') instrument for coal production.
-\item Use coal sulfur \% and the 1995 SO$_2$ power plant compliance deadline.
 \item OLS: mining and utility characteristics not random.
+\item Adapt \textcite{stratford2015coalprod} Acid Rain Program (``ARP'') instrument for coal production.
+\item ARP set coal fired power plant SO$_2$ limits.
 \item Low sulfur coal was the main compliance response \parencite{lattanzio2022clean}.
-\item High sulfur mines have limited ability to wash the sulfur out.
+\item Use coal sulfur \% and the 1995 SO$_2$ power plant compliance deadline.
+
 \end{itemize}
 \end{column}
 \begin{column}{0.54\textwidth}
@@ -233,20 +234,21 @@ Miss a test, receive a monitoring and reporting (``MR'') violation and:
 \end{frame}
 
 % ---------------------------------------------------------------- 20
-\begin{frame}{IV design: the ARP as a shifter of where coal is mined}
+\begin{frame}{2SLS}
 First stage:
 \begin{equation*}
 \begin{split}
-\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{NumFacility}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
+\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{X}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
 &\quad + State_s \cdot Y_t + C_c + \nu_{ct}
 \end{split}
 \end{equation*}
 Second stage:
 \begin{equation*}
-\text{Outcome}_{vct} = \beta_0 + \beta_1\text{NumFacility}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} + State_s \cdot Y_t + C_c + \epsilon_{ct}
+\text{Outcome}_{vct} = \beta_0 + \beta_1\text{X}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} + State_s \cdot Y_t + C_c + \epsilon_{ct}
 \end{equation*}
 \begin{itemize}\small
     \item $\text{Post95}_t = \mathbf{1}\{t \geq 1995\}$. Sulfur is time-invariant, so $C_c$ absorbs its level.
+    \item X is time varying utility characteristics.
     \item Outcome: 1 if utility $c$ had a violation, visit, or enforcement of type $v$ at any point in year $t$. 
     \item Coefficients are in percentage points.
     \item SEs clustered at the utility level.
@@ -268,40 +270,43 @@ Second stage:
 % ---------------------------------------------------------------- 24
 \begin{frame}{Upstream mining reduces utilities' self-reporting}
 \presregp{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}
-\takeaway{Base rates of nitrates, arsenic, and IOC are 5.7\%, 3.7\%, and 4.3\%. The 0.56 additional mines a 1-SD lower-sulfur watershed kept after 1995 raise nitrate, arsenic, and IOC MR violations by 2.2, 2.1, and 1.7 pp (state $\times$ year fixed effects).}
-\end{frame}
+\takeaway{Base rates of nitrates, arsenic, and IOC are 5.7\%, 3.7\%, and 4.3\%.
 
-% ---------------------------------------------------------------- 26
-\begin{frame}{Reporting cost, not concealment}
-\begin{itemize}\small
-    \item Nitrate rules require \textbf{more frequent monitoring} once a reading exceeds 50\% of the MCL --- a discrete jump in cost, with no jump in the penalty for under-reporting and no MCL.
-\end{itemize}
-\presreg{mr_concentration_lag_ols_k2}
-\takeaway{Descriptive, not causal --- read the sign, not the magnitude. Utilities under-report when self-reporting gets expensive, not to conceal exceedances.}
+Scaling by 1st stage, a 1-SD decrease in sulfur leads to 0.56 additional mines after 1995, raising nitrate, arsenic, and IOC MR violations by 2.2, 2.1, and 1.7 pp.}
 \end{frame}
-
 
 % ---------------------------------------------------------------- 29
 \begin{frame}{The regulator increases inspections}
 \presregp{h2_snsv_d12_k2}
-\takeaway{Inspection visits rise significantly ($+$2.1 pp; baseline inspection rate 3.4\%). The 0.56 additional mines a 1-SD lower-sulfur watershed kept after 1995 raise inspection visits by 1.2 pp. Regulators do not systematically step up the visit types tied to sanctions. Visits would reveal concealment and be associated with higher penalties.}
+\takeaway{Inspection visits rise significantly ($+$2.1 pp; baseline inspection rate 3.4\%). 
+
+Scaling by 1st stage, a 1-SD decrease in sulfur leads to 0.56 additional mines after 1995, raising inspection visits by 1.2 pp.}
 \end{frame}
 
 % ---------------------------------------------------------------- 28
-\begin{frame}{Enforcement does not counteract under-reporting}
+\begin{frame}{Despite inspection increase, enforcement does not increase}
 \presregp{h3_inf_formal_d12_k2}
-\takeaway{Baseline enforcement rates: informal 18.3\%, formal 2.9\%. One more upstream mine reduces formal enforcement by 3.4 pp with utility and year fixed effects alone (significant; the 0.47 additional mines a 1-SD lower-sulfur watershed kept after 1995 reduce it by 1.6 pp), but the effect loses significance once state $\times$ year fixed effects are added.}
+\takeaway{Baseline enforcement rates: informal 18.3\%, formal 2.9\%. 
+
+One more upstream mine reduces formal enforcement by 3.4 pp with utility and year fixed effects alone.
+
+Scaling by 1st stage, a 1-SD decrease in sulfur leads to 0.47 additional mines after 1995,
+reducing formal enforcement by 1.6 pp.
+
+Inspections would reveal concealment and increase penalties - which we do not see.}
 \end{frame}
 % ---------------------------------------------------------------- 30
 \begin{frame}{Conclusion}
 \begin{itemize}\small
-    \item Exogenous contamination raises the cost of self-reporting, and self-reporting falls --- \textbf{even when utilities remain below MCL}.
-    \item Under-reporting due to cost avoidance, rather than concealment of a contamination violation.
-    \item Regulators' inspection visits rise significantly --- substituting for utility self-reporting.
-    \item Reduction in enforcement along with increases in inspection suggests that contaminant exceedances are not being concealed and MR violations are not strongly punished.
-    \item \textbf{Policy.} Raising self-reporting penalties or reducing self-reporting costs could reduce under-reporting.
+    \item Contamination reduces self-reporting.
+    \item Contaminant data and increases in inspections without increasing enforcement suggests that under-reporting is not concealing MCLs. 
+    \item Evidence of cost driven under-reporting.
+    \item Regulators' inspection visits substitute for utility self-reporting.
+    \item MR violations are not strongly punished.
+    \item \textbf{Policy:} raising self-reporting penalties or reducing self-reporting costs could reduce under-reporting.
+    
     %\item \textbf{Policy.} Tightening MCLs does nothing if nobody tests. By Proposition 3 the binding lever is the price of \emph{not} reporting where source water is impaired, and it is not currently being pulled (\cite{malik1993self}; \cite{harford1987self}).
-    \item Open question: whether regulator monitoring is more efficient than self-reporting.
+
 \end{itemize}
 \vfill
 \centering \small ek559@cornell.edu
