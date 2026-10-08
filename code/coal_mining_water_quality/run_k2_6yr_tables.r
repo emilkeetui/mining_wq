@@ -22,7 +22,7 @@
 #     for syr2_mr_comparison_k2's SYR2-reporting-status comparison)
 #   clean_data/cws_6year_review.parquet (SYR2 reporting-status universe)
 # Outputs:
-#   output/reg/6yr_huc02fe_inorg_ravalli_2005_k2.tex (+ _present.tex)
+#   output/reg/6yr_huc02fe_inorg_ravalli_2005_k2.tex (+ _present.tex, _placement.tex)
 #   output/sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex (+ _present.tex)
 #   output/reg/pt_balance_6yr_k2.tex (+ _present.tex)
 #   output/sum/syr2_mr_comparison_k2.tex (+ _present.tex)
@@ -280,6 +280,58 @@ note_reg_present <- paste0(
 out_reg_present <- sub("\\.tex$", "_present.tex", out_reg)
 build_panel_table(merged_panel_lines, reg_title, reg_label, note_reg_present, out_reg_present)
 cat("Written:", out_reg_present, "\n")
+
+# Placement-week slide companion: Panel B (within-two-flow-step dose) only,
+# no panel subtitle, HUC02 described as "watershed" in the notes. The dose is
+# re-expressed in millions of short tons, so each coefficient (and SE) is the
+# effect of 1 million more short tons of cumulative upstream coal production
+# since 1985 (= the 10M ST coefficient / 10; stars unchanged). Column headers
+# carry the concentration units.
+models_mst <- list()
+dose_means <- numeric(0)
+for (j in 5:8) {
+  m_orig <- models_val[[j]]
+  chem   <- CHEMS[j - 4]
+  d_chem <- dose2[dose2$CHEMID_name == chem, ]
+  d_chem$coal_prod_upstream_cumsum_mst <- d_chem$coal_prod_upstream_cumsum_10mst * 10
+  m_s <- fixest::feols(VALUE ~ coal_prod_upstream_cumsum_mst + num_facilities | PWSID + huc02^year,
+                       data = d_chem, cluster = ~PWSID, warn = FALSE, notes = FALSE)
+  stopifnot(m_s$nobs == m_orig$nobs)
+  mean_dose  <- mean(d_chem$coal_prod_upstream_cumsum_mst[fixest::obs(m_s)])
+  models_mst <- c(models_mst, list(m_s))
+  dose_means <- c(dose_means, mean_dose)
+  cat("  Per M ST:", chem, "| mean dose (M ST) =", round(mean_dose, 1),
+      "| coef =", signif(coef(m_s)["coal_prod_upstream_cumsum_mst"], 4),
+      "| % of mean conc. =", round(100 * coef(m_s)["coal_prod_upstream_cumsum_mst"] /
+                                     mean(d_chem$VALUE[fixest::obs(m_s)]), 2), "\n")
+}
+raw_mst <- etable(
+  models_mst,
+  headers      = list(":_:" = paste0(unname(nice_chem[CHEMS]), " (mg/L)")),
+  depvar       = FALSE,
+  fitstat      = ~n,
+  style.tex    = style.tex("aer", adjustbox = TRUE),
+  tex          = TRUE,
+  digits       = "r5",
+  drop         = "Number of intake facilities",
+  drop.section = "fixef",
+  # MCLs in force over the 1998--2005 sample (arsenic's 0.010 mg/L MCL starts in 2006)
+  extralines   = list("Sample mean (million short tons)" = sprintf("%.1f", dose_means),
+                      "MCL (mg/L)" = sprintf("%.3f", c(arsenic = 0.050, nitrate = 10, barium = 2, selenium = 0.050)[CHEMS])),
+  dict         = c(k2_dict, coal_prod_upstream_cumsum_mst = "Cumul. upstream coal prod. (M ST)")
+)
+mst_lines <- strsplit(strip_cmidrule(extract_adjustbox(raw_mst)), "\n", fixed = TRUE)[[1]]
+note_reg_placement <- paste0(
+  "\\textit{Notes:} All specifications include utility and watershed $\\times$ year ",
+  "fixed effects. Standard errors clustered at the utility level. ",
+  "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+)
+title_placement <- paste0("Effect of cumulative upstream coal production within two ",
+                          "watersheds upstream on inorganic chemical concentrations, SYR2 1998--2005")
+out_reg_placement <- sub("\\.tex$", "_placement.tex", out_reg)
+build_panel_table(mst_lines, title_placement, paste0(reg_label, "_placement"),
+                  note_reg_placement, out_reg_placement)
+cat("Written:", out_reg_placement, "\n")
 
 # ── 6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex ───────────────────
 mcl_labels <- c(

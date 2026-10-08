@@ -1,0 +1,363 @@
+﻿% ============================================================
+% File:    placement_week.tex
+% Purpose: 30-slide beamer job-talk version of main.tex
+% Inputs:  ../../output/reg/*_present.tex, ../../output/sum/*_present.tex,
+%          ../../output/fig/*.png, img/*, citation.bib
+% Outputs: placement_week.pdf
+% Author:  EK  Date: 2026-08-31
+% ============================================================
+
+\documentclass{beamer}
+\usetheme{Boadilla}
+\setbeamertemplate{footline}[page number]
+\setbeamertemplate{navigation symbols}{}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{adjustbox}
+\usepackage{varwidth}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[
+backend=biber,
+style=authoryear,
+citestyle=bwl-FU
+]{biblatex}
+\addbibresource{citation.bib}
+
+% ============================================================
+% Pipeline output directory (relative to this file)
+%   \presreg{name}  -> ../../output/reg/name_present.tex
+%   \pressum{name}  -> ../../output/sum/name_present.tex
+%   \presfig{f.png} -> ../../output/fig/f.png
+% ============================================================
+\newcommand{\outputdir}{../../output}
+
+% The generated *_present.tex files are written as article floats:
+% \begin{table}[htbp] ... \caption{...} ... \end{table}. Beamer has no float
+% mechanism, and wrapping a float in adjustbox raises
+% "! LaTeX Error: Not in outer par mode." Neutralise the float and swallow the
+% caption (on a slide the frame title carries the caption text), so the table
+% body is plain material that can be boxed and scaled.
+\makeatletter
+\renewenvironment{table}[1][]{\par\centering}{\par}
+\renewcommand{\caption}[2][]{}
+\makeatother
+
+% Box the table body at its natural width inside a varwidth, so multi-panel
+% files still break between panels instead of setting them side by side, then
+% shrink only as much as is needed to fit the slide.
+% Optional argument overrides the width key, for source files that hardcode a
+% narrow adjustbox (e.g. width = 0.45\textwidth) and so need scaling UP: max
+% width only ever shrinks.
+\newcommand{\slidetableinput}[2][max width=\textwidth]{%
+  \adjustbox{#1, max totalheight=0.80\textheight, center}{%
+    \begin{varwidth}{17cm}%
+      \input{#2}%
+    \end{varwidth}}}
+\newcommand{\presreg}[2][max width=\textwidth]{\slidetableinput[#1]{\outputdir/reg/#2_present}}
+\newcommand{\presregp}[2][max width=\textwidth]{\slidetableinput[#1]{\outputdir/reg/#2_placement}}
+\newcommand{\pressum}[2][max width=\textwidth]{\slidetableinput[#1]{\outputdir/sum/#2_present}}
+\newcommand{\presfig}[2][0.75\textheight]{%
+  \begin{center}%
+  \adjustbox{max width=\textwidth, max height=#1}{\includegraphics{\outputdir/fig/#2}}%
+  \end{center}}
+
+% One-line takeaway under a table or figure. The group must close AFTER \par or
+% the paragraph inherits the outer font's baselineskip on its first line.
+\newcommand{\takeaway}[1]{\par\medskip{\footnotesize #1\par}}
+
+% In-text link to a backup/appendix slide. #1 = \hypertarget name on the
+% backup frame, #2 = short description of what the link shows.
+\newcommand{\backuplink}[2]{\hyperlink{#1}{\footnotesize(#2 $\rightarrow$)}}
+
+% Underbrace whose label wraps to the width of the braced math, so long labels
+% sit under their own term instead of running across the slide.
+% #1 = braced math (typeset in display style), #2 = label text.
+\newlength{\ubwidth}
+\newcommand{\ubtext}[2]{%
+  \settowidth{\ubwidth}{$\displaystyle #1$}%
+  \underbrace{#1}_{\parbox[t]{\ubwidth}{\centering\scriptsize #2}}}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\title[Contamination and Self-Reported Compliance]{The Effect of Contamination on Contamination Control Regulation}
+\subtitle{US Coal Mining and Drinking Water Utilities}
+\author{Emil Kee-Tui}
+\institute{Charles H. Dyson School of Applied Economics and Management \\ Cornell University}
+\date{October 2026}
+
+\begin{document}
+
+% ---------------------------------------------------------------- 1
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Self-reported compliance}
+\begin{itemize}
+    \item Self-reported regulation monitoring requires entities to demonstrate compliance to regulators.
+    \item Incentives to shirk reporting:
+    \begin{itemize}
+        \item Concealing non-compliance
+        \item Saving self-reporting costs
+    \end{itemize}
+    \item Environmental contamination regulation (e.g. US drinking water): 
+    \begin{itemize}
+        \item $\uparrow$ contamination $\rightarrow$ $\uparrow$ shirking incentives
+    \end{itemize}
+    
+    \item \textbf{Why care about self-reporting and contamination?}
+    \begin{itemize}
+        \item Different fix if concealing non-compliance vs self-reporting costs
+        \item Monitoring used across industries (HIPAA violation disclosure, SOX, energy firms)
+        \item Drinking water for 85\% of households is regulated this way
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Research question}
+
+\begin{center}
+\begin{beamercolorbox}[sep=10pt,center,rounded=true,shadow=true]{block body}
+\large 1. What happens to firm self-reporting when contamination rises?
+\end{beamercolorbox}
+\end{center}
+
+\begin{center}
+\begin{beamercolorbox}[sep=10pt,center,rounded=true,shadow=true]{block body}
+ 2. Are changes in self-reporting due to concealment or self-reporting costs?
+\end{beamercolorbox}
+\end{center}
+
+Context: US drinking water utilities exposed to water contamination from upstream coal mining (1985--2005)
+
+\begin{center}
+\begin{beamercolorbox}[sep=10pt,center,rounded=true,shadow=true]{block body}
+ 0. Does upstream coal mining raise contamination at drinking water utilities?
+\end{beamercolorbox}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{How I answer these questions}
+
+    \begin{itemize}
+        \item Annual panel of drinking water utilities on average 22 km downstream of active coal mines.
+        \item Contaminant concentrations for arsenic, nitrate, barium, and selenium, 1997--2005.
+        \item Utility self-reporting, regulator visits, and enforcement received.
+        \item Instrument upstream coal production.
+    \end{itemize}
+
+Why this is appropriate
+\begin{itemize}
+    \item Separation between contamination source and regulated firm helps identify the effect of contamination.
+    \item Coal mining $\rightarrow$ inorganic chemicals (``IOCs'') into surface and ground water.
+    \item Geology of coal seams and national energy market determines mining.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Utility self-reporting nitrate contamination}
+
+\textbf{Utility manager/staff cognitive burden} \parencite{oleckno1982national}.
+
+Self-reporting requirement for nitrates (one of 83 contaminants):
+    \begin{itemize}
+        \item \textbf{Baseline}: once a year, send one sample from every intake to a lab
+        \item \textbf{Elevated}: nitrate $\geq$ 5 mg/L, half the Maximum Contaminant Level (``MCL''), test quarterly
+    \end{itemize}
+
+Miss a test, receive a monitoring and reporting (``MR'') violation and:
+
+\begin{itemize}
+    \item Avoid an MCL (need self-report for MCL)
+    \item Regulator visit
+    \item Or enforcement: Informal (letters, notices, compliance plans); Formal (consent decrees, fines, prosecution)
+    \item MR punished less severely than MCL
+\end{itemize}
+\end{frame}
+
+
+
+    %\item  arsenic, nitrate, and ioc MR violations compared to  mcl violations
+
+
+\begin{frame}{Does coal production raise contamination at drinking water utilities?}
+\begin{equation*}
+\textit{Concen}_{ct}= \beta\cdot\!\!\sum_{\tau=1985}^{t}\!\!\text{UpstreamCoalProd}_{c\tau} + \rho_c + Watershed_c\cdot\tau_t + \epsilon_{ct}
+\end{equation*}
+\begin{itemize}\small
+    \item $\textit{Concen}_{ct}$: mean annual concentration at utility $c$, year $t$ (SYR2, 1998--2005).
+    \item $\beta$: effect of 10 million additional cumulative short tons mined upstream since 1985.
+    \item $\rho_c$: utility fixed effects. $Watershed_c\cdot\tau_t$: Watershed-specific year effects, absorbing watershed-wide industrial trends.
+    \item SEs clustered at the utility level.
+\end{itemize}
+\medskip
+\begin{itemize}
+    \item Continuous treatment, \textbf{no control}: identification comes from relative exposure.
+    \item Assumption: utilities with large upstream production changes would have trended like those with small ones. \backuplink{balancetest}{balance test on utility characteristics}
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 18
+\begin{frame}{Mining raises contaminant levels}
+\presregp{6yr_huc02fe_inorg_ravalli_2005_k2}
+\takeaway{Per sample mean tons mined upstream: nitrate $+$0.076 mg/L (***), 9.4\% of its mean; selenium $+$0.0003 mg/L (**), 6.9\% of its mean. \textbf{Every reading in the sample stays under its MCL.} In the sample, only 49 IOC MCL violations.}
+\end{frame}
+
+\begin{frame}{Coal mining \& utility behavior: instrumenting coal mining}
+\begin{columns}[T]
+\begin{column}{0.44\textwidth}
+\begin{itemize}\small
+
+\item Adapt \textcite{stratford2015coalprod} Acid Rain Program (``ARP'') instrument for coal production.
+\item Use coal sulfur \% and the 1995 SO$_2$ power plant compliance deadline.
+\item OLS: mining and utility characteristics not random.
+\item Low sulfur coal was the main compliance response \parencite{lattanzio2022clean}.
+\item High sulfur mines have limited ability to wash the sulfur out.
+\end{itemize}
+\end{column}
+\begin{column}{0.54\textwidth}
+\includegraphics[width=\textwidth]{\outputdir/fig/coal_summary_plot.png}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Where coal production moved, 1985--2005}
+\presfig[0.78\textheight]{proportionatecircleprod_diff_allminehuc12_1985_2005.png}
+\end{frame}
+
+% ---------------------------------------------------------------- 20
+\begin{frame}{IV design: the ARP as a shifter of where coal is mined}
+First stage:
+\begin{equation*}
+\begin{split}
+\text{NumMines}_{ct} &= \alpha_0 + \alpha_1\text{NumFacility}_{ct} + \alpha_2\text{UpstreamCoalSulfur\%}_c \cdot \text{Post95}_t \\
+&\quad + State_s \cdot Y_t + C_c + \nu_{ct}
+\end{split}
+\end{equation*}
+Second stage:
+\begin{equation*}
+\text{Outcome}_{vct} = \beta_0 + \beta_1\text{NumFacility}_{ct} + \gamma\widehat{\text{NumMines}}_{ct} + State_s \cdot Y_t + C_c + \epsilon_{ct}
+\end{equation*}
+\begin{itemize}\small
+    \item $\text{Post95}_t = \mathbf{1}\{t \geq 1995\}$. Sulfur is time-invariant, so $C_c$ absorbs its level.
+    \item Outcome: 1 if utility $c$ had a violation, visit, or enforcement of type $v$ at any point in year $t$. 
+    \item Coefficients are in percentage points.
+    \item SEs clustered at the utility level.
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 23
+\begin{frame}{Instrument validity}
+\begin{itemize}\small
+    \item \textbf{Independence.} The ARP is a national clean-air law set by national energy and emissions politics, not downstream utilities' water quality.
+    \item \textbf{Exclusion.} Effect of instrumenting mining downstream of the utility on utility behavior is not significant. \backuplink{kgridmrup}{MR violations}, \backuplink{kgridvisitup}{visits}, \backuplink{kgridenfup}{enforcement}.
+
+    Utility characteristics are not predicted by the instrument. \backuplink{exclfacilities}{full balance table}
+    \item \textbf{Monotonicity.} A defier is a high-sulfur watershed that expanded \emph{because} its coal was high sulfur. Scrubber adoption costs more likely lead to lost rather than gained market share; low-cost high-sulfur regions that expand anyway are never-takers. 
+    %Monotonicity is pairwise in sulfur, so low- and high-sulfur areas may respond in opposite directions (\cite{angrist1994identification}).
+\end{itemize}
+\end{frame}
+
+% ---------------------------------------------------------------- 24
+\begin{frame}{Upstream mining reduces utilities' self-reporting}
+\presregp{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}
+\takeaway{Base rates of nitrates, arsenic, and IOC are 5.7\%, 3.7\%, and 4.3\%. The 0.56 additional mines a 1-SD lower-sulfur watershed kept after 1995 raise nitrate, arsenic, and IOC MR violations by 2.2, 2.1, and 1.7 pp (state $\times$ year fixed effects). OLS estimates are far smaller --- consistent with negative omitted variable bias, as expected if poorly performing utilities (more MR violations) are protected from mine siting (fewer mines).}
+\end{frame}
+
+% ---------------------------------------------------------------- 26
+\begin{frame}{Reporting cost, not concealment}
+\begin{itemize}\small
+    \item Nitrate rules require \textbf{more frequent monitoring} once a reading exceeds 50\% of the MCL --- a discrete jump in cost, with no jump in the penalty for under-reporting and no MCL.
+\end{itemize}
+\presreg{mr_concentration_lag_ols_k2}
+\takeaway{Descriptive, not causal --- read the sign, not the magnitude. Utilities under-report when self-reporting gets expensive, not to conceal exceedances.}
+\end{frame}
+
+
+% ---------------------------------------------------------------- 29
+\begin{frame}{The regulator increases inspections}
+\presregp{h2_snsv_d12_k2}
+\takeaway{Inspection visits rise significantly ($+$2.1 pp; baseline inspection rate 3.4\%). The 0.56 additional mines a 1-SD lower-sulfur watershed kept after 1995 raise inspection visits by 1.2 pp. Regulators do not systematically step up the visit types tied to sanctions. Visits would reveal concealment and be associated with higher penalties.}
+\end{frame}
+
+% ---------------------------------------------------------------- 28
+\begin{frame}{Enforcement does not counteract under-reporting}
+\presregp{h3_inf_formal_d12_k2}
+\takeaway{Baseline enforcement rates: informal 18.3\%, formal 2.9\%. One more upstream mine reduces formal enforcement by 3.4 pp with utility and year fixed effects alone (significant; the 0.47 additional mines a 1-SD lower-sulfur watershed kept after 1995 reduce it by 1.6 pp), but the effect loses significance once state $\times$ year fixed effects are added.}
+\end{frame}
+% ---------------------------------------------------------------- 30
+\begin{frame}{Conclusion}
+\begin{itemize}\small
+    \item Exogenous contamination raises the cost of self-reporting, and self-reporting falls --- \textbf{even when utilities remain below MCL}.
+    \item Under-reporting due to cost avoidance, rather than concealment of a contamination violation.
+    \item Regulators' inspection visits rise significantly --- substituting for utility self-reporting.
+    \item Reduction in enforcement along with increases in inspection suggests that contaminant exceedances are not being concealed and MR violations are not strongly punished.
+    \item \textbf{Policy.} Raising self-reporting penalties or reducing self-reporting costs could reduce under-reporting.
+    %\item \textbf{Policy.} Tightening MCLs does nothing if nobody tests. By Proposition 3 the binding lever is the price of \emph{not} reporting where source water is impaired, and it is not currently being pulled (\cite{malik1993self}; \cite{harford1987self}).
+    \item Open question: whether regulator monitoring is more efficient than self-reporting.
+\end{itemize}
+\vfill
+\centering \small ek559@cornell.edu
+\end{frame}
+
+% ================================================================
+% Appendix
+% ================================================================
+\appendix
+\setbeamertemplate{footline}{}
+\begin{frame}
+\vfill
+\centering
+\begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+\usebeamerfont{title}Appendix\par
+\end{beamercolorbox}
+\vfill
+\end{frame}
+
+\begin{frame}{Appendix: instrument balance on intake facilities}
+\hypertarget{exclfacilities}{}
+\presreg{exclusion_test_num_facilities_k2}
+\end{frame}
+
+\begin{frame}{Appendix: balance test on utility characteristics}
+\hypertarget{balancetest}{}
+\presreg[max width=\textwidth, max totalheight=0.68\textheight]{pt_balance_6yr_k2}
+\takeaway{Observable characteristics jointly predict continuous upstream production only without state fixed effects (p=0.029) and lose significance once state fixed effects are added (p=0.461), as in the main specification. The joint test on the binary presence of upstream mining stays significant with or without state fixed effects.}
+\end{frame}
+
+\begin{frame}{Appendix: exclusion placebo, MR violations across $k$}
+\hypertarget{kgridmrup}{}
+\presfig[0.66\textheight]{kgrid_mr_upstream_of_mine_coefs.png}
+\takeaway{For utilities upstream of a mine --- where mining cannot reach the intake hydrologically --- OLS estimates on MR violations are positive and significant at every $k$. In the reduced form and 2SLS, nitrate estimates are significant for $k \geq 3$, while arsenic and inorganic chemical estimates are significant only at $k=1$.}
+\end{frame}
+
+\begin{frame}{Appendix: exclusion placebo, visits across $k$}
+\hypertarget{kgridvisitup}{}
+\presfig[0.68\textheight]{kgrid_visit_upstream_of_mine_coefs.png}
+\takeaway{For utilities upstream of a mine, inspection visits rise significantly at nearly every $k$, sanitary visits at $k=1$ and $k \geq 4$, and sample collection visits at several radii; technical assistance and enforcement visits are mostly insignificant.}
+\end{frame}
+
+\begin{frame}{Appendix: exclusion placebo, enforcement across $k$}
+\hypertarget{kgridenfup}{}
+\presfig[0.76\textheight]{kgrid_enf_upstream_of_mine_coefs.png}
+\takeaway{Enforcement actions show no consistent pattern for utilities upstream of a mine at any choice of $k$, supporting the exclusion restriction.}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+\printbibliography
+\end{frame}
+
+\end{document}
