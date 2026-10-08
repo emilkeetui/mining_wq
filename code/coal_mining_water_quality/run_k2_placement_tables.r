@@ -166,7 +166,8 @@ render_placement_k2 <- function(dat, outcomes, fe_specs, outfile, title, label,
   invisible(list(iv_list = iv_list))
 }
 
-pp_note <- "Coefficients and standard errors are in percentage points. "
+# Units (percentage points) are stated on the 2SLS specification slide, not in the notes.
+pp_note <- ""
 
 # ── MR violations (OLS, 2SLS, RF) ──────────────────────────────────────────
 r_mr <- render_placement_k2(
