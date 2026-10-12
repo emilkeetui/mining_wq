@@ -18,6 +18,9 @@
 #   clean_data/cws_data/sdwa_enf_agg_k2.parquet
 #   clean_data/cws_data/step_purity_flags.parquet
 # Outputs: none (sourced by run_k2_*.r scripts)
+# Sample switch: env var WQ_SAMPLE = "k2" (default; `_k2` outputs) or
+#   "step23" (nearest mine 2-3 flow steps upstream; main arm k=3 rows;
+#   callers write `_step23` outputs via SFX). Added 2026-10-12.
 # Author: EK  Date: 2026-09-14
 # ============================================================
 
@@ -38,6 +41,28 @@ step_purity <- read_parquet(file.path(ROOT, "clean_data/cws_data/step_purity_fla
 apply_a2 <- function(df) df %>%
   dplyr::inner_join(dplyr::filter(step_purity, a2_pure == 1) %>%
                       dplyr::select(PWSID, arm, k), by = c("PWSID", "arm", "k"))
+
+# ── 0b. Sample switch (WQ_SAMPLE env var) ───────────────────────────────
+# "k2" (default): mine within two flow steps, A2-pure at k=2 -> `_k2` outputs.
+# "step23": nearest mine two or three flow steps upstream -> `_step23` outputs,
+# per plan step23-sample-main-tables.md.
+WQ_SAMPLE <- Sys.getenv("WQ_SAMPLE", "k2")
+stopifnot(WQ_SAMPLE %in% c("k2", "step23"))
+SFX <- if (WQ_SAMPLE == "step23") "_step23" else "_k2"
+# main arm: max n_mine_hucs_linked at k=1 == 0, at k=3 >= 1, a2_pure at k=3
+step23_pwsids <- function(si) {
+  si_main <- si %>% dplyr::filter(arm == "main")
+  no_k1  <- si_main %>% dplyr::filter(k == 1) %>% dplyr::group_by(PWSID) %>%
+    dplyr::summarise(m = max(n_mine_hucs_linked), .groups = "drop") %>%
+    dplyr::filter(m == 0) %>% dplyr::pull(PWSID)
+  any_k3 <- si_main %>% dplyr::filter(k == 3) %>% dplyr::group_by(PWSID) %>%
+    dplyr::summarise(m = max(n_mine_hucs_linked), .groups = "drop") %>%
+    dplyr::filter(m >= 1) %>% dplyr::pull(PWSID)
+  pure_k3 <- step_purity %>% dplyr::filter(arm == "main", k == 3, a2_pure == 1) %>%
+    dplyr::pull(PWSID)
+  sort(Reduce(intersect, list(no_k1, any_k3, pure_k3)))
+}
+SAMPLE_DESC_STEP23 <- "utilities with no coal mine in their intake watershed or in any watershed draining directly into it, and a coal mine in at least one watershed two or three flow steps upstream of their intake"
 
 # ── 1. Panel construction ────────────────────────────────────────────────
 # Builds the joined, zero-filled, x100-scaled k=2 A-full panel for one arm.
@@ -96,6 +121,17 @@ build_k2_panel <- function(arm_choice = c("main", "placebo"), a2_only = TRUE) {
   # A2-screened one, so impure utilities cannot leak into the placebo arm
   # (the A2-placebo condition already excludes them; this is belt-and-braces).
   main_k2 <- full %>% dplyr::filter(arm == "main", k == 2, n_mine_hucs_linked >= 1)
+  if (WQ_SAMPLE == "step23" && arm_choice == "main") {
+    # A2 purity is inside step23_pwsids(), so apply_a2() is not called here.
+    ids23 <- step23_pwsids(si)
+    out <- full %>% dplyr::filter(arm == "main", k == 3, PWSID %in% ids23)
+    k1_main_ids <- unique(dplyr::filter(full, arm == "main", k == 1, n_mine_hucs_linked >= 1)$PWSID)
+    stopifnot(length(intersect(unique(out$PWSID), k1_main_ids)) == 0,
+              all(out$k == 3), is.character(out$PWSID))
+    cat(sprintf("step23 main panel: %d rows, %d utilities (%d step23 PWSIDs in step_instruments)\n",
+                nrow(out), dplyr::n_distinct(out$PWSID), length(ids23)))
+    return(out)
+  }
   if (arm_choice == "main") {
     out <- main_k2
   } else {

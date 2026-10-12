@@ -26,6 +26,9 @@
 #   output/sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex (+ _present.tex)
 #   output/reg/pt_balance_6yr_k2.tex (+ _present.tex)
 #   output/sum/syr2_mr_comparison_k2.tex (+ _present.tex)
+#   With WQ_SAMPLE=step23 (k2_common.r): only
+#   output/reg/6yr_huc02fe_inorg_ravalli_2005_step23.tex (+ _present.tex),
+#   a single panel with the steps-2+3 cumulative dose; all other sections skipped.
 # Author: EK  Date: 2026-09-16
 # ============================================================
 
@@ -63,9 +66,16 @@ nice_chem <- c(arsenic = "Arsenic", nitrate = "Nitrate", barium = "Barium", sele
 # k's cumulative production feeds the regressor. When `dose_k == sample_k`
 # this is exactly the original single-k behavior. ────────────────────────
 build_dose_sample <- function(sample_k, dose_k = sample_k) {
-  arm_k <- si %>% dplyr::filter(arm == "main", k == sample_k, n_mine_hucs_linked >= 1) %>%
-    apply_a2() %>%
-    dplyr::select(PWSID, year, production_linked_sum)
+  # step23 mode: k=3 main-arm rows of the step23 utilities (purity screen is
+  # inside step23_pwsids()), so the dose is cumulative steps-2+3 production.
+  arm_k <- if (WQ_SAMPLE == "step23") {
+    si %>% dplyr::filter(arm == "main", k == 3, PWSID %in% step23_pwsids(si)) %>%
+      dplyr::select(PWSID, year, production_linked_sum)
+  } else {
+    si %>% dplyr::filter(arm == "main", k == sample_k, n_mine_hucs_linked >= 1) %>%
+      apply_a2() %>%
+      dplyr::select(PWSID, year, production_linked_sum)
+  }
 
   linked_pwsids <- unique(arm_k$PWSID)
   d <- d6r %>% dplyr::filter(PWSID %in% linked_pwsids, CHEMID_name %in% CHEMS)
@@ -103,6 +113,113 @@ build_dose_sample <- function(sample_k, dose_k = sample_k) {
   d
 }
 
+fml_huc02 <- VALUE ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
+
+# ── Table-assembly helpers (shared by the k2 panels and the step23 table) ──
+extract_adjustbox <- function(tex_lines) {
+  x <- paste(tex_lines, collapse = "\n")
+  start_pos <- regexpr("\\\\begin\\{adjustbox\\}", x)
+  end_pos   <- regexpr("\\\\end\\{adjustbox\\}", x)
+  end_full  <- end_pos + attr(end_pos, "match.length") - 1
+  substr(x, start_pos, end_full)
+}
+
+strip_cmidrule <- function(tex_str) {
+  gsub(" *\\\\cmidrule\\(lr\\)\\{[0-9]+-[0-9]+\\}", "", tex_str)
+}
+
+build_panel_table <- function(body, title, label, notes, out_path) {
+  lines <- c(
+    "\\begin{table}[htbp]",
+    "   ",
+    paste0("   \\caption{\\label{", label, "} ", title, "}"),
+    "   \\bigskip",
+    "   ",
+    "   \\centering",
+    "   ",
+    body,
+    "   ",
+    "   {\\tiny\\linespread{1}\\selectfont \\par \\raggedright ",
+    paste0("   ", notes, "}"),
+    "   ",
+    "\\end{table}",
+    "",
+    ""
+  )
+  writeLines(lines, out_path)
+}
+
+# ── step23 mode: single-panel 6yr table, then stop ──────────────────────────
+# Utilities' nearest mine is two or three flow steps upstream, so the one-step
+# dose (k2 Panel A) is identically 0 here; only the k=3 (steps 2+3) dose is
+# estimated. Sumstats, pt_balance and syr2_mr_comparison are not requested.
+if (WQ_SAMPLE == "step23") {
+  dose23 <- build_dose_sample(3)
+  n_main_step23 <- dplyr::n_distinct(main_dat$PWSID)
+  cat(sprintf("step23 dose sample: %d rows, %d utilities, %d distinct chemicals\n",
+              nrow(dose23), dplyr::n_distinct(dose23$PWSID), dplyr::n_distinct(dose23$CHEMID_name)))
+  cat(sprintf("Coverage: %d of %d step23 main-arm utilities have SYR2 concentration coverage (%.1f%%)\n",
+              dplyr::n_distinct(dose23$PWSID), n_main_step23,
+              100 * dplyr::n_distinct(dose23$PWSID) / n_main_step23))
+
+  models_val <- list()
+  hdr_val    <- character(0)
+  for (chem in CHEMS) {
+    d_chem <- dose23[dose23$CHEMID_name == chem, ]
+    cat("  Dose: steps 2-3 | Chemical:", chem, "| n rows:", nrow(d_chem), "\n")
+    if (nrow(d_chem) < 30) { cat("  Skipping -- too few obs (logged, column dropped).\n"); next }
+    m <- tryCatch(fixest::feols(fml_huc02, data = d_chem, cluster = ~PWSID, warn = FALSE, notes = FALSE),
+                  error = function(e) { cat("  ERROR:", conditionMessage(e), "\n"); NULL })
+    if (!is.null(m)) {
+      models_val <- c(models_val, list(m))
+      hdr_val    <- c(hdr_val, nice_chem[[chem]])
+      cat("  n =", m$nobs, "| utilities =", length(fixest::fixef(m)$PWSID),
+          "| coef =", round(coef(m)["coal_prod_upstream_cumsum_10mst"], 4),
+          "| se =", round(fixest::se(m)["coal_prod_upstream_cumsum_10mst"], 4), "\n")
+    }
+  }
+  stopifnot(length(models_val) >= 1)
+  if (length(models_val) < 4) cat("NOTE: only", length(models_val), "of 4 chemicals estimable on the step23 sample\n")
+
+  raw23 <- etable(
+    models_val,
+    headers      = list(":_:" = hdr_val),
+    depvar       = FALSE,
+    fitstat      = ~n,
+    style.tex    = style.tex("aer", adjustbox = TRUE),
+    tex          = TRUE,
+    digits       = "r4",
+    drop         = "Number of intake facilities",
+    drop.section = "fixef",
+    dict         = k2_dict
+  )
+  body23 <- strsplit(strip_cmidrule(extract_adjustbox(raw23)), "\n", fixed = TRUE)[[1]]
+  title23 <- "Effect of cumulative upstream coal production on inorganic chemicals, SYR2 1998--2005"
+  label23 <- paste0("tab:6yr_huc02fe_inorg_ravalli_2005", SFX)
+  note23 <- paste0(
+    "\\textit{Notes:} Within each chemical, the column shows mean measured concentration ",
+    "from the EPA 6-Year Review. Non-detect values replaced by MDL$/\\sqrt{2}$ following ",
+    "Ravalli et al.~(2022). Explanatory variable is cumulative coal production since 1985 ",
+    "(in 10 million short tons) in watersheds two and three flow steps upstream of the ",
+    "utility's intake. Sample: ", SAMPLE_DESC_STEP23, ". Standard errors clustered at the ",
+    "utility level. All specifications include utility and HUC02 $\\times$ year fixed ",
+    "effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+  )
+  note23_present <- paste0(
+    "\\textit{Notes:} All specifications include utility and HUC02 $\\times$ year ",
+    "fixed effects. Standard errors clustered at the utility level. ",
+    "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+  )
+  out23 <- file.path(ROOT, "output/reg", paste0("6yr_huc02fe_inorg_ravalli_2005", SFX, ".tex"))
+  build_panel_table(body23, title23, label23, note23, out23)
+  cat("Written:", out23, "\n")
+  out23_present <- sub("\\.tex$", "_present.tex", out23)
+  build_panel_table(body23, title23, label23, note23_present, out23_present)
+  cat("Written:", out23_present, "\n")
+  cat("\n=== run_k2_6yr_tables.r DONE (step23) ===\n")
+  quit(save = "no")
+}
+
 dose2    <- build_dose_sample(2)              # unchanged; still used by sumstats + balance sections
 dose2_k1 <- build_dose_sample(2, dose_k = 1)  # same rows, one-step dose
 
@@ -124,8 +241,6 @@ cat(sprintf("k2 dose sample: %d rows, %d utilities, %d distinct chemicals\n",
 cat(sprintf("Coverage: %d of %d k2 main-arm utilities have SYR2 concentration coverage (%.1f%%)\n",
             dplyr::n_distinct(dose2$PWSID), n_a2_main_k2,
             100 * dplyr::n_distinct(dose2$PWSID) / n_a2_main_k2))
-
-fml_huc02 <- VALUE ~ coal_prod_upstream_cumsum_10mst + num_facilities | PWSID + huc02^year
 
 # ── 6yr_huc02fe_inorg_ravalli_2005_k2.tex ────────────────────────────────
 # 8 columns: within-one-flow-step dose (1-4) then within-two-flow-step dose
@@ -160,14 +275,8 @@ stopifnot(length(models_val) == 8)  # 2 dose defs x {arsenic, nitrate, barium, s
 # block sharing one \toprule/\bottomrule -- Panel B's own tabular-open,
 # \toprule, and duplicate (1)-(4) column-numbers row are dropped so the
 # column numbering set by the shared header carries through both panels.
-extract_adjustbox <- function(tex_lines) {
-  x <- paste(tex_lines, collapse = "\n")
-  start_pos <- regexpr("\\\\begin\\{adjustbox\\}", x)
-  end_pos   <- regexpr("\\\\end\\{adjustbox\\}", x)
-  end_full  <- end_pos + attr(end_pos, "match.length") - 1
-  substr(x, start_pos, end_full)
-}
-
+# (extract_adjustbox() / strip_cmidrule() / build_panel_table() are defined
+# above, before the step23 block.)
 insert_panel_title <- function(tex_str, n_col, panel_label) {
   lines   <- strsplit(tex_str, "\n")[[1]]
   mid_idx <- which(trimws(lines) == "\\midrule")[1]
@@ -197,9 +306,6 @@ panel_tabular <- function(models_grp) {
 # column-numbers row (the shared header above Panel A already labels and
 # numbers the columns); both panels drop the \cmidrule spanning rule under
 # the header row.
-strip_cmidrule <- function(tex_str) {
-  gsub(" *\\\\cmidrule\\(lr\\)\\{[0-9]+-[0-9]+\\}", "", tex_str)
-}
 drop_line <- function(tex_str, pattern) {
   lines <- strsplit(tex_str, "\n", fixed = TRUE)[[1]]
   paste(lines[!grepl(pattern, lines, fixed = TRUE)], collapse = "\n")
@@ -232,27 +338,6 @@ merged_panel_lines <- c(top_a, bottom_b)
 
 reg_title <- "Effect of cumulative upstream coal production on inorganic chemicals by upstream distance, SYR2 1998--2005"
 reg_label <- "tab:6yr_huc02fe_inorg_ravalli_2005_k2"
-
-build_panel_table <- function(body, title, label, notes, out_path) {
-  lines <- c(
-    "\\begin{table}[htbp]",
-    "   ",
-    paste0("   \\caption{\\label{", label, "} ", title, "}"),
-    "   \\bigskip",
-    "   ",
-    "   \\centering",
-    "   ",
-    body,
-    "   ",
-    "   {\\tiny\\linespread{1}\\selectfont \\par \\raggedright ",
-    paste0("   ", notes, "}"),
-    "   ",
-    "\\end{table}",
-    "",
-    ""
-  )
-  writeLines(lines, out_path)
-}
 
 note_reg <- paste0(
   "\\textit{Notes:} Within each chemical, the column shows mean measured concentration ",

@@ -20,6 +20,8 @@
 #   output/reg/exclusion_test_num_facilities_k2.tex (+ _present.tex)
 #   output/reg/h2_snsv_d12_k2.tex (+ _present.tex)
 #   output/reg/h3_inf_formal_d12_k2.tex (+ _present.tex)
+#   With WQ_SAMPLE=step23 (k2_common.r): only the 2sls allcat/mr/mcl, h2 and
+#   h3 tables, written with suffix `_step23` (+ _present.tex); 4.4-4.5 skipped.
 # Author: EK  Date: 2026-09-14
 # ============================================================
 
@@ -44,8 +46,22 @@ cat(sprintf("Stable-sample screen: dropped %d utilities / %d obs (lone-state: %s
             paste(lone_states, collapse = ", ")))
 
 FE_TWO <- c("PWSID + year", "PWSID + STATE_CODE^year")
+# Used by 4.4 and 4.6; defined here so 4.6 still runs when 4.4 is skipped (step23).
+fe_state_yr <- "PWSID + STATE_CODE^year"
 
-depvar_vio <- paste0(
+# step23 mode: instrument + sample clauses shared by every note sentence.
+instr_sample_step23 <- paste0(
+  "The instrument interacts an indicator for the post-1995 period with the average ",
+  "coal sulfur content of watersheds within three flow steps upstream of the utility's ",
+  "intake. The sample is ", SAMPLE_DESC_STEP23, ", in states with at least one other ",
+  "such utility."
+)
+
+depvar_vio <- if (WQ_SAMPLE == "step23") paste0(
+  "Dependent variable equals 1 if the utility had a violation of that type during the ",
+  "year, 0 otherwise; coefficients and standard errors are multiplied by 100 to show ",
+  "percentage point change. ", instr_sample_step23
+) else paste0(
   "Dependent variable equals 1 if the utility had a violation of that type during the ",
   "year, 0 otherwise; coefficients and standard errors are multiplied by 100 to show ",
   "percentage point change. The instrument interacts an indicator for the post-1995 ",
@@ -68,8 +84,8 @@ render_panel_k2(
   fe_specs   = FE_TWO,
   dict       = k2_dict,
   title      = "Effect of coal mines on inorganic chemical violations at utilities",
-  label      = "tab:2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2",
-  outfile    = "2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2",
+  label      = paste0("tab:2sls_dwnstrm_minevio_allcat_ivsum_binvio", SFX),
+  outfile    = paste0("2sls_dwnstrm_minevio_allcat_ivsum_binvio", SFX),
   depvar_sentence = depvar_vio,
   superheader = "Any violation",
   notes_present = notes_present_panel
@@ -83,8 +99,8 @@ r42 <- render_panel_k2(
   fe_specs   = FE_TWO,
   dict       = k2_dict,
   title      = "Effect of coal mines on inorganic chemical violations at utilities",
-  label      = "tab:2sls_dwnstrm_minevio_mr_ivsum_binvio_k2",
-  outfile    = "2sls_dwnstrm_minevio_mr_ivsum_binvio_k2",
+  label      = paste0("tab:2sls_dwnstrm_minevio_mr_ivsum_binvio", SFX),
+  outfile    = paste0("2sls_dwnstrm_minevio_mr_ivsum_binvio", SFX),
   depvar_sentence = depvar_vio,
   superheader = "Monitoring and reporting (MR) violation",
   notes_present = notes_present_panel
@@ -93,6 +109,8 @@ r42 <- render_panel_k2(
 # Anchor check (plan Step 4.2): state x year FE columns are 2, 4, 6 (2nd FE
 # spec per outcome, outcome-major order). Must match the grid log to 2
 # decimals or the panel build has diverged from run_step_instrument_grid.r.
+# Anchors are k2-sample values, so the gate is skipped in step23 mode.
+if (WQ_SAMPLE != "step23") {
 anchor_terms <- get_term(r42$iv_list[[2]], "num_coal_mines_linked_sum")  # nitrates, state x year
 anchor_ars   <- get_term(r42$iv_list[[4]], "num_coal_mines_linked_sum")  # arsenic, state x year
 anchor_ioc   <- get_term(r42$iv_list[[6]], "num_coal_mines_linked_sum")  # inorganic, state x year
@@ -108,6 +126,7 @@ stopifnot(
   abs(round(anchor_ioc$est, 2)   - 3.06) < 0.01, abs(round(anchor_ioc$se, 2)   - 1.66) < 0.01
 )
 cat("MR anchor gate PASSED.\n")
+}
 
 # Stable-sample gate: every column (utility+year and state x year alike)
 # must share the same N now that the unidentified utilities are screened
@@ -124,15 +143,17 @@ render_panel_k2(
   fe_specs   = FE_TWO,
   dict       = k2_dict,
   title      = "Effect of coal mines on inorganic chemical violations at utilities",
-  label      = "tab:2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2",
-  outfile    = "2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2",
+  label      = paste0("tab:2sls_dwnstrm_minevio_mcl_ivsum_binvio", SFX),
+  outfile    = paste0("2sls_dwnstrm_minevio_mcl_ivsum_binvio", SFX),
   depvar_sentence = depvar_vio,
   superheader = "Maximum contaminant level (MCL) violation",
   notes_present = notes_present_panel
 )
 
 # ── 4.4 First stage ───────────────────────────────────────────────────────
-fe_state_yr <- "PWSID + STATE_CODE^year"
+# 4.4 and 4.5 are not requested for the step23 sample (first-stage F still
+# reported inside every render_panel_k2 table).
+if (WQ_SAMPLE != "step23") {
 fs_m <- fixest::feols(
   num_coal_mines_linked_sum ~ post95:sulfur_mean0 + num_facilities | PWSID + STATE_CODE^year,
   data = main_dat, cluster = ~PWSID, warn = FALSE, notes = FALSE
@@ -356,9 +377,14 @@ table_lines_et_present <- c(
 )
 writeLines(table_lines_et_present, "Z:/ek559/mining_wq/output/reg/exclusion_test_num_facilities_k2_present.tex")
 cat("  Written: output/reg/exclusion_test_num_facilities_k2_present.tex\n")
+}  # end WQ_SAMPLE != "step23" (4.4-4.5)
 
 # ── 4.6 Visit types ────────────────────────────────────────────────────────
-depvar_visit <- paste0(
+depvar_visit <- if (WQ_SAMPLE == "step23") paste0(
+  "Dependent variable equals 1 if the utility received a regulator visit of that type ",
+  "during the year, 0 otherwise; coefficients and standard errors are multiplied by 100 ",
+  "to show percentage point change. ", instr_sample_step23
+) else paste0(
   "Dependent variable equals 1 if the utility received a regulator visit of that type ",
   "during the year, 0 otherwise; coefficients and standard errors are multiplied by 100 ",
   "to show percentage point change. The instrument interacts an indicator for the ",
@@ -375,14 +401,19 @@ render_panel_k2(
   fe_specs   = fe_state_yr,
   dict       = k2_dict,
   title      = "Effect of coal mining on regulator visit probability by visit type",
-  label      = "tab:h2_snsv_d12_k2",
-  outfile    = "h2_snsv_d12_k2",
+  label      = paste0("tab:h2_snsv_d12", SFX),
+  outfile    = paste0("h2_snsv_d12", SFX),
   depvar_sentence = depvar_visit,
   notes_present = notes_present_panel
 )
 
 # ── 4.7 Enforcement types ──────────────────────────────────────────────────
-depvar_enf <- paste0(
+depvar_enf <- if (WQ_SAMPLE == "step23") paste0(
+  "Dependent variable equals 1 if the utility had an enforcement action of that type ",
+  "during the year (\"None\" equals 1 if it had no enforcement action), 0 otherwise; ",
+  "coefficients and standard errors are multiplied by 100 to show percentage point ",
+  "change. ", instr_sample_step23
+) else paste0(
   "Dependent variable equals 1 if the utility had an enforcement action of that type ",
   "during the year (\"None\" equals 1 if it had no enforcement action), 0 otherwise; ",
   "coefficients and standard errors are multiplied by 100 to show percentage point ",
@@ -398,8 +429,8 @@ r47 <- render_panel_k2(
   fe_specs   = FE_TWO,
   dict       = k2_dict,
   title      = "Effect of coal mining on enforcement actions by type",
-  label      = "tab:h3_inf_formal_d12_k2",
-  outfile    = "h3_inf_formal_d12_k2",
+  label      = paste0("tab:h3_inf_formal_d12", SFX),
+  outfile    = paste0("h3_inf_formal_d12", SFX),
   depvar_sentence = depvar_enf,
   superheader = "Enforcement",
   notes_present = notes_present_panel
