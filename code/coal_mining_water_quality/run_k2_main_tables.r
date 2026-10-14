@@ -49,8 +49,16 @@ FE_TWO <- c("PWSID + year", "PWSID + STATE_CODE^year")
 # Used by 4.4 and 4.6; defined here so 4.6 still runs when 4.4 is skipped (step23).
 fe_state_yr <- "PWSID + STATE_CODE^year"
 
+# Treatment definition shared by every note sentence (the endogenous regressor).
+treat_sentence <- paste0(
+  "Upstream coal mines is the number of active coal mines in watersheds ",
+  if (WQ_SAMPLE == "step23") "two and three flow steps" else "within two flow steps",
+  " upstream of the utility's intake, summed across those watersheds. "
+)
+
 # step23 mode: instrument + sample clauses shared by every note sentence.
 instr_sample_step23 <- paste0(
+  treat_sentence,
   "The instrument interacts an indicator for the post-1995 period with the average ",
   "coal sulfur content of watersheds within three flow steps upstream of the utility's ",
   "intake. The sample is ", SAMPLE_DESC_STEP23, ", in states with at least one other ",
@@ -64,7 +72,7 @@ depvar_vio <- if (WQ_SAMPLE == "step23") paste0(
 ) else paste0(
   "Dependent variable equals 1 if the utility had a violation of that type during the ",
   "year, 0 otherwise; coefficients and standard errors are multiplied by 100 to show ",
-  "percentage point change. The instrument interacts an indicator for the post-1995 ",
+  "percentage point change. ", treat_sentence, "The instrument interacts an indicator for the post-1995 ",
   "period with the average coal sulfur content of watersheds within two flow steps ",
   "upstream of the utility's intake. The sample is utilities with a coal mine within ",
   "two flow steps upstream of their intake and no coal mine colocated with their intake, ",
@@ -387,7 +395,7 @@ depvar_visit <- if (WQ_SAMPLE == "step23") paste0(
 ) else paste0(
   "Dependent variable equals 1 if the utility received a regulator visit of that type ",
   "during the year, 0 otherwise; coefficients and standard errors are multiplied by 100 ",
-  "to show percentage point change. The instrument interacts an indicator for the ",
+  "to show percentage point change. ", treat_sentence, "The instrument interacts an indicator for the ",
   "post-1995 period with the average coal sulfur content of watersheds within two flow ",
   "steps upstream of the utility's intake. The sample is utilities with a coal mine ",
   "within two flow steps upstream of their intake and no coal mine colocated with their ",
@@ -417,7 +425,7 @@ depvar_enf <- if (WQ_SAMPLE == "step23") paste0(
   "Dependent variable equals 1 if the utility had an enforcement action of that type ",
   "during the year (\"None\" equals 1 if it had no enforcement action), 0 otherwise; ",
   "coefficients and standard errors are multiplied by 100 to show percentage point ",
-  "change. The instrument interacts an indicator for the post-1995 period with the ",
+  "change. ", treat_sentence, "The instrument interacts an indicator for the post-1995 period with the ",
   "average coal sulfur content of watersheds within two flow steps upstream of the ",
   "utility's intake. The sample is utilities with a coal mine within two flow steps ",
   "upstream of their intake and no coal mine colocated with their intake, in states ",

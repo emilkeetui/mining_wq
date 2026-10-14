@@ -1,0 +1,50 @@
+\begin{table}[htbp]
+\raggedright
+\begin{minipage}{\linewidth}
+\caption{\label{tab:h3_inf_formal_d12_k2_sd_prod} Effect of upstream coal production on enforcement actions by type, standard deviation units}
+\end{minipage}
+\small
+{\setlength{\tabcolsep}{4pt}%
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\toprule
+ & \multicolumn{6}{c}{Enforcement} \\
+ & \multicolumn{2}{c}{Informal} & \multicolumn{2}{c}{Formal} & \multicolumn{2}{c}{None} \\
+ & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(3)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(4)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(5)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(6)} \\
+\hline
+\multicolumn{7}{l}{OLS} \\
+Upstream coal prod. (std.) & \phantom{(}-0.012$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.010$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.060$^{***}$ & \phantom{(}\phantom{-}0.005$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.013$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.018$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}0.022)\phantom{$^{***}$} & (\phantom{-}0.024)\phantom{$^{***}$} & (\phantom{-}0.019)\phantom{$^{***}$} & (\phantom{-}0.018)\phantom{$^{***}$} & (\phantom{-}0.024)\phantom{$^{***}$} & (\phantom{-}0.026)\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\hline
+\multicolumn{7}{l}{2SLS} \\
+Upstream coal prod. (std.) & \phantom{(}-0.301$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.083$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.760$^{***}$ & \phantom{(}-0.290$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.222$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.048$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}0.222)\phantom{$^{***}$} & (\phantom{-}0.248)\phantom{$^{***}$} & (\phantom{-}0.268)\phantom{$^{***}$} & (\phantom{-}0.241)\phantom{$^{***}$} & (\phantom{-}0.204)\phantom{$^{***}$} & (\phantom{-}0.254)\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\hline
+\multicolumn{7}{l}{RF} \\
+Post-1995 $\times$ Upstream sulfur \% & \phantom{(}\phantom{-}0.033$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.009$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.083$^{***}$ & \phantom{(}\phantom{-}0.031$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.024$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.005$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}0.022)\phantom{$^{***}$} & (\phantom{-}0.027)\phantom{$^{***}$} & (\phantom{-}0.023)\phantom{$^{***}$} & (\phantom{-}0.024)\phantom{$^{***}$} & (\phantom{-}0.021)\phantom{$^{***}$} & (\phantom{-}0.027)\phantom{$^{***}$} \\
+\hline
+Utility fixed effects & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Year fixed effects & $\checkmark$ &  & $\checkmark$ &  & $\checkmark$ &  \\
+State $\times$ year fixed effects &  & $\checkmark$ &  & $\checkmark$ &  & $\checkmark$ \\
+Utilities & 565 & 565 & 565 & 565 & 565 & 565 \\
+Observations & 10,641 & 10,641 & 10,641 & 10,641 & 10,641 & 10,641 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\raggedright
+\textit{Notes:} The dependent variable equals 1 if the utility had an enforcement action of that type during the year ("None" equals 1 if it had no enforcement action), 0 otherwise. The dependent variable and the endogenous regressor (annual coal production in watersheds within two flow steps upstream of the utility's intake, summed across those watersheds) are each converted to standard deviation units (mean zero, standard deviation one) on the estimation sample, so coefficients give the standard-deviation change in the outcome per one-standard-deviation change in annual coal production. The instrument interacts an indicator for the post-1995 period with the average coal sulfur content of watersheds within two flow steps upstream of the utility's intake. The sample is utilities with a coal mine within two flow steps upstream of their intake and no coal mine colocated with their intake, in states with at least one other such utility. Standard errors clustered at the utility level. The first-stage F-statistic (clustered at the utility level) for the instrumented variable, Upstream coal prod. (std.), ranges from 11.79 to 18.05 across columns. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
+\end{minipage}
+\end{table}

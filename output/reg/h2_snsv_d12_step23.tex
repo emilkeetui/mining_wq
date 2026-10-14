@@ -1,0 +1,49 @@
+\begin{table}[htbp]
+\raggedright
+\begin{minipage}{\linewidth}
+\caption{\label{tab:h2_snsv_d12_step23} Effect of coal mining on regulator visit probability by visit type}
+\end{minipage}
+\small
+{\setlength{\tabcolsep}{4pt}%
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}}
+\toprule
+ & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{Sanitary} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{Technical assistance} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{Enforcement} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{Sample collection} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{Inspection} \\
+ & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{(3)} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{(4)} & \multicolumn{1}{>{\centering\arraybackslash}p{2.1cm}}{(5)} \\
+\hline
+\multicolumn{6}{l}{OLS} \\
+Upstream coal mines (sum) & \phantom{(}\phantom{-}0.49$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.00$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.09$^{*\phantom{*}\phantom{*}}$ & \phantom{(}-0.06$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.05$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}0.33)\phantom{$^{***}$} & (\phantom{-}0.13)\phantom{$^{***}$} & (\phantom{-}0.05)\phantom{$^{***}$} & (\phantom{-}0.05)\phantom{$^{***}$} & (\phantom{-}0.16)\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}}
+\hline
+\multicolumn{6}{l}{2SLS} \\
+Upstream coal mines (sum) & \phantom{(}\phantom{-}6.74$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-1.17$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.23$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.11$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}6.42$^{*\phantom{*}\phantom{*}}$ \\
+ & (\phantom{-}4.26)\phantom{$^{***}$} & (\phantom{-}1.90)\phantom{$^{***}$} & (\phantom{-}1.55)\phantom{$^{***}$} & (\phantom{-}0.53)\phantom{$^{***}$} & (\phantom{-}3.49)\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.1cm}}
+\hline
+\multicolumn{6}{l}{RF} \\
+Post-1995 $\times$ Upstream sulfur \% & \phantom{(}-1.80$^{**\phantom{*}}$ & \phantom{(}\phantom{-}0.31$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-0.06$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}\phantom{-}0.03$^{\phantom{*}\phantom{*}\phantom{*}}$ & \phantom{(}-1.71$^{***}$ \\
+ & (\phantom{-}0.84)\phantom{$^{***}$} & (\phantom{-}0.49)\phantom{$^{***}$} & (\phantom{-}0.42)\phantom{$^{***}$} & (\phantom{-}0.14)\phantom{$^{***}$} & (\phantom{-}0.57)\phantom{$^{***}$} \\
+\hline
+Utility fixed effects & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Year fixed effects &  &  &  &  &  \\
+State $\times$ year fixed effects & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Utilities & 405 & 405 & 405 & 405 & 405 \\
+Observations & 7,686 & 7,686 & 7,686 & 7,686 & 7,686 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\raggedright
+\textit{Notes:} Dependent variable equals 1 if the utility received a regulator visit of that type during the year, 0 otherwise; coefficients and standard errors are multiplied by 100 to show percentage point change. Upstream coal mines is the number of active coal mines in watersheds two and three flow steps upstream of the utility's intake, summed across those watersheds. The instrument interacts an indicator for the post-1995 period with the average coal sulfur content of watersheds within three flow steps upstream of the utility's intake. The sample is utilities with no coal mine in their intake watershed or in any watershed draining directly into it, and a coal mine in at least one watershed two or three flow steps upstream of their intake, in states with at least one other such utility. Standard errors clustered at the utility level. The first-stage F-statistic (clustered at the utility level) for the instrumented variable, Upstream coal mines (sum), is 6.06. Sample period 1985--2005. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
+\end{minipage}
+\end{table}

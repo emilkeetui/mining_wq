@@ -290,7 +290,7 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
                              instr_str = "post95:sulfur_mean0",
                              title, label, outfile,
                              depvar_sentence, extra_note = NULL, superheader = NULL,
-                             notes_present = NULL) {
+                             notes_present = NULL, digits = 2) {
   n_oc  <- length(outcomes)
   n_fe  <- length(fe_specs)
   n_col <- n_oc * n_fe
@@ -353,7 +353,7 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
 
   title_row <- function(model_label) paste0("\\multicolumn{", n_col + 1, "}{l}{", model_label, "} \\\\")
 
-  col_fmts  <- lapply(seq_len(n_col), function(j) fmt_col(ols_terms[[j]], rf_terms[[j]], iv_terms[[j]]))
+  col_fmts  <- lapply(seq_len(n_col), function(j) fmt_col(ols_terms[[j]], rf_terms[[j]], iv_terms[[j]], digits = digits))
   ols_cells <- lapply(col_fmts, `[[`, "ols")
   rf_cells  <- lapply(col_fmts, `[[`, "rf")
   iv_cells  <- lapply(col_fmts, `[[`, "iv")
