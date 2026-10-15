@@ -26,9 +26,9 @@
 #   output/sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex (+ _present.tex)
 #   output/reg/pt_balance_6yr_k2.tex (+ _present.tex)
 #   output/sum/syr2_mr_comparison_k2.tex (+ _present.tex)
-#   With WQ_SAMPLE=step23 (k2_common.r): only
-#   output/reg/6yr_huc02fe_inorg_ravalli_2005_step23.tex (+ _present.tex),
-#   a single panel with the steps-2+3 cumulative dose; all other sections skipped.
+#   With WQ_SAMPLE=step23 or step2 (k2_common.r): only
+#   output/reg/6yr_huc02fe_inorg_ravalli_2005_step23.tex or _step2.tex (+ _present.tex),
+#   a single panel with the cumulative dose (steps 2+3, or step 2 only); all other sections skipped.
 # Author: EK  Date: 2026-09-16
 # ============================================================
 
@@ -68,8 +68,8 @@ nice_chem <- c(arsenic = "Arsenic", nitrate = "Nitrate", barium = "Barium", sele
 build_dose_sample <- function(sample_k, dose_k = sample_k) {
   # step23 mode: k=3 main-arm rows of the step23 utilities (purity screen is
   # inside step23_pwsids()), so the dose is cumulative steps-2+3 production.
-  arm_k <- if (WQ_SAMPLE == "step23") {
-    si %>% dplyr::filter(arm == "main", k == 3, PWSID %in% step23_pwsids(si)) %>%
+  arm_k <- if (IS_NEAREST) {
+    si %>% dplyr::filter(arm == "main", k == NEAREST_K, PWSID %in% nearest_step_pwsids(si, NEAREST_K)) %>%
       dplyr::select(PWSID, year, production_linked_sum)
   } else {
     si %>% dplyr::filter(arm == "main", k == sample_k, n_mine_hucs_linked >= 1) %>%
@@ -153,13 +153,13 @@ build_panel_table <- function(body, title, label, notes, out_path) {
 # Utilities' nearest mine is two or three flow steps upstream, so the one-step
 # dose (k2 Panel A) is identically 0 here; only the k=3 (steps 2+3) dose is
 # estimated. Sumstats, pt_balance and syr2_mr_comparison are not requested.
-if (WQ_SAMPLE == "step23") {
-  dose23 <- build_dose_sample(3)
+if (IS_NEAREST) {
+  dose23 <- build_dose_sample(NEAREST_K)
   n_main_step23 <- dplyr::n_distinct(main_dat$PWSID)
-  cat(sprintf("step23 dose sample: %d rows, %d utilities, %d distinct chemicals\n",
-              nrow(dose23), dplyr::n_distinct(dose23$PWSID), dplyr::n_distinct(dose23$CHEMID_name)))
-  cat(sprintf("Coverage: %d of %d step23 main-arm utilities have SYR2 concentration coverage (%.1f%%)\n",
-              dplyr::n_distinct(dose23$PWSID), n_main_step23,
+  cat(sprintf("%s dose sample: %d rows, %d utilities, %d distinct chemicals\n",
+              WQ_SAMPLE, nrow(dose23), dplyr::n_distinct(dose23$PWSID), dplyr::n_distinct(dose23$CHEMID_name)))
+  cat(sprintf("Coverage: %d of %d %s main-arm utilities have SYR2 concentration coverage (%.1f%%)\n",
+              dplyr::n_distinct(dose23$PWSID), n_main_step23, WQ_SAMPLE,
               100 * dplyr::n_distinct(dose23$PWSID) / n_main_step23))
 
   models_val <- list()
@@ -179,7 +179,7 @@ if (WQ_SAMPLE == "step23") {
     }
   }
   stopifnot(length(models_val) >= 1)
-  if (length(models_val) < 4) cat("NOTE: only", length(models_val), "of 4 chemicals estimable on the step23 sample\n")
+  if (length(models_val) < 4) cat("NOTE: only", length(models_val), "of 4 chemicals estimable on the nearest-mine sample\n")
 
   raw23 <- etable(
     models_val,
@@ -200,8 +200,8 @@ if (WQ_SAMPLE == "step23") {
     "\\textit{Notes:} Within each chemical, the column shows mean measured concentration ",
     "from the EPA 6-Year Review. Non-detect values replaced by MDL$/\\sqrt{2}$ following ",
     "Ravalli et al.~(2022). Explanatory variable is cumulative coal production since 1985 ",
-    "(in 10 million short tons) in watersheds two and three flow steps upstream of the ",
-    "utility's intake. Sample: ", SAMPLE_DESC_STEP23, ". Standard errors clustered at the ",
+    "(in 10 million short tons) in watersheds ", STEP_PHRASE, " upstream of the ",
+    "utility's intake. Sample: ", SAMPLE_DESC_NEAREST, ". Standard errors clustered at the ",
     "utility level. All specifications include utility and HUC02 $\\times$ year fixed ",
     "effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
   )
@@ -216,7 +216,7 @@ if (WQ_SAMPLE == "step23") {
   out23_present <- sub("\\.tex$", "_present.tex", out23)
   build_panel_table(body23, title23, label23, note23_present, out23_present)
   cat("Written:", out23_present, "\n")
-  cat("\n=== run_k2_6yr_tables.r DONE (step23) ===\n")
+  cat("\n=== run_k2_6yr_tables.r DONE (", WQ_SAMPLE, ") ===\n")
   quit(save = "no")
 }
 

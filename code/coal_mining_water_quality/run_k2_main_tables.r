@@ -20,8 +20,8 @@
 #   output/reg/exclusion_test_num_facilities_k2.tex (+ _present.tex)
 #   output/reg/h2_snsv_d12_k2.tex (+ _present.tex)
 #   output/reg/h3_inf_formal_d12_k2.tex (+ _present.tex)
-#   With WQ_SAMPLE=step23 (k2_common.r): only the 2sls allcat/mr/mcl, h2 and
-#   h3 tables, written with suffix `_step23` (+ _present.tex); 4.4-4.5 skipped.
+#   With WQ_SAMPLE=step23 or step2 (k2_common.r): only the 2sls allcat/mr/mcl, h2 and
+#   h3 tables, written with suffix `_step23`/`_step2` (+ _present.tex); 4.4-4.5 skipped.
 # Author: EK  Date: 2026-09-14
 # ============================================================
 
@@ -52,7 +52,7 @@ fe_state_yr <- "PWSID + STATE_CODE^year"
 # Treatment definition shared by every note sentence (the endogenous regressor).
 treat_sentence <- paste0(
   "Upstream coal mines is the number of active coal mines in watersheds ",
-  if (WQ_SAMPLE == "step23") "two and three flow steps" else "within two flow steps",
+  if (IS_NEAREST) STEP_PHRASE else "within two flow steps",
   " upstream of the utility's intake, summed across those watersheds. "
 )
 
@@ -60,12 +60,12 @@ treat_sentence <- paste0(
 instr_sample_step23 <- paste0(
   treat_sentence,
   "The instrument interacts an indicator for the post-1995 period with the average ",
-  "coal sulfur content of watersheds within three flow steps upstream of the utility's ",
-  "intake. The sample is ", SAMPLE_DESC_STEP23, ", in states with at least one other ",
+  "coal sulfur content of watersheds within ", INSTR_STEP_PHRASE, " flow steps upstream of the utility's ",
+  "intake. The sample is ", SAMPLE_DESC_NEAREST, ", in states with at least one other ",
   "such utility."
 )
 
-depvar_vio <- if (WQ_SAMPLE == "step23") paste0(
+depvar_vio <- if (IS_NEAREST) paste0(
   "Dependent variable equals 1 if the utility had a violation of that type during the ",
   "year, 0 otherwise; coefficients and standard errors are multiplied by 100 to show ",
   "percentage point change. ", instr_sample_step23
@@ -83,7 +83,7 @@ depvar_vio <- if (WQ_SAMPLE == "step23") paste0(
 # instrument or sample sentences). step23 keeps its full sentences.
 pp_sentence <- paste0("coefficients and standard errors are multiplied by 100 to show ",
                       "percentage point change. ")
-depvar_vio_short <- if (WQ_SAMPLE == "step23") depvar_vio else paste0(
+depvar_vio_short <- if (IS_NEAREST) depvar_vio else paste0(
   "Dependent variable equals 1 if the utility had a violation of that type during the ",
   "year, 0 otherwise; ", pp_sentence, trimws(treat_sentence)
 )
@@ -129,7 +129,7 @@ r42 <- render_panel_k2(
 # spec per outcome, outcome-major order). Must match the grid log to 2
 # decimals or the panel build has diverged from run_step_instrument_grid.r.
 # Anchors are k2-sample values, so the gate is skipped in step23 mode.
-if (WQ_SAMPLE != "step23") {
+if (!IS_NEAREST) {
 anchor_terms <- get_term(r42$iv_list[[2]], "num_coal_mines_linked_sum")  # nitrates, state x year
 anchor_ars   <- get_term(r42$iv_list[[4]], "num_coal_mines_linked_sum")  # arsenic, state x year
 anchor_ioc   <- get_term(r42$iv_list[[6]], "num_coal_mines_linked_sum")  # inorganic, state x year
@@ -173,7 +173,7 @@ render_panel_k2(
 # ── 4.4 First stage ───────────────────────────────────────────────────────
 # 4.4 and 4.5 are not requested for the step23 sample (first-stage F still
 # reported inside every render_panel_k2 table).
-if (WQ_SAMPLE != "step23") {
+if (!IS_NEAREST) {
 fs_m <- fixest::feols(
   num_coal_mines_linked_sum ~ post95:sulfur_mean0 + num_facilities | PWSID + STATE_CODE^year,
   data = main_dat, cluster = ~PWSID, warn = FALSE, notes = FALSE
@@ -393,10 +393,10 @@ table_lines_et_present <- c(
 )
 writeLines(table_lines_et_present, "Z:/ek559/mining_wq/output/reg/exclusion_test_num_facilities_k2_present.tex")
 cat("  Written: output/reg/exclusion_test_num_facilities_k2_present.tex\n")
-}  # end WQ_SAMPLE != "step23" (4.4-4.5)
+}  # end !IS_NEAREST (4.4-4.5)
 
 # ── 4.6 Visit types ────────────────────────────────────────────────────────
-depvar_visit <- if (WQ_SAMPLE == "step23") paste0(
+depvar_visit <- if (IS_NEAREST) paste0(
   "Dependent variable equals 1 if the utility received a regulator visit of that type ",
   "during the year, 0 otherwise; coefficients and standard errors are multiplied by 100 ",
   "to show percentage point change. ", instr_sample_step23
@@ -409,7 +409,7 @@ depvar_visit <- if (WQ_SAMPLE == "step23") paste0(
   "within two flow steps upstream of their intake and no coal mine colocated with their ",
   "intake, in states with at least one other such utility."
 )
-depvar_visit_short <- if (WQ_SAMPLE == "step23") depvar_visit else paste0(
+depvar_visit_short <- if (IS_NEAREST) depvar_visit else paste0(
   "Dependent variable equals 1 if the utility received a regulator visit of that type ",
   "during the year, 0 otherwise; ", pp_sentence, trimws(treat_sentence)
 )
@@ -429,7 +429,7 @@ render_panel_k2(
 )
 
 # ── 4.7 Enforcement types ──────────────────────────────────────────────────
-depvar_enf <- if (WQ_SAMPLE == "step23") paste0(
+depvar_enf <- if (IS_NEAREST) paste0(
   "Dependent variable equals 1 if the utility had an enforcement action of that type ",
   "during the year (\"None\" equals 1 if it had no enforcement action), 0 otherwise; ",
   "coefficients and standard errors are multiplied by 100 to show percentage point ",
@@ -444,7 +444,7 @@ depvar_enf <- if (WQ_SAMPLE == "step23") paste0(
   "upstream of their intake and no coal mine colocated with their intake, in states ",
   "with at least one other such utility."
 )
-depvar_enf_short <- if (WQ_SAMPLE == "step23") depvar_enf else paste0(
+depvar_enf_short <- if (IS_NEAREST) depvar_enf else paste0(
   "Dependent variable equals 1 if the utility had an enforcement action of that type ",
   "during the year (\"None\" equals 1 if it had no enforcement action), 0 otherwise; ",
   pp_sentence, trimws(treat_sentence)
