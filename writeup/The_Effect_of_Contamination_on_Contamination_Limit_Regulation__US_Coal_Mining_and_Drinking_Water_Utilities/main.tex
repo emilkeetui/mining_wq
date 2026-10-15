@@ -747,9 +747,51 @@ This appendix contains the derivation of the utility's negligence choice and the
 \outreg{h2_snsv_d12_k2}\clearpage
 
 \clearpage
+\subsection*{Upstream coal mines versus upstream coal production}
+
+\begin{figure}
+\centering
+\outfig{k2_scaled_first_stage.png}
+\caption{\raggedright Effect of the post-1995 sulfur instrument on upstream coal mines and upstream coal production}
+\label{fig:k2_scaled_first_stage}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005. Coal mines and coal production are the number of active mines and annual coal production in millions of short tons, summed over watersheds within two watersheds upstream. The explanatory variable is the post-1995 indicator interacted with the average coal sulfur content of the same watersheds, with utility and state-by-year fixed effects. The left panel divides the coefficient by the sample mean of the dependent variable, and the right panel divides it by the dependent variable's standard deviation. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig{k2_scaled_compare_violations.png}
+\caption{\raggedright Effect of upstream coal mines and upstream coal production on inorganic chemical violations}
+\label{fig:k2_scaled_compare_violations}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005. Each estimate is two-stage least squares, instrumenting the regressor, either the number of active coal mines or annual coal production, summed over watersheds within two watersheds upstream, with the post-1995 indicator interacted with the average coal sulfur content of the same watersheds, with utility and state-by-year fixed effects. The dependent variable equals 1 if the violation occurred during the year. In the left panels the dependent variable and the regressor are each in standard deviation units. In the right panels each is divided by its sample mean, so coefficients are elasticities evaluated at the sample means. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig{k2_scaled_compare_visit_enf.png}
+\caption{\raggedright Effect of upstream coal mines and upstream coal production on regulator visits and enforcement actions}
+\label{fig:k2_scaled_compare_visit_enf}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005. Each estimate is two-stage least squares, instrumenting the regressor, either the number of active coal mines or annual coal production, summed over watersheds within two watersheds upstream, with the post-1995 indicator interacted with the average coal sulfur content of the same watersheds, with utility and state-by-year fixed effects. The dependent variable equals 1 if the visit or enforcement action occurred during the year, and for none it equals 1 if the utility had no enforcement action. In the left panels the dependent variable and the regressor are each in standard deviation units. In the right panels each is divided by its sample mean, so coefficients are elasticities evaluated at the sample means. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig{k2_scaled_compare_scatter.png}
+\caption{\raggedright Elasticity with respect to upstream coal production against elasticity with respect to upstream coal mines}
+\label{fig:k2_scaled_compare_scatter}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} Each point plots, for one outcome, the elasticity at the sample means with respect to annual upstream coal production against the elasticity with respect to the number of upstream coal mines, with 95 percent confidence intervals. The dashed line marks equal elasticities. In the left panel, estimates are two-stage least squares with utility and state-by-year fixed effects, instrumenting with the post-1995 indicator interacted with average upstream coal sulfur content. With a single instrument, the ratio of the two elasticities equals the ratio of the two scaled first-stage coefficients, so every outcome lies on the solid line. In the right panel, estimates are ordinary least squares of mean measured concentration (Six-Year Review 2, 1998--2005) for utilities with a coal mine within two watersheds upstream, with utility and HUC2-region-by-year fixed effects. Standard errors are clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\clearpage
 \subsection*{Coal mines downstream of the utility intake}
 
-\outreg{scaled_compare_elas_k2}\clearpage
 \outreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2placebo}\clearpage
 \outreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2placebo}\clearpage
 \outreg{h2_snsv_d12_k2placebo}\clearpage
