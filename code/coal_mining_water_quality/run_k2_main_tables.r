@@ -79,6 +79,15 @@ depvar_vio <- if (WQ_SAMPLE == "step23") paste0(
   "in states with at least one other such utility."
 )
 
+# Notes variants for the compact-layout tables: treatment definition only (no
+# instrument or sample sentences). step23 keeps its full sentences.
+pp_sentence <- paste0("coefficients and standard errors are multiplied by 100 to show ",
+                      "percentage point change. ")
+depvar_vio_short <- if (WQ_SAMPLE == "step23") depvar_vio else paste0(
+  "Dependent variable equals 1 if the utility had a violation of that type during the ",
+  "year, 0 otherwise; ", pp_sentence, trimws(treat_sentence)
+)
+
 # Presentation companions: same table bodies, notes stripped to clustering +
 # stars only (all render_panel_k2 outputs already show FE checkmark rows in
 # panel_rf) -- .claude/logs/2026-08-31-presentation-notes-tables.md.
@@ -94,7 +103,8 @@ render_panel_k2(
   title      = "Effect of coal mines on inorganic chemical violations at utilities",
   label      = paste0("tab:2sls_dwnstrm_minevio_allcat_ivsum_binvio", SFX),
   outfile    = paste0("2sls_dwnstrm_minevio_allcat_ivsum_binvio", SFX),
-  depvar_sentence = depvar_vio,
+  depvar_sentence = depvar_vio_short,
+  compact_layout = TRUE,
   superheader = "Any violation",
   notes_present = notes_present_panel
 )
@@ -109,7 +119,8 @@ r42 <- render_panel_k2(
   title      = "Effect of coal mines on inorganic chemical violations at utilities",
   label      = paste0("tab:2sls_dwnstrm_minevio_mr_ivsum_binvio", SFX),
   outfile    = paste0("2sls_dwnstrm_minevio_mr_ivsum_binvio", SFX),
-  depvar_sentence = depvar_vio,
+  depvar_sentence = depvar_vio_short,
+  compact_layout = TRUE,
   superheader = "Monitoring and reporting (MR) violation",
   notes_present = notes_present_panel
 )
@@ -153,7 +164,8 @@ render_panel_k2(
   title      = "Effect of coal mines on inorganic chemical violations at utilities",
   label      = paste0("tab:2sls_dwnstrm_minevio_mcl_ivsum_binvio", SFX),
   outfile    = paste0("2sls_dwnstrm_minevio_mcl_ivsum_binvio", SFX),
-  depvar_sentence = depvar_vio,
+  depvar_sentence = depvar_vio_short,
+  compact_layout = TRUE,
   superheader = "Maximum contaminant level (MCL) violation",
   notes_present = notes_present_panel
 )
@@ -178,12 +190,8 @@ el_fs <- list(
 )
 fs_notes <- notes_k2(paste0(
   "The dependent variable is the number of coal mines in watersheds within two flow ",
-  "steps upstream of the utility's intake, summed across those watersheds. The ",
-  "instrument interacts an indicator for the post-1995 period with the average coal ",
-  "sulfur content of those watersheds. The sample is utilities with a coal mine ",
-  "within two flow steps upstream of their intake and no coal mine colocated with ",
-  "their intake, in states with at least one other such utility."
-))
+  "steps upstream of the utility's intake, summed across those watersheds."
+), sample_period = FALSE)
 etable(
   fs_m,
   style.tex       = style.tex("aer", adjustbox = TRUE),
@@ -191,7 +199,7 @@ etable(
   digits          = "r4",
   drop            = "Number of intake facilities",
   drop.section    = "fixef",
-  title           = "First stage: effect of the Acid Rain Program on the number of upstream coal mines (summed across watersheds within two flow steps upstream)",
+  title           = "First stage: effect of the Acid Rain Program on the number of upstream coal mines, 1985-2005",
   label           = "tab:fs_dwnstrm_minevio_ivsum_k2",
   extralines      = el_fs,
   fitstat         = ~ n,
@@ -212,7 +220,7 @@ etable(
   digits          = "r4",
   drop            = "Number of intake facilities",
   drop.section    = "fixef",
-  title           = "First stage: effect of the Acid Rain Program on the number of upstream coal mines (summed across watersheds within two flow steps upstream)",
+  title           = "First stage: effect of the Acid Rain Program on the number of upstream coal mines, 1985-2005",
   label           = "tab:fs_dwnstrm_minevio_ivsum_k2",
   extralines      = el_fs,
   fitstat         = ~ n,
@@ -401,6 +409,10 @@ depvar_visit <- if (WQ_SAMPLE == "step23") paste0(
   "within two flow steps upstream of their intake and no coal mine colocated with their ",
   "intake, in states with at least one other such utility."
 )
+depvar_visit_short <- if (WQ_SAMPLE == "step23") depvar_visit else paste0(
+  "Dependent variable equals 1 if the utility received a regulator visit of that type ",
+  "during the year, 0 otherwise; ", pp_sentence, trimws(treat_sentence)
+)
 render_panel_k2(
   dat        = main_dat,
   outcomes   = c(any_snsv = "Sanitary", any_tech = "Technical assistance",
@@ -411,7 +423,8 @@ render_panel_k2(
   title      = "Effect of coal mining on regulator visit probability by visit type",
   label      = paste0("tab:h2_snsv_d12", SFX),
   outfile    = paste0("h2_snsv_d12", SFX),
-  depvar_sentence = depvar_visit,
+  depvar_sentence = depvar_visit_short,
+  compact_layout = TRUE,
   notes_present = notes_present_panel
 )
 
@@ -431,6 +444,11 @@ depvar_enf <- if (WQ_SAMPLE == "step23") paste0(
   "upstream of their intake and no coal mine colocated with their intake, in states ",
   "with at least one other such utility."
 )
+depvar_enf_short <- if (WQ_SAMPLE == "step23") depvar_enf else paste0(
+  "Dependent variable equals 1 if the utility had an enforcement action of that type ",
+  "during the year (\"None\" equals 1 if it had no enforcement action), 0 otherwise; ",
+  pp_sentence, trimws(treat_sentence)
+)
 r47 <- render_panel_k2(
   dat        = main_dat,
   outcomes   = c(any_informal = "Informal", any_formal = "Formal", no_enf = "None"),
@@ -439,7 +457,8 @@ r47 <- render_panel_k2(
   title      = "Effect of coal mining on enforcement actions by type",
   label      = paste0("tab:h3_inf_formal_d12", SFX),
   outfile    = paste0("h3_inf_formal_d12", SFX),
-  depvar_sentence = depvar_enf,
+  depvar_sentence = depvar_enf_short,
+  compact_layout = TRUE,
   superheader = "Enforcement",
   notes_present = notes_present_panel
 )

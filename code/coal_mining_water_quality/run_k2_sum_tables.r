@@ -179,10 +179,7 @@ combined_note <- paste0(
   "\\textit{Notes:} Sample of drinking water utilities with a coal mine within two ",
   "flow steps upstream of their intake and no coal mine colocated with their intake, ",
   "1985--2005. MR = monitoring and reporting violation; MCL = maximum contaminant ",
-  "level violation. Panel A: \\% Non-zero is the share of utility-year observations ",
-  "with a nonzero violation share for that category, in percent; Num. Violations is ",
-  "the corresponding count of utility-year observations. Panel B: Mean, SD, P90, and ",
-  "P99 describe the number of days in a year in violation. Number of observations = ",
+  "level violation. Number of observations = ",
   "Number of utilities $\\times$ Number of years. ",
   "N\\,=\\,", fn(N_obs), " = ", fn(N_pws), " utilities $\\times$ up to ", fn(N_years),
   " years (1985--2005)."
@@ -191,7 +188,7 @@ combined_note <- paste0(
 table_lines_1 <- c(
   "\\begin{table}[htbp]",
   "\\raggedright",
-  "\\caption{Coal Mining Exposed Utilities' Inorganic Chemical Water Violations, Two-Step Upstream Watershed Linkage, 1985--2005}",
+  "\\caption{Utilities' Inorganic Chemical Water Violations, 1985--2005}",
   "\\label{tab:violation_binary_days_panels_k2}",
   "\\small",
   panel_a_lines,
@@ -215,7 +212,7 @@ cat("\nWritten:", out_path_1, "\n")
 table_lines_1_present <- c(
   "\\begin{table}[htbp]",
   "\\raggedright",
-  "\\caption{Coal Mining Exposed Utilities' Inorganic Chemical Water Violations, Two-Step Upstream Watershed Linkage, 1985--2005}",
+  "\\caption{Utilities' Inorganic Chemical Water Violations, 1985--2005}",
   "\\label{tab:violation_binary_days_panels_k2}",
   "\\small",
   panel_a_lines,
@@ -369,9 +366,7 @@ combined_note2 <- paste0(
   "\\textit{Notes:} Sample of drinking water utilities with a coal mine within two ",
   "flow steps upstream of their intake and no coal mine colocated with their intake, ",
   "1985--2005. MR = monitoring and reporting violation; MCL = maximum contaminant ",
-  "level violation. Whole panel columns report the share and count of utility-year ",
-  "cells with a given enforcement action or site visit type, among all ", fn(N_obs2), " ",
-  "cells. During MR year and During MCL year columns restrict to the ", n_mr_fmt2, " and ",
+  "level violation. During MR year and During MCL year columns restrict to the ", n_mr_fmt2, " and ",
   n_mcl_fmt2, " cells, respectively, with a nitrate, arsenic, or inorganic chemical ",
   "violation of that category, before computing the same share and count. Panel A: ",
   "Formal and Informal enforcement follow the EPA SDWIS enforcement-action ",
@@ -379,7 +374,7 @@ combined_note2 <- paste0(
   "Panel B: Sanitary visits are sanitary surveys and follow-up sanitary surveys; ",
   "Technical assistance covers technical assistance, engineering, and operations and ",
   "maintenance visits; Enforcement visits are formal-enforcement, investigation, and ",
-  "emergency site visits; Sample collection is a sample-collection visit; Inspection ",
+  "emergency assistance visits; Sample collection is a sample-collection visit; Inspection ",
   "covers site, regularly scheduled, and informal system inspections. An enforcement ",
   "action or visit type may co-occur with others in the same cell, so rows need not ",
   "sum to the Any/whole-panel total. Number of observations = ", fn(N_obs2), "."
@@ -388,7 +383,7 @@ combined_note2 <- paste0(
 table_lines_2 <- c(
   "\\begin{table}[htbp]",
   "\\raggedright",
-  "\\caption{Enforcement Actions and Site Visits, Coal Mining Exposed Utilities, Two-Step Upstream Watershed Linkage, 1985--2005}",
+  "\\caption{Enforcement Actions and Site Visits at Utilities, 1985--2005}",
   "\\label{tab:enforcement_visit_type_panels_k2}",
   "\\small",
   panel_a_lines2,
@@ -412,7 +407,7 @@ cat("Written:", out_path_2, "\n")
 table_lines_2_present <- c(
   "\\begin{table}[htbp]",
   "\\raggedright",
-  "\\caption{Enforcement Actions and Site Visits, Coal Mining Exposed Utilities, Two-Step Upstream Watershed Linkage, 1985--2005}",
+  "\\caption{Enforcement Actions and Site Visits at Utilities, 1985--2005}",
   "\\label{tab:enforcement_visit_type_panels_k2}",
   "\\small",
   panel_a_lines2,

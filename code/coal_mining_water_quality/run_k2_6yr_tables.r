@@ -460,8 +460,20 @@ build_sumstats_k2 <- function(df_subset) {
 
 panel_a_ss  <- build_sumstats_k2(dose2)
 sum_df_a_ss <- panel_a_ss$sum_df
-median_cum_prod <- median(panel_a_ss$coal_df$coal_prod_upstream_cumsum_10mst, na.rm = TRUE)
-dose2_above <- dose2[dose2$coal_prod_upstream_cumsum_10mst > median_cum_prod, ]
+# Annual (not cumulative) tons of coal extracted in the linked upstream HUCs,
+# k=2, same production series that feeds the cumulative dose (NA -> 0).
+annual_prod_k2 <- si %>%
+  dplyr::filter(arm == "main", k == 2, n_mine_hucs_linked >= 1) %>%
+  dplyr::distinct(PWSID, year, production_linked_sum) %>%
+  dplyr::mutate(annual_prod_st = replace(production_linked_sum, is.na(production_linked_sum), 0)) %>%
+  dplyr::select(PWSID, year, annual_prod_st)
+stopifnot(!anyDuplicated(annual_prod_k2[, c("PWSID", "year")]))
+dose2 <- dplyr::left_join(dose2, annual_prod_k2, by = c("PWSID", "year"))
+stopifnot(!anyNA(dose2$annual_prod_st))
+# Median over the Panel A utility-year sample (each PWSID-year counted once).
+median_annual_prod <- median(
+  unique(dose2[, c("PWSID", "year", "annual_prod_st")])$annual_prod_st)
+dose2_above <- dose2[dose2$annual_prod_st > median_annual_prod, ]
 panel_b_ss  <- build_sumstats_k2(dose2_above)
 sum_df_b_ss <- panel_b_ss$sum_df
 
@@ -472,7 +484,8 @@ fmt_pct_ss <- function(x) if (is.na(x)) "---" else sprintf("%.1f\\%%", 100 * x)
 note_ss <- paste(c(
   "\\textit{Notes:} SYR2 sample from 1998--2005.",
   "``Near MCL'' is the share of utility-year mean concentrations exceeding 50\\% of the applicable MCL.",
-  paste0("Panel B restricts Panel A's sample to utility-year observations with cumulative upstream coal production above the sample median of ", fmt_num_ss(median_cum_prod), " (10M ST).")
+  paste0("Panel B restricts Panel A's sample to utility-year observations with annual coal extraction in upstream watersheds above the sample median of ", formatC(median_annual_prod, format = "f", digits = 0, big.mark = ","), " short tons per year",
+         if (median_annual_prod == 0) ", that is, utility-years with any coal extraction in upstream watersheds." else ".")
 ), collapse = " ")
 
 col_spec_ss <- paste0(
@@ -504,7 +517,7 @@ panel_b_lines_ss <- c(
   "   \\bigskip",
   "   \\begin{adjustbox}{width = 0.9\\textwidth, center}",
   paste0("      \\begin{tabular}{", col_spec_ss, "}"),
-  "         \\multicolumn{7}{l}{\\textbf{Panel B: Utility exposed to above median cumulative tons of coal extraction}} \\\\",
+  "         \\multicolumn{7}{l}{\\textbf{Panel B: Utility-years above median annual tons of coal extracted}} \\\\",
   vapply(seq_len(nrow(sum_df_b_ss)), function(i) make_ss_row(sum_df_b_ss[i, ]), character(1)),
   "         \\bottomrule",
   "      \\end{tabular}",
@@ -513,7 +526,7 @@ panel_b_lines_ss <- c(
 
 tex_ss <- c(
   "", "\\begin{table}[htbp]",
-  paste0("   \\caption{\\label{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2} Utility contaminant concentrations (1998-2005) and cumulative upstream coal production exposure (since 1985), two-step upstream watershed linkage}"),
+  paste0("   \\caption{\\label{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2} Utility contaminant concentrations, 1998-2005}"),
   "   \\bigskip", "   \\centering",
   panel_a_lines_ss, panel_b_lines_ss,
   "   \\begin{minipage}{\\linewidth}", "   \\vspace{4pt}",
@@ -529,7 +542,7 @@ cat("Written:", out_ss, "\n")
 # .claude/logs/2026-08-31-presentation-notes-tables.md.
 tex_ss_present <- c(
   "", "\\begin{table}[htbp]",
-  paste0("   \\caption{\\label{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2} Utility contaminant concentrations (1998-2005) and cumulative upstream coal production exposure (since 1985), two-step upstream watershed linkage}"),
+  paste0("   \\caption{\\label{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2} Utility contaminant concentrations, 1998-2005}"),
   "   \\bigskip", "   \\centering",
   panel_a_lines_ss, panel_b_lines_ss,
   "\\end{table}", ""

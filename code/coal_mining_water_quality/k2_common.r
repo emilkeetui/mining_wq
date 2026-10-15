@@ -177,7 +177,20 @@ k2_dict <- c(
 )
 
 # ── 3. Coefficient formatting helpers (verbatim, run_main_tables.r:345-393) ──
-fmt_num_wide <- function(est, se, pval, w, digits = 2) {
+fmt_num_wide <- function(est, se, pval, w, digits = 2, tight = FALSE) {
+  if (tight) {
+    # Right-aligned column: the sign, "(" and ")" are zero-width boxes hanging
+    # outside the digits, so the decimal points line up down the column and no
+    # gap separates "(" from the first digit of the standard error.
+    stars_n <- if (is.na(pval)) 0L else if (pval < 0.01) 3L else if (pval < 0.05) 2L else if (pval < 0.1) 1L else 0L
+    stars_render <- paste0(vapply(1:3, function(i) if (i <= stars_n) "*" else "\\phantom{*}", character(1)), collapse = "")
+    sign_hang <- if (est < 0) "\\makebox[0pt][r]{-}" else ""
+    return(list(
+      coef = paste0(sign_hang, sprintf(paste0("%.", digits, "f"), abs(est)), "$^{", stars_render, "}$"),
+      se   = paste0("\\makebox[0pt][r]{(}", sprintf(paste0("%.", digits, "f"), se),
+                    "\\makebox[0pt][l]{)}\\phantom{$^{***}$}")
+    ))
+  }
   sign_coef <- if (est < 0) "-" else "\\phantom{-}"
   num       <- sprintf(paste0("%.", digits, "f"), abs(est))
   se_num    <- sprintf(paste0("%.", digits, "f"), se)
@@ -196,7 +209,7 @@ fmt_num_wide <- function(est, se, pval, w, digits = 2) {
   )
 }
 
-fmt_col <- function(ols_t, rf_t, iv_t, digits = 2) {
+fmt_col <- function(ols_t, rf_t, iv_t, digits = 2, tight = FALSE) {
   int_w <- function(x) {
     if (is.na(x)) return(0L)
     nchar(sub("\\..*$", "", sprintf(paste0("%.", digits, "f"), abs(x))))
@@ -205,9 +218,9 @@ fmt_col <- function(ols_t, rf_t, iv_t, digits = 2) {
            int_w(rf_t$est),  int_w(rf_t$se),
            int_w(iv_t$est),  int_w(iv_t$se))
   list(
-    ols = fmt_num_wide(ols_t$est, ols_t$se, ols_t$pval, w, digits),
-    rf  = fmt_num_wide(rf_t$est,  rf_t$se,  rf_t$pval,  w, digits),
-    iv  = fmt_num_wide(iv_t$est,  iv_t$se,  iv_t$pval,  w, digits)
+    ols = fmt_num_wide(ols_t$est, ols_t$se, ols_t$pval, w, digits, tight),
+    rf  = fmt_num_wide(rf_t$est,  rf_t$se,  rf_t$pval,  w, digits, tight),
+    iv  = fmt_num_wide(iv_t$est,  iv_t$se,  iv_t$pval,  w, digits, tight)
   )
 }
 
@@ -245,12 +258,12 @@ f_clustered <- function(dat, fe_str, endog = "num_coal_mines_linked_sum") {
 # about fixed effects. `depvar_sentence` must avoid variable names and
 # describe the outcome/instrument in plain language (Step 0.7 terminology:
 # "within two flow steps upstream", never "colocated + downstream").
-notes_k2 <- function(depvar_sentence, f_note = NULL, extra = NULL) {
+notes_k2 <- function(depvar_sentence, f_note = NULL, extra = NULL, sample_period = TRUE) {
   paste0(
     "\\textit{Notes:} ", depvar_sentence, " ",
     "Standard errors clustered at the utility level. ",
     if (!is.null(f_note)) paste0(f_note, " ") else "",
-    "Sample period 1985--2005. ",
+    if (sample_period) "Sample period 1985--2005. " else "",
     if (!is.null(extra)) paste0(extra, " ") else "",
     "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
   )
@@ -290,7 +303,10 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
                              instr_str = "post95:sulfur_mean0",
                              title, label, outfile,
                              depvar_sentence, extra_note = NULL, superheader = NULL,
-                             notes_present = NULL, digits = 2) {
+                             notes_present = NULL, digits = 2, compact_layout = FALSE) {
+  # compact_layout = TRUE: first-stage F-statistic as a table row (not in the
+  # notes), N and number of utilities in the notes (not as table rows), and
+  # decimal-aligned figures with no gap between "(" and the standard error.
   n_oc  <- length(outcomes)
   n_fe  <- length(fe_specs)
   n_col <- n_oc * n_fe
@@ -353,7 +369,7 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
 
   title_row <- function(model_label) paste0("\\multicolumn{", n_col + 1, "}{l}{", model_label, "} \\\\")
 
-  col_fmts  <- lapply(seq_len(n_col), function(j) fmt_col(ols_terms[[j]], rf_terms[[j]], iv_terms[[j]], digits = digits))
+  col_fmts  <- lapply(seq_len(n_col), function(j) fmt_col(ols_terms[[j]], rf_terms[[j]], iv_terms[[j]], digits = digits, tight = compact_layout))
   ols_cells <- lapply(col_fmts, `[[`, "ols")
   rf_cells  <- lapply(col_fmts, `[[`, "rf")
   iv_cells  <- lapply(col_fmts, `[[`, "iv")
@@ -371,6 +387,8 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
   fe_row_state <- paste0("State $\\times$ year fixed effects & ", chk_state, " \\\\")
   n_util_row   <- paste0("Utilities & ", paste(format(n_utils, big.mark = ","), collapse = " & "), " \\\\")
   n_obs_row    <- paste0("Observations & ", paste(format(n_obs, big.mark = ","), collapse = " & "), " \\\\")
+  f_stat_row   <- paste0("First-stage F-statistic & ",
+                         paste0(fmt_single(f_vals, digits), "\\phantom{$^{***}$}", collapse = " & "), " \\\\")
 
   tabcolsep_pt    <- 4
   cm_per_pt       <- 2.54 / 72.27
@@ -418,7 +436,7 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
     se_line(rf_cells),
     "\\hline",
     fe_row_util, fe_row_year, fe_row_state,
-    n_util_row, n_obs_row,
+    if (compact_layout) f_stat_row else c(n_util_row, n_obs_row),
     "\\bottomrule",
     "\\end{tabular}"
   ))
@@ -431,6 +449,19 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
     paste0("The first-stage F-statistic (clustered at the utility level) for the instrumented ",
            "variable, ", coal_lab, ", ranges from ", fmt_single(min(f_vals)),
            " to ", fmt_single(max(f_vals)), " across columns.")
+  }
+  if (compact_layout) {
+    f_note <- NULL
+    n_note <- if (length(unique(n_obs)) == 1 && length(unique(n_utils)) == 1) {
+      paste0("Number of observations: ", format(n_obs[1], big.mark = ","),
+             "; number of utilities: ", format(n_utils[1], big.mark = ","), ".")
+    } else {
+      paste0("Number of observations by column: ",
+             paste0("(", seq_len(n_col), ") ", format(n_obs, big.mark = ","), collapse = ", "),
+             "; number of utilities by column: ",
+             paste0("(", seq_len(n_col), ") ", format(n_utils, big.mark = ","), collapse = ", "), ".")
+    }
+    extra_note <- paste(c(extra_note, n_note), collapse = " ")
   }
   note_text <- notes_k2(depvar_sentence, f_note = f_note, extra = extra_note)
 
