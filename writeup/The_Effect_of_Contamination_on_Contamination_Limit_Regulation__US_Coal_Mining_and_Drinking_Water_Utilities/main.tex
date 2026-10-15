@@ -766,16 +766,37 @@ This appendix contains the derivation of the utility's negligence choice and the
 \outreg{h2_snsv_d12_k2updn}\clearpage
 
 \clearpage
-\subsection*{Nearest coal mine two or three watersheds upstream}
+\subsection*{Coal mines two and three watersheds upstream}
 
-\outreg{2sls_dwnstrm_minevio_allcat_ivsum_binvio_step23}\clearpage
-\outreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_step23}\clearpage
-\outreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio_step23}\clearpage
-\begin{landscape}\vspace*{\fill}
-\outreg{6yr_huc02fe_inorg_ravalli_2005_step23}
-\vspace*{\fill}\end{landscape}
-\outreg{h3_inf_formal_d12_step23}\clearpage
-\outreg{h2_snsv_d12_step23}\clearpage
+\begin{figure}
+\centering
+\outfig{k2_ring_coefs_mr_mcl.png}
+\caption{\raggedright Effect of coal mines on inorganic chemical violations, by distance of the mines upstream}
+\label{fig:k2_ring_coefs_mr_mcl}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} All three estimates use the same sample, utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, 1985--2005. Black: active coal mines within two watersheds upstream. Orange: active coal mines in watersheds exactly two watersheds upstream. Blue: active coal mines in watersheds two or three watersheds upstream. Utilities with no mine in those watersheds have zero. Each estimate is two-stage least squares, instrumenting with the post-1995 indicator interacted with the average coal sulfur content of the same set of watersheds, with utility and state-by-year fixed effects. The dependent variable equals 1 if the violation occurred during the year, and coefficients are in percentage points. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig{k2_ring_coefs_visit_enf.png}
+\caption{\raggedright Effect of coal mines on regulator visits and enforcement actions, by distance of the mines upstream}
+\label{fig:k2_ring_coefs_visit_enf}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} All three estimates use the same sample, utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, 1985--2005. Black: active coal mines within two watersheds upstream. Orange: active coal mines in watersheds exactly two watersheds upstream. Blue: active coal mines in watersheds two or three watersheds upstream. Utilities with no mine in those watersheds have zero. Each estimate is two-stage least squares, instrumenting with the post-1995 indicator interacted with the average coal sulfur content of the same set of watersheds, with utility and state-by-year fixed effects. The dependent variable equals 1 if the visit or enforcement action occurred during the year, and coefficients are in percentage points. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig[0.85\linewidth]{k2_ring_coefs_syr2.png}
+\caption{\raggedright Effect of coal production on measured contaminant concentrations, by distance of the mines upstream}
+\label{fig:k2_ring_coefs_syr2}
+{\footnotesize\linespread{1}\selectfont\par\raggedright
+\textit{Notes:} Estimates use utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it. Black: coal production within two watersheds upstream. Orange: production in watersheds exactly two watersheds upstream. Blue: production in watersheds two or three watersheds upstream. Each estimate is ordinary least squares of the mean measured concentration from the Six-Year Review (1998--2005) on annual coal production in millions of short tons in those watersheds, with utility and region-by-year fixed effects. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
 
 % ---------- Figures ----------
 

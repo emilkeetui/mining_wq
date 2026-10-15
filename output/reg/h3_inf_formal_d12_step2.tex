@@ -1,0 +1,49 @@
+\begin{table}[htbp]
+\raggedright
+\begin{minipage}{\linewidth}
+\caption{\label{tab:h3_inf_formal_d12_step2} Effect of coal mining on enforcement actions by type}
+\end{minipage}
+\small
+{\setlength{\tabcolsep}{4pt}%
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\toprule
+ & \multicolumn{6}{c}{Enforcement} \\
+ & \multicolumn{2}{c}{Informal} & \multicolumn{2}{c}{Formal} & \multicolumn{2}{c}{None} \\
+ & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(3)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(4)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(5)} & \multicolumn{1}{>{\centering\arraybackslash}p{1.75cm}}{(6)} \\
+\hline
+\multicolumn{7}{l}{OLS} \\
+Upstream coal mines (sum) & \makebox[0pt][r]{-}2.36$^{***}$ & \makebox[0pt][r]{-}2.81$^{***}$ & \makebox[0pt][r]{-}1.23$^{**\phantom{*}}$ & \makebox[0pt][r]{-}0.06$^{\phantom{*}\phantom{*}\phantom{*}}$ & 2.87$^{***}$ & 2.80$^{**\phantom{*}}$ \\
+ & \makebox[0pt][r]{(}0.86\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}1.00\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}0.52\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}0.51\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}0.94\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}1.11\makebox[0pt][l]{)}\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\hline
+\multicolumn{7}{l}{2SLS} \\
+Upstream coal mines (sum) & \makebox[0pt][r]{-}15.97$^{**\phantom{*}}$ & \makebox[0pt][r]{-}12.33$^{**\phantom{*}}$ & \makebox[0pt][r]{-}3.30$^{\phantom{*}\phantom{*}\phantom{*}}$ & \makebox[0pt][r]{-}2.32$^{\phantom{*}\phantom{*}\phantom{*}}$ & 13.54$^{**\phantom{*}}$ & 11.38$^{**\phantom{*}}$ \\
+ & \makebox[0pt][r]{(}7.85\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}5.79\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}2.03\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}1.78\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}6.38\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}5.75\makebox[0pt][l]{)}\phantom{$^{***}$} \\
+\end{tabular}
+\end{adjustbox}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{5.5cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}>{\raggedleft\arraybackslash}p{1.75cm}}
+\hline
+\multicolumn{7}{l}{RF} \\
+Post-1995 $\times$ Upstream sulfur \% & 4.29$^{***}$ & 4.81$^{***}$ & 0.89$^{\phantom{*}\phantom{*}\phantom{*}}$ & 0.91$^{\phantom{*}\phantom{*}\phantom{*}}$ & \makebox[0pt][r]{-}3.64$^{***}$ & \makebox[0pt][r]{-}4.44$^{**\phantom{*}}$ \\
+ & \makebox[0pt][r]{(}1.40\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}1.78\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}0.58\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}0.65\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}1.26\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}1.83\makebox[0pt][l]{)}\phantom{$^{***}$} \\
+\hline
+Utility fixed effects & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Year fixed effects & $\checkmark$ &  & $\checkmark$ &  & $\checkmark$ &  \\
+State $\times$ year fixed effects &  & $\checkmark$ &  & $\checkmark$ &  & $\checkmark$ \\
+First-stage F-statistic & 7.63\phantom{$^{***}$} & 10.77\phantom{$^{***}$} & 7.63\phantom{$^{***}$} & 10.77\phantom{$^{***}$} & 7.63\phantom{$^{***}$} & 10.77\phantom{$^{***}$} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+}
+\begin{minipage}{\linewidth}
+\vspace{4pt}
+\footnotesize
+\raggedright
+\textit{Notes:} Dependent variable equals 1 if the utility had an enforcement action of that type during the year ("None" equals 1 if it had no enforcement action), 0 otherwise; coefficients and standard errors are multiplied by 100 to show percentage point change. Upstream coal mines is the number of active coal mines in watersheds exactly two flow steps upstream of the utility's intake, summed across those watersheds. The instrument interacts an indicator for the post-1995 period with the average coal sulfur content of watersheds within two flow steps upstream of the utility's intake. The sample is utilities with no coal mine in their intake watershed or in any watershed draining directly into it, and a coal mine in at least one watershed exactly two flow steps upstream of their intake, in states with at least one other such utility. Standard errors clustered at the utility level. Sample period 1985--2005. Number of observations: 4,244; number of utilities: 225. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
+\end{minipage}
+\end{table}
