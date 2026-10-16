@@ -247,9 +247,11 @@ if (!is.null(fwd) && !is.null(fwd6mon)) {
     "\\textit{Notes:} SYR2 sample restricted to utilities with a coal mine within two ",
     "flow steps upstream of their intake and no coal mine colocated with their intake ",
     "(1998--2005), nitrate only. Outcome: nitrate MR (monitoring/reporting) violation ",
-    "in the forward window (1--365 days for the 1-yr column; 1--182 days for the ",
-    "6-mon column) following the sample date. Concen. $>$ 50\\% MCL = reading at ",
-    "50--100\\% of the MCL, the quarterly-monitoring trigger. Mean concentration = ",
+    "in the 365 days following the contaminant concentration sample date for the ",
+    "1-yr column; violation in the 182 days following the contaminant concentration ",
+    "sample date for the 6-mon column. Concen. $>$ 50\\% MCL = reading at ",
+    "50--100\\% of the MCL (5 mg/L), which triggers quarterly rather than the ",
+    "baseline annual nitrate testing. Mean concentration = ",
     "utility-year mean reading, z-scored within chemical. Coefficients and standard ",
     "errors are in percentage points. All specifications include utility and year ",
     "fixed effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the ",
@@ -269,7 +271,7 @@ if (!is.null(fwd) && !is.null(fwd6mon)) {
   right_align_tabular_k2(out_tex_k2)
   pad_stars_for_decimal_align_k2(out_tex_k2)
   wrap_table_float(out_tex_k2,
-    "Nitrate MR violations following a reading above 50\\% of the MCL, two-step upstream watershed linkage",
+    "Nitrate MR violations following a reading above 50\\% of the MCL",
     label = "tab:mr_concentration_lag_ols_k2")
   reformat_notes_tiny_k2(out_tex_k2)
   cat(sprintf("\nTable saved to: %s\n", out_tex_k2))
@@ -301,7 +303,7 @@ if (!is.null(fwd) && !is.null(fwd6mon)) {
   right_align_tabular_k2(out_tex_k2_present)
   pad_stars_for_decimal_align_k2(out_tex_k2_present)
   wrap_table_float(out_tex_k2_present,
-    "Nitrate MR violations following a reading above 50\\% of the MCL, two-step upstream watershed linkage",
+    "Nitrate MR violations following a reading above 50\\% of the MCL",
     label = "tab:mr_concentration_lag_ols_k2")
   reformat_notes_tiny_k2(out_tex_k2_present)
   cat(sprintf("Table saved to: %s\n", out_tex_k2_present))

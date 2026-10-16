@@ -124,19 +124,24 @@ drop_colnum_row <- function(tex_str) {
   paste(lines[!is_colnum], collapse = "\n")
 }
 build_panel_table <- function(body, title, label, notes, out_path) {
+  # Drop the adjustbox wrapper so the tabular sits at natural width; the
+  # minipage below is sized to it, aligning caption and notes with table edges.
+  body <- body[!grepl("\\\\(begin|end)\\{adjustbox\\}", body)]
   lines <- c(
     "\\begin{table}[htbp]",
-    "   ",
-    paste0("   \\caption{\\label{", label, "} ", title, "}"),
-    "   \\bigskip",
-    "   ",
-    "   \\centering",
-    "   ",
+    "\\centering",
+    "\\makeatletter\\@ifundefined{fsnotesbox}{\\newsavebox{\\fsnotesbox}}{}\\makeatother",
+    "\\sbox{\\fsnotesbox}{%",
     body,
-    "   ",
-    "   {\\tiny\\linespread{1}\\selectfont \\par \\raggedright ",
+    "}%",
+    "\\begin{minipage}{\\wd\\fsnotesbox}",
+    "\\raggedright",
+    paste0("\\caption{\\label{", label, "} ", title, "}"),
+    "\\vspace{4pt}",
+    "{\\centering\\usebox{\\fsnotesbox}\\par}",
+    "{\\tiny\\linespread{1}\\selectfont \\par \\raggedright ",
     paste0("   ", notes, "}"),
-    "   ",
+    "\\end{minipage}",
     "\\end{table}",
     "",
     ""

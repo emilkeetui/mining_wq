@@ -574,6 +574,7 @@ dose_cs <- arm_k2_cum %>%
     dose_10mst      = sum(prod_ann[year >= 1985 & year <= 2005]) / 1e7,
     dose_post_10mst = sum(prod_ann[year >= 1998 & year <= 2005]) / 1e7,
     dose_pre_10mst  = sum(prod_ann[year >= 1985 & year <= 1997]) / 1e7,
+    prod_ann_1mst   = mean(prod_ann[year >= 1998 & year <= 2005]) / 1e6,
     .groups = "drop"
   ) %>%
   dplyr::mutate(any_dose = as.integer(dose_10mst > 0), any_dose_post = as.integer(dose_post_10mst > 0))
@@ -603,9 +604,9 @@ cat(sprintf("\nBalance sample utilities: %d (with 1997 backcast pop: %d)\n",
             nrow(bal), sum(!is.na(bal$log_pop_1997))))
 
 RHS_BAL <- "log_pop_1997 + log_pop_syr2 + num_facilities + num_hucs + surface_water + owner_public + is_wholesaler + source_protected"
-fml_bal_1 <- as.formula(paste0("dose_post_10mst ~ ", RHS_BAL))
+fml_bal_1 <- as.formula(paste0("prod_ann_1mst ~ ", RHS_BAL))
 fml_bal_2 <- as.formula(paste0("any_dose_post   ~ ", RHS_BAL))
-fml_bal_3 <- as.formula(paste0("dose_post_10mst ~ ", RHS_BAL, " | STATE_CODE"))
+fml_bal_3 <- as.formula(paste0("prod_ann_1mst ~ ", RHS_BAL, " | STATE_CODE"))
 fml_bal_4 <- as.formula(paste0("any_dose_post   ~ ", RHS_BAL, " | STATE_CODE"))
 
 m_bal <- list(
@@ -633,7 +634,8 @@ dict_bal <- c(k2_dict,
   dose_10mst       = "Dose 1985--2005 (10M ST)",
   dose_post_10mst  = "Dose 1998--2005 (10M ST)",
   dose_pre_10mst   = "Dose 1985--1997 (10M ST)",
-  any_dose         = "Any upstream mining",
+  prod_ann_1mst    = "Annual upstream coal prod. (1M ST)",
+  any_dose        = "Any upstream mining",
   any_dose_post    = "Any mining 1998--2005",
   log_pop_1997     = "Log backcast pop. 1997",
   log_pop_syr2     = "Log pop. served (SYR2)",
@@ -671,9 +673,9 @@ postprocess_bal_k2 <- function(x) {
   # Equal-width, evenly-spaced data columns: coefficients/SEs right-justified
   # (decimal alignment), column numbers and superheader group labels centered
   # at the same fixed width so the header rows line up with the body below.
-  data_w_cm   <- 2.4
+  data_w_cm   <- 3.0
   data_w      <- paste0(data_w_cm, "cm")
-  right_col   <- paste0(">{\\raggedleft\\arraybackslash}p{", data_w, "}")
+  right_col   <- paste0(">{\\centering\\arraybackslash}p{", data_w, "}")
   center_col  <- paste0(">{\\centering\\arraybackslash}p{", data_w, "}")
   center_col2 <- paste0(">{\\centering\\arraybackslash}p{", 2 * data_w_cm, "cm}")
 
@@ -700,13 +702,36 @@ postprocess_bal_k2 <- function(x) {
   for (i in idx) {
     lines[i] <- gsub("(\\(\\d+\\))", paste0("\\\\multicolumn{1}{", center_col_repl, "}{\\1}"), lines[i])
   }
+  # Decimal-align every numeric body cell: fixed-width boxes for
+  # (prefix + integer part), decimal part, and suffix (")" or stars), so the
+  # period sits at the same x-position in every row of a column.
+  body_start <- which(grepl("\\midrule", lines, fixed = TRUE))[1]
+  body_end   <- which(grepl("\\bottomrule", lines, fixed = TRUE))[1]
+  align_cell <- function(cell) {
+    cell <- trimws(cell)
+    m <- regmatches(cell, regexec("^(\\(?-?)([0-9]+)(\\.[0-9]+)?(\\)|\\$\\^\\{\\*+\\}\\$)?$", cell))[[1]]
+    if (length(m) == 0) return(cell)
+    frac <- if (nzchar(m[4])) m[4] else "\\phantom{.}"
+    paste0("\\makebox[1.7em][r]{", m[2], m[3], "}\\makebox[2.6em][l]{", frac,
+           "}\\makebox[1.9em][l]{", m[5], "}")
+  }
+  for (i in seq(body_start + 1, body_end - 1)) {
+    if (!grepl("&", lines[i], fixed = TRUE) || grepl("multicolumn", lines[i], fixed = TRUE)) next
+    tail_i <- regmatches(lines[i], regexpr("\\\\\\\\.*$", lines[i]))
+    if (length(tail_i) == 0) tail_i <- ""
+    body_i <- sub("\\\\\\\\.*$", "", lines[i])
+    cells  <- strsplit(body_i, "&", fixed = TRUE)[[1]]
+    if (length(cells) < 2) next
+    cells[-1] <- vapply(cells[-1], align_cell, character(1))
+    lines[i] <- paste0(paste(cells, collapse = " & "), tail_i)
+  }
   paste(lines, collapse = "\n")
 }
 
 out_bal <- "Z:/ek559/mining_wq/output/reg/pt_balance_6yr_k2.tex"
 etable(
   m_bal_ord,
-  headers = list(" " = list("Cumul. upstream coal prod. (10M ST)" = 2, "Any upstream coal mining" = 2)),
+  headers = list(" " = list("Annual upstream coal prod. (1M ST)" = 2, "Any upstream coal mining" = 2)),
   depvar = FALSE,
   fitstat = ~ n,
   extralines = list(
@@ -716,7 +741,7 @@ etable(
   style.tex = style.tex("aer", adjustbox = TRUE),
   tex = TRUE,
   digits = "r4",
-  title = "Balance test of utility characteristics and upstream coal production 1998--2005, two-step upstream watershed linkage",
+  title = "Balance test of utility characteristics and upstream coal production 1998--2005",
   label = "tab:pt_balance_6yr_k2",
   dict = dict_bal,
   notes = note_bal,
@@ -736,7 +761,7 @@ note_bal_present <- paste0(
 out_bal_present <- sub("\\.tex$", "_present.tex", out_bal)
 etable(
   m_bal_ord,
-  headers = list(" " = list("Cumul. upstream coal prod. (10M ST)" = 2, "Any upstream coal mining" = 2)),
+  headers = list(" " = list("Annual upstream coal prod. (1M ST)" = 2, "Any upstream coal mining" = 2)),
   depvar = FALSE,
   fitstat = ~ n,
   extralines = list(
@@ -746,7 +771,7 @@ etable(
   style.tex = style.tex("aer", adjustbox = TRUE),
   tex = TRUE,
   digits = "r4",
-  title = "Balance test of utility characteristics and upstream coal production 1998--2005, two-step upstream watershed linkage",
+  title = "Balance test of utility characteristics and upstream coal production 1998--2005",
   label = "tab:pt_balance_6yr_k2",
   dict = dict_bal,
   notes = note_bal_present,

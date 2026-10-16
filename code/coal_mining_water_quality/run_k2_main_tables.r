@@ -183,6 +183,24 @@ cat(sprintf("\nFirst-stage F (main, state x year FE): %.2f [want ~49.20]\n", f_v
 stopifnot(abs(f_val_main - 49.20) < 0.01)
 cat("First-stage F gate PASSED.\n")
 
+# Caption, tabular and notes share one minipage sized to the natural tabular
+# width, so the title and notes end exactly at the table edges.
+fit_caption_notes_to_tabular <- function(x) {
+  x <- paste(x, collapse = "\n")
+  cap <- regmatches(x, regexpr("\\\\caption\\{.*\\}(?=\n)", x, perl = TRUE))
+  tab <- regmatches(x, regexpr("(?s)\\\\begin\\{tabular\\}.*?\\\\end\\{tabular\\}", x, perl = TRUE))
+  nts <- regmatches(x, regexpr("(?s)\\{\\\\tiny.*\\}(?=\\s*\\\\end\\{table\\})", x, perl = TRUE))
+  if (length(cap) != 1 || length(tab) != 1 || length(nts) != 1) return(x)
+  paste(c(
+    "\\begin{table}[htbp]", "\\centering",
+    "\\makeatletter\\@ifundefined{fsnotesbox}{\\newsavebox{\\fsnotesbox}}{}\\makeatother",
+    "\\sbox{\\fsnotesbox}{%", tab, "}%",
+    "\\begin{minipage}{\\wd\\fsnotesbox}", "\\raggedright",
+    cap, "\\vspace{4pt}", "{\\centering\\usebox{\\fsnotesbox}\\par}", nts,
+    "\\end{minipage}", "\\end{table}", ""
+  ), collapse = "\n")
+}
+
 el_fs <- list(
   "F-test (1st stage, clustered)"      = fmt_single(f_val_main),
   "Utility fixed effects"              = "$\\checkmark$",
@@ -199,13 +217,13 @@ etable(
   digits          = "r4",
   drop            = "Number of intake facilities",
   drop.section    = "fixef",
-  title           = "First stage: effect of the Acid Rain Program on the number of upstream coal mines, 1985-2005",
+  title           = "First stage: effect of the instrument on the number of upstream coal mines, 1985-2005",
   label           = "tab:fs_dwnstrm_minevio_ivsum_k2",
   extralines      = el_fs,
   fitstat         = ~ n,
   dict            = k2_dict,
   notes           = fs_notes,
-  postprocess.tex = function(x) right_align_tabular(move_notes_below_adjustbox(x)),
+  postprocess.tex = function(x) fit_caption_notes_to_tabular(right_align_tabular(move_notes_below_adjustbox(x))),
   file            = "Z:/ek559/mining_wq/output/reg/fs_dwnstrm_minevio_ivsum_k2.tex"
 )
 cat("  Written: output/reg/fs_dwnstrm_minevio_ivsum_k2.tex\n")
@@ -220,13 +238,13 @@ etable(
   digits          = "r4",
   drop            = "Number of intake facilities",
   drop.section    = "fixef",
-  title           = "First stage: effect of the Acid Rain Program on the number of upstream coal mines, 1985-2005",
+  title           = "First stage: effect of the instrument on the number of upstream coal mines, 1985-2005",
   label           = "tab:fs_dwnstrm_minevio_ivsum_k2",
   extralines      = el_fs,
   fitstat         = ~ n,
   dict            = k2_dict,
   notes           = notes_present_panel,
-  postprocess.tex = function(x) right_align_tabular(move_notes_below_adjustbox(x)),
+  postprocess.tex = function(x) fit_caption_notes_to_tabular(right_align_tabular(move_notes_below_adjustbox(x))),
   file            = "Z:/ek559/mining_wq/output/reg/fs_dwnstrm_minevio_ivsum_k2_present.tex"
 )
 cat("  Written: output/reg/fs_dwnstrm_minevio_ivsum_k2_present.tex\n")
