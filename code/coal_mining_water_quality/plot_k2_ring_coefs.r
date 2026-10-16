@@ -91,12 +91,22 @@ d3 <- prep("syr2", syr2_order)
 d3$outcome_label <- factor(d3$outcome_label, levels = syr2_order)
 d3$y <- as.numeric(d3$series_label %in% series_labels[1]) * offsets[["k2"]] +
   as.numeric(d3$series_label == series_labels[3]) * offsets[["ring23"]]
-fmt_plain <- function(x) format(x, scientific = FALSE, trim = TRUE, drop0trailing = FALSE)
+# Per-facet tick labels: fixed decimals, chosen so the break step shows at 1-2
+# significant figures; every tick in a facet shares that number of decimals.
+fmt_plain <- function(x) {
+  x_ok <- x[!is.na(x)]
+  step <- min(diff(sort(unique(x_ok))))
+  mag  <- floor(log10(step))
+  lead <- step / 10^mag
+  dec  <- max(0, -mag + if (abs(lead - round(lead)) > 1e-8) 1 else 0)
+  out  <- formatC(x, format = "f", digits = dec)
+  sub("^-(0\\.?0*)$", "\\1", out)
+}
 fig3 <- base_layers(ggplot(d3, aes(x = coef, y = y))) +
   facet_wrap(~ outcome_label, ncol = 1, scales = "free_x", strip.position = "left") +
   guides(colour = guide_legend(nrow = 3), shape = guide_legend(nrow = 3)) +
   scale_y_continuous(breaks = NULL, expand = expansion(add = 0.4)) +
-  scale_x_continuous(labels = fmt_plain) +
+  scale_x_continuous(breaks = scales::breaks_extended(n = 4), labels = fmt_plain) +
   labs(x = "OLS coefficient (mg/L per million short tons)", y = NULL) +
   theme(strip.placement = "outside", strip.background = element_blank(),
         strip.text.y.left = element_text(angle = 0, hjust = 1))

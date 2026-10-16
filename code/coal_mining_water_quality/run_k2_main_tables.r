@@ -183,71 +183,23 @@ cat(sprintf("\nFirst-stage F (main, state x year FE): %.2f [want ~49.20]\n", f_v
 stopifnot(abs(f_val_main - 49.20) < 0.01)
 cat("First-stage F gate PASSED.\n")
 
-# Caption, tabular and notes share one minipage sized to the natural tabular
-# width, so the title and notes end exactly at the table edges.
-fit_caption_notes_to_tabular <- function(x) {
-  x <- paste(x, collapse = "\n")
-  cap <- regmatches(x, regexpr("\\\\caption\\{.*\\}(?=\n)", x, perl = TRUE))
-  tab <- regmatches(x, regexpr("(?s)\\\\begin\\{tabular\\}.*?\\\\end\\{tabular\\}", x, perl = TRUE))
-  nts <- regmatches(x, regexpr("(?s)\\{\\\\tiny.*\\}(?=\\s*\\\\end\\{table\\})", x, perl = TRUE))
-  if (length(cap) != 1 || length(tab) != 1 || length(nts) != 1) return(x)
-  paste(c(
-    "\\begin{table}[htbp]", "\\centering",
-    "\\makeatletter\\@ifundefined{fsnotesbox}{\\newsavebox{\\fsnotesbox}}{}\\makeatother",
-    "\\sbox{\\fsnotesbox}{%", tab, "}%",
-    "\\begin{minipage}{\\wd\\fsnotesbox}", "\\raggedright",
-    cap, "\\vspace{4pt}", "{\\centering\\usebox{\\fsnotesbox}\\par}", nts,
-    "\\end{minipage}", "\\end{table}", ""
-  ), collapse = "\n")
-}
-
-el_fs <- list(
-  "F-test (1st stage, clustered)"      = fmt_single(f_val_main),
-  "Utility fixed effects"              = "$\\checkmark$",
-  "State $\\times$ year fixed effects" = "$\\checkmark$"
-)
-fs_notes <- notes_k2(paste0(
+fs_label <- "Post-1995 $\\times$ Upstream sulfur \\%"
+fs_notes_fn <- function(extra) notes_k2(paste0(
   "The dependent variable is the number of coal mines in watersheds within two flow ",
   "steps upstream of the utility's intake, summed across those watersheds."
-), sample_period = FALSE)
-etable(
-  fs_m,
-  style.tex       = style.tex("aer", adjustbox = TRUE),
-  tex             = TRUE,
-  digits          = "r4",
-  drop            = "Number of intake facilities",
-  drop.section    = "fixef",
-  title           = "First stage: effect of the instrument on the number of upstream coal mines, 1985-2005",
-  label           = "tab:fs_dwnstrm_minevio_ivsum_k2",
-  extralines      = el_fs,
-  fitstat         = ~ n,
-  dict            = k2_dict,
-  notes           = fs_notes,
-  postprocess.tex = function(x) fit_caption_notes_to_tabular(right_align_tabular(move_notes_below_adjustbox(x))),
-  file            = "Z:/ek559/mining_wq/output/reg/fs_dwnstrm_minevio_ivsum_k2.tex"
+), extra = extra, sample_period = FALSE)
+render_coef_table_k2(
+  rows        = list(list(label = fs_label, terms = list(get_term(fs_m, "post95:sulfur_mean0")))),
+  col_headers = "Upstream coal mines (sum)", colnums = FALSE,
+  fe_list     = list("Utility" = TRUE, "State $\\times$ year" = TRUE),
+  f_rows      = list("First-stage F-statistic" = f_val_main),
+  n_obs       = nobs(fs_m), n_utils = length(fixest::fixef(fs_m)$PWSID),
+  label       = "tab:fs_dwnstrm_minevio_ivsum_k2",
+  title       = "First stage: effect of the instrument on the number of upstream coal mines, 1985--2005",
+  outfile     = "fs_dwnstrm_minevio_ivsum_k2",
+  note_text_fn = fs_notes_fn, notes_present = notes_present_panel,
+  data_w_cm   = 3
 )
-cat("  Written: output/reg/fs_dwnstrm_minevio_ivsum_k2.tex\n")
-
-# Presentation companion: same table body, notes stripped to clustering +
-# stars only (FE checkmark rows already shown via el_fs) --
-# .claude/logs/2026-08-31-presentation-notes-tables.md.
-etable(
-  fs_m,
-  style.tex       = style.tex("aer", adjustbox = TRUE),
-  tex             = TRUE,
-  digits          = "r4",
-  drop            = "Number of intake facilities",
-  drop.section    = "fixef",
-  title           = "First stage: effect of the instrument on the number of upstream coal mines, 1985-2005",
-  label           = "tab:fs_dwnstrm_minevio_ivsum_k2",
-  extralines      = el_fs,
-  fitstat         = ~ n,
-  dict            = k2_dict,
-  notes           = notes_present_panel,
-  postprocess.tex = function(x) fit_caption_notes_to_tabular(right_align_tabular(move_notes_below_adjustbox(x))),
-  file            = "Z:/ek559/mining_wq/output/reg/fs_dwnstrm_minevio_ivsum_k2_present.tex"
-)
-cat("  Written: output/reg/fs_dwnstrm_minevio_ivsum_k2_present.tex\n")
 
 # ── 4.5 Exclusion-restriction falsification test ─────────────────────────
 m1 <- fixest::feols(num_facilities ~ post95:sulfur_mean0 | PWSID + STATE_CODE^year,
@@ -284,133 +236,27 @@ col1_interact <- get_single_term(m1, include = c("post95", "sulfur_mean0"))
 col2_main     <- get_single_term(m2, include = c("sulfur_mean0"), exclude = c("post95"))
 col2_interact <- get_single_term(m2, include = c("post95", "sulfur_mean0"))
 
-DIGITS_ET <- 4
-fmt_col_terms <- function(terms_list, digits = DIGITS_ET) {
-  int_w <- function(x) {
-    if (is.na(x)) return(0L)
-    nchar(sub("\\..*$", "", sprintf(paste0("%.", digits, "f"), abs(x))))
-  }
-  w <- max(sapply(terms_list, function(t) max(int_w(t$est), int_w(t$se))))
-  lapply(terms_list, function(t) fmt_num_wide(t$est, t$se, t$pval, w, digits))
-}
-col1_fmt <- fmt_col_terms(list(col1_interact))
-col2_fmt <- fmt_col_terms(list(col2_main, col2_interact))
-
-sulfur_row_coef   <- paste0("Upstream sulfur & & ", col2_fmt[[1]]$coef, " \\\\")
-sulfur_row_se     <- paste0(" & & ", col2_fmt[[1]]$se, " \\\\")
-interact_row_coef <- paste0("Post-1995 $\\times$ Upstream sulfur & ", col1_fmt[[1]]$coef, " & ", col2_fmt[[2]]$coef, " \\\\")
-interact_row_se   <- paste0(" & ", col1_fmt[[1]]$se, " & ", col2_fmt[[2]]$se, " \\\\")
-
-n_utils_col1 <- length(fixest::fixef(m1)$PWSID)
-n_utils_col2 <- length(balanced_ids)
-n_obs_col1   <- nobs(m1)
-n_obs_col2   <- nobs(m2)
-
-n_y_et <- 2
-label_w_cm_et <- 5.5
-data_w_cm_et  <- 2.5
-# Data columns are plain right-aligned ("r"), not fixed-width raggedleft
-# p{} boxes: a p{} box's width is fixed regardless of content, so a
-# \multicolumn{1}{c}{...} header centers in the middle of that box while
-# the right-flush, phantom-padded numbers below sit at its right edge --
-# the header then floats to the left of the numbers instead of sitting
-# above them. "r" sizes the column to its (equal-width, decimal-aligned)
-# content, so the centered header lands directly above the numbers.
-col_spec_et <- paste0("p{", label_w_cm_et, "cm}",
-                       paste(rep("r", n_y_et), collapse = ""))
-depvar_header_et <- " & \\multicolumn{2}{c}{Number of Intake Facilities} \\\\"
-header_row_et <- " & \\multicolumn{1}{c}{(1)} & \\multicolumn{1}{c}{(2)} \\\\"
-
-tabcolsep_pt <- 4
-cm_per_pt    <- 2.54 / 72.27
-textwidth_cm <- 16.51
-intercol_pad_cm_et <- 2 * (n_y_et + 1) * tabcolsep_pt * cm_per_pt
-natural_w_cm_et <- label_w_cm_et + n_y_et * data_w_cm_et + intercol_pad_cm_et
-needs_scale_et  <- natural_w_cm_et > textwidth_cm
-total_w_et <- if (needs_scale_et) "\\linewidth" else paste0(round(natural_w_cm_et, 4), "cm")
-
-tabular_lines_et <- c(
-  paste0("\\begin{tabular}{", col_spec_et, "}"),
-  "\\toprule",
-  depvar_header_et,
-  header_row_et,
-  "\\hline",
-  sulfur_row_coef,
-  sulfur_row_se,
-  interact_row_coef,
-  interact_row_se,
-  "\\hline",
-  "Utility fixed effects & $\\checkmark$ & \\\\",
-  "Year fixed effects & & $\\checkmark$ \\\\",
-  "State $\\times$ year fixed effects & $\\checkmark$ & \\\\",
-  "Balanced panel & & $\\checkmark$ \\\\",
-  paste0("Utilities & ", format(n_utils_col1, big.mark = ","), " & ", format(n_utils_col2, big.mark = ","), " \\\\"),
-  paste0("Observations & ", format(n_obs_col1, big.mark = ","), " & ", format(n_obs_col2, big.mark = ","), " \\\\"),
-  "\\bottomrule",
-  "\\end{tabular}"
-)
-if (needs_scale_et) {
-  tab_start <- grep("^\\\\begin\\{tabular\\}", tabular_lines_et)[1]
-  tab_end   <- max(grep("^\\\\end\\{tabular\\}", tabular_lines_et))
-  tabular_lines_et <- c(
-    tabular_lines_et[seq_len(tab_start - 1)],
-    "\\begin{adjustbox}{max width=\\linewidth}",
-    tabular_lines_et[tab_start:tab_end],
-    "\\end{adjustbox}",
-    if (tab_end < length(tabular_lines_et)) tabular_lines_et[(tab_end + 1):length(tabular_lines_et)] else NULL
-  )
-}
-
-note_et <- notes_k2(paste0(
+note_et_fn <- function(extra) notes_k2(paste0(
   "The dependent variable is the number of active intake facilities operated by the ",
   "utility in that year. The sample is utilities with a coal mine within two flow ",
   "steps upstream of their intake and no coal mine colocated with their intake, in ",
   "states with at least one other such utility."
-))
-table_lines_et <- c(
-  "\\begin{table}[htbp]",
-  "\\raggedright",
-  paste0("\\begin{minipage}{", total_w_et, "}"),
-  paste0("\\caption{\\label{tab:exclusion_test_num_facilities_k2} Effect of instrument on utility characteristics}"),
-  "\\end{minipage}",
-  "\\small",
-  "{\\setlength{\\tabcolsep}{4pt}%",
-  tabular_lines_et,
-  "}",
-  paste0("\\begin{minipage}{", total_w_et, "}"),
-  "\\vspace{4pt}",
-  "\\footnotesize",
-  "\\raggedright",
-  note_et,
-  "\\end{minipage}",
-  "\\end{table}"
+), extra = extra)
+render_coef_table_k2(
+  rows = list(
+    list(label = "Upstream sulfur \\%", terms = list(NULL, col2_main)),
+    list(label = fs_label, terms = list(col1_interact, col2_interact))
+  ),
+  col_headers = c("", ""), superheader = "Number of intake facilities",
+  fe_list     = list("Utility" = c(TRUE, FALSE), "Year" = c(FALSE, TRUE), "State $\\times$ year" = c(TRUE, FALSE)),
+  spec_rows   = list("Balanced panel" = c(FALSE, TRUE)),
+  n_obs       = c(nobs(m1), nobs(m2)),
+  n_utils     = c(length(fixest::fixef(m1)$PWSID), length(balanced_ids)),
+  label       = "tab:exclusion_test_num_facilities_k2",
+  title       = "Effect of instrument on utility characteristics",
+  outfile     = "exclusion_test_num_facilities_k2",
+  note_text_fn = note_et_fn, notes_present = notes_present_panel
 )
-writeLines(table_lines_et, "Z:/ek559/mining_wq/output/reg/exclusion_test_num_facilities_k2.tex")
-cat("  Written: output/reg/exclusion_test_num_facilities_k2.tex\n")
-
-# Presentation companion: same table body, notes stripped to clustering +
-# stars only (FE checkmark rows already shown in tabular_lines_et) --
-# .claude/logs/2026-08-31-presentation-notes-tables.md.
-table_lines_et_present <- c(
-  "\\begin{table}[htbp]",
-  "\\raggedright",
-  paste0("\\begin{minipage}{", total_w_et, "}"),
-  paste0("\\caption{\\label{tab:exclusion_test_num_facilities_k2} Effect of instrument on utility characteristics}"),
-  "\\end{minipage}",
-  "\\small",
-  "{\\setlength{\\tabcolsep}{4pt}%",
-  tabular_lines_et,
-  "}",
-  paste0("\\begin{minipage}{", total_w_et, "}"),
-  "\\vspace{4pt}",
-  "\\footnotesize",
-  "\\raggedright",
-  notes_present_panel,
-  "\\end{minipage}",
-  "\\end{table}"
-)
-writeLines(table_lines_et_present, "Z:/ek559/mining_wq/output/reg/exclusion_test_num_facilities_k2_present.tex")
-cat("  Written: output/reg/exclusion_test_num_facilities_k2_present.tex\n")
 }  # end !IS_NEAREST (4.4-4.5)
 
 # ── 4.6 Visit types ────────────────────────────────────────────────────────

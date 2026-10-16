@@ -796,7 +796,7 @@ ref_mags_a = np.array([vmax_a * 0.25, vmax_a * 0.5, vmax_a])
 ref_s_a    = S_MIN_A + (ref_mags_a - vmin_a) * (S_MAX_A - S_MIN_A) / (vmax_a - vmin_a + 1e-12)
 size_handles_a = [ax.scatter([], [], s=s, color="grey", alpha=0.6, edgecolors="k") for s in ref_s_a]
 size_labels_a  = [f"{int(v):,.0f} short tons" for v in ref_mags_a]
-leg1_a = ax.legend(size_handles_a, size_labels_a, title="|Change|", loc="lower left",
+leg1_a = ax.legend(size_handles_a, size_labels_a, title="Change in production", loc="lower left",
                    bbox_to_anchor=(0.01, 0.05), frameon=True, fontsize=13)
 ax.add_artist(leg1_a)
 

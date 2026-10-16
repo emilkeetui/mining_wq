@@ -1,34 +1,31 @@
 \begin{table}[htbp]
 \centering
-\makeatletter\@ifundefined{fsnotesbox}{\newsavebox{\fsnotesbox}}{}\makeatother
-\sbox{\fsnotesbox}{%
-   \begin{tabular}{lcccc}
-      \toprule
-       & Arsenic & Nitrate & Barium & Selenium \\
-                                  & (1)            & (2)          & (3)      & (4)\\  
-      \midrule 
-      \multicolumn{5}{l}{\textbf{Panel A: Utilities with a coal mine one watershed upstream}} \\
-      Upstream coal prod. (1M ST) & 0.0034$^{***}$ & 0.0748$^{*}$ & 0.0088   & 0.0018\\   
-                                  & (0.0010)       & (0.0449)     & (0.0081) & (0.0012)\\   
-       \\
-      Observations                & 334            & 432          & 322      & 319\\  
-      \midrule
-      \multicolumn{5}{l}{\textbf{Panel B: Utilities with a coal mine within two watersheds upstream}} \\
-      Upstream coal prod. (1M ST) & 0.0004   & 0.0610$^{***}$ & 0.0137   & 0.0004\\   
-                                  & (0.0003) & (0.0153)       & (0.0123) & (0.0004)\\   
-       \\
-      Observations                & 366      & 472            & 353      & 350\\  
-      \bottomrule
-   \end{tabular}
-}%
-\begin{minipage}{\wd\fsnotesbox}
-\raggedright
+\begin{minipage}{15.6058cm}
 \caption{\label{tab:6yr_huc02fe_inorg_ravalli_2005_annprod_ab} Effect of annual upstream coal production on inorganic chemicals, SYR2 1998--2005}
+\end{minipage}
+\small
+{\setlength{\tabcolsep}{4pt}%
+\begin{tabular}{p{6.2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}}
+\toprule
+ & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{Arsenic} & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{Nitrate} & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{Barium} & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{Selenium} \\
+ & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{(1)} & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{(2)} & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{(3)} & \multicolumn{1}{>{\centering\arraybackslash}p{2cm}}{(4)} \\
+\midrule
+\multicolumn{5}{l}{\textbf{Panel A: Utilities with a coal mine one watershed upstream}} \\
+Upstream coal prod. (1M ST) & \makebox[0.5em][r]{0}\makebox[4.1em][l]{.0034$^{***}$} & \makebox[0.5em][r]{0}\makebox[3.1em][l]{.075$^{*\phantom{*}\phantom{*}}$} & \makebox[0.5em][r]{0}\makebox[3.6em][l]{.0088$^{\phantom{*}\phantom{*}\phantom{*}}$} & \makebox[0.5em][r]{0}\makebox[4.1em][l]{.0018$^{\phantom{*}\phantom{*}\phantom{*}}$} \\
+ & \makebox[0pt][r]{(}\makebox[0.5em][r]{0}\makebox[4.1em][l]{.0010\makebox[0pt][l]{)}\phantom{$^{***}$}} & \makebox[0pt][r]{(}\makebox[0.5em][r]{0}\makebox[3.1em][l]{.045\makebox[0pt][l]{)}\phantom{$^{***}$}} & \makebox[0pt][r]{(}\makebox[0.5em][r]{0}\makebox[3.6em][l]{.0081\makebox[0pt][l]{)}\phantom{$^{***}$}} & \makebox[0pt][r]{(}\makebox[0.5em][r]{0}\makebox[4.1em][l]{.0012\makebox[0pt][l]{)}\phantom{$^{***}$}} \\
+Observations & 334\phantom{$^{***}$} & 432\phantom{$^{***}$} & 322\phantom{$^{***}$} & 319\phantom{$^{***}$} \\
+\midrule
+\multicolumn{5}{l}{\textbf{Panel B: Utilities with a coal mine within two watersheds upstream}} \\
+Upstream coal prod. (1M ST) & \makebox[0.5em][r]{0}\makebox[4.1em][l]{.00038$^{\phantom{*}\phantom{*}\phantom{*}}$} & \makebox[0.5em][r]{0}\makebox[3.1em][l]{.061$^{***}$} & \makebox[0.5em][r]{0}\makebox[3.6em][l]{.014$^{\phantom{*}\phantom{*}\phantom{*}}$} & \makebox[0.5em][r]{0}\makebox[4.1em][l]{.00037$^{\phantom{*}\phantom{*}\phantom{*}}$} \\
+ & \makebox[0pt][r]{(}\makebox[0.5em][r]{0}\makebox[4.1em][l]{.00028\makebox[0pt][l]{)}\phantom{$^{***}$}} & \makebox[0pt][r]{(}\makebox[0.5em][r]{0}\makebox[3.1em][l]{.015\makebox[0pt][l]{)}\phantom{$^{***}$}} & \makebox[0pt][r]{(}\makebox[0.5em][r]{0}\makebox[3.6em][l]{.012\makebox[0pt][l]{)}\phantom{$^{***}$}} & \makebox[0pt][r]{(}\makebox[0.5em][r]{0}\makebox[4.1em][l]{.00039\makebox[0pt][l]{)}\phantom{$^{***}$}} \\
+Observations & 366\phantom{$^{***}$} & 472\phantom{$^{***}$} & 353\phantom{$^{***}$} & 350\phantom{$^{***}$} \\
+\bottomrule
+\end{tabular}
+}
+\begin{minipage}{15.6058cm}
 \vspace{4pt}
-{\centering\usebox{\fsnotesbox}\par}
-{\tiny\linespread{1}\selectfont \par \raggedright
-   \textit{Notes:} Within each chemical, the column shows mean measured concentration from the EPA 6-Year Review. Non-detect values replaced by MDL$/\sqrt{2}$ following Ravalli et al.~(2022). Explanatory variable is coal production during the year (in millions of short tons) in watersheds upstream of the utility's intake. Panel A: community water systems with a coal mine one watershed upstream and no coal mine colocated with their intake, with production in that upstream watershed. Panel B: community water systems with a coal mine within two watersheds upstream and no coal mine colocated with their intake, with production summed across those watersheds. Standard errors clustered at the utility level. All specifications include utility and HUC02 $\times$ year fixed effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+\footnotesize
+\raggedright
+\textit{Notes:} Within each chemical, the column shows mean measured concentration from the EPA 6-Year Review. Non-detect values replaced by MDL$/\sqrt{2}$ following Ravalli et al.~(2022). Explanatory variable is coal production during the year (in millions of short tons) in watersheds upstream of the utility's intake. Panel A: community water systems with a coal mine one watershed upstream and no coal mine colocated with their intake, with production in that upstream watershed. Panel B: community water systems with a coal mine within two watersheds upstream and no coal mine colocated with their intake, with production summed across those watersheds. Standard errors clustered at the utility level. All specifications include utility and HUC02 $\times$ year fixed effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
 \end{minipage}
 \end{table}
-
-

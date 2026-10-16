@@ -79,77 +79,9 @@ cat("Panel A models
 cat("Panel B models
 "); models_b <- fit_panel(b_df)
 
-# ── Two-panel table assembly (helpers verbatim from run_k2_6yr_tables.r) ──
-extract_adjustbox <- function(tex_lines) {
-  x <- paste(tex_lines, collapse = "\n")
-  start_pos <- regexpr("\\\\begin\\{adjustbox\\}", x)
-  end_pos   <- regexpr("\\\\end\\{adjustbox\\}", x)
-  end_full  <- end_pos + attr(end_pos, "match.length") - 1
-  substr(x, start_pos, end_full)
-}
-
-insert_panel_title <- function(tex_str, n_col, panel_label) {
-  lines   <- strsplit(tex_str, "\n")[[1]]
-  mid_idx <- which(trimws(lines) == "\\midrule")[1]
-  title_line <- paste0("      \\multicolumn{", n_col + 1, "}{l}{\\textbf{", panel_label, "}} \\\\")
-  c(lines[seq_len(mid_idx)], title_line, lines[(mid_idx + 1):length(lines)])
-}
-
-panel_tabular <- function(models_grp) {
-  raw <- etable(
-    models_grp,
-    headers      = list(":_:" = unname(nice_chem[CHEMS])),
-    depvar       = FALSE,
-    fitstat      = ~n,
-    style.tex    = style.tex("aer", adjustbox = TRUE),
-    tex          = TRUE,
-    digits       = "r4",
-    drop         = "Number of intake facilities",
-    drop.section = "fixef",
-    dict         = k2_dict
-  )
-  extract_adjustbox(raw)
-}
-
-strip_cmidrule <- function(tex_str) {
-  gsub(" *\\\\cmidrule\\(lr\\)\\{[0-9]+-[0-9]+\\}", "", tex_str)
-}
-drop_line <- function(tex_str, pattern) {
-  lines <- strsplit(tex_str, "\n", fixed = TRUE)[[1]]
-  paste(lines[!grepl(pattern, lines, fixed = TRUE)], collapse = "\n")
-}
-drop_colnum_row <- function(tex_str) {
-  lines <- strsplit(tex_str, "\n", fixed = TRUE)[[1]]
-  is_colnum <- grepl("\\(1\\)", lines) & grepl("\\(4\\)", lines)
-  paste(lines[!is_colnum], collapse = "\n")
-}
-build_panel_table <- function(body, title, label, notes, out_path) {
-  # Drop the adjustbox wrapper so the tabular sits at natural width; the
-  # minipage below is sized to it, aligning caption and notes with table edges.
-  body <- body[!grepl("\\\\(begin|end)\\{adjustbox\\}", body)]
-  lines <- c(
-    "\\begin{table}[htbp]",
-    "\\centering",
-    "\\makeatletter\\@ifundefined{fsnotesbox}{\\newsavebox{\\fsnotesbox}}{}\\makeatother",
-    "\\sbox{\\fsnotesbox}{%",
-    body,
-    "}%",
-    "\\begin{minipage}{\\wd\\fsnotesbox}",
-    "\\raggedright",
-    paste0("\\caption{\\label{", label, "} ", title, "}"),
-    "\\vspace{4pt}",
-    "{\\centering\\usebox{\\fsnotesbox}\\par}",
-    "{\\tiny\\linespread{1}\\selectfont \\par \\raggedright ",
-    paste0("   ", notes, "}"),
-    "\\end{minipage}",
-    "\\end{table}",
-    "",
-    ""
-  )
-  writeLines(lines, out_path)
-}
-
-
+# ── Two-panel table assembly ──────────────────────────────────────────────
+# Concentration outcome: coefficients and SEs carry 2 significant figures and
+# are decimal-aligned within each column with fixed-width integer/fraction boxes.
 note_reg_present <- paste0(
   "\\textit{Notes:} All specifications include utility and HUC02 $\\times$ year ",
   "fixed effects. Standard errors clustered at the utility level. ",
@@ -168,25 +100,49 @@ note_reg <- paste0(
   "HUC02 $\\times$ year fixed effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
 
-panel_a_tex <- strip_cmidrule(panel_tabular(models_a))
-panel_a_lines <- insert_panel_title(panel_a_tex, 4, "Panel A: Utilities with a coal mine one watershed upstream")
-panel_b_tex <- strip_cmidrule(panel_tabular(models_b))
-panel_b_tex <- drop_line(panel_b_tex, "Arsenic & Nitrate & Barium & Selenium")
-panel_b_tex <- drop_colnum_row(panel_b_tex)
-panel_b_lines <- insert_panel_title(panel_b_tex, 4, "Panel B: Utilities with a coal mine within two watersheds upstream")
-
-# Both panels keep their Observations row (different N). Panel A is cut just
-# before its bottomrule; Panel B contributes everything after its top midrule.
-a_end <- which(trimws(panel_a_lines) == "\\bottomrule")[1] - 1
-mid_b <- which(trimws(panel_b_lines) == "\\midrule")[1]
-merged_panel_lines <- c(panel_a_lines[seq_len(a_end)], "      \\midrule",
-                        panel_b_lines[(mid_b + 1):length(panel_b_lines)])
+ab_pad <- "\\phantom{$^{***}$}"
+ab_cells <- function(models_a, models_b) {
+  terms <- lapply(c(models_a, models_b), get_term, term = regvar)
+  n_m   <- length(models_a)
+  out   <- vector("list", n_m)
+  for (j in seq_len(n_m)) {
+    t_a <- terms[[j]]; t_b <- terms[[n_m + j]]
+    strs  <- c(fmt_sig(t_a$est), fmt_sig(t_a$se), fmt_sig(t_b$est), fmt_sig(t_b$se))
+    stars <- c(stars_from_p(t_a$pval), 0L, stars_from_p(t_b$pval), 0L)
+    cells <- split_align_cells(strs, stars = stars, paren = c(FALSE, TRUE, FALSE, TRUE))
+    out[[j]] <- cells
+  }
+  out
+}
+ab_col <- ab_cells(models_a, models_b)
+ab_row <- function(label, k) paste0(label, " & ", paste(vapply(ab_col, `[`, character(1), k), collapse = " & "), " \\\\")
+ab_n   <- function(models) paste0("Observations & ",
+  paste0(fmt_int(vapply(models, nobs, numeric(1))), ab_pad, collapse = " & "), " \\\\")
+ab_cen <- ">{\\centering\\arraybackslash}p{2cm}"
+ab_lab <- k2_dict[["coal_prod_upstream_1mst"]]
+ab_w_cm <- c(6.2, rep(2, 4))
+body_ab <- c(
+  paste0("\\begin{tabular}{p{6.2cm}", paste0(rep(">{\\raggedleft\\arraybackslash}p{2cm}", 4), collapse = ""), "}"),
+  "\\toprule",
+  paste0(" & ", paste0("\\multicolumn{1}{", ab_cen, "}{", unname(nice_chem[CHEMS]), "}", collapse = " & "), " \\\\"),
+  paste0(" & ", paste0("\\multicolumn{1}{", ab_cen, "}{(", 1:4, ")}", collapse = " & "), " \\\\"),
+  "\\midrule",
+  "\\multicolumn{5}{l}{\\textbf{Panel A: Utilities with a coal mine one watershed upstream}} \\\\",
+  ab_row(ab_lab, 1), ab_row("", 2), ab_n(models_a),
+  "\\midrule",
+  "\\multicolumn{5}{l}{\\textbf{Panel B: Utilities with a coal mine within two watersheds upstream}} \\\\",
+  ab_row(ab_lab, 3), ab_row("", 4), ab_n(models_b),
+  "\\bottomrule",
+  "\\end{tabular}"
+)
+tw_ab <- table_width(ab_w_cm)
+if (tw_ab$needs_scale) body_ab <- c("\\begin{adjustbox}{max width=\\linewidth}", body_ab, "\\end{adjustbox}")
 
 title <- "Effect of annual upstream coal production on inorganic chemicals, SYR2 1998--2005"
 label <- "tab:6yr_huc02fe_inorg_ravalli_2005_annprod_ab"
-build_panel_table(merged_panel_lines, title, label, note_reg, out_reg)
+writeLines(table_shell(label, title, tw_ab$total_w, body_ab, note_reg), out_reg)
 cat("Written:", out_reg, "\n")
 out_reg_present <- sub("\\.tex$", "_present.tex", out_reg)
-build_panel_table(merged_panel_lines, title, label, note_reg_present, out_reg_present)
+writeLines(table_shell(label, title, tw_ab$total_w, body_ab, note_reg_present), out_reg_present)
 cat("Written:", out_reg_present, "\n")
 cat("\n=== run_k2_6yr_annprod_ab.r DONE ===\n")

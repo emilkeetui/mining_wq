@@ -420,10 +420,10 @@ cat("Written:", out_reg_placement, "\n")
 
 # ── 6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex ───────────────────
 mcl_labels <- c(
-  "arsenic"  = "Pre-2006: 0.050 mg/L, 2006+: 0.010 mg/L",
-  "nitrate"  = "10.0 mg/L",
-  "barium"   = "2.000 mg/L",
-  "selenium" = "0.050 mg/L"
+  "arsenic"  = paste0(fmt_sig(0.050), " (pre-2006), ", fmt_sig(0.010), " (2006+)"),
+  "nitrate"  = fmt_sig(10),
+  "barium"   = fmt_sig(2),
+  "selenium" = fmt_sig(0.050)
 )
 mcl_values <- c("nitrate" = 10.000, "barium" = 2.000, "selenium" = 0.050)
 mcl_value_for <- function(chem, year) {
@@ -470,85 +470,62 @@ annual_prod_k2 <- si %>%
 stopifnot(!anyDuplicated(annual_prod_k2[, c("PWSID", "year")]))
 dose2 <- dplyr::left_join(dose2, annual_prod_k2, by = c("PWSID", "year"))
 stopifnot(!anyNA(dose2$annual_prod_st))
-# Median over the Panel A utility-year sample (each PWSID-year counted once).
-median_annual_prod <- median(
-  unique(dose2[, c("PWSID", "year", "annual_prod_st")])$annual_prod_st)
-dose2_above <- dose2[dose2$annual_prod_st > median_annual_prod, ]
-panel_b_ss  <- build_sumstats_k2(dose2_above)
+# Panel B: utility-years with any (non-zero) coal extraction upstream.
+dose2_nonzero <- dose2[dose2$annual_prod_st > 0, ]
+panel_b_ss  <- build_sumstats_k2(dose2_nonzero)
 sum_df_b_ss <- panel_b_ss$sum_df
-
-fmt_num_ss <- function(x) if (is.na(x)) "---" else sprintf("%.4f", x)
-fmt_n_ss   <- function(x) formatC(x, format = "d", big.mark = ",")
-fmt_pct_ss <- function(x) if (is.na(x)) "---" else sprintf("%.1f\\%%", 100 * x)
 
 note_ss <- paste(c(
   "\\textit{Notes:} SYR2 sample from 1998--2005.",
-  "``Near MCL'' is the share of utility-year mean concentrations exceeding 50\\% of the applicable MCL.",
-  paste0("Panel B restricts Panel A's sample to utility-year observations with annual coal extraction in upstream watersheds above the sample median of ", formatC(median_annual_prod, format = "f", digits = 0, big.mark = ","), " short tons per year",
-         if (median_annual_prod == 0) ", that is, utility-years with any coal extraction in upstream watersheds." else ".")
+  "``Near MCL'' is the percent of utility-year mean concentrations exceeding 50\\% of the applicable MCL.",
+  "Panel B restricts Panel A's sample to utility-year observations with non-zero annual coal extraction in upstream watersheds."
 ), collapse = " ")
 
-col_spec_ss <- paste0(
-  ">{\\raggedright\\arraybackslash}p{4.4cm}", ">{\\raggedright\\arraybackslash}p{3.6cm}",
-  ">{\\raggedleft\\arraybackslash}p{1.3cm}", ">{\\raggedleft\\arraybackslash}p{1.3cm}",
-  ">{\\raggedleft\\arraybackslash}p{1.3cm}", ">{\\raggedleft\\arraybackslash}p{1.15cm}",
-  ">{\\raggedleft\\arraybackslash}p{1.3cm}"
-)
-header_row_ss <- "Variable & MCL & Mean & Max & Std.\\ Dev. & $N$ & Near MCL \\\\"
-make_ss_row <- function(r) {
-  paste0("         ", r$variable, " & ", r$mcl_label, " & ", fmt_num_ss(r$mean_val), " & ",
-         fmt_num_ss(r$max_val), " & ", fmt_num_ss(r$sd_val), " & ", fmt_n_ss(r$n_obs), " & ",
-         fmt_pct_ss(r$near_mcl), " \\\\")
+ss_w_cm <- c(4.0, 3.2, 1.4, 1.4, 1.5, 1.0, 2.0)
+col_spec_ss <- paste0(">{\\raggedright\\arraybackslash}p{", ss_w_cm[1], "cm}",
+                      ">{\\raggedright\\arraybackslash}p{", ss_w_cm[2], "cm}",
+                      paste0(">{\\raggedleft\\arraybackslash}p{", ss_w_cm[-(1:2)], "cm}", collapse = ""))
+header_row_ss <- "Variable & MCL & Mean & Max & Std.\\ dev. & $N$ & Near MCL (\\%) \\\\"
+
+# Decimal-aligned significant-figure cells, computed over both panels so a
+# column shares one set of box widths.
+all_ss <- rbind(sum_df_a_ss, sum_df_b_ss)
+for (v in c("mean_val", "max_val", "sd_val")) {
+  all_ss[[paste0(v, "_cell")]] <- split_align_cells(fmt_sig(all_ss[[v]], 2), stars = FALSE)
 }
+make_ss_row <- function(i) {
+  r <- all_ss[i, ]
+  paste0(r$variable, " & ", r$mcl_label, " & ", r$mean_val_cell, " & ", r$max_val_cell, " & ",
+         r$sd_val_cell, " & ", fmt_int(r$n_obs), " & ", fmt_fixed(100 * r$near_mcl, 2), " \\\\")
+}
+n_a_ss <- nrow(sum_df_a_ss)
+body_ss <- c(
+  paste0("\\begin{tabular}{", col_spec_ss, "}"),
+  "\\toprule",
+  header_row_ss,
+  "\\midrule",
+  "\\multicolumn{7}{l}{\\textbf{Panel A: Full sample}} \\\\",
+  vapply(seq_len(n_a_ss), make_ss_row, character(1)),
+  "\\midrule",
+  "\\multicolumn{7}{l}{\\textbf{Panel B: Utility-years with non-zero coal extraction}} \\\\",
+  vapply(n_a_ss + seq_len(nrow(sum_df_b_ss)), make_ss_row, character(1)),
+  "\\bottomrule",
+  "\\end{tabular}"
+)
+tw_ss <- table_width(ss_w_cm)
+if (tw_ss$needs_scale) body_ss <- c("\\begin{adjustbox}{max width=\\linewidth}", body_ss, "\\end{adjustbox}")
 
-panel_a_lines_ss <- c(
-  "   \\begin{adjustbox}{width = 0.9\\textwidth, center}",
-  paste0("      \\begin{tabular}{", col_spec_ss, "}"),
-  "         \\toprule",
-  paste0("         ", header_row_ss),
-  "         \\midrule",
-  "         \\multicolumn{7}{l}{\\textbf{Panel A: Full sample}} \\\\",
-  vapply(seq_len(nrow(sum_df_a_ss)), function(i) make_ss_row(sum_df_a_ss[i, ]), character(1)),
-  "         \\bottomrule",
-  "      \\end{tabular}",
-  "   \\end{adjustbox}"
-)
-panel_b_lines_ss <- c(
-  "   \\bigskip",
-  "   \\begin{adjustbox}{width = 0.9\\textwidth, center}",
-  paste0("      \\begin{tabular}{", col_spec_ss, "}"),
-  "         \\multicolumn{7}{l}{\\textbf{Panel B: Utility-years above median annual tons of coal extracted}} \\\\",
-  vapply(seq_len(nrow(sum_df_b_ss)), function(i) make_ss_row(sum_df_b_ss[i, ]), character(1)),
-  "         \\bottomrule",
-  "      \\end{tabular}",
-  "   \\end{adjustbox}"
-)
-
-tex_ss <- c(
-  "", "\\begin{table}[htbp]",
-  paste0("   \\caption{\\label{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2} Utility contaminant concentrations, 1998-2005}"),
-  "   \\bigskip", "   \\centering",
-  panel_a_lines_ss, panel_b_lines_ss,
-  "   \\begin{minipage}{\\linewidth}", "   \\vspace{4pt}",
-  paste0("   {\\tiny\\linespread{1}\\selectfont\\raggedright ", note_ss, "}"),
-  "   \\end{minipage}", "\\end{table}", ""
-)
+ss_label <- "tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2"
+ss_title <- "Utility contaminant concentrations, 1998--2005"
 out_ss <- "Z:/ek559/mining_wq/output/sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex"
-writeLines(tex_ss, out_ss)
+writeLines(table_shell(ss_label, ss_title, tw_ss$total_w, body_ss, note_ss), out_ss)
 cat("Written:", out_ss, "\n")
 
-# Presentation companion: same table body, trailing notes minipage dropped
-# entirely (summary statistics carry no clustering/FE/stars) --
+# Presentation companion: same table body, notes dropped entirely (summary
+# statistics carry no clustering/FE/stars) --
 # .claude/logs/2026-08-31-presentation-notes-tables.md.
-tex_ss_present <- c(
-  "", "\\begin{table}[htbp]",
-  paste0("   \\caption{\\label{tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2} Utility contaminant concentrations, 1998-2005}"),
-  "   \\bigskip", "   \\centering",
-  panel_a_lines_ss, panel_b_lines_ss,
-  "\\end{table}", ""
-)
 out_ss_present <- sub("\\.tex$", "_present.tex", out_ss)
-writeLines(tex_ss_present, out_ss_present)
+writeLines(table_shell(ss_label, ss_title, tw_ss$total_w, body_ss, NULL), out_ss_present)
 cat("Written:", out_ss_present, "\n")
 
 # ── pt_balance_6yr_k2.tex ─────────────────────────────────────────────────
@@ -616,17 +593,17 @@ m_bal <- list(
   fixest::feols(fml_bal_4, data = bal, vcov = "hetero", warn = FALSE, notes = FALSE)
 )
 
-wald_f <- character(0); wald_p <- character(0)
+wald_f <- numeric(0); wald_p <- numeric(0)
 for (i in seq_along(m_bal)) {
   w <- tryCatch(
     fixest::wald(m_bal[[i]], keep = "log_pop|num_|surface_water|owner_public|is_wholesaler|source_protected", print = FALSE),
     error = function(e) NULL
   )
   if (!is.null(w)) {
-    wald_f <- c(wald_f, format(round(w$stat, 2), nsmall = 2))
-    wald_p <- c(wald_p, format(round(w$p, 3), nsmall = 3))
+    wald_f <- c(wald_f, w$stat)
+    wald_p <- c(wald_p, w$p)
   } else {
-    wald_f <- c(wald_f, "---"); wald_p <- c(wald_p, "---")
+    wald_f <- c(wald_f, NA_real_); wald_p <- c(wald_p, NA_real_)
   }
 }
 
@@ -666,119 +643,35 @@ m_bal_ord  <- m_bal[col_order]
 wald_f_ord <- wald_f[col_order]
 wald_p_ord <- wald_p[col_order]
 
-postprocess_bal_k2 <- function(x) {
-  x <- move_notes_below_adjustbox(x)
-  x <- paste(x, collapse = "\n")
+bal_terms <- function(var) lapply(m_bal_ord, function(m) get_term(m, var))
+bal_vars  <- c("(Intercept)", "log_pop_1997", "log_pop_syr2", "num_facilities", "surface_water",
+               "owner_public", "is_wholesaler", "source_protected")
+bal_label <- function(v) if (v == "(Intercept)") "Constant" else dict_bal[[v]]
+n_col_bal <- length(m_bal_ord)
+bal_data_w <- "2cm"
+bal_pad <- "\\phantom{$^{***}$}"
+bal_p_line <- paste0("\\hspace{1em} $p$-value & ",
+                     paste0(fmt_p(wald_p_ord), bal_pad, collapse = " & "), " \\\\")
 
-  # Equal-width, evenly-spaced data columns: coefficients/SEs right-justified
-  # (decimal alignment), column numbers and superheader group labels centered
-  # at the same fixed width so the header rows line up with the body below.
-  data_w_cm   <- 3.0
-  data_w      <- paste0(data_w_cm, "cm")
-  right_col   <- paste0(">{\\centering\\arraybackslash}p{", data_w, "}")
-  center_col  <- paste0(">{\\centering\\arraybackslash}p{", data_w, "}")
-  center_col2 <- paste0(">{\\centering\\arraybackslash}p{", 2 * data_w_cm, "cm}")
-
-  m <- regmatches(x, regexpr("\\\\begin\\{tabular\\}\\{l+c+\\}", x))
-  if (length(m) == 1 && nzchar(m)) {
-    n_data   <- nchar(gsub("[^c]", "", m))
-    new_spec <- paste0("\\begin{tabular}{l", paste(rep(right_col, n_data), collapse = ""), "}")
-    x <- sub(m, new_spec, x, fixed = TRUE)
-    x <- gsub("\\multicolumn{2}{c}", paste0("\\multicolumn{2}{", center_col2, "}"), x, fixed = TRUE)
-  }
-
-  lines <- strsplit(x, "\n")[[1]]
-  is_numrow <- function(line) {
-    cells <- strsplit(line, "&", fixed = TRUE)[[1]]
-    cells <- trimws(gsub("\\\\\\\\.*$", "", cells))
-    cells <- cells[cells != ""]
-    length(cells) > 0 && all(grepl("^\\(\\d+\\)$", cells))
-  }
-  idx <- which(vapply(lines, is_numrow, logical(1)))
-  # gsub's backreference replacement parser swallows lone backslashes not
-  # followed by a digit, so double every backslash in center_col before
-  # handing it to the (\1)-backreference gsub below.
-  center_col_repl <- gsub("\\", "\\\\", center_col, fixed = TRUE)
-  for (i in idx) {
-    lines[i] <- gsub("(\\(\\d+\\))", paste0("\\\\multicolumn{1}{", center_col_repl, "}{\\1}"), lines[i])
-  }
-  # Decimal-align every numeric body cell: fixed-width boxes for
-  # (prefix + integer part), decimal part, and suffix (")" or stars), so the
-  # period sits at the same x-position in every row of a column.
-  body_start <- which(grepl("\\midrule", lines, fixed = TRUE))[1]
-  body_end   <- which(grepl("\\bottomrule", lines, fixed = TRUE))[1]
-  align_cell <- function(cell) {
-    cell <- trimws(cell)
-    m <- regmatches(cell, regexec("^(\\(?-?)([0-9]+)(\\.[0-9]+)?(\\)|\\$\\^\\{\\*+\\}\\$)?$", cell))[[1]]
-    if (length(m) == 0) return(cell)
-    frac <- if (nzchar(m[4])) m[4] else "\\phantom{.}"
-    paste0("\\makebox[1.7em][r]{", m[2], m[3], "}\\makebox[2.6em][l]{", frac,
-           "}\\makebox[1.9em][l]{", m[5], "}")
-  }
-  for (i in seq(body_start + 1, body_end - 1)) {
-    if (!grepl("&", lines[i], fixed = TRUE) || grepl("multicolumn", lines[i], fixed = TRUE)) next
-    tail_i <- regmatches(lines[i], regexpr("\\\\\\\\.*$", lines[i]))
-    if (length(tail_i) == 0) tail_i <- ""
-    body_i <- sub("\\\\\\\\.*$", "", lines[i])
-    cells  <- strsplit(body_i, "&", fixed = TRUE)[[1]]
-    if (length(cells) < 2) next
-    cells[-1] <- vapply(cells[-1], align_cell, character(1))
-    lines[i] <- paste0(paste(cells, collapse = " & "), tail_i)
-  }
-  paste(lines, collapse = "\n")
-}
-
-out_bal <- "Z:/ek559/mining_wq/output/reg/pt_balance_6yr_k2.tex"
-etable(
-  m_bal_ord,
-  headers = list(" " = list("Annual upstream coal prod. (1M ST)" = 2, "Any upstream coal mining" = 2)),
-  depvar = FALSE,
-  fitstat = ~ n,
-  extralines = list(
-    "Joint $F$-test (all covariates)" = wald_f_ord,
-    "\\hspace{1em} $p$-value"         = wald_p_ord
-  ),
-  style.tex = style.tex("aer", adjustbox = TRUE),
-  tex = TRUE,
-  digits = "r4",
-  title = "Balance test of utility characteristics and upstream coal production 1998--2005",
-  label = "tab:pt_balance_6yr_k2",
-  dict = dict_bal,
-  notes = note_bal,
-  postprocess.tex = postprocess_bal_k2,
-  file = out_bal, replace = TRUE
-)
-cat("Written:", out_bal, "\n")
-
-# Presentation companion: same table body (FE checkmark rows already carry
-# the fixed-effects info and differ across columns, so notes stay silent on
-# FE per table-notes-conventions.md Rule 7); notes reduced to clustering +
-# stars legend only -- .claude/logs/2026-08-31-presentation-notes-tables.md.
 note_bal_present <- paste0(
   "\\textit{Notes:} Heteroskedasticity-robust standard errors. ",
   "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
 )
-out_bal_present <- sub("\\.tex$", "_present.tex", out_bal)
-etable(
-  m_bal_ord,
-  headers = list(" " = list("Annual upstream coal prod. (1M ST)" = 2, "Any upstream coal mining" = 2)),
-  depvar = FALSE,
-  fitstat = ~ n,
-  extralines = list(
-    "Joint $F$-test (all covariates)" = wald_f_ord,
-    "\\hspace{1em} $p$-value"         = wald_p_ord
-  ),
-  style.tex = style.tex("aer", adjustbox = TRUE),
-  tex = TRUE,
-  digits = "r4",
-  title = "Balance test of utility characteristics and upstream coal production 1998--2005",
-  label = "tab:pt_balance_6yr_k2",
-  dict = dict_bal,
-  notes = note_bal_present,
-  postprocess.tex = postprocess_bal_k2,
-  file = out_bal_present, replace = TRUE
+render_coef_table_k2(
+  rows = lapply(bal_vars, function(v) list(label = bal_label(v), terms = bal_terms(v))),
+  col_headers = NULL, colnums = TRUE,
+  group_headers = list(list(label = "Annual upstream coal prod. (1M ST)", span = 2),
+                       list(label = "Any upstream coal mining", span = 2)),
+  fe_list     = list("State" = c(FALSE, TRUE, FALSE, TRUE)),
+  f_rows      = list("Joint $F$-test (all covariates)" = wald_f_ord),
+  stat_lines  = bal_p_line,
+  n_obs       = vapply(m_bal_ord, nobs, numeric(1)), n_utils = NULL,
+  label       = "tab:pt_balance_6yr_k2",
+  title       = "Balance test of utility characteristics and upstream coal production 1998--2005",
+  outfile     = "pt_balance_6yr_k2",
+  note_text_fn = function(extra) note_bal, notes_present = note_bal_present,
+  label_w_cm  = 5, data_w_cm = 2
 )
-cat("Written:", out_bal_present, "\n")
 
 # ── syr2_mr_comparison_k2.tex ────────────────────────────────────────────
 # Compare MR/MCL violation rates between utilities with and without SYR2
@@ -846,8 +739,8 @@ pvals <- list(
   mean_num_vio_8505 = stats::t.test(g1$mean_num_vio_8505, g2$mean_num_vio_8505)$p.value
 )
 
-fmt_pct_c  <- function(x) sprintf("%.1f\\%%", x * 100)
-fmt_mean_c <- function(x) sprintf("%.2f", x)
+fmt_pct_c  <- function(x) fmt_fixed(x * 100, 2)
+fmt_mean_c <- function(x) fmt_fixed(x, 2)
 star_str_c <- function(p) if (p < 0.01) "^{***}" else if (p < 0.05) "^{**}" else if (p < 0.1) "^{*}" else ""
 
 g1_row <- dplyr::filter(group_means, group == 1); g2_row <- dplyr::filter(group_means, group == 2)
@@ -877,68 +770,61 @@ rows_8505 <- list(
        diff = fmt_mean_c(diffs["mean_num_vio_8505"]), p = pvals$mean_num_vio_8505)
 )
 
-build_panel_c <- function(panel_title, rows) {
-  header <- paste0(
-    "\\textbf{", panel_title, "}\\\\[2pt]\n",
-    "\\begin{adjustbox}{max width=\\textwidth}\n",
-    "\\begin{tabular}{lrrrr}\n\\toprule\n",
-    " & \\multicolumn{2}{c}{Utility appears in SYR2} & & \\\\\n",
-    "\\cmidrule(lr){2-3}\n",
-    " & Yes & No & Diff. & $p$-value \\\\\n",
-    " & \\multicolumn{1}{c}{(1)} & \\multicolumn{1}{c}{(2)} & \\multicolumn{1}{c}{(3)} & \\multicolumn{1}{c}{(4)} \\\\\n",
-    "\\hline\n"
-  )
-  body <- ""
-  for (i in seq_along(rows)) {
-    r <- rows[[i]]
-    stars <- star_str_c(r$p)
-    diff_cell <- if (nzchar(stars)) paste0(r$diff, "$", stars, "$") else r$diff
-    if (i == length(rows)) body <- paste0(body, "\\hline\n")
-    body <- paste0(body, r$label, " & ", r$g1, " & ", r$g2, " & ", diff_cell, " & ", sprintf("%.3f", r$p), " \\\\\n")
+build_syr2_table <- function(with_notes) {
+  cmp_w_cm <- c(6.5, 1.75, 1.75, 1.75, 1.75)
+  cen <- ">{\\centering\\arraybackslash}p{1.75cm}"
+  pad <- "\\phantom{$^{***}$}"
+  hang <- function(s) ifelse(startsWith(s, "-"), paste0("\\makebox[0pt][r]{-}", sub("^-", "", s)), s)
+  panel_rows <- function(rows) {
+    body <- vapply(rows, function(r) {
+      paste0(r$label, " & ", hang(r$g1), pad, " & ", hang(r$g2), pad, " & ",
+             hang(r$diff), stars_slots(stars_from_p(r$p)), " & ", fmt_p(r$p), pad, " \\\\")
+    }, character(1))
+    unname(body)
   }
-  footer <- "\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n\\par\n"
-  paste0(header, body, footer)
+  body_c <- c(
+    paste0("\\begin{tabular}{>{\\raggedright\\arraybackslash}p{", cmp_w_cm[1], "cm}", paste0(">{\\raggedleft\\arraybackslash}p{", cmp_w_cm[-1], "cm}", collapse = ""), "}"),
+    "\\toprule",
+    " & \\multicolumn{2}{c}{Utility appears in SYR2 (\\%)} & & \\\\",
+    "\\cmidrule(lr){2-3}",
+    paste0(" & ", paste0("\\multicolumn{1}{", cen, "}{", c("Yes", "No", "Diff.", "$p$-value"), "}", collapse = " & "), " \\\\"),
+    paste0(" & ", paste0("\\multicolumn{1}{", cen, "}{(", 1:4, ")}", collapse = " & "), " \\\\"),
+    "\\midrule",
+    # Only the full 1985--2005 window is reported; rows_9705 is kept for
+    # reference but no longer rendered.
+    panel_rows(rows_8505),
+    "\\bottomrule",
+    "\\end{tabular}"
+  )
+  tw_c <- table_width(cmp_w_cm)
+  if (tw_c$needs_scale) body_c <- c("\\begin{adjustbox}{max width=\\linewidth}", body_c, "\\end{adjustbox}")
+  note_c <- if (with_notes) paste0(
+    "\\textit{Notes:} Sample restricted to utilities with a coal mine within two flow steps ",
+    "upstream of their intake and no coal mine colocated with their intake. ",
+    "\\textit{Has SYR2 reading}: at least one Six-Year Review contaminant reading for ",
+    "arsenic, nitrate, selenium, or barium. \\textit{No SYR2 reading}: utility is in a ",
+    "state where at least one utility has a SYR2 reading but the utility itself does ",
+    "not. MR violation: inorganic chemical monitoring and reporting violation. MCL ",
+    "violation: inorganic chemical maximum contaminant violation. Mean annual ",
+    "violations: sum of MR and MCL violation indicators across arsenic, nitrate, and ",
+    "inorganic chemicals categories (maximum of 6 per utility-year). $N$ utilities: ",
+    "group 1 = ", g1_row$n_cws, ", group 2 = ", g2_row$n_cws, ". ",
+    "The first two rows are percentages of utilities and their differences are in percentage points. ",
+    "Stars on differences are from two-sample $t$-tests. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
+  ) else NULL
+  table_shell("tab:syr2_mr_comparison_k2",
+              "MR and MCL violation rates and counts by SYR2 contaminant reporting status, two-step upstream watershed linkage, 1985--2005",
+              tw_c$total_w, body_c, note_c)
 }
 
-tex_c <- paste0(
-  "\\begin{table}[htbp]\n\\centering\n",
-  "\\caption{MR and MCL violation rates and counts by SYR2 contaminant reporting status, two-step upstream watershed linkage}\n",
-  "\\label{tab:syr2_mr_comparison_k2}\n",
-  build_panel_c("Panel A: 1997--2005", rows_9705),
-  "\\vspace{8pt}\n",
-  build_panel_c("Panel B: 1985--2005", rows_8505),
-  "\\begin{minipage}{\\linewidth}\n\\vspace{4pt}\n\\footnotesize\n\\raggedright\n",
-  "\\textit{Notes:} Sample restricted to utilities with a coal mine within two flow steps ",
-  "upstream of their intake and no coal mine colocated with their intake. ",
-  "\\textit{Has SYR2 reading}: at least one Six-Year Review contaminant reading for ",
-  "arsenic, nitrate, selenium, or barium. \\textit{No SYR2 reading}: utility is in a ",
-  "state where at least one utility has a SYR2 reading but the utility itself does ",
-  "not. MR violation: inorganic chemical monitoring and reporting violation. MCL ",
-  "violation: inorganic chemical maximum contaminant violation. Mean annual ",
-  "violations: sum of MR and MCL violation indicators across arsenic, nitrate, and ",
-  "inorganic chemicals categories (maximum of 6 per utility-year). $N$ utilities: ",
-  "group 1 = ", g1_row$n_cws, ", group 2 = ", g2_row$n_cws, ". Diff.~stars from ",
-  "two-sample $t$-test: *** $p<0.01$, ** $p<0.05$, * $p<0.1$.\n",
-  "\\end{minipage}\n\\end{table}\n"
-)
-
 out_c <- "Z:/ek559/mining_wq/output/sum/syr2_mr_comparison_k2.tex"
-writeLines(tex_c, out_c)
+writeLines(build_syr2_table(TRUE), out_c)
 cat("Written:", out_c, "\n")
 
 # Presentation companion: same table body, trailing notes minipage dropped
 # entirely -- .claude/logs/2026-08-31-presentation-notes-tables.md.
-tex_c_present <- paste0(
-  "\\begin{table}[htbp]\n\\centering\n",
-  "\\caption{MR and MCL violation rates and counts by SYR2 contaminant reporting status, two-step upstream watershed linkage}\n",
-  "\\label{tab:syr2_mr_comparison_k2}\n",
-  build_panel_c("Panel A: 1997--2005", rows_9705),
-  "\\vspace{8pt}\n",
-  build_panel_c("Panel B: 1985--2005", rows_8505),
-  "\\end{table}\n"
-)
 out_c_present <- sub("\\.tex$", "_present.tex", out_c)
-writeLines(tex_c_present, out_c_present)
+writeLines(build_syr2_table(FALSE), out_c_present)
 cat("Written:", out_c_present, "\n")
 
 cat("\n=== run_k2_6yr_tables.r DONE ===\n")

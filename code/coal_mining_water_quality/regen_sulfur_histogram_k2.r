@@ -47,22 +47,24 @@ cat("HUC12s in sulfur histogram:", nrow(coal_sulfur_hist_k2), "\n")
 out_path <- file.path(ROOT, "output/fig/sulfur_histogram_k2.png")
 if (file.exists(out_path)) cat("WARNING:", out_path, "already exists -- overwriting\n")
 png(out_path, width = 11, height = 13.5, units = "in", res = 300)
-par(mfrow = c(3, 1), mar = c(6, 6, 5, 2) + 0.1,
+par(mfrow = c(3, 1), mar = c(6, 8, 5, 2) + 0.1, mgp = c(5, 1, 0),
     cex.main = 2.2, cex.lab = 1.7, cex.axis = 1.55)
 
 hist(coal_data_k2$num_coal_mines_colocated,
-     main = "Within two HUC12s upstream of utility intakes: active coal mines",
-     xlab = "Number of active coal mines", col = "lightblue",
-     border = "black")
+     main = "Active coal mines",
+     xlab = "Number of active coal mines", ylab = "Frequency", las = 1,
+     col = "lightblue", border = "black")
 
-hist(coal_data_k2$production_short_tons_coal_colocated,
-     main = "Within two HUC12s upstream of utility intakes: total coal production",
-     xlab = "Coal production (short tons)", col = "lightblue",
-     border = "black")
+# Production in million short tons so tick labels stay short (no raw 2000000)
+hist(coal_data_k2$production_short_tons_coal_colocated / 1e6,
+     main = "Coal production",
+     xlab = "Coal production (million short tons)", ylab = "Frequency", las = 1,
+     col = "lightblue", border = "black")
 
 hist(coal_sulfur_hist_k2$sulfur,
-     main = "Histogram of the percentage of sulfur in coal weight in HUC12 watersheds",
-     xlab = "Coal bed % sulfur", col = "lightblue", border = "black")
+     main = "Coal sulfur content",
+     xlab = "Coal sulfur content (% of weight)", ylab = "Frequency", las = 1,
+     col = "lightblue", border = "black")
 
 dev.off()
 cat("Saved:", out_path, "\n")

@@ -62,6 +62,7 @@ r_mr <- render_panel_k2(
   title      = paste0("Effect of coal mines on inorganic chemical violations at ", sample_clause),
   label      = "tab:2sls_dwnstrm_minevio_mr_ivsum_binvio_k2placebo",
   outfile    = "2sls_dwnstrm_minevio_mr_ivsum_binvio_k2placebo",
+  compact_layout = TRUE,
   depvar_sentence = depvar_vio,
   superheader = "Monitoring and reporting (MR) violation"
 )
@@ -87,6 +88,7 @@ render_panel_k2(
   title      = paste0("Effect of coal mines on inorganic chemical violations at ", sample_clause),
   label      = "tab:2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2placebo",
   outfile    = "2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2placebo",
+  compact_layout = TRUE,
   depvar_sentence = depvar_vio,
   superheader = "Maximum contaminant level (MCL) violation"
 )
@@ -109,6 +111,7 @@ render_panel_k2(
   title      = paste0("Effect of coal mining on regulator visit probability by visit type at ", sample_clause),
   label      = "tab:h2_snsv_d12_k2placebo",
   outfile    = "h2_snsv_d12_k2placebo",
+  compact_layout = TRUE,
   depvar_sentence = depvar_visit
 )
 
@@ -129,6 +132,7 @@ render_panel_k2(
   title      = paste0("Effect of coal mining on enforcement actions by type at ", sample_clause),
   label      = "tab:h3_inf_formal_d12_k2placebo",
   outfile    = "h3_inf_formal_d12_k2placebo",
+  compact_layout = TRUE,
   depvar_sentence = depvar_enf,
   superheader = "Any enforcement"
 )

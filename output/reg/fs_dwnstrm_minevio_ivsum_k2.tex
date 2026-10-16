@@ -1,39 +1,25 @@
 \begin{table}[htbp]
 \centering
-\makeatletter\@ifundefined{fsnotesbox}{\newsavebox{\fsnotesbox}}{}\makeatother
-\sbox{\fsnotesbox}{%
-\begin{tabular}{lr}
-         \toprule
-         
-                                                 & Upstream coal mines (sum)\\  
-         
-                                                 & (1)\\  
-         
-         \midrule 
-         Post-1995 $\times$ Upstream sulfur \%   & -0.4933$^{***}$\\   
-                                                 & (0.0703)\\   
-         
-         F-test (1st stage, clustered)           & 49.20\\  
-         
-         Utility fixed effects                   & $\checkmark$\\   
-         
-         State $\times$ year fixed effects       & $\checkmark$\\   
-         
-          \\
-         
-         Observations                            & 10,641\\  
-         
-         \bottomrule
-         
-      \end{tabular}
-}%
-\begin{minipage}{\wd\fsnotesbox}
-\raggedright
-\caption{\label{tab:fs_dwnstrm_minevio_ivsum_k2} First stage: effect of the instrument on the number of upstream coal mines, 1985-2005}
+\begin{minipage}{10.0623cm}
+\caption{\label{tab:fs_dwnstrm_minevio_ivsum_k2} First stage: effect of the instrument on the number of upstream coal mines, 1985--2005}
+\end{minipage}
+\small
+{\setlength{\tabcolsep}{4pt}%
+\begin{tabular}{>{\raggedright\arraybackslash}p{6.5cm}>{\raggedleft\arraybackslash}p{3cm}}
+\toprule
+ & \multicolumn{1}{>{\centering\arraybackslash}p{3cm}}{Upstream coal mines (sum)} \\
+\hline
+Post-1995 $\times$ Upstream sulfur \% & \makebox[0pt][r]{-}0.49$^{***}$ \\
+ & \makebox[0pt][r]{(}0.07\makebox[0pt][l]{)}\phantom{$^{***}$} \\
+\hline
+First-stage F-statistic & 49.20\phantom{$^{***}$} \\
+\bottomrule
+\end{tabular}
+}
+\begin{minipage}{10.0623cm}
 \vspace{4pt}
-{\centering\usebox{\fsnotesbox}\par}
-{\tiny\linespread{1}\selectfont \par \raggedright 
-   \textit{Notes:} The dependent variable is the number of coal mines in watersheds within two flow steps upstream of the utility's intake, summed across those watersheds. Standard errors clustered at the utility level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.}
+\footnotesize
+\raggedright
+\textit{Notes:} The dependent variable is the number of coal mines in watersheds within two flow steps upstream of the utility's intake, summed across those watersheds. Standard errors clustered at the utility level. All specifications include utility and state-by-year fixed effects. Number of observations: 10,641; number of utilities: 565. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
 \end{minipage}
 \end{table}
-

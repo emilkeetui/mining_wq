@@ -153,12 +153,9 @@ fs_stats_updn <- function(dat, fe) {
 
 # Decimal-alignment width computed over every term in a column.
 fmt_col_multi <- function(terms_list, digits = 2) {
-  int_w <- function(x) {
-    if (is.na(x)) return(0L)
-    nchar(sub("\\..*$", "", sprintf(paste0("%.", digits, "f"), abs(x))))
-  }
-  w <- max(sapply(terms_list, function(t) max(int_w(t$est), int_w(t$se))))
-  lapply(terms_list, function(t) fmt_num_wide(t$est, t$se, t$pval, w, digits))
+  # tight cells: hanging sign / parentheses in a right-aligned column, so no
+  # integer-width padding is needed
+  lapply(terms_list, function(t) fmt_num_wide(t$est, t$se, t$pval, 1, digits, tight = TRUE))
 }
 
 range_str <- function(v) {
@@ -214,7 +211,7 @@ render_panel_k2_updn <- function(dat, outcomes, fe_specs, dict,
   # integer digits. adjustbox scales the whole tabular to \linewidth.
   label_w_cm <- 7
   max_w_cm   <- 19
-  data_w_cm  <- min(3, (max_w_cm - label_w_cm) / n_col)
+  data_w_cm  <- min(2, (max_w_cm - label_w_cm) / n_col)
   label_w    <- paste0(label_w_cm, "cm")
   data_w     <- paste0(data_w_cm, "cm")
   col_spec   <- paste0(">{\\raggedright\\arraybackslash}p{", label_w, "}",
@@ -231,7 +228,7 @@ render_panel_k2_updn <- function(dat, outcomes, fe_specs, dict,
     grp_header_cells <- paste0("\\multicolumn{", n_fe, "}{c}{", oc_labels, "}")
     header_block <- c(paste0(" & ", paste(grp_header_cells, collapse = " & "), " \\\\"), colnum_row)
   } else {
-    header_cells <- paste0("\\multicolumn{1}{", centered_data_col, "}{", oc_labels, "}")
+    header_cells <- paste0("\\multicolumn{1}{", centered_data_col, "}{\\footnotesize ", oc_labels, "}")
     header_block <- c(paste0(" & ", paste(header_cells, collapse = " & "), " \\\\"), colnum_row)
   }
 
@@ -242,14 +239,12 @@ render_panel_k2_updn <- function(dat, outcomes, fe_specs, dict,
 
   fe_state     <- vapply(col_fe, function(fe) grepl("STATE_CODE^year", fe, fixed = TRUE), logical(1))
   fe_year      <- vapply(col_fe, function(fe) "year" %in% trimws(strsplit(fe, "\\+")[[1]]), logical(1))
-  chk_all      <- paste(rep("$\\checkmark$", n_col), collapse = " & ")
-  chk_state    <- paste(ifelse(fe_state, "$\\checkmark$", ""), collapse = " & ")
-  chk_year     <- paste(ifelse(fe_year, "$\\checkmark$", ""), collapse = " & ")
-  fe_row_util  <- paste0("Utility fixed effects & ", chk_all, " \\\\")
-  fe_row_year  <- paste0("Year fixed effects & ", chk_year, " \\\\")
-  fe_row_state <- paste0("State $\\times$ year fixed effects & ", chk_state, " \\\\")
-  n_util_row   <- paste0("Utilities & ", paste(format(n_utils, big.mark = ","), collapse = " & "), " \\\\")
-  n_obs_row    <- paste0("Observations & ", paste(format(n_obs, big.mark = ","), collapse = " & "), " \\\\")
+  fe_res <- fe_block(list("Utility" = rep(TRUE, n_col), "Year" = fe_year, "State $\\times$ year" = fe_state), data_w)
+  nb     <- n_block(n_obs, n_utils)
+  f_rows <- c(
+    paste0("First-stage F-statistic (upstream) & ", paste0(fmt_fixed(jf_up, 2), "\\phantom{$^{***}$}", collapse = " & "), " \\\\"),
+    paste0("First-stage F-statistic (downstream) & ", paste0(fmt_fixed(jf_dn, 2), "\\phantom{$^{***}$}", collapse = " & "), " \\\\")
+  )
 
   tabcolsep_pt    <- 4
   cm_per_pt       <- 2.54 / 72.27
@@ -293,24 +288,23 @@ render_panel_k2_updn <- function(dat, outcomes, fe_specs, dict,
     title_row("RF"),
     pair(5, zu_lab), pair(6, zd_lab),
     "\\hline",
-    fe_row_util, fe_row_year, fe_row_state,
-    n_util_row, n_obs_row,
+    fe_res$rows,
+    nb$rows,
+    f_rows,
     "\\bottomrule",
     "\\end{tabular}"
   ))
 
   f_note <- paste0(
     "Upstream and downstream coal mines are instrumented jointly using both instruments. ",
-    "The first-stage F-statistic (clustered at the utility level) for both instruments ",
-    if (n_col > 1 && (length(unique(round(jf_up, 2))) > 1 || length(unique(round(jf_dn, 2))) > 1))
-      "ranges across columns from " else "is ",
-    range_str(jf_up), " for upstream coal mines and ", range_str(jf_dn), " for downstream coal mines."
+    "The first-stage F-statistics (clustered at the utility level) test both instruments jointly."
   )
+  extra_note <- paste(c(extra_note, fe_res$note, nb$note), collapse = " ")
   note_text <- notes_k2(depvar_sentence, f_note = f_note, extra = extra_note)
 
   build_table_lines <- function(note_text_val) c(
     "\\begin{table}[htbp]",
-    "\\raggedright",
+    "\\centering",
     paste0("\\begin{minipage}{", total_w, "}"),
     paste0("\\caption{\\label{", label, "} ", title, "}"),
     "\\end{minipage}",
@@ -414,41 +408,28 @@ fs_all <- fs_stats_updn(main_dat, fe_state_yr)
 cat(sprintf("\nFirst stage (state x year FE): joint F up %.2f / down %.2f [probe 24.68 / 18.31]\n",
             fs_all$up$joint_f, fs_all$dn$joint_f))
 
-el_fs <- list(
-  "F-test (1st stage, clustered)"      = c(fmt_single(fs_all$up$joint_f), fmt_single(fs_all$dn$joint_f)),
-  "Utility fixed effects"              = c("$\\checkmark$", "$\\checkmark$"),
-  "State $\\times$ year fixed effects" = c("$\\checkmark$", "$\\checkmark$")
-)
-fs_notes <- notes_k2(paste0(
+fs_notes_fn <- function(extra) notes_k2(paste0(
   "The dependent variable is the number of coal mines in watersheds within two flow ",
   "steps upstream (column 1) or downstream (column 2) of the utility's intake, summed ",
   "across those watersheds. ", instr_clause, " ", sample_clause
-))
+), extra = extra)
 fs_title <- "First stage: effect of the Acid Rain Program on the number of upstream and downstream coal mines (summed across watersheds within two flow steps)"
-for (v in c("full", "present")) {
-  etable(
-    fs_all$up$fs, fs_all$dn$fs,
-    style.tex       = style.tex("aer", adjustbox = TRUE),
-    tex             = TRUE,
-    digits          = "r4",
-    drop            = "Number of intake facilities",
-    drop.section    = "fixef",
-    title           = fs_title,
-    label           = "tab:fs_dwnstrm_minevio_ivsum_k2updn",
-    extralines      = el_fs,
-    fitstat         = ~ n,
-    dict            = k2_dict_updn,
-    notes           = if (v == "full") fs_notes else notes_present_panel,
-    # \par before the notes group closes, so its \raggedright applies instead
-    # of the float's \centering (notes must be left-justified).
-    postprocess.tex = function(x) sub("p$<$0.1.}", "p$<$0.1.\\par}",
-                                      right_align_tabular(move_notes_below_adjustbox(x)), fixed = TRUE),
-    file            = file.path(ROOT, "output/reg",
-                                paste0("fs_dwnstrm_minevio_ivsum_k2updn", if (v == "present") "_present" else "", ".tex")),
-    replace         = TRUE
-  )
-}
-cat("  Written: output/reg/fs_dwnstrm_minevio_ivsum_k2updn.tex (+ _present)\n")
+render_coef_table_k2(
+  rows = list(
+    list(label = k2_dict_updn[["z_up"]], terms = list(get_term(fs_all$up$fs, "z_up"), get_term(fs_all$dn$fs, "z_up"))),
+    list(label = k2_dict_updn[["z_dn"]], terms = list(get_term(fs_all$up$fs, "z_dn"), get_term(fs_all$dn$fs, "z_dn")))
+  ),
+  col_headers = c("Upstream coal mines (sum)", "Downstream coal mines (sum)"),
+  fe_list     = list("Utility" = c(TRUE, TRUE), "State $\\times$ year" = c(TRUE, TRUE)),
+  f_rows      = list("First-stage F-statistic (joint)" = c(fs_all$up$joint_f, fs_all$dn$joint_f)),
+  n_obs       = c(nobs(fs_all$up$fs), nobs(fs_all$dn$fs)),
+  n_utils     = c(length(fixest::fixef(fs_all$up$fs)$PWSID), length(fixest::fixef(fs_all$dn$fs)$PWSID)),
+  label       = "tab:fs_dwnstrm_minevio_ivsum_k2updn",
+  title       = fs_title,
+  outfile     = "fs_dwnstrm_minevio_ivsum_k2updn",
+  note_text_fn = fs_notes_fn, notes_present = notes_present_panel,
+  label_w_cm  = 6.5, data_w_cm = 3
+)
 
 # 4.5 Exclusion-restriction falsification test
 m1 <- fixest::feols(num_facilities ~ z_up + z_dn | PWSID + STATE_CODE^year,
@@ -463,81 +444,30 @@ cat(sprintf("Balanced-panel subsample: %d utilities (of %d), %d obs\n",
 m2 <- fixest::feols(num_facilities ~ sulfur_mean0 + sulfur_down_mean0 + z_up + z_dn | year,
                      data = dat_bal, cluster = ~PWSID, warn = FALSE, notes = FALSE)
 
-DIGITS_ET <- 4
-col1_fmt <- fmt_col_multi(list(get_term(m1, "z_up"), get_term(m1, "z_dn")), DIGITS_ET)
-col2_fmt <- fmt_col_multi(list(get_term(m2, "sulfur_mean0"), get_term(m2, "sulfur_down_mean0"),
-                               get_term(m2, "z_up"), get_term(m2, "z_dn")), DIGITS_ET)
-et_rows <- c(
-  paste0("Upstream sulfur & & ", col2_fmt[[1]]$coef, " \\\\"),
-  paste0(" & & ", col2_fmt[[1]]$se, " \\\\"),
-  paste0("Downstream sulfur & & ", col2_fmt[[2]]$coef, " \\\\"),
-  paste0(" & & ", col2_fmt[[2]]$se, " \\\\"),
-  paste0("Post-1995 $\\times$ Upstream sulfur & ", col1_fmt[[1]]$coef, " & ", col2_fmt[[3]]$coef, " \\\\"),
-  paste0(" & ", col1_fmt[[1]]$se, " & ", col2_fmt[[3]]$se, " \\\\"),
-  paste0("Post-1995 $\\times$ Downstream sulfur & ", col1_fmt[[2]]$coef, " & ", col2_fmt[[4]]$coef, " \\\\"),
-  paste0(" & ", col1_fmt[[2]]$se, " & ", col2_fmt[[4]]$se, " \\\\")
-)
-
-n_y_et <- 2
-label_w_cm_et <- 5.5
-data_w_cm_et  <- 2.5
-# Plain "r" data columns so centered headers sit above the numbers
-# (see run_k2_main_tables.r:257-263).
-col_spec_et <- paste0("p{", label_w_cm_et, "cm}", paste(rep("r", n_y_et), collapse = ""))
-tabcolsep_pt <- 4
-cm_per_pt    <- 2.54 / 72.27
-textwidth_cm <- 16.51
-natural_w_cm_et <- label_w_cm_et + n_y_et * data_w_cm_et + 2 * (n_y_et + 1) * tabcolsep_pt * cm_per_pt
-needs_scale_et  <- natural_w_cm_et > textwidth_cm
-total_w_et <- if (needs_scale_et) "\\linewidth" else paste0(round(natural_w_cm_et, 4), "cm")
-
-tabular_lines_et <- c(
-  paste0("\\begin{tabular}{", col_spec_et, "}"),
-  "\\toprule",
-  " & \\multicolumn{2}{c}{Number of Intake Facilities} \\\\",
-  " & \\multicolumn{1}{c}{(1)} & \\multicolumn{1}{c}{(2)} \\\\",
-  "\\hline",
-  et_rows,
-  "\\hline",
-  "Utility fixed effects & $\\checkmark$ & \\\\",
-  "Year fixed effects & & $\\checkmark$ \\\\",
-  "State $\\times$ year fixed effects & $\\checkmark$ & \\\\",
-  "Balanced panel & & $\\checkmark$ \\\\",
-  paste0("Utilities & ", format(length(fixest::fixef(m1)$PWSID), big.mark = ","), " & ",
-         format(length(balanced_ids), big.mark = ","), " \\\\"),
-  paste0("Observations & ", format(nobs(m1), big.mark = ","), " & ", format(nobs(m2), big.mark = ","), " \\\\"),
-  "\\bottomrule",
-  "\\end{tabular}"
-)
-if (needs_scale_et) {
-  tabular_lines_et <- c("\\begin{adjustbox}{max width=\\linewidth}", tabular_lines_et, "\\end{adjustbox}")
-}
-note_et <- notes_k2(paste0(
+note_et_fn <- function(extra) notes_k2(paste0(
   "The dependent variable is the number of active intake facilities operated by the ",
   "utility in that year. Upstream and downstream sulfur are the average coal sulfur ",
   "content of watersheds within two flow steps upstream and downstream of the utility's ",
   "intake. ", sample_clause
-))
-et_table <- function(note_val) c(
-  "\\begin{table}[htbp]",
-  "\\raggedright",
-  paste0("\\begin{minipage}{", total_w_et, "}"),
-  "\\caption{\\label{tab:exclusion_test_num_facilities_k2updn} Effect of upstream and downstream instruments on utility characteristics}",
-  "\\end{minipage}",
-  "\\small",
-  "{\\setlength{\\tabcolsep}{4pt}%",
-  tabular_lines_et,
-  "}",
-  paste0("\\begin{minipage}{", total_w_et, "}"),
-  "\\vspace{4pt}",
-  "\\footnotesize",
-  "\\raggedright",
-  note_val,
-  "\\end{minipage}",
-  "\\end{table}"
+), extra = extra)
+render_coef_table_k2(
+  rows = list(
+    list(label = "Upstream sulfur \\%",   terms = list(NULL, get_term(m2, "sulfur_mean0"))),
+    list(label = "Downstream sulfur \\%", terms = list(NULL, get_term(m2, "sulfur_down_mean0"))),
+    list(label = k2_dict_updn[["z_up"]],  terms = list(get_term(m1, "z_up"), get_term(m2, "z_up"))),
+    list(label = k2_dict_updn[["z_dn"]],  terms = list(get_term(m1, "z_dn"), get_term(m2, "z_dn")))
+  ),
+  col_headers = c("", ""), superheader = "Number of intake facilities",
+  fe_list     = list("Utility" = c(TRUE, FALSE), "Year" = c(FALSE, TRUE), "State $\\times$ year" = c(TRUE, FALSE)),
+  spec_rows   = list("Balanced panel" = c(FALSE, TRUE)),
+  n_obs       = c(nobs(m1), nobs(m2)),
+  n_utils     = c(length(fixest::fixef(m1)$PWSID), length(balanced_ids)),
+  label       = "tab:exclusion_test_num_facilities_k2updn",
+  title       = "Effect of upstream and downstream instruments on utility characteristics",
+  outfile     = "exclusion_test_num_facilities_k2updn",
+  note_text_fn = note_et_fn, notes_present = notes_present_panel,
+  label_w_cm  = 6.5
 )
-writeLines(et_table(note_et), file.path(ROOT, "output/reg/exclusion_test_num_facilities_k2updn.tex"))
-writeLines(et_table(notes_present_panel), file.path(ROOT, "output/reg/exclusion_test_num_facilities_k2updn_present.tex"))
 cat("  Written: output/reg/exclusion_test_num_facilities_k2updn.tex (+ _present)\n")
 
 # 4.6 Visit types (state x year FE only, as in the existing table)

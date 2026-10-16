@@ -1,21 +1,25 @@
-
 \begin{table}[htbp]
-\caption{Nitrate MR violations following a reading above 50\% of the MCL}\label{tab:mr_concentration_lag_ols_k2}
 \centering
-\begin{adjustbox}{width = \textwidth, center}
-   \begin{tabular}{lrr}
-      \toprule    
-                      & Nitrate MR (1-yr) & Nitrate MR (6-mon) \\   
-                      & (1)               & (2)\\  
-      \midrule 
-      Concen. $>$ 50\% MCL       & 58.9341$^{**}$    & 26.0695$^{**}$\\   
-                      & (24.5521)         & (10.5051)\\   
-      Mean concen. (z-score)   & 1.2906$^{\phantom{**}}$            & 0.0795$^{\phantom{**}}$\\   
-                      & (1.4648)          & (0.9057)\\   
-       \\
-      Observations    & 835               & 835\\  
-      \bottomrule
-   \end{tabular}
-\end{adjustbox}
-{\tiny\linespread{1}\selectfont \par \raggedright \textit{Notes:} SYR2 sample restricted to utilities with a coal mine within two flow steps upstream of their intake and no coal mine colocated with their intake (1998--2005), nitrate only. Outcome: nitrate MR (monitoring/reporting) violation in the 365 days following the contaminant concentration sample date for the 1-yr column; violation in the 182 days following the contaminant concentration sample date for the 6-mon column. Concen. $>$ 50\% MCL = reading at 50--100\% of the MCL (5 mg/L), which triggers quarterly rather than the baseline annual nitrate testing. Mean concentration = utility-year mean reading, z-scored within chemical. Coefficients and standard errors are in percentage points. All specifications include utility and year fixed effects. *** p$<$0.01, ** p$<$0.05, * p$<$0.1. SEs clustered at the utility level.}
+\begin{minipage}{10.8435cm}
+\caption{\label{tab:mr_concentration_lag_ols_k2} Nitrate MR violations following a reading above 50\% of the MCL}
+\end{minipage}
+\small
+{\setlength{\tabcolsep}{4pt}%
+\begin{tabular}{>{\raggedright\arraybackslash}p{5cm}>{\raggedleft\arraybackslash}p{2.5cm}>{\raggedleft\arraybackslash}p{2.5cm}}
+\toprule
+ & \multicolumn{1}{>{\centering\arraybackslash}p{2.5cm}}{Nitrate MR (1-yr)} & \multicolumn{1}{>{\centering\arraybackslash}p{2.5cm}}{Nitrate MR (6-mon)} \\
+\hline
+Concen. $>$ 50\% MCL & 58.93$^{**\phantom{*}}$ & 26.07$^{**\phantom{*}}$ \\
+ & \makebox[0pt][r]{(}24.55\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}10.51\makebox[0pt][l]{)}\phantom{$^{***}$} \\
+Mean concen. (z-score) & 1.29$^{\phantom{*}\phantom{*}\phantom{*}}$ & 0.08$^{\phantom{*}\phantom{*}\phantom{*}}$ \\
+ & \makebox[0pt][r]{(}1.46\makebox[0pt][l]{)}\phantom{$^{***}$} & \makebox[0pt][r]{(}0.91\makebox[0pt][l]{)}\phantom{$^{***}$} \\
+\bottomrule
+\end{tabular}
+}
+\begin{minipage}{10.8435cm}
+\vspace{4pt}
+\footnotesize
+\raggedright
+\textit{Notes:} SYR2 sample restricted to utilities with a coal mine within two flow steps upstream of their intake and no coal mine colocated with their intake (1998--2005), nitrate only. Outcome: nitrate MR (monitoring/reporting) violation in the 365 days following the contaminant concentration sample date for the 1-yr column; violation in the 182 days following the contaminant concentration sample date for the 6-mon column. Concen. $>$ 50\% MCL = reading at 50--100\% of the MCL (5 mg/L), which triggers quarterly rather than the baseline annual nitrate testing. Mean concentration = utility-year mean reading, z-scored within chemical. Coefficients and standard errors are in percentage points. All specifications include utility and year fixed effects. Number of observations: 835; number of utilities: 82. Standard errors clustered at the utility level. *** p$<$0.01, ** p$<$0.05, * p$<$0.1.
+\end{minipage}
 \end{table}

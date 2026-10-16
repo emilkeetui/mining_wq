@@ -107,16 +107,22 @@ make_binary_row <- function(rs) {
 # than the original table's "IOCs" abbreviation, which was already within
 # ~6pt of the text width -- an auto "l" column here overflows the page.
 w_label_cm   <- 3.0
-tabcolsep_cm <- 6 / 72.27 * 2.54
-gap_cm       <- 2 * tabcolsep_cm
 w_b_num <- 1.15
-block_w <- 4 * w_b_num + 3 * gap_cm
-w_a_num <- (block_w - gap_cm) / 2
 w_b <- paste0(w_b_num, "cm")
-w_a <- paste0(round(w_a_num, 2), "cm")
 w_label <- paste0(w_label_cm, "cm")
-col_a <- paste0(">{\\raggedright\\arraybackslash}p{", w_label, "} *{4}{>{\\centering\\arraybackslash}p{", w_a, "}}")
-col_b <- paste0(">{\\raggedright\\arraybackslash}p{", w_label, "} *{8}{>{\\centering\\arraybackslash}p{", w_b, "}}")
+
+# Violation-panels table: both panels share one total width (4pt tabcolsep set
+# by table_shell()). Panel B has 8 data columns; Panel A's 4 columns are sized
+# to the same total. Data columns are right-aligned so decimals line up.
+w_label_v   <- 4.3
+w_b_v       <- 1.2
+pad_cm_v    <- function(n_col) 2 * (n_col + 1) * 4 * 2.54 / 72.27
+w_a_v       <- (w_label_v + 8 * w_b_v + pad_cm_v(8) - w_label_v - pad_cm_v(4)) / 4
+tw_v        <- table_width(c(w_label_v, rep(w_b_v, 8)))
+col_a <- paste0(">{\\raggedright\\arraybackslash}p{", w_label_v, "cm} *{4}{>{\\raggedleft\\arraybackslash}p{", round(w_a_v, 3), "cm}}")
+col_b <- paste0(">{\\raggedright\\arraybackslash}p{", w_label_v, "cm} *{8}{>{\\raggedleft\\arraybackslash}p{", w_b_v, "cm}}")
+# Centered header cell over a right-aligned data column
+hc <- function(w_cm, txt) paste0("\\multicolumn{1}{>{\\centering\\arraybackslash}p{", w_cm, "cm}}{\\textbf{", txt, "}}")
 
 panel_a_lines <- c(
   paste0("\\begin{tabular}{", col_a, "}"),
@@ -124,8 +130,8 @@ panel_a_lines <- c(
   "\\multicolumn{5}{l}{\\textbf{Panel A: Any violation in year}} \\\\",
   " & \\multicolumn{2}{c}{\\textbf{MR}} & \\multicolumn{2}{c}{\\textbf{MCL}} \\\\",
   "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}",
-  paste0("\\textbf{Contaminant} & \\textbf{\\%} & \\textbf{N} & ",
-         "\\textbf{\\%} & \\textbf{N} \\\\"),
+  paste0("\\textbf{Contaminant} & ", hc(round(w_a_v, 3), "\\%"), " & ", hc(round(w_a_v, 3), "N"), " & ",
+         hc(round(w_a_v, 3), "\\%"), " & ", hc(round(w_a_v, 3), "N"), " \\\\"),
   "\\hline",
   sapply(row_specs, make_binary_row),
   "\\end{tabular}"
@@ -144,8 +150,8 @@ panel_b_lines <- c(
   "\\multicolumn{9}{l}{\\textbf{Panel B: Days in year}} \\\\",
   " & \\multicolumn{4}{c}{\\textbf{MR}} & \\multicolumn{4}{c}{\\textbf{MCL}} \\\\",
   "\\cmidrule(lr){2-5}\\cmidrule(lr){6-9}",
-  paste0("\\textbf{Contaminant} & \\textbf{Mean} & \\textbf{SD} & \\textbf{P90} & \\textbf{P99} & ",
-         "\\textbf{Mean} & \\textbf{SD} & \\textbf{P90} & \\textbf{P99} \\\\"),
+  paste0("\\textbf{Contaminant} & ",
+         paste(rep(c(hc(w_b_v, "Mean"), hc(w_b_v, "SD"), hc(w_b_v, "P90"), hc(w_b_v, "P99")), 2), collapse = " & "), " \\\\"),
   "\\hline",
   sapply(row_specs, make_days_row),
   "\\hline",
@@ -185,22 +191,9 @@ combined_note <- paste0(
   " years (1985--2005)."
 )
 
-table_lines_1 <- c(
-  "\\begin{table}[htbp]",
-  "\\raggedright",
-  "\\caption{Utilities' Inorganic Chemical Water Violations, 1985--2005}",
-  "\\label{tab:violation_binary_days_panels_k2}",
-  "\\small",
-  panel_a_lines,
-  panel_b_lines,
-  "\\begin{minipage}{\\linewidth}",
-  "\\vspace{4pt}",
-  "\\footnotesize",
-  "\\raggedright",
-  combined_note,
-  "\\end{minipage}",
-  "\\end{table}"
-)
+title_1 <- "Inorganic chemical violations at utilities, 1985--2005"
+table_lines_1 <- table_shell("tab:violation_binary_days_panels_k2", title_1, tw_v$total_w,
+                             c(panel_a_lines, panel_b_lines), combined_note)
 
 out_path_1 <- "Z:/ek559/mining_wq/output/sum/violation_binary_days_panels_k2.tex"
 writeLines(table_lines_1, out_path_1)
@@ -209,16 +202,8 @@ cat("\nWritten:", out_path_1, "\n")
 # Presentation companion: same table body, trailing notes minipage dropped
 # entirely (summary statistics carry no clustering/FE/stars) --
 # .claude/logs/2026-08-31-presentation-notes-tables.md.
-table_lines_1_present <- c(
-  "\\begin{table}[htbp]",
-  "\\raggedright",
-  "\\caption{Utilities' Inorganic Chemical Water Violations, 1985--2005}",
-  "\\label{tab:violation_binary_days_panels_k2}",
-  "\\small",
-  panel_a_lines,
-  panel_b_lines,
-  "\\end{table}"
-)
+table_lines_1_present <- table_shell("tab:violation_binary_days_panels_k2", title_1, tw_v$total_w,
+                                     c(panel_a_lines, panel_b_lines), NULL)
 out_path_1_present <- sub("\\.tex$", "_present.tex", out_path_1)
 writeLines(table_lines_1_present, out_path_1_present)
 cat("Written:", out_path_1_present, "\n")
@@ -380,22 +365,10 @@ combined_note2 <- paste0(
   "sum to the Any/whole-panel total. Number of observations = ", fn(N_obs2), "."
 )
 
-table_lines_2 <- c(
-  "\\begin{table}[htbp]",
-  "\\raggedright",
-  "\\caption{Enforcement Actions and Site Visits at Utilities, 1985--2005}",
-  "\\label{tab:enforcement_visit_type_panels_k2}",
-  "\\small",
-  panel_a_lines2,
-  panel_b_lines2,
-  "\\begin{minipage}{\\linewidth}",
-  "\\vspace{4pt}",
-  "\\footnotesize",
-  "\\raggedright",
-  combined_note2,
-  "\\end{minipage}",
-  "\\end{table}"
-)
+title_2 <- "Enforcement actions and site visits at utilities, 1985--2005"
+tw_2 <- table_width(c(w_label, rep(w_num, 6)))
+table_lines_2 <- table_shell("tab:enforcement_visit_type_panels_k2", title_2, tw_2$total_w,
+                             c(panel_a_lines2, panel_b_lines2), combined_note2)
 
 out_path_2 <- "Z:/ek559/mining_wq/output/sum/enforcement_visit_type_panels_k2.tex"
 writeLines(table_lines_2, out_path_2)
@@ -404,16 +377,8 @@ cat("Written:", out_path_2, "\n")
 # Presentation companion: same table body, trailing notes minipage dropped
 # entirely (summary statistics carry no clustering/FE/stars) --
 # .claude/logs/2026-08-31-presentation-notes-tables.md.
-table_lines_2_present <- c(
-  "\\begin{table}[htbp]",
-  "\\raggedright",
-  "\\caption{Enforcement Actions and Site Visits at Utilities, 1985--2005}",
-  "\\label{tab:enforcement_visit_type_panels_k2}",
-  "\\small",
-  panel_a_lines2,
-  panel_b_lines2,
-  "\\end{table}"
-)
+table_lines_2_present <- table_shell("tab:enforcement_visit_type_panels_k2", title_2, tw_2$total_w,
+                                     c(panel_a_lines2, panel_b_lines2), NULL)
 out_path_2_present <- sub("\\.tex$", "_present.tex", out_path_2)
 writeLines(table_lines_2_present, out_path_2_present)
 cat("Written:", out_path_2_present, "\n")

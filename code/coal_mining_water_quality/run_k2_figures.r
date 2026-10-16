@@ -85,19 +85,11 @@ make_binscatter_panel <- function(df, panel_title) {
     theme(panel.grid = element_blank())
 }
 
-p_before_k2 <- make_binscatter_panel(huc_years %>% dplyr::filter(year <= 1995), "Up to and Including 1995")
+p_before_k2 <- make_binscatter_panel(huc_years %>% dplyr::filter(year <= 1995), "Up to and including 1995")
 p_after_k2  <- make_binscatter_panel(huc_years %>% dplyr::filter(year > 1995), "After 1995")
 
-(p_before_k2 + p_after_k2) +
-  plot_annotation(
-    title = "Descriptive evidence of first-stage relevance",
-    caption = paste0(
-      "Sample: HUC12 watersheds within two flow steps upstream of a utility water ",
-      "intake, 1985-2005.\nPoints show the mean sulfur as a percent of coal weight ",
-      "within each coal-mine-count bin; ranges show +/- 1 standard deviation within bin."
-    ),
-    theme = theme(plot.caption = element_text(hjust = 0))
-  )
+# Title and notes live in the LaTeX caption / notes block, not in the image.
+(p_before_k2 + p_after_k2)
 
 out_path_1 <- "Z:/ek559/mining_wq/output/fig/scatterhuccoalsulfur_pooled_k2.png"
 ggsave(out_path_1, width = 8, height = 5, dpi = 500)
@@ -143,7 +135,6 @@ p2 <- ggplot(plot_df, aes(x = e_instr, y = e_mines)) +
   geom_point(alpha = 0.12, size = 0.5, color = "steelblue") +
   geom_smooth(method = "lm", se = TRUE, color = "black", linewidth = 0.8, fill = "grey70") +
   labs(
-    title = "First Stage: ARP \u00d7 Coal Sulfur Content and Upstream Mine Activity",
     x     = "Residualized instrument (post-1995 \u00d7 coal sulfur content)",
     y     = "Residualized upstream mine count"
   ) +
@@ -151,7 +142,6 @@ p2 <- ggplot(plot_df, aes(x = e_instr, y = e_mines)) +
   scale_y_continuous(labels = scales::label_number(accuracy = 0.1)) +
   theme_classic(base_size = 11) +
   theme(
-    plot.title  = element_text(size = 11, face = "bold", margin = margin(b = 6)),
     plot.margin = margin(t = 8, r = 12, b = 8, l = 8)
   )
 

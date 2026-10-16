@@ -237,6 +237,152 @@ fmt_col <- function(ols_t, rf_t, iv_t, digits = 2, tight = FALSE) {
 
 fmt_single <- function(x, digits = 2) sprintf(paste0("%.", digits, "f"), x)
 
+# ── 3b. Table formatting helpers (plan: standardize-table-figure-formatting) ──
+# Fixed decimals; a value that rounds to zero never prints a minus sign.
+fmt_fixed <- function(x, digits = 2) {
+  out <- sprintf(paste0("%.", digits, "f"), x)
+  out <- sub("^-(0\\.?0*)$", "\\1", out)
+  out[is.na(x)] <- ""
+  out
+}
+
+fmt_int <- function(x) {
+  out <- formatC(x, format = "d", big.mark = ",")
+  out[is.na(x)] <- ""
+  out
+}
+
+# p-values: 2 decimals, anything below 0.005 prints as <0.01
+fmt_p <- function(p) {
+  ifelse(is.na(p), "", ifelse(p < 0.005, "$<$0.01", fmt_fixed(p, 2)))
+}
+
+# Significant figures (concentration cells); never scientific, no trailing "."
+fmt_sig <- function(x, sig = 2) {
+  out <- vapply(x, function(v) {
+    if (is.na(v)) return("")
+    if (v == 0) return(paste0("0.", strrep("0", sig - 1)))
+    s <- formatC(signif(v, sig), digits = sig, format = "fg", flag = "#")
+    sub("\\.$", "", s)
+  }, character(1))
+  unname(out)
+}
+
+stars_slots <- function(n_stars) {
+  vapply(n_stars, function(n) {
+    paste0("$^{", paste0(vapply(1:3, function(i) if (i <= n) "*" else "\\phantom{*}", character(1)), collapse = ""), "}$")
+  }, character(1))
+}
+
+stars_from_p <- function(p) {
+  ifelse(is.na(p), 0L, ifelse(p < 0.01, 3L, ifelse(p < 0.05, 2L, ifelse(p < 0.1, 1L, 0L))))
+}
+
+# Decimal-aligned cells for one column of formatted numbers with differing
+# decimals (significant-figure columns). Integer part and fraction sit in
+# fixed-width boxes; the sign and parentheses hang at zero width.
+split_align_cells <- function(strings, stars = NULL, paren = FALSE) {
+  strings <- as.character(strings)
+  blank   <- is.na(strings) | strings == ""
+  neg     <- !blank & startsWith(strings, "-")
+  bare    <- sub("^-", "", strings)
+  int_p   <- sub("\\..*$", "", bare)
+  frac_p  <- ifelse(grepl("\\.", bare), sub("^[^.]*\\.", "", bare), NA_character_)
+  int_w   <- max(c(1, nchar(int_p[!blank])))
+  frac_w  <- max(c(0, ifelse(is.na(frac_p[!blank]), 0, nchar(frac_p[!blank]) + 1)))
+  slot_w  <- if (isFALSE(stars)) 0 else 1.1  # em, width reserved for the three star slots
+  star_tx <- if (isFALSE(stars)) rep("", length(strings))  # stars = FALSE: no star slot at all
+             else if (is.null(stars)) rep("\\phantom{$^{***}$}", length(strings))
+             else stars_slots(stars)
+  paren   <- rep_len(paren, length(strings))  # may flag individual cells (SE rows)
+  if (!isFALSE(stars)) star_tx[paren] <- "\\phantom{$^{***}$}"
+  sign_tx <- ifelse(neg, "\\makebox[0pt][r]{-}", "")
+  frac_tx <- ifelse(is.na(frac_p), "", paste0(".", frac_p))
+  close_tx <- ifelse(paren, "\\makebox[0pt][l]{)}", "")
+  open_tx  <- ifelse(paren, "\\makebox[0pt][r]{(}", "")
+  cells <- paste0(open_tx,
+                  "\\makebox[", 0.5 * int_w, "em][r]{", sign_tx, int_p, "}",
+                  "\\makebox[", 0.5 * frac_w + slot_w, "em][l]{", frac_tx, close_tx, star_tx, "}")
+  cells[blank] <- ""
+  cells
+}
+
+chk_cell <- function(on, data_w) {
+  ifelse(on, paste0("\\multicolumn{1}{>{\\centering\\arraybackslash}p{", data_w, "}}{$\\checkmark$}"), "")
+}
+
+# Fixed-effects rows: drop rows that are empty everywhere; if every remaining
+# row is uniform across columns, drop the block and return a notes sentence.
+fe_block <- function(fe_list, data_w) {
+  fe_list <- fe_list[vapply(fe_list, any, logical(1))]
+  if (length(fe_list) == 0) return(list(rows = NULL, note = NULL))
+  uniform <- all(vapply(fe_list, function(v) length(unique(v)) == 1, logical(1)))
+  if (uniform) {
+    words <- tolower(gsub(" \\$\\\\times\\$ ", "-by-", names(fe_list)))
+    joined <- if (length(words) == 1) words else paste0(paste(words[-length(words)], collapse = ", "),
+                                                        if (length(words) > 2) "," else "", " and ", words[length(words)])
+    return(list(rows = NULL, note = paste0("All specifications include ", joined, " fixed effects.")))
+  }
+  rows <- vapply(names(fe_list), function(nm) {
+    paste0(nm, " fixed effects & ", paste(chk_cell(fe_list[[nm]], data_w), collapse = " & "), " \\\\")
+  }, character(1))
+  list(rows = unname(rows), note = NULL)
+}
+
+# Observations / utilities: rows only when they differ across columns.
+n_block <- function(n_obs, n_utils) {
+  # n_utils = NULL: the table has no separate utility count
+  uni_o <- length(unique(n_obs)) == 1
+  uni_u <- !is.null(n_utils) && length(unique(n_utils)) == 1
+  pad   <- "\\phantom{$^{***}$}"
+  rows  <- c(
+    if (!is.null(n_utils) && !uni_u) paste0("Utilities & ", paste0(fmt_int(n_utils), pad, collapse = " & "), " \\\\"),
+    if (!uni_o) paste0("Observations & ", paste0(fmt_int(n_obs), pad, collapse = " & "), " \\\\")
+  )
+  note_parts <- c(
+    if (uni_o) paste0("number of observations: ", fmt_int(n_obs[1])),
+    if (uni_u) paste0("number of utilities: ", fmt_int(n_utils[1]))
+  )
+  note <- if (length(note_parts)) {
+    s <- paste(note_parts, collapse = "; ")
+    paste0(toupper(substr(s, 1, 1)), substr(s, 2, nchar(s)), ".")
+  } else NULL
+  list(rows = rows, note = note)
+}
+
+# Float shell: centered table, caption and notes in minipages of table width.
+table_shell <- function(label, title, total_w, body_lines, note_text) {
+  c(
+    "\\begin{table}[htbp]",
+    "\\centering",
+    paste0("\\begin{minipage}{", total_w, "}"),
+    paste0("\\caption{\\label{", label, "} ", title, "}"),
+    "\\end{minipage}",
+    "\\small",
+    "{\\setlength{\\tabcolsep}{4pt}%",
+    body_lines,
+    "}",
+    if (!is.null(note_text)) c(
+      paste0("\\begin{minipage}{", total_w, "}"),
+      "\\vspace{4pt}",
+      "\\footnotesize",
+      "\\raggedright",
+      note_text,
+      "\\end{minipage}"
+    ),
+    "\\end{table}"
+  )
+}
+
+# Natural width (cm) of a tabular with the given column widths, plus the
+# total_w string and whether it must be scaled to fit \linewidth.
+table_width <- function(col_w_cm, tabcolsep_pt = 4, textwidth_cm = 16.51) {
+  pad <- 2 * length(col_w_cm) * tabcolsep_pt * 2.54 / 72.27
+  nat <- sum(col_w_cm) + pad
+  list(natural_cm = nat, needs_scale = nat > textwidth_cm,
+       total_w = if (nat > textwidth_cm) "\\linewidth" else paste0(round(nat, 4), "cm"))
+}
+
 get_term <- function(model, term) {
   ct <- fixest::coeftable(model)
   row <- if (term %in% rownames(ct)) term else paste0("fit_", term)
@@ -264,9 +410,9 @@ f_clustered <- function(dat, fe_str, endog = "num_coal_mines_linked_sum") {
 }
 
 # ── 5. Table-notes string builder ───────────────────────────────────────
-# Every k2 table has FE checkmark rows in its body (Utility/Year/State x
-# year), so per table-notes-conventions.md Rule 7 the notes say nothing
-# about fixed effects. `depvar_sentence` must avoid variable names and
+# FE text appears in the notes only when fe_block() dropped the FE rows
+# (uniform across columns); otherwise the checkmark rows carry it and the
+# notes stay silent (table-notes-conventions.md Rule 7). `depvar_sentence` must avoid variable names and
 # describe the outcome/instrument in plain language (Step 0.7 terminology:
 # "within two flow steps upstream", never "colocated + downstream").
 notes_k2 <- function(depvar_sentence, f_note = NULL, extra = NULL, sample_period = TRUE) {
@@ -275,7 +421,7 @@ notes_k2 <- function(depvar_sentence, f_note = NULL, extra = NULL, sample_period
     "Standard errors clustered at the utility level. ",
     if (!is.null(f_note)) paste0(f_note, " ") else "",
     if (sample_period) "Sample period 1985--2005. " else "",
-    if (!is.null(extra)) paste0(extra, " ") else "",
+    if (!is.null(extra) && nzchar(extra)) paste0(extra, " ") else "",
     "*** p$<$0.01, ** p$<$0.05, * p$<$0.1."
   )
 }
@@ -371,7 +517,9 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
     colnum_row   <- paste0(" & ", paste(colnum_cells, collapse = " & "), " \\\\")
     header_block <- c(grp_header_row, colnum_row)
   } else {
-    header_cells <- paste0("\\multicolumn{1}{", centered_data_col, "}{", oc_labels, "}")
+    # narrow data columns: footnotesize header words so e.g. "Enforcement" fits
+    hdr_font <- if (data_w_cm < 2.5) "\\footnotesize " else ""
+    header_cells <- paste0("\\multicolumn{1}{", centered_data_col, "}{", hdr_font, oc_labels, "}")
     header_row   <- paste0(" & ", paste(header_cells, collapse = " & "), " \\\\")
     colnum_cells <- paste0("\\multicolumn{1}{", centered_data_col, "}{(", seq_len(n_col), ")}")
     colnum_row   <- paste0(" & ", paste(colnum_cells, collapse = " & "), " \\\\")
@@ -390,12 +538,17 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
 
   fe_state     <- vapply(col_fe, function(fe) grepl("STATE_CODE^year", fe, fixed = TRUE), logical(1))
   fe_year      <- vapply(col_fe, function(fe) "year" %in% trimws(strsplit(fe, "\\+")[[1]]), logical(1))
-  chk_all      <- paste(rep("$\\checkmark$", n_col), collapse = " & ")
-  chk_state    <- paste(ifelse(fe_state, "$\\checkmark$", ""), collapse = " & ")
-  chk_year     <- paste(ifelse(fe_year, "$\\checkmark$", ""), collapse = " & ")
-  fe_row_util  <- paste0("Utility fixed effects & ", chk_all, " \\\\")
-  fe_row_year  <- paste0("Year fixed effects & ", chk_year, " \\\\")
-  fe_row_state <- paste0("State $\\times$ year fixed effects & ", chk_state, " \\\\")
+  if (compact_layout) {
+    fe_res <- fe_block(list("Utility" = rep(TRUE, n_col), "Year" = fe_year, "State $\\times$ year" = fe_state), data_w)
+    fe_rows_out <- fe_res$rows
+  } else {
+    chk_all      <- paste(rep("$\\checkmark$", n_col), collapse = " & ")
+    chk_state    <- paste(ifelse(fe_state, "$\\checkmark$", ""), collapse = " & ")
+    chk_year     <- paste(ifelse(fe_year, "$\\checkmark$", ""), collapse = " & ")
+    fe_rows_out  <- c(paste0("Utility fixed effects & ", chk_all, " \\\\"),
+                      paste0("Year fixed effects & ", chk_year, " \\\\"),
+                      paste0("State $\\times$ year fixed effects & ", chk_state, " \\\\"))
+  }
   n_util_row   <- paste0("Utilities & ", paste(format(n_utils, big.mark = ","), collapse = " & "), " \\\\")
   n_obs_row    <- paste0("Observations & ", paste(format(n_obs, big.mark = ","), collapse = " & "), " \\\\")
   f_stat_row   <- paste0("First-stage F-statistic & ",
@@ -446,8 +599,8 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
     coef_line(rf_cells, instr_lab),
     se_line(rf_cells),
     "\\hline",
-    fe_row_util, fe_row_year, fe_row_state,
-    if (compact_layout) f_stat_row else c(n_util_row, n_obs_row),
+    fe_rows_out,
+    if (compact_layout) c(n_block(n_obs, n_utils)$rows, f_stat_row) else c(n_util_row, n_obs_row),
     "\\bottomrule",
     "\\end{tabular}"
   ))
@@ -463,22 +616,14 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
   }
   if (compact_layout) {
     f_note <- NULL
-    n_note <- if (length(unique(n_obs)) == 1 && length(unique(n_utils)) == 1) {
-      paste0("Number of observations: ", format(n_obs[1], big.mark = ","),
-             "; number of utilities: ", format(n_utils[1], big.mark = ","), ".")
-    } else {
-      paste0("Number of observations by column: ",
-             paste0("(", seq_len(n_col), ") ", format(n_obs, big.mark = ","), collapse = ", "),
-             "; number of utilities by column: ",
-             paste0("(", seq_len(n_col), ") ", format(n_utils, big.mark = ","), collapse = ", "), ".")
-    }
-    extra_note <- paste(c(extra_note, n_note), collapse = " ")
+    nb <- n_block(n_obs, n_utils)
+    extra_note <- paste(c(extra_note, fe_res$note, nb$note), collapse = " ")
   }
   note_text <- notes_k2(depvar_sentence, f_note = f_note, extra = extra_note)
 
   build_table_lines <- function(note_text_val) c(
     "\\begin{table}[htbp]",
-    "\\raggedright",
+    "\\centering",
     paste0("\\begin{minipage}{", total_w, "}"),
     paste0("\\caption{\\label{", label, "} ", title, "}"),
     "\\end{minipage}",
@@ -515,4 +660,77 @@ render_panel_k2 <- function(dat, outcomes, fe_specs, dict,
 
   invisible(list(f_vals = f_vals, n_utils = n_utils, n_obs = n_obs,
                  iv_list = iv_list, rf_list = rf_list, ols_list = ols_list))
+}
+
+# ── 7. Generic coefficient table (single panel) ──────────────────────────────
+# rows: list of list(label = "...", terms = list(<get_term() list or NULL> per column))
+# fe_list: named list of logical vectors (see fe_block); spec_rows: named list of
+# logical vectors shown as centered checkmark rows (differing specs);
+# f_rows: named list label -> numeric vector of first-stage F-statistics.
+# Coefficients are tight 2-decimal cells; N/FE rows follow the S4 rule.
+render_coef_table_k2 <- function(rows, col_headers, superheader = NULL, colnums = TRUE,
+                                 fe_list = NULL, spec_rows = NULL, f_rows = NULL,
+                                 n_obs, n_utils, label, title, outfile,
+                                 note_text_fn, notes_present = NULL,
+                                 label_w_cm = 6.5, data_w_cm = 2.5, digits = 2,
+                                 group_headers = NULL, stat_lines = NULL) {
+  # group_headers: list of list(label, span) drawn above the column numbers
+  # with a \cmidrule under each group; stat_lines: pre-formatted rows appended
+  # after the F-statistic rows.
+  n_col  <- length(rows[[1]]$terms)
+  data_w <- paste0(data_w_cm, "cm")
+  cen    <- paste0(">{\\centering\\arraybackslash}p{", data_w, "}")
+  col_spec <- paste0(">{\\raggedright\\arraybackslash}p{", label_w_cm, "cm}",
+                     paste(rep(paste0(">{\\raggedleft\\arraybackslash}p{", data_w, "}"), n_col), collapse = ""))
+  pad <- "\\phantom{$^{***}$}"
+
+  coef_lines <- unlist(lapply(rows, function(r) {
+    cells <- lapply(r$terms, function(t) {
+      if (is.null(t) || is.na(t$est)) list(coef = "", se = "")
+      else fmt_num_wide(t$est, t$se, t$pval, 1, digits, tight = TRUE)
+    })
+    c(paste0(r$label, " & ", paste(sapply(cells, `[[`, "coef"), collapse = " & "), " \\\\"),
+      paste0(" & ", paste(sapply(cells, `[[`, "se"), collapse = " & "), " \\\\"))
+  }))
+
+  fe_res <- if (!is.null(fe_list)) fe_block(fe_list, data_w) else list(rows = NULL, note = NULL)
+  spec_lines <- if (!is.null(spec_rows)) vapply(names(spec_rows), function(nm)
+    paste0(nm, " & ", paste(chk_cell(spec_rows[[nm]], data_w), collapse = " & "), " \\\\"), character(1)) else NULL
+  nb <- n_block(n_obs, n_utils)
+  f_lines <- if (!is.null(f_rows)) vapply(names(f_rows), function(nm)
+    paste0(nm, " & ", paste0(fmt_fixed(f_rows[[nm]], digits), pad, collapse = " & "), " \\\\"), character(1)) else NULL
+
+  grp_spans <- if (!is.null(group_headers)) cumsum(c(1, vapply(group_headers, function(g) g$span, numeric(1)))) else NULL
+  hdr <- c(
+    if (!is.null(superheader)) paste0(" & \\multicolumn{", n_col, "}{c}{", superheader, "} \\\\"),
+    if (!is.null(group_headers)) c(
+      # p-width spans the grouped columns (incl. inner column padding) so long labels wrap
+      paste0(" & ", paste0("\\multicolumn{", vapply(group_headers, function(g) g$span, numeric(1)),
+                           "}{>{\\centering\\arraybackslash}p{",
+                           round(vapply(group_headers, function(g) g$span, numeric(1)) * data_w_cm +
+                                   (vapply(group_headers, function(g) g$span, numeric(1)) - 1) * 2 * 4 * 2.54 / 72.27, 3),
+                           "cm}}{", vapply(group_headers, function(g) g$label, character(1)), "}", collapse = " & "), " \\\\"),
+      paste0("\\cmidrule(lr){", grp_spans[-length(grp_spans)] + 1, "-", grp_spans[-1], "}", collapse = "")
+    ),
+    if (!is.null(col_headers) && any(nzchar(col_headers)))
+      paste0(" & ", paste0("\\multicolumn{1}{", cen, "}{", col_headers, "}", collapse = " & "), " \\\\"),
+    if (colnums) paste0(" & ", paste0("\\multicolumn{1}{", cen, "}{(", seq_len(n_col), ")}", collapse = " & "), " \\\\")
+  )
+  tab_lines <- c(paste0("\\begin{tabular}{", col_spec, "}"), "\\toprule", hdr, "\\hline",
+                 coef_lines,
+                 if (length(c(fe_res$rows, spec_lines, nb$rows, f_lines, stat_lines))) "\\hline",
+                 fe_res$rows, unname(spec_lines), nb$rows, unname(f_lines), stat_lines,
+                 "\\bottomrule", "\\end{tabular}")
+  tw <- table_width(c(label_w_cm, rep(data_w_cm, n_col)))
+  if (tw$needs_scale) tab_lines <- c("\\begin{adjustbox}{max width=\\linewidth}", tab_lines, "\\end{adjustbox}")
+
+  extra <- paste(c(fe_res$note, nb$note), collapse = " ")
+  write_one <- function(note_text, path) {
+    writeLines(table_shell(label, title, tw$total_w, tab_lines, note_text), path)
+    cat("  Written:", path, "\n")
+  }
+  write_one(note_text_fn(extra), file.path(ROOT, "output/reg", paste0(outfile, ".tex")))
+  if (!is.null(notes_present))
+    write_one(notes_present, file.path(ROOT, "output/reg", paste0(outfile, "_present.tex")))
+  invisible(tw)
 }

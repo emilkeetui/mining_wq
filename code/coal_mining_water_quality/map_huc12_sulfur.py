@@ -80,7 +80,7 @@ mine_geom.plot(
     linewidth=0.2, vmin=VMIN, vmax=VMAX, zorder=2,
     legend=True,
     legend_kwds={
-        "label": "Mean Sulfur (% of Coal Weight)",
+        "label": "Mean sulfur (% of coal weight)",
         "shrink": 0.6,
         "format": FormatStrFormatter("%.1f"),
         "extend": "max",
@@ -92,7 +92,6 @@ states_clip.boundary.plot(ax=ax, color="#666666", linewidth=0.5, zorder=3)
 ax.set_xlim(bounds[0], bounds[2])
 ax.set_ylim(bounds[1], bounds[3])
 ax.axis("off")
-ax.set_title("HUC12 watersheds containing coal mines, by mean coal sulfur content", fontsize=16)
 
 plt.tight_layout()
 plt.savefig(str(OUT_PATH), dpi=200, bbox_inches="tight")

@@ -126,7 +126,6 @@ states_clip.boundary.plot(ax=ax, color="#666666", linewidth=0.5, zorder=4)
 ax.set_xlim(bounds[0], bounds[2])
 ax.set_ylim(bounds[1], bounds[3])
 ax.axis("off")
-ax.set_title("HUC12 watersheds containing coal mines, 1985-2005", fontsize=18)
 
 legend_handles = [
     mpatches.Patch(facecolor="#2ca02c", label="Upstream of utility water intake"),
