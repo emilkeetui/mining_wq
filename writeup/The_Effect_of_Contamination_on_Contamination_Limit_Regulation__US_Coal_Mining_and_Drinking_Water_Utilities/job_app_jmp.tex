@@ -505,6 +505,12 @@ I estimate the effect of coal mining on the enforcement utilities receive. This 
 
 %The coefficient of $UpstreamCoalSulfur\%_c \times Post95_t$ in the reduced form regression compares the enforcement at utilities with higher sulfur levels after 1995 to those with lower sulfur levels. A one-percentage point increase in $UpstreamCoalSulfur\%_c$ is associated with a 1.45 percentage point increase in formal enforcement after 1995, compared to before 1995. Mining declines with sulfur after 1995; this means that places that likely experienced declines in mining after 1995 also experienced increases in formal enforcement compared to places that experienced mining increases; formal enforcement is less likely to be used as upstream mining increases. This is not counterintuitive when considering that formal enforcement such as legal action is hard to conduct without evidence of an MCL or strong evidence of wrongdoing, and previous results show that utilities downstream of mining increases under-report, thus providing less evidence for regulator formal enforcement.
 
+\section{Over-identification with an upstream and a downstream sulfur instrument}\label{sec:overid}
+
+The instrument in the previous sections interacts the post-1995 indicator with upstream coal sulfur content. A second instrument is available from the same source of variation: the post-1995 indicator interacted with the average coal sulfur content of watersheds within two watersheds downstream of the utility's intake. Downstream coal mines cannot contaminate the intake, so downstream sulfur should affect the utility only by predicting upstream mining, since the same regional coal markets and power plant demand for low-sulfur coal drive both. Using both instruments for the single endogenous regressor, the number of upstream coal mines, makes the model over-identified by one degree, so the exclusion restrictions become partly testable.
+
+The first stage remains strong. The joint F-statistic for the two instruments is 24.68 with state-by-year fixed effects and 19.95 with utility and year fixed effects, both above 10, though lower than the 49.20 for the upstream instrument alone (Table \ref{tab:fs_dwnstrm_minevio_ivsum_k2overid}). I test the null that both instruments are valid with Hansen's J statistic, robust to clustering at the utility level. Tables \ref{tab:2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2overid}--\ref{tab:h3_inf_formal_d12_k2overid} report the results. The test does not reject in any of the 29 specifications; the smallest p-value is 0.12. With one overidentifying restriction, the test is informative only against the two instruments implying different effects, and it cannot detect a violation shared by both. The over-identified estimates are close to the single-instrument estimates. For monitoring and reporting violations with state-by-year fixed effects, an additional upstream coal mine raises the probability of a nitrates, arsenic, and inorganic chemicals violation by 3.96, 3.82, and 3.11 percentage points, compared with 3.94, 3.78, and 3.06 using upstream sulfur alone. Table \ref{tab:exclusion_test_num_facilities_k2overid} shows the results of regressing the number of intake facilities on both instruments.
+
 \section{Discussion}\label{sec:discussion}
 
 By raising self-reporting costs, coal mining can lower self-reporting even if it does not push contamination above the MCL. Contaminant concentration readings do not rise above the MCL across utilities in the SYR2. These utilities differ in their compliance costs, and, returning to the model, in their negligence. This implies that over the range of utilities in the data, the likelihood of exceeding the MCL upon self-reporting is small, $q(a) \rightarrow \epsilon$. The self-reporting cutoff $\hat{c}(a) = t - (r-ps)q(a)$ then sits close to $t$, and a utility deciding whether to report weighs the direct cost of self-reporting against the penalty for skipping it, with no contaminant exceedance to conceal.
@@ -914,6 +920,118 @@ This appendix contains the derivation of the utility's negligence choice and the
 \end{figure}
 \clearpage
 
+\clearpage
+\subsection*{High vs low sulfur instrument trend analysis}
+
+% Summary of the pre-trend tests behind the event-study figures below.
+\outreg{es_highlow_pretrend_k2}\clearpage
+
+\begin{figure}
+\centering
+\outfig{es_highlow_headline_k2.png}
+\caption{\raggedright Event study of the high-minus-low sulfur difference in upstream coal mines, inorganic chemical monitoring and reporting violations, regulator visits, and enforcement actions}
+\label{fig:es_highlow_headline_k2}
+\fignotes{The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005. High-sulfur utilities are those whose average upstream coal sulfur content is at least 1.5 percent; the rest are low sulfur. Each panel plots the coefficients on year indicators interacted with the high-sulfur indicator, with 1994 omitted, controlling for the number of intake facilities, with utility and state-by-year fixed effects. Outcomes equal 100 if the violation, visit, or enforcement action occurred during the year, so coefficients are in percentage points; the first panel is in mines. The dashed vertical line separates 1994 from the post-1995 period. The p-value in each panel title is from a joint test that the 1985--1993 coefficients are zero. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig[0.85\linewidth]{es_highlow_mr_k2.png}
+\caption{\raggedright Event study of the high-minus-low sulfur difference in upstream coal mines and monitoring and reporting violations, by contaminant}
+\label{fig:es_highlow_mr_k2}
+\fignotes[0.85\linewidth]{The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005. High-sulfur utilities are those whose average upstream coal sulfur content is at least 1.5 percent; the rest are low sulfur. Coefficients are on year indicators interacted with the high-sulfur indicator, with 1994 omitted, controlling for the number of intake facilities, with utility and state-by-year fixed effects. Violation outcomes equal 100 if the utility had a violation of that type during the year, so coefficients are in percentage points; the first panel is in mines. The p-value in each panel title is from a joint test that the 1985--1993 coefficients are zero. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig{es_highlow_visit_k2.png}
+\caption{\raggedright Event study of the high-minus-low sulfur difference in regulator visits, by visit type}
+\label{fig:es_highlow_visit_k2}
+\fignotes{The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005. High-sulfur utilities are those whose average upstream coal sulfur content is at least 1.5 percent; the rest are low sulfur. Coefficients are on year indicators interacted with the high-sulfur indicator, with 1994 omitted, controlling for the number of intake facilities, with utility and state-by-year fixed effects. Outcomes equal 100 if the utility had a visit of that type during the year, so coefficients are in percentage points. The p-value in each panel title is from a joint test that the 1985--1993 coefficients are zero. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig[0.85\linewidth]{es_highlow_enf_k2.png}
+\caption{\raggedright Event study of the high-minus-low sulfur difference in enforcement actions, by action type}
+\label{fig:es_highlow_enf_k2}
+\fignotes[0.85\linewidth]{The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005. High-sulfur utilities are those whose average upstream coal sulfur content is at least 1.5 percent; the rest are low sulfur. Coefficients are on year indicators interacted with the high-sulfur indicator, with 1994 omitted, controlling for the number of intake facilities, with utility and state-by-year fixed effects. Outcomes equal 100 if the utility had an enforcement action of that type during the year, so coefficients are in percentage points. The p-value in each panel title is from a joint test that the 1985--1993 coefficients are zero. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig{es_highlow_headline_k2_nozero.png}
+\caption{\raggedright Event study of the high-minus-low sulfur difference, excluding utilities with no measured upstream sulfur}
+\label{fig:es_highlow_headline_k2_nozero}
+\fignotes{The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005, excluding utilities with no coal sulfur measurement within the buffer around upstream watersheds. High-sulfur utilities are those whose average upstream coal sulfur content is at least 1.5 percent; the rest are low sulfur. Coefficients are on year indicators interacted with the high-sulfur indicator, with 1994 omitted, controlling for the number of intake facilities, with utility and state-by-year fixed effects. Outcomes equal 100 if the violation, visit, or enforcement action occurred during the year, so coefficients are in percentage points; the first panel is in mines. The p-value in each panel title is from a joint test that the 1985--1993 coefficients are zero. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig{es_highlow_headline_k2_tercile.png}
+\caption{\raggedright Event study of the difference between the top and bottom terciles of upstream sulfur}
+\label{fig:es_highlow_headline_k2_tercile}
+\fignotes{The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005, excluding utilities in the middle tercile of upstream coal sulfur content. High-sulfur utilities are those in the top tercile of average upstream coal sulfur content and low-sulfur utilities are those in the bottom tercile. Coefficients are on year indicators interacted with the high-sulfur indicator, with 1994 omitted, controlling for the number of intake facilities, with utility and state-by-year fixed effects. Outcomes equal 100 if the violation, visit, or enforcement action occurred during the year, so coefficients are in percentage points; the first panel is in mines. The p-value in each panel title is from a joint test that the 1985--1993 coefficients are zero. Bars are 95 percent confidence intervals with standard errors clustered at the utility level.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig[0.7\linewidth]{means_highlow_firststage_k2.png}
+\caption{\raggedright Average number of upstream coal mines, by upstream sulfur group}
+\label{fig:means_highlow_firststage_k2}
+\fignotes[0.7\linewidth]{The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005. High-sulfur utilities are those whose average upstream coal sulfur content is at least 1.5 percent; the rest are low sulfur. Each line shows the annual mean for each group. The dashed vertical line separates 1994 from the post-1995 period.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig{means_highlow_mr_k2.png}
+\caption{\raggedright Share of utilities with a monitoring and reporting violation, by upstream sulfur group}
+\label{fig:means_highlow_mr_k2}
+\fignotes{The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005. High-sulfur utilities are those whose average upstream coal sulfur content is at least 1.5 percent; the rest are low sulfur. Each panel shows the annual percent of utilities with a violation of that type for each group. The dashed vertical line separates 1994 from the post-1995 period.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig{means_highlow_visit_k2.png}
+\caption{\raggedright Share of utilities with a regulator visit, by upstream sulfur group}
+\label{fig:means_highlow_visit_k2}
+\fignotes{The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005. High-sulfur utilities are those whose average upstream coal sulfur content is at least 1.5 percent; the rest are low sulfur. Each panel shows the annual percent of utilities with a visit of that type for each group. The dashed vertical line separates 1994 from the post-1995 period.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig[0.85\linewidth]{means_highlow_enf_k2.png}
+\caption{\raggedright Share of utilities with an enforcement action, by upstream sulfur group}
+\label{fig:means_highlow_enf_k2}
+\fignotes[0.85\linewidth]{The sample is utilities with a coal mine within two watersheds upstream of their intake and no coal mine colocated with it, in states with at least one other such utility, 1985--2005. High-sulfur utilities are those whose average upstream coal sulfur content is at least 1.5 percent; the rest are low sulfur. Each panel shows the annual percent of utilities with an enforcement action of that type for each group. The dashed vertical line separates 1994 from the post-1995 period.}
+\end{figure}
+\clearpage
+
+\clearpage
+\subsection*{Over-identified IV: upstream and downstream sulfur instruments}
+
+\outreg{fs_dwnstrm_minevio_ivsum_k2overid}\clearpage
+
+\outreg{2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2overid}\clearpage
+
+\outreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2overid}\clearpage
+
+\outreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2overid}\clearpage
+
+\outreg{exclusion_test_num_facilities_k2overid}\clearpage
+
+\outreg{h2_snsv_d12_k2overid}\clearpage
+
+\outreg{h3_inf_formal_d12_k2overid}\clearpage
 
 \endgroup
 \end{document}
