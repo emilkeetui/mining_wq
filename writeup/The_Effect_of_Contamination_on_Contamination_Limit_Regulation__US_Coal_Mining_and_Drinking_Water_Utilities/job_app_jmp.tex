@@ -534,6 +534,206 @@ I do not address the efficiency of shifting monitoring onto the regulators. Wate
 The findings here suggest that the regulatory design of the SDWA, which relies on utility self-monitoring and assigns substantially lower penalties to non-monitoring than to detected contamination, creates systematic incentives to under-report. Increasing penalties for non-monitoring in high-pollution areas may be a more effective lever for improving drinking water outcomes than increases in MCL stringency alone.
 
 
+\newpage
+
+%\section{Appendices}
+
+%\subsection{Type of enforcement following type of visit}
+
+%\outreg{mr_to_sanitary_visit}
+
+%\outsum{visit_type_onset_summary}
+
+%\outreg{sanitary_visit_event_study}
+
+%\outsum{sanitary_visit_to_enforcement}
+
+%\outreg{sanitary_visit_enforcement_iterative}
+
+%\subsection{Alternative Specification of Number of Upstream Coal Mines}
+
+% Local copy: differs from the pipeline version in output/reg/ (hand-edited
+% caption and row labels). Re-point to \outreg once the pipeline matches.
+%\input{reg/2sls_dwnstrm_minevio_allcat}
+
+%%input{reg/2sls_dwnstrm_minevio_mr}
+
+% Local copy: differs from the pipeline version in output/reg/ (hand-edited
+% caption and row labels). Re-point to \outreg once the pipeline matches.
+%\input{reg/2sls_dwnstrm_minevio_mcl}
+
+%\subsection{Binary coded SDWA violations}
+
+%\subsection{Regulator action, violation sequencing, SDWA rule enactment dates}
+
+%\outsum{viol_concurrent_following_mr}
+
+%\outsum{viol_sequence_after_mr}
+
+%\outsum{sdwa_regulator_data_inventory}
+
+%\outsum{sdwa_rule_enactment_dates}
+
+%\outsum{npdwr_changes}
+
+% \emergencystretch lets TeX break the long agency URLs in the reference list
+% without overrunning the right margin.
+{\emergencystretch=3em
+\printbibliography}
+
+\clearpage
+\section*{Tables and Figures}
+\addcontentsline{toc}{section}{Tables and Figures}
+
+% Uniform float typography for the whole end-matter block.
+%  \tiny (used for Notes in 12 of 16 table files) -> \footnotesize (10pt)
+%  \scriptsize -> \footnotesize, for safety
+%  \small (used for the tabular body in 2 table files) -> \normalsize (12pt)
+% Scoped to this group so the \small on the title-page affiliation is untouched.
+\begingroup
+\let\tiny\footnotesize
+\let\scriptsize\footnotesize
+\let\small\normalsize
+
+% ---------- Tables ----------
+%\outsum{ioc_days_dwnstrm}\clearpage
+%\outsum{visit_type_summary}\clearpage
+%\outsum{mr_mcl_incidence_summary}\clearpage
+\outsum{violation_binary_days_panels_k2}\clearpage
+\outsum{enforcement_visit_type_panels_k2}\clearpage
+\outsum{6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2}\clearpage
+\outsum{syr2_mr_comparison_k2}\clearpage
+%\outsum{upstream_coal_summary}\clearpage
+
+\outreg{pt_balance_6yr_k2}\clearpage
+\outreg{6yr_huc02fe_inorg_ravalli_2005_annprod_ab}\clearpage
+
+\outreg{fs_dwnstrm_minevio_ivsum_k2}\clearpage
+
+\outreg{exclusion_test_num_facilities_k2}\clearpage
+
+\outreg{2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2}\clearpage
+
+\outreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}\clearpage
+
+\outreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2}\clearpage
+
+\outreg{h2_snsv_d12_k2}\clearpage
+
+\outreg{h3_inf_formal_d12_k2}\clearpage
+
+\outreg{mr_concentration_lag_ols_k2}\clearpage
+% Commented out: not referenced in the main body.
+%\outreg{mr_concentration_lag_national_downstream_states}\clearpage
+%\outsum{sanitary_visit_timing_formal_enforcement_rate}\clearpage
+
+% ---------- Figures ----------
+
+% Commented out: not referenced in the main body. To restore, uncomment this
+% figure together with the sentence in the Data section that cites it.
+%\begin{figure}
+%\centering
+%\outfig{mineviolengthhist_downstream.png}
+%\caption{Distribution of violation lengths, by contaminant}
+%\label{img:mineviolengthhist_downstream}
+%{\footnotesize\linespread{1}\selectfont\par\raggedright
+%\textit{Notes:} Panels show the distribution of the number of days each violation lasts for the arsenic, nitrate, and inorganic chemical contaminant categories analyzed in this paper. Violation length is measured as the number of days between a violation's recorded start and end dates.}
+%\end{figure}
+%\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{img/WBD_Base_HUStructure_small.png}
+\caption{\raggedright Hierarchical structure of USGS hydrologic unit codes. Illustrates how a hydrologic region is nested into progressively smaller watershed units, from two-digit units covering large multi-state regions down to twelve-digit units covering a few square miles. Each smaller unit is fully contained within the boundaries of the larger unit above it.}
+\label{img:WBD_Base_HUStructure_small}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[height=0.8\textheight]{\outputdir/fig/sulfur_histogram_k2.png}
+\caption{\raggedright Histogram of the percentage of sulfur in coal weight in HUC12 watersheds within two HUC12s upstream of a water utility intake. The top two panels show the number of active coal mines and annual coal production in millions of short tons, with one observation per watershed-year. The bottom panel shows coal sulfur content, with one observation per watershed.}
+\label{hist:sulfurhuc12}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig{map_huc12_main_sample.png}
+\caption{\raggedright Shading distinguishes HUC12 watersheds that lie directly upstream of a water utility intake and contain a coal mine from HUC12 watersheds containing a coal mine with no water utility located downstream.}
+\label{map:map_huc12_main_sample}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig[0.8\linewidth]{coal_summary_plot.png}
+\caption{\raggedright Coal production trends by HUC12 watershed sulfur content, 1983 to 2005.}
+\label{plot:coal_summary_plot}
+\end{figure}
+\clearpage
+
+\begin{landscape}\vspace*{\fill}
+\begin{figure}
+\centering
+\outfig[0.85\linewidth]{proportionatecircleprod_diff_allminehuc12_1985_2005.png}
+\caption{\raggedright Change in coal production by watershed, 1985 to 2005. Circles are centered on watersheds with at least one active coal mine between 1985 and 2005 and are sized in proportion to the change in total coal production over the period. Red circles indicate an increase in production and blue circles indicate a decrease.}
+\label{map:proportionatecircleprod_diff_allminehuc12_1985_2005}
+\end{figure}
+\vspace*{\fill}\end{landscape}
+
+\begin{landscape}\vspace*{\fill}
+\begin{figure}
+\centering
+\outfig[0.85\linewidth]{proportionatecircle_upstream_mines_huc12_1985_2005.png}
+\caption{\raggedright Change in upstream coal production weighted by downstream population. Circles are centered on coal-mining watersheds located directly upstream of a water utility intake and are sized in proportion to the population served by the downstream utility. Red circles indicate an increase in production and blue circles indicate a decrease. Watersheds with no water utility directly downstream are omitted. The total population one watershed downstream of an active coal mine was 1,257,836 in 1985 and 218,874 in 2005, a net decrease of 1,038,962.}
+\label{map:proportionatecircle_upstream_mines_huc12_1985_2005}
+\end{figure}
+\vspace*{\fill}\end{landscape}
+
+\begin{figure}
+\centering
+\outfig{scatterhuccoalsulfur_pooled_k2.png}
+\caption{\raggedright Coal mines and coal sulfur content, before and after 1995. Mean coal sulfur content by number of coal mines in a watershed. Each point is the mean across watershed-year observations with that number of mines; vertical lines show plus or minus one standard deviation; the line is a linear fit of sulfur content on the number of mines, estimated separately for the periods before and after 1995.}
+\label{fig:scatterhuccoalsulfur}
+\fignotes{Sample: HUC12 watersheds within two flow steps upstream of a utility water intake, 1985--2005. Points show the mean sulfur as a percent of coal weight within each coal-mine-count bin; ranges show $\pm 1$ standard deviation within bin.}
+\end{figure}
+\clearpage
+
+\begin{figure}
+\centering
+\outfig{first_stage_scatter_dwnstrm_k2.png}
+\caption{\raggedright Residualized first-stage relationship. Each point is a utility by year observation for utilities with a coal mine within two watersheds upstream of their intake, 1985 to 2005. Both axes show residuals from separate regressions of each variable on utility, year, and state-by-year fixed effects, retaining only within-utility variation over time. The vertical axis residualizes the number of coal mines upstream within two watersheds; the horizontal axis residualizes the instrument, the post-1995 indicator interacted with the sulfur content of upstream coal. By the Frisch-Waugh-Lovell theorem, the slope of the fitted line equals the first-stage coefficient from the two-stage least squares specification.}
+\label{fig:first_stage_scatter_dwnstrm}
+\end{figure}
+\clearpage
+
+% ---------- Figures not referenced in the text ----------
+
+% Commented out: not referenced in the main body.
+%\begin{figure}
+%\centering
+%% Local copy: this figure has no counterpart in output/fig/.
+%\includegraphics[width=\linewidth]{plots/data_cleaning/eia_msha_mine_huc12s.png}
+%\caption{Watersheds matched to coal mine location and production data}
+%\label{map:eia_msha_mine_huc12s}
+%{\footnotesize\linespread{1}\selectfont\par\raggedright
+%\textit{Notes:} Shading indicates whether a watershed contains a mine with only location data, only production data, both matched together, or a mine that has since closed. Only watersheds matched to both mine location and mine production data are used to measure coal production in the main analysis.}
+%\end{figure}
+%\clearpage
+
+\begin{figure}
+\centering
+\outfig{map_huc12_sulfur.png}
+\caption{\raggedright Shading indicates the mean sulfur content of coal, as a percentage of coal weight, for HUC12 watersheds containing an active coal mine. Values are capped at the 95th percentile; watersheds above this threshold appear in the darkest shade, marked by the arrow on the color scale.}
+\label{map:map_huc12_sulfur}
+\end{figure}
+\clearpage
+
+\clearpage
+\endgroup
+
+\clearpage
 \appendix
 
 \section{Appendix}\label{app}
@@ -754,202 +954,4 @@ This appendix contains the derivation of the utility's negligence choice and the
 
 \endgroup
 
-\newpage
-
-%\section{Appendices}
-
-%\subsection{Type of enforcement following type of visit}
-
-%\outreg{mr_to_sanitary_visit}
-
-%\outsum{visit_type_onset_summary}
-
-%\outreg{sanitary_visit_event_study}
-
-%\outsum{sanitary_visit_to_enforcement}
-
-%\outreg{sanitary_visit_enforcement_iterative}
-
-%\subsection{Alternative Specification of Number of Upstream Coal Mines}
-
-% Local copy: differs from the pipeline version in output/reg/ (hand-edited
-% caption and row labels). Re-point to \outreg once the pipeline matches.
-%\input{reg/2sls_dwnstrm_minevio_allcat}
-
-%%input{reg/2sls_dwnstrm_minevio_mr}
-
-% Local copy: differs from the pipeline version in output/reg/ (hand-edited
-% caption and row labels). Re-point to \outreg once the pipeline matches.
-%\input{reg/2sls_dwnstrm_minevio_mcl}
-
-%\subsection{Binary coded SDWA violations}
-
-%\subsection{Regulator action, violation sequencing, SDWA rule enactment dates}
-
-%\outsum{viol_concurrent_following_mr}
-
-%\outsum{viol_sequence_after_mr}
-
-%\outsum{sdwa_regulator_data_inventory}
-
-%\outsum{sdwa_rule_enactment_dates}
-
-%\outsum{npdwr_changes}
-
-% \emergencystretch lets TeX break the long agency URLs in the reference list
-% without overrunning the right margin.
-{\emergencystretch=3em
-\printbibliography}
-
-\clearpage
-\section*{Tables and Figures}
-\addcontentsline{toc}{section}{Tables and Figures}
-
-% Uniform float typography for the whole end-matter block.
-%  \tiny (used for Notes in 12 of 16 table files) -> \footnotesize (10pt)
-%  \scriptsize -> \footnotesize, for safety
-%  \small (used for the tabular body in 2 table files) -> \normalsize (12pt)
-% Scoped to this group so the \small on the title-page affiliation is untouched.
-\begingroup
-\let\tiny\footnotesize
-\let\scriptsize\footnotesize
-\let\small\normalsize
-
-% ---------- Tables ----------
-%\outsum{ioc_days_dwnstrm}\clearpage
-%\outsum{visit_type_summary}\clearpage
-%\outsum{mr_mcl_incidence_summary}\clearpage
-\outsum{violation_binary_days_panels_k2}\clearpage
-\outsum{enforcement_visit_type_panels_k2}\clearpage
-\outsum{6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2}\clearpage
-\outsum{syr2_mr_comparison_k2}\clearpage
-%\outsum{upstream_coal_summary}\clearpage
-
-\outreg{pt_balance_6yr_k2}\clearpage
-\outreg{6yr_huc02fe_inorg_ravalli_2005_annprod_ab}\clearpage
-
-\outreg{fs_dwnstrm_minevio_ivsum_k2}\clearpage
-
-\outreg{exclusion_test_num_facilities_k2}\clearpage
-
-\outreg{2sls_dwnstrm_minevio_allcat_ivsum_binvio_k2}\clearpage
-
-\outreg{2sls_dwnstrm_minevio_mr_ivsum_binvio_k2}\clearpage
-
-\outreg{2sls_dwnstrm_minevio_mcl_ivsum_binvio_k2}\clearpage
-
-\outreg{h2_snsv_d12_k2}\clearpage
-
-\outreg{h3_inf_formal_d12_k2}\clearpage
-
-\outreg{mr_concentration_lag_ols_k2}\clearpage
-% Commented out: not referenced in the main body.
-%\outreg{mr_concentration_lag_national_downstream_states}\clearpage
-%\outsum{sanitary_visit_timing_formal_enforcement_rate}\clearpage
-
-% ---------- Figures ----------
-
-% Commented out: not referenced in the main body. To restore, uncomment this
-% figure together with the sentence in the Data section that cites it.
-%\begin{figure}
-%\centering
-%\outfig{mineviolengthhist_downstream.png}
-%\caption{Distribution of violation lengths, by contaminant}
-%\label{img:mineviolengthhist_downstream}
-%{\footnotesize\linespread{1}\selectfont\par\raggedright
-%\textit{Notes:} Panels show the distribution of the number of days each violation lasts for the arsenic, nitrate, and inorganic chemical contaminant categories analyzed in this paper. Violation length is measured as the number of days between a violation's recorded start and end dates.}
-%\end{figure}
-%\clearpage
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{img/WBD_Base_HUStructure_small.png}
-\caption{\raggedright Hierarchical structure of USGS hydrologic unit codes. Illustrates how a hydrologic region is nested into progressively smaller watershed units, from two-digit units covering large multi-state regions down to twelve-digit units covering a few square miles. Each smaller unit is fully contained within the boundaries of the larger unit above it.}
-\label{img:WBD_Base_HUStructure_small}
-\end{figure}
-\clearpage
-
-\begin{figure}
-\centering
-\includegraphics[height=0.8\textheight]{\outputdir/fig/sulfur_histogram_k2.png}
-\caption{\raggedright Histogram of the percentage of sulfur in coal weight in HUC12 watersheds within two HUC12s upstream of a water utility intake. The top two panels show the number of active coal mines and annual coal production in millions of short tons, with one observation per watershed-year. The bottom panel shows coal sulfur content, with one observation per watershed.}
-\label{hist:sulfurhuc12}
-\end{figure}
-\clearpage
-
-\begin{figure}
-\centering
-\outfig{map_huc12_main_sample.png}
-\caption{\raggedright Shading distinguishes HUC12 watersheds that lie directly upstream of a water utility intake and contain a coal mine from HUC12 watersheds containing a coal mine with no water utility located downstream.}
-\label{map:map_huc12_main_sample}
-\end{figure}
-\clearpage
-
-\begin{figure}
-\centering
-\outfig[0.8\linewidth]{coal_summary_plot.png}
-\caption{\raggedright Coal production trends by HUC12 watershed sulfur content, 1983 to 2005.}
-\label{plot:coal_summary_plot}
-\end{figure}
-\clearpage
-
-\begin{landscape}\vspace*{\fill}
-\begin{figure}
-\centering
-\outfig[0.85\linewidth]{proportionatecircleprod_diff_allminehuc12_1985_2005.png}
-\caption{\raggedright Change in coal production by watershed, 1985 to 2005. Circles are centered on watersheds with at least one active coal mine between 1985 and 2005 and are sized in proportion to the change in total coal production over the period. Red circles indicate an increase in production and blue circles indicate a decrease.}
-\label{map:proportionatecircleprod_diff_allminehuc12_1985_2005}
-\end{figure}
-\vspace*{\fill}\end{landscape}
-
-\begin{landscape}\vspace*{\fill}
-\begin{figure}
-\centering
-\outfig[0.85\linewidth]{proportionatecircle_upstream_mines_huc12_1985_2005.png}
-\caption{\raggedright Change in upstream coal production weighted by downstream population. Circles are centered on coal-mining watersheds located directly upstream of a water utility intake and are sized in proportion to the population served by the downstream utility. Red circles indicate an increase in production and blue circles indicate a decrease. Watersheds with no water utility directly downstream are omitted. The total population one watershed downstream of an active coal mine was 1,257,836 in 1985 and 218,874 in 2005, a net decrease of 1,038,962.}
-\label{map:proportionatecircle_upstream_mines_huc12_1985_2005}
-\end{figure}
-\vspace*{\fill}\end{landscape}
-
-\begin{figure}
-\centering
-\outfig{scatterhuccoalsulfur_pooled_k2.png}
-\caption{\raggedright Coal mines and coal sulfur content, before and after 1995. Mean coal sulfur content by number of coal mines in a watershed. Each point is the mean across watershed-year observations with that number of mines; vertical lines show plus or minus one standard deviation; the line is a linear fit of sulfur content on the number of mines, estimated separately for the periods before and after 1995.}
-\label{fig:scatterhuccoalsulfur}
-\fignotes{Sample: HUC12 watersheds within two flow steps upstream of a utility water intake, 1985--2005. Points show the mean sulfur as a percent of coal weight within each coal-mine-count bin; ranges show $\pm 1$ standard deviation within bin.}
-\end{figure}
-\clearpage
-
-\begin{figure}
-\centering
-\outfig{first_stage_scatter_dwnstrm_k2.png}
-\caption{\raggedright Residualized first-stage relationship. Each point is a utility by year observation for utilities with a coal mine within two watersheds upstream of their intake, 1985 to 2005. Both axes show residuals from separate regressions of each variable on utility, year, and state-by-year fixed effects, retaining only within-utility variation over time. The vertical axis residualizes the number of coal mines upstream within two watersheds; the horizontal axis residualizes the instrument, the post-1995 indicator interacted with the sulfur content of upstream coal. By the Frisch-Waugh-Lovell theorem, the slope of the fitted line equals the first-stage coefficient from the two-stage least squares specification.}
-\label{fig:first_stage_scatter_dwnstrm}
-\end{figure}
-\clearpage
-
-% ---------- Figures not referenced in the text ----------
-
-% Commented out: not referenced in the main body.
-%\begin{figure}
-%\centering
-%% Local copy: this figure has no counterpart in output/fig/.
-%\includegraphics[width=\linewidth]{plots/data_cleaning/eia_msha_mine_huc12s.png}
-%\caption{Watersheds matched to coal mine location and production data}
-%\label{map:eia_msha_mine_huc12s}
-%{\footnotesize\linespread{1}\selectfont\par\raggedright
-%\textit{Notes:} Shading indicates whether a watershed contains a mine with only location data, only production data, both matched together, or a mine that has since closed. Only watersheds matched to both mine location and mine production data are used to measure coal production in the main analysis.}
-%\end{figure}
-%\clearpage
-
-\begin{figure}
-\centering
-\outfig{map_huc12_sulfur.png}
-\caption{\raggedright Shading indicates the mean sulfur content of coal, as a percentage of coal weight, for HUC12 watersheds containing an active coal mine. Values are capped at the 95th percentile; watersheds above this threshold appear in the darkest shade, marked by the arrow on the color scale.}
-\label{map:map_huc12_sulfur}
-\end{figure}
-\clearpage
-
-\clearpage
-\endgroup
 \end{document}
