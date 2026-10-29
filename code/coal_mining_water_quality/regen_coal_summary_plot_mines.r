@@ -3,7 +3,9 @@
 # Purpose: Mine-level coal summary figure (mean/total mine coal production
 #          and number of active mines by sulfur level), 1983-2005.
 # Inputs: clean_data/coal_mine_prod_charac.parquet,
-#         clean_data/huc_coal_charac_geom_match.parquet
+#         clean_data/huc_coal_charac_geom_match.parquet,
+#         clean_data/cws_data/step_instruments.parquet,
+#         clean_data/cws_data/step_huc_links_k2.parquet
 # Outputs: output/fig/coal_summary_plot_mines.png
 # Author: EK  Date: 2026-10-28
 # ============================================================
@@ -31,6 +33,19 @@ huc_sulfur <- arrow::read_parquet(file.path(ROOT, "clean_data/huc_coal_charac_ge
                                   col_select = c("huc12", "sulfur_colocated")) %>%
   distinct(huc12, sulfur_colocated)
 stopifnot(!any(duplicated(huc_sulfur$huc12)))
+
+# Restrict to mines in HUC12s linked (within 2 steps upstream) to the k=2 main-arm CWS sample.
+# Intake HUC12s themselves contain no mines by construction (utilities with a mine-HUC
+# intake are dropped), so the linked HUC12s are the sample's mine-bearing watersheds.
+k2_pwsids <- arrow::read_parquet(file.path(ROOT, "clean_data/cws_data/step_instruments.parquet"),
+                                 col_select = c("PWSID", "arm", "k", "n_mine_hucs_linked")) %>%
+  filter(arm == "main", k == 2, n_mine_hucs_linked >= 1) %>% distinct(PWSID)
+k2_links <- arrow::read_parquet(file.path(ROOT, "clean_data/cws_data/step_huc_links_k2.parquet"))
+k2_linked_hucs <- unique(k2_links$linked_huc12[k2_links$PWSID %in% k2_pwsids$PWSID])
+cat("k=2 main-arm CWS:", nrow(k2_pwsids), " linked HUC12s:", length(k2_linked_hucs), "\n")
+n_all_mines <- n_distinct(mines$mine_id)
+mines <- mines[mines$huc12 %in% k2_linked_hucs, ]
+cat("Mines kept in k=2 linked HUC12s:", n_distinct(mines$mine_id), "of", n_all_mines, "\n")
 
 n_before <- nrow(mines)
 mines_before <- n_distinct(mines$mine_id)
