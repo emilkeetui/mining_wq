@@ -1,7 +1,7 @@
 # ============================================================
 # Script: regen_coal_summary_plot_mines.r
-# Purpose: Mine-level coal summary figure (mean/total mine coal production
-#          and number of active mines by sulfur level), 1983-2005.
+# Purpose: Mine-level coal summary figure (total mine coal production
+#          by sulfur level), 1983-2005.
 # Inputs: clean_data/coal_mine_prod_charac.parquet,
 #         clean_data/huc_coal_charac_geom_match.parquet,
 #         clean_data/cws_data/step_instruments.parquet,
@@ -14,7 +14,6 @@
 library(dplyr)
 library(arrow)
 library(ggplot2)
-library(patchwork)
 library(scales)
 
 ROOT <- "Z:/ek559/mining_wq"
@@ -61,37 +60,25 @@ cat("Active mine-years by sulfur group:\n")
 print(table(active$high_sulfur))
 
 coal_prod_over_time <- active %>% group_by(high_sulfur, year) %>%
-  summarise(avg_mine_coal = mean(production_short_tons),
-            tot_sulf_coal = sum(production_short_tons),
-            n_active_mines = n_distinct(mine_id),
-            .groups = "drop")
+  summarise(tot_sulf_coal = sum(production_short_tons), .groups = "drop")
 coal_prod_over_time$high_sulfur <- as.factor(coal_prod_over_time$high_sulfur)
 
-# Rescale: thousand short tons (mean), million short tons (total)
-coal_prod_over_time$avg_mine_coal_k <- coal_prod_over_time$avg_mine_coal / 1e3
+# Rescale: million short tons
 coal_prod_over_time$tot_sulf_coal_m <- coal_prod_over_time$tot_sulf_coal / 1e6
 
 sulfur_labels <- c("0" = "Low sulfur (\u22641.5% weight)", "1" = "High sulfur (>1.5% weight)")
 
-panel_plot <- function(yvar, title, ylab, accuracy) {
-  ggplot(coal_prod_over_time, aes(x = year, y = .data[[yvar]], color = high_sulfur)) +
-    geom_line() +
-    labs(title = title, x = "Year", y = ylab) +
-    scale_color_manual(name = "Sulfur level", values = c("0" = "blue", "1" = "red"),
-                       labels = sulfur_labels) +
-    scale_y_continuous(labels = scales::label_number(accuracy = accuracy, big.mark = "")) +
-    theme_minimal()
-}
-
-plot1 <- panel_plot("avg_mine_coal_k", "Mean mine coal production", "Thousand short tons", 1)
-plot2 <- panel_plot("tot_sulf_coal_m", "Total mine coal production", "Million short tons", 1)
-plot3 <- panel_plot("n_active_mines", "Active coal mines", "Number of mines", 1)
-
-combined_plot <- wrap_plots(list(plot1, plot2, plot3), ncol = 1) +
-  plot_layout(guides = "collect") &
+combined_plot <- ggplot(coal_prod_over_time,
+                        aes(x = year, y = tot_sulf_coal_m, color = high_sulfur)) +
+  geom_line() +
+  labs(x = "Year", y = "Million short tons") +
+  scale_color_manual(name = "Sulfur level", values = c("0" = "blue", "1" = "red"),
+                     labels = sulfur_labels) +
+  scale_y_continuous(labels = scales::label_number(accuracy = 1, big.mark = "")) +
+  theme_minimal() +
   theme(legend.position = "bottom")
 
 out_path <- file.path(ROOT, "output/fig/coal_summary_plot_mines.png")
 if (file.exists(out_path)) cat("WARNING:", out_path, "already exists -- overwriting\n")
-ggsave(out_path, combined_plot, height = 5, width = 6.5)
+ggsave(out_path, combined_plot, height = 3, width = 6.5)
 cat("Saved:", out_path, "\n")
