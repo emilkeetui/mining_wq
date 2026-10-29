@@ -5,7 +5,7 @@
 #          axes. Data prep and plot code copied from mining_reg.r.
 # Inputs: clean_data/huc_coal_charac_geom_match.parquet
 # Outputs: output/fig/coal_summary_plot.png
-# Author: EK  Date: 2026-10-15
+# Author: EK  Date: 2026-10-28
 # ============================================================
 
 .libPaths(c("C:/Users/ek559/AppData/Local/R/win-library/4.6", "Z:/ek559/RPackages"))
@@ -21,7 +21,7 @@ ROOT <- "Z:/ek559/mining_wq"
 coal_data_summary <- arrow::read_parquet(file.path(ROOT, "clean_data/huc_coal_charac_geom_match.parquet"))
 coal_data_summary <- coal_data_summary[coal_data_summary$minehuc %in% c("mine", "upstream_of_mine") &
                                        coal_data_summary$year >= 1983 & coal_data_summary$year <= 2005, ]
-coal_data_summary$high_sulfur <- as.integer(coal_data_summary$sulfur_colocated > 2)
+coal_data_summary$high_sulfur <- as.integer(coal_data_summary$sulfur_colocated > 1.5)
 
 coal_prod_over_time <- coal_data_summary %>% group_by(high_sulfur, year) %>%
   summarise(avg_huc_coal = mean(production_short_tons_coal_colocated, na.rm = TRUE),
@@ -34,7 +34,7 @@ coal_prod_over_time$high_sulfur <- as.factor(coal_prod_over_time$high_sulfur)
 coal_prod_over_time$avg_huc_coal_k <- coal_prod_over_time$avg_huc_coal / 1e3
 coal_prod_over_time$tot_sulf_coal_m <- coal_prod_over_time$tot_sulf_coal / 1e6
 
-sulfur_labels <- c("0" = "Low sulfur (<2% weight)", "1" = "High sulfur (>2% weight)")
+sulfur_labels <- c("0" = "Low sulfur (≤1.5% weight)", "1" = "High sulfur (>1.5% weight)")
 
 panel_plot <- function(yvar, title, ylab, accuracy) {
   ggplot(coal_prod_over_time, aes(x = year, y = .data[[yvar]], color = high_sulfur)) +
