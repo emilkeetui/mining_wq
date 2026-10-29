@@ -313,7 +313,7 @@ During the sample period, coal fired power plants increased their demand for low
 
 Emissions were capped in two phases. In Phase I, the EPA issued emission permits and allowances to 110 highly polluting, mostly coal-fired electricity-generating facilities. Facilities targeted under Phase I were required to achieve compliance with SO2 emission reductions by 1995. Phase II included smaller power-generating units that used oil, coal, and gas. The deadline for compliance with Phase II was January 1, 2000. I focus on the Phase I deadline because it targeted the largest coal-fired power plants, which were the largest customers for coal since the electric power industry accounted for 90 percent of coal demand in 2000 \parencite{freme2000us}. The ARP increased the demand for low-sulfur coal and reduced the demand for high-sulfur coal \parencite{epaarpcoalemp, stratford2015coalprod}. Mines producing high-sulfur coal have a limited ability to post-process the coal to remove sulfur since part of the sulfur is integral to the chemical structure of the coal and cannot be removed \parencite{wheelock1984coal}.
 
-Coal fired power plants were the main destination for US coal production, so the national coal supply responded by reducing production of high sulfur coal while slightly increasing production of low sulfur coal. Figure \ref{map:map_huc12_main_sample} plots national coal production by sulfur content. The reduction in high sulfur coal production beginning around 1990, five years before the ARP deadline, reflects coal fired power plants switching coal suppliers in anticipation of the ARP deadline, since 70\% of coal was supplied through contracts lasting between one and fifty years, while 15\% of coal was purchased on the spot market, and 15\% was sourced through vertically integrated coal mines and electric utilities \parencite{joskow1987price}. 
+Coal fired power plants were the main destination for US coal production, so the national coal supply responded by reducing production of high sulfur coal while slightly increasing production of low sulfur coal. Figure \ref{plot:coal_summary_plot_mines} plots national coal production by sulfur content. The reduction in high sulfur coal production beginning around 1990, five years before the ARP deadline, reflects coal fired power plants switching coal suppliers in anticipation of the ARP deadline, since 70\% of coal was supplied through contracts lasting between one and fifty years, while 15\% of coal was purchased on the spot market, and 15\% was sourced through vertically integrated coal mines and electric utilities \parencite{joskow1987price}. 
 
 \section{Data}\label{sec:data}
 
@@ -373,7 +373,7 @@ My IV relies on predicting coal production from the sulfur content of coal and w
 
 The demand for coal from each mine depends on the physical characteristics of its coal. Thus, the coal production upstream of a utility depends on the average sulfur percentage in coal deposits in the watersheds where the utility's intakes are located and those that are upstream of the intakes. I measure a utility's upstream coal sulfur as the mean sulfur percentage across all watersheds within two watersheds upstream of its intakes. I use the USGS COALQUAL dataset to measure the sulfur percentages present in coal within a watershed. The USGS COALQUAL dataset consists of geospatially explicit drilled coal core samples from across the US. Samples measure characteristics, including the percentage of coal weight that consists of sulfur. I match COALQUAL samples to watershed boundaries that lie within 20 km of their coordinates, irrespective of whether coal production took place in that watershed. I assign a sulfur value of zero to watersheds that I cannot match to a drilled coal core sample. This approximates coal deposits with the potential to be extracted. The mismeasurement of sulfur levels due to extreme variation within watersheds, where some high-sulfur coal watersheds may actually contain low-sulfur coal, is not an issue since watersheds have low variation in measured coal sulfur levels.
 
-High-sulfur coal production fell between 1985 and 2005, while low-sulfur coal production was more resilient and, in some places, increased. Figure \ref{hist:sulfurhuc12} plots a histogram of the sulfur percentage of the coal bed within the watersheds where a utility water intake and coal production are located. The sulfur content of watersheds' coal beds ranges from zero to 4.5 percent, with most of the watersheds below 1.5 percent. Slightly more than half of the watersheds have low-sulfur coal beds.  
+High-sulfur (greater than 1.5 percent sulfur) coal production fell between 1985 and 2005, while low-sulfur (1.5 percent or less sulfur) coal production was more resilient and, in some places, increased. Figure \ref{hist:sulfurhuc12} plots a histogram of the sulfur percentage of the coal bed within the watersheds where a utility water intake and coal production are located. The sulfur content of watersheds' coal beds ranges from zero to 4.5 percent, with most of the watersheds below 1.5 percent. Slightly more than half of the watersheds have low-sulfur coal beds.  
 
 In Figure \ref{map:map_huc12_main_sample}, the watersheds that contain coal production and are upstream of a utility water intake are green, while the watersheds that contain coal production and are not upstream of a utility are red. Most watersheds in my sample are located in Pennsylvania, Kentucky, and West Virginia. The eastern coal fields more frequently occur in watersheds upstream of drinking water utilities. Western coal production takes place more frequently in watersheds without utility water intakes and is less well represented in my sample.
 
@@ -653,6 +653,14 @@ The findings here suggest that the regulatory design of the SDWA, which relies o
 %\textit{Notes:} Panels show the distribution of the number of days each violation lasts for the arsenic, nitrate, and inorganic chemical contaminant categories analyzed in this paper. Violation length is measured as the number of days between a violation's recorded start and end dates.}
 %\end{figure}
 %\clearpage
+
+\begin{figure}
+\centering
+\outfig[0.8\linewidth]{coal_summary_plot_mines.png}
+\caption{\raggedright Coal production trends by percent of sulfur in coal by weight, 1983 to 2005.}
+\label{plot:coal_summary_plot_mines}
+\end{figure}
+\clearpage
 
 \begin{figure}
 \centering
