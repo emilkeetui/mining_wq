@@ -68,8 +68,8 @@ x_pp <- "2SLS coefficient (percentage points)"
 
 # ── Figure 1: MR and MCL violations ─────────────────────────────────────
 inorg_order <- c("Arsenic", "Nitrates", "Inorganic chemicals")
-p_mr  <- plot_ring_panel("mr",  inorg_order, "Monitoring and reporting violations", x_pp, 0.1)
-p_mcl <- plot_ring_panel("mcl", inorg_order, "Maximum contaminant level violations", x_pp, 0.1) +
+p_mr  <- plot_ring_panel("mr",  inorg_order, "Monitoring and reporting (MR) violations", x_pp, 0.1)
+p_mcl <- plot_ring_panel("mcl", inorg_order, "Maximum contaminant level (MCL) violations", x_pp, 0.1) +
   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
 fig1 <- (p_mr | p_mcl) + plot_layout(guides = "collect") & theme(legend.position = "bottom")
 save_fig(fig1, "k2_ring_coefs_mr_mcl.png", 9, 4)

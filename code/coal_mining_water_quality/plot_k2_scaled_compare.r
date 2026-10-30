@@ -42,9 +42,9 @@ three <- c("Arsenic", "Nitrates", "Inorganic chemicals")
 fam_def <- list(
   any   = list(heading = "Any violation",
                y = c("arsenic_bin", "nitrates_bin", "inorganic_chemicals_bin"), lab = three),
-  mr    = list(heading = "Monitoring and reporting violations",
+  mr    = list(heading = "Monitoring and reporting (MR) violations",
                y = c("arsenic_MR_bin", "nitrates_MR_bin", "inorganic_chemicals_MR_bin"), lab = three),
-  mcl   = list(heading = "Maximum contaminant level violations",
+  mcl   = list(heading = "Maximum contaminant level (MCL) violations",
                y = c("arsenic_MCL_bin", "nitrates_MCL_bin", "inorganic_chemicals_MCL_bin"), lab = three),
   visit = list(heading = "Regulator visits",
                y = c("any_snsv", "any_tech", "any_enfvisit", "any_smpl", "any_insp"),
