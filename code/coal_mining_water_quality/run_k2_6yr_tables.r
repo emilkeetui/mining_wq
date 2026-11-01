@@ -516,7 +516,7 @@ tw_ss <- table_width(ss_w_cm)
 if (tw_ss$needs_scale) body_ss <- c("\\begin{adjustbox}{max width=\\linewidth}", body_ss, "\\end{adjustbox}")
 
 ss_label <- "tab:6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2"
-ss_title <- "Utility contaminant concentrations, 1998--2005"
+ss_title <- "Utility pollution concentrations, 1998--2005"
 out_ss <- "Z:/ek559/mining_wq/output/sum/6yr_huc02fe_inorg_val_sumstats_ravalli_2005_k2.tex"
 writeLines(table_shell(ss_label, ss_title, tw_ss$total_w, body_ss, note_ss), out_ss)
 cat("Written:", out_ss, "\n")
@@ -801,11 +801,11 @@ build_syr2_table <- function(with_notes) {
   note_c <- if (with_notes) paste0(
     "\\textit{Notes:} Sample restricted to utilities with a coal mine within two flow steps ",
     "upstream of their intake and no coal mine colocated with their intake. ",
-    "\\textit{Has SYR2 reading}: at least one Six-Year Review contaminant reading for ",
+    "\\textit{Has SYR2 reading}: at least one Six-Year Review pollution concentration reading for ",
     "arsenic, nitrate, selenium, or barium. \\textit{No SYR2 reading}: utility is in a ",
     "state where at least one utility has a SYR2 reading but the utility itself does ",
     "not. MR violation: inorganic chemical monitoring and reporting violation. MCL ",
-    "violation: inorganic chemical maximum contaminant violation. Mean annual ",
+    "violation: inorganic chemical maximum contaminant level violation. Mean annual ",
     "violations: sum of MR and MCL violation indicators across arsenic, nitrate, and ",
     "inorganic chemicals categories (maximum of 6 per utility-year). $N$ utilities: ",
     "group 1 = ", g1_row$n_cws, ", group 2 = ", g2_row$n_cws, ". ",
@@ -813,7 +813,7 @@ build_syr2_table <- function(with_notes) {
     "Stars on differences are from two-sample $t$-tests. *** p$<$0.01, ** p$<$0.05, * p$<$0.1."
   ) else NULL
   table_shell("tab:syr2_mr_comparison_k2",
-              "MR and MCL violation rates and counts by SYR2 contaminant reporting status, two-step upstream watershed linkage, 1985--2005",
+              "MR and MCL violation rates and counts by SYR2 pollution concentration reporting status, two-step upstream watershed linkage, 1985--2005",
               tw_c$total_w, body_c, note_c)
 }
 
