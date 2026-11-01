@@ -24,6 +24,12 @@ Pull latest Overleaf edits (53f30e4), grammar-check job_app_jmp.tex (obvious err
 - [x] Paper compiles, 0 errors, 79 pages
 - [x] `app:overidentified` "undefined" warning was an artifact: local build read stale gitignored job_app_jmp.aux (Oct 29)
 
+## Update: contamination → pollution (groups A–D)
+- Committed 4da53d9: contaminant wording, scripts, outputs, factual slips.
+- Applied 20 exact replacements of contamination/contaminated (lines 211, 290, 348–406, 486, 502, 516,
+  808, 814, 822, 875); section title now "The impact of coal mining on pollution levels at downstream
+  utilities". Paper compiles, 0 errors. Remaining PDF matches: MCL term and cited paper titles only. Uncommitted.
+
 ## Open Questions / Next Steps
-- Uncommitted: contaminant replacements, 3 scripts, 7 regenerated outputs.
+- Uncommitted: contamination replacements in job_app_jmp.tex.
 - Flagged, not fixed: line 530 "standard error units" (should be standard deviation); line 554 "1997 to 2005" (SYR2 is 1998–2005).
