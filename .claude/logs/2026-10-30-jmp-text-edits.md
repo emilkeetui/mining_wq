@@ -31,3 +31,12 @@ discussion order (main body and appendix separately).
 - Violations section title -> "The impact of coal mining on utility under-reporting and water quality violations" (user: no MR/MCL acronyms in section titles).
 - Appendix figures A-numbered: after `appendix`, reset the figure counter and set `thefigure` / `theHfigure` to A + arabic(figure). Appendix tables left at 15-21 (not requested).
 - Could not recompile: MiKTeX/latexmk still failing (exit 127 / 0xC0000409).
+
+---
+**[COMPACTION NOTE — 2026-10-30T18:45:56Z]**  
+Auto-compact triggered. Active plan: `mine-level-coal-production-by-sulfur-figure.md`.  
+Resume by reading CLAUDE.md + most recent plan + `git log --oneline -5`.
+---
+
+## 2026-11-04 â€” Abstract grammar pass
+- Pulled Overleaf commit 0c04a80 (abstract rewrite), then grammar-edited the abstract in job_app_jmp.tex (possessive, causal "because", vague "This", modifier placement, dangling infinitive, cost/costs consistency, tense). Not committed.
